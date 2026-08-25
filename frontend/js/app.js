@@ -74,6 +74,7 @@ function formatINR(amount) {
 // ==========================================
 document.addEventListener('DOMContentLoaded', async () => {
   lucide.createIcons();
+  checkAuthStatus();
   updateApiKeyDisplay();
   initSessionIdentity();
   
@@ -95,12 +96,100 @@ document.addEventListener('DOMContentLoaded', async () => {
   loadStudioScenario('pothole');
 });
 
+// ==========================================
+// ROLE GATEWAY & AUTHENTICATION
+// ==========================================
+function checkAuthStatus() {
+  const isAuth = sessionStorage.getItem('sadaksuraksha_auth') === 'true';
+  const overlay = document.getElementById('role-gateway-overlay');
+  if (overlay) {
+    if (isAuth) {
+      overlay.classList.add('hidden');
+    } else {
+      overlay.classList.remove('hidden');
+    }
+  }
+}
+
+function fillOverlayDemo(type) {
+  const deptElem = document.getElementById('overlay-dept');
+  const idElem = document.getElementById('overlay-officer-id');
+  const pinElem = document.getElementById('overlay-officer-pin');
+  const errElem = document.getElementById('overlay-login-error');
+  if (errElem) errElem.classList.add('hidden');
+
+  if (type === 'nhai') {
+    if (deptElem) deptElem.value = 'nhai';
+    if (idElem) idElem.value = 'NHAI-CHIEF-019';
+    if (pinElem) pinElem.value = 'NHAI2026';
+  } else {
+    if (deptElem) deptElem.value = 'pwd_ka';
+    if (idElem) idElem.value = 'PWD-KA-INSPECT-44';
+    if (pinElem) pinElem.value = 'PWD123';
+  }
+}
+
+function handleOverlayGovLogin(e) {
+  if (e) e.preventDefault();
+  const dept = document.getElementById('overlay-dept')?.value || 'nhai';
+  const officerId = document.getElementById('overlay-officer-id')?.value.trim();
+  const pin = document.getElementById('overlay-officer-pin')?.value.trim();
+  const errorElem = document.getElementById('overlay-login-error');
+
+  if (!officerId || !pin) {
+    if (errorElem) {
+      errorElem.textContent = '❌ Please enter both Officer Badge ID and Security PIN.';
+      errorElem.classList.remove('hidden');
+    }
+    return;
+  }
+
+  // Save session credentials
+  sessionStorage.setItem('sadaksuraksha_auth', 'true');
+  sessionStorage.setItem('sadaksuraksha_role', 'gov_agent');
+  sessionStorage.setItem('sadaksuraksha_dept', dept);
+  sessionStorage.setItem('sadaksuraksha_officer', officerId);
+
+  // Update header badge text
+  const deptText = document.getElementById('header-dept-text');
+  if (deptText) {
+    deptText.textContent = `${officerId} • ${dept.toUpperCase()}`;
+  }
+
+  // Hide overlay
+  const overlay = document.getElementById('role-gateway-overlay');
+  if (overlay) {
+    overlay.classList.add('hidden');
+  }
+
+  // Ensure Leaflet map sizes correctly
+  if (gisMap) {
+    setTimeout(() => gisMap.invalidateSize(), 200);
+  }
+}
+
+function handleLogout() {
+  sessionStorage.removeItem('sadaksuraksha_auth');
+  sessionStorage.removeItem('sadaksuraksha_role');
+  sessionStorage.removeItem('sadaksuraksha_dept');
+  sessionStorage.removeItem('sadaksuraksha_officer');
+  
+  const overlay = document.getElementById('role-gateway-overlay');
+  if (overlay) {
+    overlay.classList.remove('hidden');
+    lucide.createIcons();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    window.location.href = '/';
+  }
+}
+
 function initSessionIdentity() {
   const officer = sessionStorage.getItem('sadaksuraksha_officer');
   const dept = sessionStorage.getItem('sadaksuraksha_dept');
   const deptText = document.getElementById('header-dept-text');
   if (deptText && officer) {
-    deptText.textContent = `${officer} • NHAI/PWD`;
+    deptText.textContent = `${officer} • ${(dept || 'NHAI').toUpperCase()}`;
   }
 }
 
@@ -1327,14 +1416,7 @@ function renderIngestionStreams(streams) {
   lucide.createIcons();
 }
 
-// Role switching and Logout
-function handleLogout() {
-  sessionStorage.removeItem('sadaksuraksha_auth');
-  sessionStorage.removeItem('sadaksuraksha_role');
-  sessionStorage.removeItem('sadaksuraksha_dept');
-  sessionStorage.removeItem('sadaksuraksha_officer');
-  window.location.href = '/';
-}
+
 
 // Load ingestion streams when switching to ingestion tab
 const originalSwitchTab = window.switchTab;

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -145,7 +145,7 @@
         </div>
 
         <div>
-          <a href="/report" class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-green-400 text-black font-extrabold text-sm flex items-center justify-center gap-2.5 shadow-xl shadow-emerald-500/25 transition-all hover:scale-[1.02]">
+          <a href="/report" onclick="if(window.location.protocol==='file:'){event.preventDefault();window.location.href='report.html';}" class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-green-400 text-black font-extrabold text-sm flex items-center justify-center gap-2.5 shadow-xl shadow-emerald-500/25 transition-all hover:scale-[1.02]">
             <i data-lucide="camera" class="w-4 h-4"></i>
             <span>Enter Citizen Reporting Portal</span>
             <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
@@ -278,7 +278,11 @@
       sessionStorage.setItem('sadaksuraksha_officer', officerId);
 
       // Redirect to the Government AI Command Center
-      window.location.href = '/dashboard';
+      if (window.location.protocol === 'file:') {
+        window.location.href = 'index.html';
+      } else {
+        window.location.href = '/dashboard';
+      }
     }
   </script>
 </body>
