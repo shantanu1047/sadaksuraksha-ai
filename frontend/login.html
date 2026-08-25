@@ -473,14 +473,6 @@
   <script>
     lucide.createIcons();
 
-    function scrollLoginPosters(direction) {
-      const container = document.getElementById('login-posters-container');
-      if (container) {
-        const scrollAmount = direction === 'left' ? -360 : 360;
-        container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-      }
-    }
-
     function quickDemoLogin(type) {
       if (type === 'nhai') {
         document.getElementById('gov-dept').value = 'nhai';
