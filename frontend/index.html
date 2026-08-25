@@ -244,14 +244,16 @@
 
       <!-- 1. MODULES & VIEWS DROPDOWN -->
       <div class="relative" id="dropdown-nav-wrapper">
-        <button type="button" onclick="toggleNavDropdown(event)" id="nav-dropdown-btn" class="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border-2 border-black text-xs font-black text-black transition-colors">
-          <i data-lucide="layout-grid" class="w-4 h-4 text-black"></i>
+        <button type="button" onclick="toggleNavDropdown(event)" id="nav-dropdown-btn" class="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white hover:bg-orange-50 border-2 border-black text-xs font-black text-black transition-colors">
+          <i data-lucide="layout-grid" class="w-4 h-4 text-orange-600"></i>
           <span id="nav-dropdown-label" class="text-black font-black">GIS Hazard Map</span>
           <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-black transition-transform duration-200" id="nav-dropdown-arrow"></i>
         </button>
 
-        <!-- Dropdown Menu (Flat White with Black Borders) -->
-        <div id="nav-dropdown-menu" class="hidden absolute top-full left-0 mt-2 w-72 bg-white border-2 border-black rounded-2xl p-2.5 z-[1100] space-y-1.5">
+        <!-- Dropdown Menu (Flat White with Black Borders & Tricolour Strip) -->
+        <div id="nav-dropdown-menu" class="hidden absolute top-full left-0 mt-2 w-72 bg-white border-2 border-black rounded-2xl p-2.5 z-[1100] space-y-1.5 overflow-hidden">
+          <div class="tricolor-strip -mx-2.5 -mt-2.5 mb-2"></div>
+          
           <div class="flex items-center justify-between px-3 py-1.5 bg-slate-100 rounded-xl border border-black">
             <span class="text-[10px] font-black uppercase tracking-wider text-black font-mono flex items-center gap-1.5">
               <i data-lucide="layers" class="w-3.5 h-3.5 text-black"></i> Platform Modules
@@ -259,72 +261,79 @@
             <span class="text-[9px] bg-black text-white font-mono px-1.5 py-0.2 rounded font-bold">7 Views</span>
           </div>
 
-          <button type="button" onclick="selectNavTab('map', 'GIS Hazard Map')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-cyan-50 border-2 border-transparent hover:border-black transition-all text-left group">
-            <div class="w-8 h-8 rounded-lg bg-cyan-100 border-2 border-black flex items-center justify-center shrink-0">
-              <i data-lucide="map" class="w-4 h-4 text-black"></i>
+          <!-- 1. Saffron Module -->
+          <button type="button" onclick="selectNavTab('map', 'GIS Hazard Map')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-orange-50 border-2 border-transparent hover:border-black transition-all text-left group">
+            <div class="w-8 h-8 rounded-lg bg-orange-100 border-2 border-black flex items-center justify-center shrink-0">
+              <i data-lucide="map" class="w-4 h-4 text-orange-700"></i>
             </div>
             <div>
-              <p class="text-xs font-black text-black group-hover:text-blue-700 transition-colors leading-none">GIS Hazard Map</p>
+              <p class="text-xs font-black text-black group-hover:text-orange-700 transition-colors leading-none">GIS Hazard Map</p>
               <p class="text-[11px] text-slate-600 font-medium mt-1">Spatial priority backlog & live pins</p>
             </div>
           </button>
 
-          <button type="button" onclick="selectNavTab('studio', 'Inspection Studio')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-purple-50 border-2 border-transparent hover:border-black transition-all text-left group">
-            <div class="w-8 h-8 rounded-lg bg-purple-100 border-2 border-black flex items-center justify-center shrink-0">
-              <i data-lucide="scan" class="w-4 h-4 text-black"></i>
+          <!-- 2. Navy Module -->
+          <button type="button" onclick="selectNavTab('studio', 'Inspection Studio')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-blue-50 border-2 border-transparent hover:border-black transition-all text-left group">
+            <div class="w-8 h-8 rounded-lg bg-blue-100 border-2 border-black flex items-center justify-center shrink-0">
+              <i data-lucide="scan" class="w-4 h-4 text-blue-800"></i>
             </div>
             <div>
-              <p class="text-xs font-black text-black group-hover:text-purple-700 transition-colors leading-none">Inspection Studio</p>
+              <p class="text-xs font-black text-black group-hover:text-blue-800 transition-colors leading-none">Inspection Studio</p>
               <p class="text-[11px] text-slate-600 font-medium mt-1">Visual AI & 4-modal sensor fusion</p>
             </div>
           </button>
 
-          <button type="button" onclick="selectNavTab('patrol', 'Patrol Simulator')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-amber-50 border-2 border-transparent hover:border-black transition-all text-left group">
-            <div class="w-8 h-8 rounded-lg bg-amber-100 border-2 border-black flex items-center justify-center shrink-0">
-              <i data-lucide="car" class="w-4 h-4 text-black"></i>
+          <!-- 3. Green Module -->
+          <button type="button" onclick="selectNavTab('patrol', 'Patrol Simulator')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-emerald-50 border-2 border-transparent hover:border-black transition-all text-left group">
+            <div class="w-8 h-8 rounded-lg bg-emerald-100 border-2 border-black flex items-center justify-center shrink-0">
+              <i data-lucide="car" class="w-4 h-4 text-emerald-700"></i>
             </div>
             <div>
-              <p class="text-xs font-black text-black group-hover:text-amber-700 transition-colors leading-none">Patrol Simulator</p>
+              <p class="text-xs font-black text-black group-hover:text-emerald-700 transition-colors leading-none">Patrol Simulator</p>
               <p class="text-[11px] text-slate-600 font-medium mt-1">Live vehicle telemetry & roughness</p>
             </div>
           </button>
 
-          <button type="button" onclick="selectNavTab('backlog', 'Work Orders')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-emerald-50 border-2 border-transparent hover:border-black transition-all text-left group">
-            <div class="w-8 h-8 rounded-lg bg-emerald-100 border-2 border-black flex items-center justify-center shrink-0">
-              <i data-lucide="clipboard-list" class="w-4 h-4 text-black"></i>
+          <!-- 4. Saffron Module -->
+          <button type="button" onclick="selectNavTab('backlog', 'Work Orders')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-orange-50 border-2 border-transparent hover:border-black transition-all text-left group">
+            <div class="w-8 h-8 rounded-lg bg-orange-100 border-2 border-black flex items-center justify-center shrink-0">
+              <i data-lucide="clipboard-list" class="w-4 h-4 text-orange-700"></i>
             </div>
             <div>
-              <p class="text-xs font-black text-black group-hover:text-emerald-700 transition-colors leading-none">Work Orders</p>
+              <p class="text-xs font-black text-black group-hover:text-orange-700 transition-colors leading-none">Work Orders</p>
               <p class="text-[11px] text-slate-600 font-medium mt-1">Clustered PWD repair schedule</p>
             </div>
           </button>
 
-          <button type="button" onclick="selectNavTab('copilot', 'AI Co-Pilot')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-cyan-50 border-2 border-transparent hover:border-black transition-all text-left group">
-            <div class="w-8 h-8 rounded-lg bg-cyan-100 border-2 border-black flex items-center justify-center shrink-0">
-              <i data-lucide="bot" class="w-4 h-4 text-black"></i>
+          <!-- 5. Navy Module -->
+          <button type="button" onclick="selectNavTab('copilot', 'AI Co-Pilot')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-blue-50 border-2 border-transparent hover:border-black transition-all text-left group">
+            <div class="w-8 h-8 rounded-lg bg-blue-100 border-2 border-black flex items-center justify-center shrink-0">
+              <i data-lucide="bot" class="w-4 h-4 text-blue-800"></i>
             </div>
             <div>
-              <p class="text-xs font-black text-black group-hover:text-cyan-700 transition-colors leading-none">AI Co-Pilot</p>
+              <p class="text-xs font-black text-black group-hover:text-blue-800 transition-colors leading-none">AI Co-Pilot</p>
               <p class="text-[11px] text-slate-600 font-medium mt-1">MoRTH & IRC engineering chat</p>
             </div>
           </button>
 
-          <button type="button" onclick="selectNavTab('analytics', 'Analytics & Reports')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-blue-50 border-2 border-transparent hover:border-black transition-all text-left group">
-            <div class="w-8 h-8 rounded-lg bg-blue-100 border-2 border-black flex items-center justify-center shrink-0">
-              <i data-lucide="bar-chart-3" class="w-4 h-4 text-black"></i>
+          <!-- 6. Green Module -->
+          <button type="button" onclick="selectNavTab('analytics', 'Analytics & Reports')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-emerald-50 border-2 border-transparent hover:border-black transition-all text-left group">
+            <div class="w-8 h-8 rounded-lg bg-emerald-100 border-2 border-black flex items-center justify-center shrink-0">
+              <i data-lucide="bar-chart-3" class="w-4 h-4 text-emerald-700"></i>
             </div>
             <div>
-              <p class="text-xs font-black text-black group-hover:text-blue-700 transition-colors leading-none">Analytics & Reports</p>
+              <p class="text-xs font-black text-black group-hover:text-emerald-700 transition-colors leading-none">Analytics & Reports</p>
               <p class="text-[11px] text-slate-600 font-medium mt-1">Defect distribution & cost charts</p>
             </div>
           </button>
 
-          <button type="button" onclick="selectNavTab('ingestion', 'Multi-Source Ingestion')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-pink-50 border-2 border-transparent hover:border-black transition-all text-left group">
-            <div class="w-8 h-8 rounded-lg bg-pink-100 border-2 border-black flex items-center justify-center shrink-0">
-              <i data-lucide="radio-tower" class="w-4 h-4 text-black"></i>
+          <!-- 7. Saffron Module -->
+          <button type="button" onclick="selectNavTab('ingestion', 'Multi-Source Ingestion')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-orange-50 border-2 border-transparent hover:border-black transition-all text-left group">
+            <div class="w-8 h-8 rounded-lg bg-orange-100 border-2 border-black flex items-center justify-center shrink-0">
+              <i data-lucide="radio-tower" class="w-4 h-4 text-orange-700"></i>
             </div>
             <div>
-              <p class="text-xs font-black text-black group-hover:text-pink-700 transition-colors leading-none">Multi-Source Ingestion</p>
+              <p class="text-xs font-black text-black group-hover:text-orange-700 transition-colors leading-none">Multi-Source Ingestion</p>
               <p class="text-[11px] text-slate-600 font-medium mt-1">CCTV, Google Maps & Citizen 311</p>
             </div>
           </button>
@@ -332,8 +341,8 @@
       </div>
 
       <!-- 2. STATE / REGION SELECTOR (INDIA) -->
-      <div class="flex items-center gap-2 bg-white px-3.5 py-2 rounded-xl border-2 border-black">
-        <i data-lucide="map-pin" class="w-4 h-4 text-black"></i>
+      <div class="flex items-center gap-2 bg-white px-3.5 py-2 rounded-xl border-2 border-black hover:bg-orange-50/40 transition-colors">
+        <span class="text-xs">🇮🇳</span>
         <label for="state-selector" class="text-xs font-black text-black">State:</label>
         <select id="state-selector" onchange="handleStateChange(this.value)" class="bg-white border-none text-black font-extrabold text-xs rounded-lg px-2 py-0.5 focus:outline-none cursor-pointer">
           <option value="all">🇮🇳 All India (16 States)</option>
@@ -359,37 +368,39 @@
 
       <!-- 3. ACTIONS & TOOLS DROPDOWN -->
       <div class="relative" id="dropdown-actions-wrapper">
-        <button type="button" onclick="toggleActionsDropdown(event)" id="actions-dropdown-btn" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-300 hover:bg-amber-400 border-2 border-black text-black font-black text-xs transition-colors">
+        <button type="button" onclick="toggleActionsDropdown(event)" id="actions-dropdown-btn" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#FF9933] hover:bg-[#F28500] border-2 border-black text-black font-black text-xs transition-colors cursor-pointer">
           <i data-lucide="zap" class="w-4 h-4 text-black"></i>
           <span>Actions & Tools</span>
           <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-black" id="actions-dropdown-arrow"></i>
         </button>
 
-        <!-- Dropdown Menu (Flat White with Black Borders) -->
-        <div id="actions-dropdown-menu" class="hidden absolute top-full right-0 mt-2 w-64 bg-white border-2 border-black rounded-2xl p-2.5 z-[1100] space-y-1.5">
-          <div class="flex items-center justify-between px-3 py-1.5 bg-amber-50 rounded-xl border border-black">
+        <!-- Dropdown Menu (Flat White with Black Borders & Tricolour Strip) -->
+        <div id="actions-dropdown-menu" class="hidden absolute top-full right-0 mt-2 w-64 bg-white border-2 border-black rounded-2xl p-2.5 z-[1100] space-y-1.5 overflow-hidden">
+          <div class="tricolor-strip -mx-2.5 -mt-2.5 mb-2"></div>
+
+          <div class="flex items-center justify-between px-3 py-1.5 bg-orange-50 rounded-xl border border-black">
             <span class="text-[10px] font-black uppercase tracking-wider text-black font-mono flex items-center gap-1.5">
-              <i data-lucide="wrench" class="w-3.5 h-3.5 text-black"></i> Engineering Tools
+              <i data-lucide="wrench" class="w-3.5 h-3.5 text-orange-700"></i> Engineering Tools
             </span>
-            <span class="text-[9px] bg-amber-300 text-black font-mono px-1.5 py-0.2 rounded font-bold border border-black">Active</span>
+            <span class="text-[9px] bg-[#FF9933] text-black font-mono px-1.5 py-0.2 rounded font-bold border border-black">Active</span>
           </div>
           
-          <button type="button" onclick="triggerQuickScanModal(); closeAllDropdowns();" class="w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-amber-50 border-2 border-transparent hover:border-black transition-all text-left group">
-            <div class="w-8 h-8 rounded-lg bg-amber-100 border-2 border-black flex items-center justify-center shrink-0">
-              <i data-lucide="plus-circle" class="w-4 h-4 text-black"></i>
+          <button type="button" onclick="triggerQuickScanModal(); closeAllDropdowns();" class="w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-orange-50 border-2 border-transparent hover:border-black transition-all text-left group">
+            <div class="w-8 h-8 rounded-lg bg-orange-100 border-2 border-black flex items-center justify-center shrink-0">
+              <i data-lucide="plus-circle" class="w-4 h-4 text-orange-700"></i>
             </div>
             <div>
-              <p class="text-xs font-black text-black group-hover:text-amber-800 transition-colors leading-none">Ingest Road Incident</p>
+              <p class="text-xs font-black text-black group-hover:text-orange-800 transition-colors leading-none">Ingest Road Incident</p>
               <p class="text-[11px] text-slate-600 font-medium mt-1">Submit manual shock / defect data</p>
             </div>
           </button>
 
-          <button type="button" onclick="openApiKeyModal(); closeAllDropdowns();" class="w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-cyan-50 border-2 border-transparent hover:border-black transition-all text-left group">
-            <div class="w-8 h-8 rounded-lg bg-cyan-100 border-2 border-black flex items-center justify-center shrink-0">
-              <i data-lucide="key" class="w-4 h-4 text-black"></i>
+          <button type="button" onclick="openApiKeyModal(); closeAllDropdowns();" class="w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-blue-50 border-2 border-transparent hover:border-black transition-all text-left group">
+            <div class="w-8 h-8 rounded-lg bg-blue-100 border-2 border-black flex items-center justify-center shrink-0">
+              <i data-lucide="key" class="w-4 h-4 text-blue-800"></i>
             </div>
             <div>
-              <p class="text-xs font-black text-black group-hover:text-cyan-800 transition-colors leading-none" id="apiKeyBtnText">Gemini API Key</p>
+              <p class="text-xs font-black text-black group-hover:text-blue-800 transition-colors leading-none" id="apiKeyBtnText">Gemini API Key</p>
               <p class="text-[11px] text-slate-600 font-medium mt-1">Configure cloud multimodal AI</p>
             </div>
           </button>
@@ -415,63 +426,87 @@
   <section class="bg-[#eeeeea] border-b-2 border-black px-6 py-2.5">
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
       
-      <div class="bg-white border-2 border-black rounded-xl p-3 flex items-center gap-3">
-        <div class="p-2 rounded-lg bg-red-100 border-2 border-black text-red-700">
-          <i data-lucide="alert-triangle" class="w-5 h-5"></i>
-        </div>
-        <div>
-          <p class="text-[11px] text-slate-700 font-bold">Critical Hazards</p>
-          <p id="kpi-critical" class="text-lg font-black text-red-600 font-mono">--</p>
-        </div>
-      </div>
-
-      <div class="bg-white border-2 border-black rounded-xl p-3 flex items-center gap-3">
-        <div class="p-2 rounded-lg bg-amber-100 border-2 border-black text-amber-700">
-          <i data-lucide="layers" class="w-5 h-5"></i>
-        </div>
-        <div>
-          <p class="text-[11px] text-slate-700 font-bold">Active Incidents</p>
-          <p id="kpi-total" class="text-lg font-black text-black font-mono">--</p>
+      <!-- 1. Critical Hazards (Saffron Accent) -->
+      <div class="bg-white border-2 border-black rounded-xl p-3 flex flex-col justify-between overflow-hidden">
+        <div class="tricolor-strip-sm -mx-3 -mt-3 mb-2"></div>
+        <div class="flex items-center gap-3">
+          <div class="p-2 rounded-lg bg-red-100 border-2 border-black text-red-700">
+            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <p class="text-[11px] text-slate-700 font-bold">Critical Hazards</p>
+            <p id="kpi-critical" class="text-lg font-black text-red-600 font-mono">--</p>
+          </div>
         </div>
       </div>
 
-      <div class="bg-white border-2 border-black rounded-xl p-3 flex items-center gap-3">
-        <div class="p-2 rounded-lg bg-emerald-100 border-2 border-black text-emerald-700">
-          <i data-lucide="filter-x" class="w-5 h-5"></i>
-        </div>
-        <div>
-          <p class="text-[11px] text-slate-700 font-bold">False Positives Filtered</p>
-          <p id="kpi-fp" class="text-lg font-black text-emerald-700 font-mono">--</p>
-        </div>
-      </div>
-
-      <div class="bg-white border-2 border-black rounded-xl p-3 flex items-center gap-3">
-        <div class="p-2 rounded-lg bg-cyan-100 border-2 border-black text-cyan-700">
-          <i data-lucide="gauge" class="w-5 h-5"></i>
-        </div>
-        <div>
-          <p class="text-[11px] text-slate-700 font-bold">IRC / PCI Health</p>
-          <p id="kpi-pci" class="text-lg font-black text-cyan-800 font-mono">-- <span class="text-xs text-slate-600">/100</span></p>
+      <!-- 2. Active Incidents (Saffron Accent) -->
+      <div class="bg-white border-2 border-black rounded-xl p-3 flex flex-col justify-between overflow-hidden">
+        <div class="tricolor-strip-sm -mx-3 -mt-3 mb-2"></div>
+        <div class="flex items-center gap-3">
+          <div class="p-2 rounded-lg bg-orange-100 border-2 border-black text-orange-700">
+            <i data-lucide="layers" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <p class="text-[11px] text-slate-700 font-bold">Active Incidents</p>
+            <p id="kpi-total" class="text-lg font-black text-black font-mono">--</p>
+          </div>
         </div>
       </div>
 
-      <div class="bg-white border-2 border-black rounded-xl p-3 flex items-center gap-3">
-        <div class="p-2 rounded-lg bg-blue-100 border-2 border-black text-blue-700">
-          <i data-lucide="truck" class="w-5 h-5"></i>
-        </div>
-        <div>
-          <p class="text-[11px] text-slate-700 font-bold">Clustered Dispatches</p>
-          <p id="kpi-work-orders" class="text-lg font-black text-blue-700 font-mono">--</p>
+      <!-- 3. False Positives Filtered (Green Accent) -->
+      <div class="bg-white border-2 border-black rounded-xl p-3 flex flex-col justify-between overflow-hidden">
+        <div class="tricolor-strip-sm -mx-3 -mt-3 mb-2"></div>
+        <div class="flex items-center gap-3">
+          <div class="p-2 rounded-lg bg-emerald-100 border-2 border-black text-emerald-700">
+            <i data-lucide="filter-x" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <p class="text-[11px] text-slate-700 font-bold">False Positives</p>
+            <p id="kpi-fp" class="text-lg font-black text-emerald-700 font-mono">--</p>
+          </div>
         </div>
       </div>
 
-      <div class="bg-white border-2 border-black rounded-xl p-3 flex items-center gap-3">
-        <div class="p-2 rounded-lg bg-purple-100 border-2 border-black text-purple-700 font-black text-base flex items-center justify-center">
-          ₹
+      <!-- 4. IRC / PCI Health (Navy Accent) -->
+      <div class="bg-white border-2 border-black rounded-xl p-3 flex flex-col justify-between overflow-hidden">
+        <div class="tricolor-strip-sm -mx-3 -mt-3 mb-2"></div>
+        <div class="flex items-center gap-3">
+          <div class="p-2 rounded-lg bg-blue-100 border-2 border-black text-blue-800">
+            <i data-lucide="gauge" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <p class="text-[11px] text-slate-700 font-bold">IRC / PCI Health</p>
+            <p id="kpi-pci" class="text-lg font-black text-blue-800 font-mono">-- <span class="text-xs text-slate-600">/100</span></p>
+          </div>
         </div>
-        <div>
-          <p class="text-[11px] text-slate-700 font-bold">Est. Repair Budget</p>
-          <p id="kpi-cost" class="text-lg font-black text-purple-900 font-mono">₹ --</p>
+      </div>
+
+      <!-- 5. Clustered Dispatches (Green Accent) -->
+      <div class="bg-white border-2 border-black rounded-xl p-3 flex flex-col justify-between overflow-hidden">
+        <div class="tricolor-strip-sm -mx-3 -mt-3 mb-2"></div>
+        <div class="flex items-center gap-3">
+          <div class="p-2 rounded-lg bg-emerald-100 border-2 border-black text-emerald-700">
+            <i data-lucide="truck" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <p class="text-[11px] text-slate-700 font-bold">Clustered Dispatches</p>
+            <p id="kpi-work-orders" class="text-lg font-black text-emerald-700 font-mono">--</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Est. Repair Budget (Saffron Accent) -->
+      <div class="bg-white border-2 border-black rounded-xl p-3 flex flex-col justify-between overflow-hidden">
+        <div class="tricolor-strip-sm -mx-3 -mt-3 mb-2"></div>
+        <div class="flex items-center gap-3">
+          <div class="p-2 rounded-lg bg-orange-100 border-2 border-black text-orange-700 font-black text-base flex items-center justify-center">
+            ₹
+          </div>
+          <div>
+            <p class="text-[11px] text-slate-700 font-bold">Repair Budget</p>
+            <p id="kpi-cost" class="text-lg font-black text-orange-950 font-mono">₹ --</p>
+          </div>
         </div>
       </div>
 
@@ -489,7 +524,7 @@
         <div id="gis-map" class="w-full h-full"></div>
 
         <!-- FLOATING TOP-LEFT TOGGLE BUTTON FOR PRIORITY FEED (CLICK TO OPEN) -->
-        <button id="btn-toggle-feed-drawer" onclick="toggleFeedDrawer(true)" type="button" class="absolute top-4 left-4 z-20 flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-amber-300 hover:bg-amber-400 border-2 border-black text-black font-black text-xs transition-colors cursor-pointer group">
+        <button id="btn-toggle-feed-drawer" onclick="toggleFeedDrawer(true)" type="button" class="absolute top-4 left-4 z-20 flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-[#FF9933] hover:bg-[#F28500] border-2 border-black text-black font-black text-xs transition-colors cursor-pointer group">
           <div class="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse"></div>
           <i data-lucide="flame" class="w-4 h-4 text-black"></i>
           <span>Priority Backlog Feed</span>
@@ -498,16 +533,19 @@
         </button>
 
         <!-- FLOATING SLIDE-OVER PRIORITY FEED DRAWER PANEL (SHOWS ON CLICK) -->
-        <div id="priority-feed-drawer" class="hidden absolute top-4 left-4 z-30 w-96 max-w-[calc(100%-2rem)] max-h-[calc(100%-2rem)] bg-white border-2 border-black rounded-2xl p-4 flex flex-col gap-3 transition-all duration-300 text-black">
-          
+        <div id="priority-feed-drawer" class="hidden absolute top-4 left-4 z-30 w-96 max-w-[calc(100%-2rem)] max-h-[calc(100%-2rem)] bg-white border-2 border-black rounded-2xl p-4 flex flex-col gap-3 transition-all duration-300 text-black overflow-hidden">
+          <div class="tricolor-strip -mx-4 -mt-4 mb-1"></div>
+
           <!-- Drawer Header -->
           <div class="flex items-center justify-between border-b-2 border-black pb-2.5">
             <div class="flex items-center gap-2">
-              <div class="w-7 h-7 rounded-lg bg-amber-100 border-2 border-black flex items-center justify-center">
-                <i data-lucide="flame" class="w-4 h-4 text-black"></i>
+              <div class="w-7 h-7 rounded-lg bg-orange-100 border-2 border-black flex items-center justify-center">
+                <i data-lucide="flame" class="w-4 h-4 text-orange-700"></i>
               </div>
               <div>
-                <h2 class="text-xs font-black text-black uppercase tracking-wider">Priority Backlog Feed</h2>
+                <h2 class="text-xs font-black text-black uppercase tracking-wider flex items-center gap-1.5">
+                  <span>Priority Backlog Feed</span> <span class="text-xs">🇮🇳</span>
+                </h2>
                 <p class="text-[10px] text-slate-600 font-bold">Click any card to fly to map defect</p>
               </div>
             </div>
@@ -1290,13 +1328,17 @@
 
   <!-- INCIDENT DETAIL MODAL (in ₹ INR) -->
   <div id="incident-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] hidden flex items-center justify-center p-4" style="z-index: 99999 !important;">
-    <div class="bg-white border-2 border-black rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col custom-scrollbar text-black">
+    <div class="bg-white border-2 border-black rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col custom-scrollbar text-black overflow-hidden">
+      <div class="tricolor-strip"></div>
       
       <div class="p-5 border-b-2 border-black flex items-center justify-between sticky top-0 bg-white z-10">
         <div class="flex items-center gap-3">
           <div id="modal-badge-severity" class="px-2.5 py-1 rounded-lg text-xs font-black font-mono border-2 border-black">CRITICAL</div>
           <div>
-            <h3 id="modal-title" class="text-base font-black text-black">Hazard Title</h3>
+            <div class="flex items-center gap-2">
+              <h3 id="modal-title" class="text-base font-black text-black">Hazard Title</h3>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-orange-100 text-orange-950 border border-black font-black">🇮🇳 MoRTH Verified</span>
+            </div>
             <div class="flex items-center gap-2 mt-0.5">
               <p id="modal-address" class="text-xs text-slate-700 font-bold">Address / Corridor</p>
             </div>
@@ -1330,36 +1372,39 @@
           </div>
 
           <div class="grid grid-cols-2 gap-3 text-xs font-mono font-bold">
-            <div class="bg-slate-50 p-3 rounded-xl border border-black">
-              <p class="text-slate-600 text-[10px]">Priority Risk Score</p>
-              <p id="modal-risk-score" class="text-lg font-black text-red-600">96.5 <span class="text-xs text-slate-500">/100</span></p>
+            <div class="bg-orange-50/60 p-3 rounded-xl border-2 border-black">
+              <p class="text-slate-700 text-[10px] uppercase font-bold">Priority Risk Score</p>
+              <p id="modal-risk-score" class="text-lg font-black text-red-600">96.5 <span class="text-xs text-slate-600">/100</span></p>
             </div>
-            <div class="bg-slate-50 p-3 rounded-xl border border-black">
-              <p class="text-slate-600 text-[10px]">IRC/PCI Deduct</p>
-              <p id="modal-pci-deduct" class="text-lg font-black text-amber-700">-58.4 pts</p>
+            <div class="bg-slate-50 p-3 rounded-xl border-2 border-black">
+              <p class="text-slate-700 text-[10px] uppercase font-bold">IRC/PCI Deduct</p>
+              <p id="modal-pci-deduct" class="text-lg font-black text-amber-800">-58.4 pts</p>
             </div>
-            <div class="bg-slate-50 p-3 rounded-xl border border-black">
-              <p class="text-slate-600 text-[10px]">Cavity Depth (Verified)</p>
-              <p id="modal-depth" class="text-lg font-black text-blue-800">9.5 cm</p>
+            <div class="bg-blue-50/60 p-3 rounded-xl border-2 border-black">
+              <p class="text-slate-700 text-[10px] uppercase font-bold">Cavity Depth (Verified)</p>
+              <p id="modal-depth" class="text-lg font-black text-blue-900">9.5 cm</p>
             </div>
-            <div class="bg-slate-50 p-3 rounded-xl border border-black">
-              <p class="text-slate-600 text-[10px]">Est. PWD Repair Cost</p>
-              <p id="modal-repair-cost" class="text-lg font-black text-purple-900">₹ 24,500</p>
+            <div class="bg-emerald-50/60 p-3 rounded-xl border-2 border-black">
+              <p class="text-slate-700 text-[10px] uppercase font-bold">Est. PWD Repair Cost</p>
+              <p id="modal-repair-cost" class="text-lg font-black text-emerald-900">₹ 24,500</p>
             </div>
           </div>
         </div>
 
         <div class="bg-white p-4 rounded-xl border-2 border-black">
           <p class="text-xs font-black text-black mb-2 flex items-center gap-2">
-            <i data-lucide="activity" class="w-4 h-4 text-black"></i> Synchronized 3-Axis Accelerometer Transient
+            <i data-lucide="activity" class="w-4 h-4 text-orange-600"></i> Synchronized 3-Axis Accelerometer Transient
           </p>
           <div class="h-36">
             <canvas id="modal-imu-chart"></canvas>
           </div>
         </div>
 
-        <div class="bg-blue-50 border-2 border-black rounded-xl p-4 text-xs">
-          <p class="font-black text-blue-900 uppercase tracking-wider mb-1">Recommended Engineering Repair Technique (MoRTH / IRC):</p>
+        <div class="bg-orange-50/40 border-2 border-black rounded-xl p-4 text-xs">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs">🇮🇳</span>
+            <p class="font-black text-orange-950 uppercase tracking-wider">Recommended Engineering Repair Technique (MoRTH / IRC:82-2015):</p>
+          </div>
           <p id="modal-repair-technique" class="text-black font-extrabold">Full-Depth Bituminous Concrete (BC) Milling & Hot Mix Compaction</p>
           <p id="modal-repair-hours" class="text-slate-700 mt-1 font-mono font-bold">Estimated Crew Hours: 3.2 hrs</p>
         </div>
@@ -1371,30 +1416,34 @@
 
   <!-- API KEY CONFIG MODAL -->
   <div id="apikey-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] hidden flex items-center justify-center p-4" style="z-index: 99999 !important;">
-    <div class="bg-white border-2 border-black rounded-2xl w-full max-w-md p-6 flex flex-col gap-4 text-black">
+    <div class="bg-white border-2 border-black rounded-2xl w-full max-w-md p-6 flex flex-col gap-4 text-black overflow-hidden relative">
+      <div class="tricolor-strip -mx-6 -mt-6 mb-2"></div>
+
       <div class="flex items-center justify-between border-b-2 border-black pb-3">
         <h3 class="text-sm font-black text-black flex items-center gap-2">
-          <i data-lucide="key" class="w-4 h-4 text-black"></i> Configure Google Gemini API Key
+          <i data-lucide="key" class="w-4 h-4 text-orange-600"></i> Configure Google Gemini API Key
         </h3>
         <button onclick="closeApiKeyModal()" class="text-black hover:text-red-600 cursor-pointer">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
       <p class="text-xs text-slate-700 font-medium">Enter your Gemini API Key to enable live cloud multimodal vision defect analysis and real-time generative infrastructure reasoning.</p>
-      <input type="password" id="input-api-key" placeholder="AIzaSy..." class="bg-white border-2 border-black rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:bg-amber-50">
+      <input type="password" id="input-api-key" placeholder="AIzaSy..." class="bg-white border-2 border-black rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:bg-orange-50">
       <div class="flex items-center justify-end gap-2 pt-2">
-        <button onclick="closeApiKeyModal()" class="px-3 py-1.5 rounded-lg text-xs font-bold text-black hover:bg-slate-100 border border-black cursor-pointer">Cancel</button>
-        <button onclick="saveApiKey()" class="px-4 py-1.5 rounded-lg text-xs font-black bg-amber-300 hover:bg-amber-400 border-2 border-black text-black cursor-pointer">Save Key</button>
+        <button onclick="closeApiKeyModal()" class="px-3 py-1.5 rounded-lg text-xs font-bold text-black hover:bg-slate-100 border-2 border-black cursor-pointer">Cancel</button>
+        <button onclick="saveApiKey()" class="px-4 py-1.5 rounded-lg text-xs font-black bg-[#FF9933] hover:bg-[#F28500] border-2 border-black text-black cursor-pointer">Save Key</button>
       </div>
     </div>
   </div>
 
   <!-- QUICK INGEST MODAL -->
   <div id="ingest-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] hidden flex items-center justify-center p-4" style="z-index: 99999 !important;">
-    <div class="bg-white border-2 border-black rounded-2xl w-full max-w-lg p-6 flex flex-col gap-4 text-black">
+    <div class="bg-white border-2 border-black rounded-2xl w-full max-w-lg p-6 flex flex-col gap-4 text-black overflow-hidden relative">
+      <div class="tricolor-strip -mx-6 -mt-6 mb-2"></div>
+
       <div class="flex items-center justify-between border-b-2 border-black pb-3">
         <h3 class="text-sm font-black text-black flex items-center gap-2">
-          <i data-lucide="plus-circle" class="w-4 h-4 text-black"></i> Ingest Multimodal Road Incident
+          <i data-lucide="plus-circle" class="w-4 h-4 text-orange-600"></i> Ingest Multimodal Road Incident
         </h3>
         <button onclick="closeIngestModal()" class="text-black hover:text-red-600 cursor-pointer">
           <i data-lucide="x" class="w-4 h-4"></i>

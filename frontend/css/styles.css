@@ -20,9 +20,57 @@ code, pre, .font-mono {
   display: block;
 }
 
+.tricolor-strip-sm {
+  height: 2.5px;
+  width: 100%;
+  background: linear-gradient(90deg, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%);
+  display: block;
+}
+
 .tricolor-badge {
-  background: linear-gradient(90deg, rgba(255, 153, 51, 0.15) 0%, rgba(255, 255, 255, 0.9) 50%, rgba(19, 136, 8, 0.15) 100%);
+  background: linear-gradient(90deg, rgba(255, 153, 51, 0.18) 0%, rgba(255, 255, 255, 0.95) 50%, rgba(19, 136, 8, 0.18) 100%);
   border: 1.5px solid #000000;
+}
+
+.tricolor-icon-ring {
+  background: linear-gradient(135deg, #FF9933 0%, #FFFFFF 50%, #138808 100%);
+  padding: 2px;
+  border-radius: 12px;
+  border: 1.5px solid #000000;
+}
+
+/* Indian Tricolour Theme Utility Classes */
+.bg-saffron {
+  background-color: #FF9933 !important;
+}
+.bg-saffron-light {
+  background-color: #FFF3E6 !important;
+}
+.text-saffron {
+  color: #D96B00 !important;
+}
+.border-saffron {
+  border-color: #FF9933 !important;
+}
+
+.bg-india-green {
+  background-color: #138808 !important;
+}
+.bg-india-green-light {
+  background-color: #EAF5EA !important;
+}
+.text-india-green {
+  color: #138808 !important;
+}
+.border-india-green {
+  border-color: #138808 !important;
+}
+
+.bg-chakra-blue {
+  background-color: #000080 !important;
+}
+.text-chakra-blue {
+  color: #000080 !important;
 }
 
 /* Custom Scrollbar */
@@ -54,11 +102,12 @@ code, pre, .font-mono {
   color: #000000;
   border: 2px solid #000000;
   font-weight: 700;
-  transition: background-color 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .filter-pill:hover {
-  background-color: #f1f5f9;
+  background-color: #FFF3E6; /* Saffron tint on hover */
+  border-color: #000000;
 }
 
 .filter-pill.active {
@@ -98,6 +147,16 @@ code, pre, .font-mono {
   border-radius: 12px !important;
   color: #000000 !important;
   padding: 0 !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+.leaflet-popup-content-wrapper::before {
+  content: '';
+  display: block;
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(90deg, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%);
 }
 
 .leaflet-popup-tip {
@@ -122,20 +181,21 @@ code, pre, .font-mono {
 .pin-critical {
   background: #ef4444;
   color: #ffffff;
+  box-shadow: 0 0 0 2px #FF9933;
 }
 
 .pin-high {
-  background: #f59e0b;
+  background: #FF9933;
   color: #000000;
 }
 
 .pin-medium {
-  background: #3b82f6;
+  background: #000080;
   color: #ffffff;
 }
 
 .pin-low {
-  background: #10b981;
+  background: #138808;
   color: #ffffff;
 }
 
@@ -147,9 +207,11 @@ code, pre, .font-mono {
 
 /* Car Patrol Pin */
 .patrol-car-pin {
-  background: #0284c7;
+  background: #000080;
+  color: #ffffff;
   border: 2px solid #000000;
   border-radius: 50%;
+  box-shadow: 0 0 0 2px #FF9933;
 }
 
 /* Modals & Z-Index Layering */

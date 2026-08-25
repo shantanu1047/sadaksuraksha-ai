@@ -104,10 +104,11 @@
 
       <!-- 1. CITIZEN CARD -->
       <div class="glass-card rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden text-black">
+        <div class="tricolor-strip -mx-8 -mt-8 mb-6"></div>
         <div>
           <div class="flex items-center justify-between mb-6">
             <div class="w-14 h-14 rounded-2xl bg-emerald-100 border-2 border-black flex items-center justify-center">
-              <i data-lucide="smartphone" class="w-7 h-7 text-black"></i>
+              <i data-lucide="smartphone" class="w-7 h-7 text-emerald-800"></i>
             </div>
             <span class="px-3 py-1 rounded-lg text-xs font-black font-mono bg-emerald-100 text-emerald-950 border-2 border-black">
               PUBLIC ACCESS
@@ -115,7 +116,7 @@
           </div>
 
           <h3 class="text-2xl font-black text-black mb-2 flex items-center gap-2">
-            Indian Citizen Portal
+            <span>Indian Citizen Portal</span> <span class="text-lg">🇮🇳</span>
           </h3>
           <p class="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed mb-6">
             Report road hazards, potholes, monsoon waterlogging, and damaged barriers from your smartphone. AI automatically calculates cavity depth and routes your report to PWD.
@@ -138,10 +139,10 @@
         </div>
 
         <div>
-          <a href="/report" onclick="if(window.location.protocol==='file:'){event.preventDefault();window.location.href='report.html';}" class="w-full py-4 px-6 rounded-2xl bg-emerald-400 hover:bg-emerald-300 border-2 border-black text-black font-black text-sm flex items-center justify-center gap-2.5 transition-colors">
-            <i data-lucide="camera" class="w-4 h-4 text-black"></i>
+          <a href="/report" onclick="if(window.location.protocol==='file:'){event.preventDefault();window.location.href='report.html';}" class="w-full py-4 px-6 rounded-2xl bg-[#138808] hover:bg-[#0f6b06] border-2 border-black text-white font-black text-sm flex items-center justify-center gap-2.5 transition-colors">
+            <i data-lucide="camera" class="w-4 h-4 text-white"></i>
             <span>Enter Citizen Reporting Portal</span>
-            <i data-lucide="arrow-right" class="w-4 h-4 ml-1 text-black"></i>
+            <i data-lucide="arrow-right" class="w-4 h-4 ml-1 text-white"></i>
           </a>
           <p class="text-[11px] text-center text-slate-600 font-bold mt-3">No login or password required • Free public service</p>
         </div>
@@ -149,18 +150,19 @@
 
       <!-- 2. GOVERNMENT OFFICIAL CARD -->
       <div class="glass-card rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden text-black">
+        <div class="tricolor-strip -mx-8 -mt-8 mb-6"></div>
         <div>
           <div class="flex items-center justify-between mb-6">
-            <div class="w-14 h-14 rounded-2xl bg-amber-200 border-2 border-black flex items-center justify-center">
-              <i data-lucide="building-2" class="w-7 h-7 text-black"></i>
+            <div class="w-14 h-14 rounded-2xl bg-orange-100 border-2 border-black flex items-center justify-center">
+              <i data-lucide="building-2" class="w-7 h-7 text-orange-700"></i>
             </div>
-            <span class="px-3 py-1 rounded-lg text-xs font-black font-mono bg-amber-100 text-black border-2 border-black">
+            <span class="px-3 py-1 rounded-lg text-xs font-black font-mono bg-orange-100 text-orange-950 border-2 border-black">
               RESTRICTED ACCESS
             </span>
           </div>
 
           <h3 class="text-2xl font-black text-black mb-2 flex items-center gap-2">
-            Government Authority Login
+            <span>Government Authority Login</span> <span class="text-lg">🏛️</span>
           </h3>
           <p class="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed mb-6">
             For NHAI Highway Engineers, State PWD Officers, Smart City ICCC Commanders, and Municipal Road Maintenance Teams.
@@ -170,7 +172,7 @@
           <form id="gov-login-form" onsubmit="handleGovLogin(event)" class="space-y-3.5 mb-6">
             <div>
               <label class="block text-xs font-black text-black mb-1">Department / Organization:</label>
-              <select id="gov-dept" class="w-full bg-white border-2 border-black rounded-xl px-3.5 py-2.5 text-xs text-black font-bold focus:outline-none focus:bg-amber-50">
+              <select id="gov-dept" class="w-full bg-white border-2 border-black rounded-xl px-3.5 py-2.5 text-xs text-black font-bold focus:outline-none focus:bg-orange-50">
                 <option value="nhai">NHAI — National Highways Authority of India</option>
                 <option value="morth">MoRTH — Ministry of Road Transport & Highways</option>
                 <option value="pwd_ka">Karnataka State PWD (Bengaluru Division)</option>
@@ -185,11 +187,11 @@
             <div class="grid grid-cols-2 gap-3">
               <div>
                 <label class="block text-xs font-black text-black mb-1">Officer Badge ID:</label>
-                <input type="text" id="officer-id" value="NHAI-ENG-8429" placeholder="e.g. NHAI-7740" class="w-full bg-white border-2 border-black rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:bg-amber-50">
+                <input type="text" id="officer-id" value="NHAI-ENG-8429" placeholder="e.g. NHAI-7740" class="w-full bg-white border-2 border-black rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:bg-orange-50">
               </div>
               <div>
                 <label class="block text-xs font-black text-black mb-1">Security PIN / Token:</label>
-                <input type="password" id="officer-pin" value="••••••••" placeholder="Security PIN" class="w-full bg-white border-2 border-black rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:bg-amber-50">
+                <input type="password" id="officer-pin" value="••••••••" placeholder="Security PIN" class="w-full bg-white border-2 border-black rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:bg-orange-50">
               </div>
             </div>
 
@@ -202,7 +204,7 @@
               </button>
             </div>
 
-            <button type="submit" class="w-full py-4 px-6 rounded-2xl bg-amber-300 hover:bg-amber-400 border-2 border-black text-black font-black text-sm flex items-center justify-center gap-2.5 transition-colors mt-4 cursor-pointer">
+            <button type="submit" class="w-full py-4 px-6 rounded-2xl bg-[#FF9933] hover:bg-[#F28500] border-2 border-black text-black font-black text-sm flex items-center justify-center gap-2.5 transition-colors mt-4 cursor-pointer">
               <i data-lucide="shield-check" class="w-4 h-4"></i>
               <span>Access AI Command Center</span>
               <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>

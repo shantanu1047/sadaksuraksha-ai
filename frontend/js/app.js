@@ -397,27 +397,27 @@ function renderMapMarkers(hazards) {
     const marker = L.marker([h.latitude, h.longitude], { icon: customIcon });
 
     const popupHtml = `
-      <div class="p-2 text-xs font-sans" style="color:#0f172a;min-width:240px;">
-        <div class="flex items-center justify-between font-bold border-b pb-1 mb-1">
-          <span style="color:#0284c7;">${h.id} (${h.state})</span>
-          <span style="color:${h.severity === 'critical' ? '#dc2626' : '#d97706'};text-transform:uppercase;">${h.severity}</span>
+      <div class="p-3 text-xs font-sans text-black" style="min-width:250px;">
+        <div class="flex items-center justify-between font-bold border-b-2 border-black pb-1.5 mb-2">
+          <span class="font-mono text-xs font-black text-[#000080]">${h.id} (${h.state})</span>
+          <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-extrabold border border-black ${h.severity === 'critical' ? 'bg-red-200 text-red-950' : 'bg-orange-200 text-orange-950'} uppercase">${h.severity}</span>
         </div>
-        <p class="font-bold text-sm mb-1">${h.title}</p>
-        <p class="text-slate-600 mb-1 leading-tight">${h.address}</p>
-        <div class="bg-slate-100 p-1.5 rounded font-mono text-[11px] mb-2">
-          <strong>Risk Score:</strong> ${h.priority.raw_risk_score}/100<br/>
-          <strong>Cavity Depth:</strong> ${h.fusion.physical_depth_cm} cm<br/>
-          <strong>Est. PWD Cost:</strong> ${formatINR(h.priority.estimated_repair_cost_usd)}
+        <p class="font-extrabold text-xs text-black mb-1 leading-snug">${h.title}</p>
+        <p class="text-[11px] text-slate-700 mb-2 leading-tight font-medium">${h.address}</p>
+        <div class="bg-slate-50 p-2 rounded-lg font-mono text-[10px] mb-2.5 border border-black space-y-0.5">
+          <div class="flex justify-between"><strong>Risk Priority:</strong> <span class="text-red-600 font-extrabold">${h.priority.raw_risk_score}/100</span></div>
+          <div class="flex justify-between"><strong>Cavity Depth:</strong> <span class="text-blue-800 font-extrabold">${h.fusion.physical_depth_cm} cm</span></div>
+          <div class="flex justify-between"><strong>PWD Repair:</strong> <span class="text-purple-900 font-extrabold">${formatINR(h.priority.estimated_repair_cost_usd)}</span></div>
         </div>
         <div class="space-y-1.5">
-          <button onclick="openIncidentModal('${h.id}')" style="background:#0284c7;color:white;padding:5px 8px;border-radius:6px;width:100%;font-weight:bold;cursor:pointer;border:none;font-size:11px;">
-            View Multimodal Dossier
+          <button onclick="openIncidentModal('${h.id}')" style="background:#FF9933;color:#000000;padding:6px 10px;border-radius:8px;width:100%;font-weight:900;cursor:pointer;border:2px solid #000000;font-size:11px;display:flex;align-items:center;justify-content:center;gap:4px;">
+            <span>🇮🇳 View Multimodal Dossier</span>
           </button>
-          <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;gap:4px;background:#2563eb;color:white;padding:5px 8px;border-radius:6px;width:100%;font-weight:bold;text-decoration:none;font-size:11px;box-sizing:border-box;">
+          <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;gap:4px;background:#000080;color:#ffffff;padding:5px 8px;border-radius:8px;width:100%;font-weight:800;text-decoration:none;font-size:11px;border:2px solid #000000;box-sizing:border-box;">
             🗺️ Open in Google Maps ↗
           </a>
-          <a href="https://www.google.com/maps/dir/?api=1&destination=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;color:#0284c7;font-size:10px;text-decoration:none;">
-            🧭 Navigate to Location
+          <a href="https://www.google.com/maps/dir/?api=1&destination=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;color:#138808;font-size:10px;text-decoration:none;font-weight:800;margin-top:2px;">
+            🧭 Navigate Route
           </a>
         </div>
       </div>
@@ -488,7 +488,7 @@ function renderIncidentFeed(hazards) {
     }
 
     const card = document.createElement('div');
-    card.className = 'bg-white hover:bg-amber-50 border-2 border-black rounded-xl p-3 cursor-pointer transition-colors flex flex-col gap-2 group text-black';
+    card.className = 'bg-white hover:bg-orange-50/40 border-2 border-black rounded-xl p-3 cursor-pointer transition-colors flex flex-col gap-2 group text-black overflow-hidden relative';
     card.onclick = () => {
       openIncidentModal(h.id);
       if (gisMap) {
@@ -497,6 +497,7 @@ function renderIncidentFeed(hazards) {
     };
 
     card.innerHTML = `
+      <div class="tricolor-strip-sm -mx-3 -mt-3 mb-1"></div>
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-1.5">
           <span class="text-[10px] font-mono px-2 py-0.5 rounded-lg ${badgeBg} uppercase font-extrabold">
@@ -512,7 +513,7 @@ function renderIncidentFeed(hazards) {
         </div>
       </div>
       <div>
-        <h4 class="text-xs font-bold text-black group-hover:text-blue-700 transition-colors leading-snug">${h.title}</h4>
+        <h4 class="text-xs font-bold text-black group-hover:text-orange-700 transition-colors leading-snug">${h.title}</h4>
         <p class="text-[11px] text-slate-700 truncate mt-0.5">${h.address}</p>
       </div>
       <div class="flex items-center justify-between text-[10px] text-black font-mono font-bold border-t-2 border-black pt-1.5">
@@ -792,11 +793,11 @@ function renderWorkOrders(workOrders) {
 
   workOrders.forEach(wo => {
     const card = document.createElement('div');
-    card.className = 'bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between gap-4 transition-colors text-black';
+    card.className = 'bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between gap-4 transition-colors text-black overflow-hidden relative';
 
     let tierBadge = 'bg-blue-100 text-blue-950 border-2 border-black';
     if (wo.priority_tier.includes('Tier 1')) tierBadge = 'bg-red-100 text-red-950 border-2 border-black';
-    else if (wo.priority_tier.includes('Tier 2')) tierBadge = 'bg-amber-100 text-amber-950 border-2 border-black';
+    else if (wo.priority_tier.includes('Tier 2')) tierBadge = 'bg-orange-100 text-orange-950 border-2 border-black';
 
     let hazardsHtml = wo.hazards_summary.map(h => `
       <div class="flex items-center justify-between text-xs bg-slate-50 p-2 rounded-lg border border-black font-mono font-bold">
@@ -809,11 +810,12 @@ function renderWorkOrders(workOrders) {
     `).join('');
 
     card.innerHTML = `
+      <div class="tricolor-strip-sm -mx-5 -mt-5 mb-1"></div>
       <div class="flex flex-col gap-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="text-xs font-mono font-bold text-black bg-slate-100 border border-black px-2 py-0.5 rounded">${wo.id}</span>
-            <span class="text-[10px] text-black bg-slate-100 border border-black px-1.5 py-0.5 rounded font-bold">${wo.state}</span>
+            <span class="text-[10px] text-black bg-orange-100 border border-black px-1.5 py-0.5 rounded font-bold">${wo.state}</span>
           </div>
           <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-lg font-extrabold ${tierBadge}">${wo.priority_tier}</span>
         </div>
@@ -849,10 +851,10 @@ function renderWorkOrders(workOrders) {
       <div class="flex items-center justify-between border-t-2 border-black pt-3 text-xs">
         <span class="text-slate-800 font-mono font-bold">Status: <strong class="text-emerald-800 font-extrabold">${wo.status.toUpperCase()}</strong></span>
         <div class="flex items-center gap-2">
-          <a href="https://www.google.com/maps/search/?api=1&query=${wo.cluster_center_lat},${wo.cluster_center_lng}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-lg bg-blue-100 hover:bg-blue-200 border-2 border-black text-black text-xs font-bold flex items-center gap-1 transition-colors">
+          <a href="https://www.google.com/maps/search/?api=1&query=${wo.cluster_center_lat},${wo.cluster_center_lng}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-lg bg-[#FF9933] hover:bg-[#F28500] border-2 border-black text-black text-xs font-bold flex items-center gap-1 transition-colors">
             🗺️ Maps ↗
           </a>
-          <button onclick="dispatchWorkOrder('${wo.id}')" class="px-3 py-1.5 rounded-lg font-extrabold bg-amber-300 hover:bg-amber-400 border-2 border-black text-black text-xs transition-colors cursor-pointer">
+          <button onclick="dispatchWorkOrder('${wo.id}')" class="px-3 py-1.5 rounded-lg font-black bg-[#138808] hover:bg-[#0f6b06] border-2 border-black text-white text-xs transition-colors cursor-pointer">
             Dispatch Crew
           </button>
         </div>
@@ -1390,11 +1392,12 @@ function renderIngestionStreams(streams) {
     const icon = sourceIcons[s.source_type] || '📡';
     const color = statusColors[s.status] || 'slate';
     return `
-      <div class="bg-white border-2 border-black rounded-xl p-4 transition-colors text-black">
+      <div class="bg-white border-2 border-black rounded-xl p-4 transition-colors text-black overflow-hidden relative">
+        <div class="tricolor-strip-sm -mx-4 -mt-4 mb-2.5"></div>
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
             <span class="text-lg">${icon}</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider text-black">${s.source_type.replace(/_/g, ' ')}</span>
+            <span class="text-[10px] uppercase font-black tracking-wider text-black">${s.source_type.replace(/_/g, ' ')}</span>
           </div>
           <span class="flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-extrabold bg-emerald-100 border border-black text-emerald-950">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 ${s.status === 'active' ? 'animate-pulse' : ''}"></span>
@@ -1409,7 +1412,7 @@ function renderIngestionStreams(streams) {
             <p class="text-slate-600">Frames</p>
           </div>
           <div>
-            <p class="font-extrabold font-mono text-amber-700">${s.hazards_detected}</p>
+            <p class="font-extrabold font-mono text-orange-700">${s.hazards_detected}</p>
             <p class="text-slate-600">Hazards</p>
           </div>
           <div>
