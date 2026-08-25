@@ -27,36 +27,40 @@
   </script>
   <style>
     body {
-      background-color: #f6f6f2;
+      background-color: #f8f9fa;
       color: #000000;
     }
 
     .glass-card {
       background: #ffffff;
       border: 2px solid #000000;
-      box-shadow: 6px 6px 0px #000000;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .glass-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 8px 8px 0px #000000;
+    /* Indian Tricolour Top Bar */
+    .tricolor-strip {
+      height: 5px;
+      width: 100%;
+      background: linear-gradient(90deg, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%);
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between selection:bg-amber-300 selection:text-black">
+<body class="min-h-screen flex flex-col justify-between selection:bg-amber-200 selection:text-black">
+
+  <!-- Top Indian Tricolour Strip -->
+  <div class="tricolor-strip"></div>
 
   <!-- Top Global Header -->
-  <header class="p-6 border-b-2 border-black bg-white sticky top-0 z-40 shadow-[0_4px_0px_#000]">
+  <header class="p-6 border-b-2 border-black bg-white sticky top-0 z-40">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-3.5">
-        <div class="w-11 h-11 rounded-2xl bg-amber-200 border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_#000]">
+        <div class="w-11 h-11 rounded-2xl bg-amber-200 border-2 border-black flex items-center justify-center">
           <i data-lucide="shield-alert" class="w-6 h-6 text-black"></i>
         </div>
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-lg font-black tracking-wider text-black font-mono uppercase flex items-center gap-2">
-              SADAK-SURAKSHA
+              <span>SADAK-SURAKSHA</span> <span class="text-base">🇮🇳</span>
             </h1>
             <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-emerald-100 border border-black text-emerald-950">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span> MoRTH & NHAI CONNECTED
@@ -67,11 +71,11 @@
       </div>
 
       <div class="hidden md:flex items-center gap-3">
-        <div class="px-3.5 py-1.5 rounded-xl bg-white border-2 border-black text-xs font-mono text-black font-bold flex items-center gap-2 shadow-[2px_2px_0px_#000]">
+        <div class="px-3.5 py-1.5 rounded-xl bg-orange-100 border-2 border-black text-xs font-mono text-black font-bold flex items-center gap-2">
           <i data-lucide="map-pin" class="w-3.5 h-3.5 text-black"></i>
           <span>16 States / UTs Active</span>
         </div>
-        <div class="px-3.5 py-1.5 rounded-xl bg-emerald-100 border-2 border-black text-xs font-mono text-emerald-950 font-bold flex items-center gap-2 shadow-[2px_2px_0px_#000]">
+        <div class="px-3.5 py-1.5 rounded-xl bg-emerald-100 border-2 border-black text-xs font-mono text-emerald-950 font-bold flex items-center gap-2">
           <i data-lucide="activity" class="w-3.5 h-3.5 text-black"></i>
           <span>AI Vision & IMU Live</span>
         </div>
@@ -84,7 +88,7 @@
 
     <!-- Title Section -->
     <div class="text-center max-w-3xl mx-auto mb-12">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border-2 border-black text-black text-xs font-black mb-4 shadow-[2px_2px_0px_#000]">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border-2 border-black text-black text-xs font-black mb-4">
         <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i> Single-Sign-On & Public Reporting Gateway
       </div>
       <h2 class="text-3xl sm:text-4xl font-black text-black tracking-tight leading-tight">
@@ -102,10 +106,10 @@
       <div class="glass-card rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden text-black">
         <div>
           <div class="flex items-center justify-between mb-6">
-            <div class="w-14 h-14 rounded-2xl bg-emerald-100 border-2 border-black flex items-center justify-center shadow-[3px_3px_0px_#000]">
+            <div class="w-14 h-14 rounded-2xl bg-emerald-100 border-2 border-black flex items-center justify-center">
               <i data-lucide="smartphone" class="w-7 h-7 text-black"></i>
             </div>
-            <span class="px-3 py-1 rounded-lg text-xs font-black font-mono bg-emerald-100 text-emerald-950 border-2 border-black shadow-[2px_2px_0px_#000]">
+            <span class="px-3 py-1 rounded-lg text-xs font-black font-mono bg-emerald-100 text-emerald-950 border-2 border-black">
               PUBLIC ACCESS
             </span>
           </div>
@@ -134,7 +138,7 @@
         </div>
 
         <div>
-          <a href="/report" onclick="if(window.location.protocol==='file:'){event.preventDefault();window.location.href='report.html';}" class="w-full py-4 px-6 rounded-2xl bg-emerald-400 hover:bg-emerald-300 border-2 border-black text-black font-black text-sm flex items-center justify-center gap-2.5 shadow-[4px_4px_0px_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all">
+          <a href="/report" onclick="if(window.location.protocol==='file:'){event.preventDefault();window.location.href='report.html';}" class="w-full py-4 px-6 rounded-2xl bg-emerald-400 hover:bg-emerald-300 border-2 border-black text-black font-black text-sm flex items-center justify-center gap-2.5 transition-colors">
             <i data-lucide="camera" class="w-4 h-4 text-black"></i>
             <span>Enter Citizen Reporting Portal</span>
             <i data-lucide="arrow-right" class="w-4 h-4 ml-1 text-black"></i>
@@ -147,10 +151,10 @@
       <div class="glass-card rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden text-black">
         <div>
           <div class="flex items-center justify-between mb-6">
-            <div class="w-14 h-14 rounded-2xl bg-amber-200 border-2 border-black flex items-center justify-center shadow-[3px_3px_0px_#000]">
+            <div class="w-14 h-14 rounded-2xl bg-amber-200 border-2 border-black flex items-center justify-center">
               <i data-lucide="building-2" class="w-7 h-7 text-black"></i>
             </div>
-            <span class="px-3 py-1 rounded-lg text-xs font-black font-mono bg-amber-100 text-black border-2 border-black shadow-[2px_2px_0px_#000]">
+            <span class="px-3 py-1 rounded-lg text-xs font-black font-mono bg-amber-100 text-black border-2 border-black">
               RESTRICTED ACCESS
             </span>
           </div>
@@ -190,15 +194,15 @@
             </div>
 
             <div class="flex items-center gap-2 pt-1">
-              <button type="button" onclick="quickDemoLogin('nhai')" class="text-[11px] bg-slate-100 hover:bg-slate-200 border-2 border-black text-black font-black px-2.5 py-1 rounded-lg transition-colors cursor-pointer shadow-[2px_2px_0px_#000]">
+              <button type="button" onclick="quickDemoLogin('nhai')" class="text-[11px] bg-slate-100 hover:bg-slate-200 border-2 border-black text-black font-black px-2.5 py-1 rounded-lg transition-colors cursor-pointer">
                 ⚡ NHAI Engineer Demo
               </button>
-              <button type="button" onclick="quickDemoLogin('pwd')" class="text-[11px] bg-slate-100 hover:bg-slate-200 border-2 border-black text-black font-black px-2.5 py-1 rounded-lg transition-colors cursor-pointer shadow-[2px_2px_0px_#000]">
+              <button type="button" onclick="quickDemoLogin('pwd')" class="text-[11px] bg-slate-100 hover:bg-slate-200 border-2 border-black text-black font-black px-2.5 py-1 rounded-lg transition-colors cursor-pointer">
                 ⚡ State PWD Demo
               </button>
             </div>
 
-            <button type="submit" class="w-full py-4 px-6 rounded-2xl bg-amber-300 hover:bg-amber-400 border-2 border-black text-black font-black text-sm flex items-center justify-center gap-2.5 shadow-[4px_4px_0px_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all mt-4 cursor-pointer">
+            <button type="submit" class="w-full py-4 px-6 rounded-2xl bg-amber-300 hover:bg-amber-400 border-2 border-black text-black font-black text-sm flex items-center justify-center gap-2.5 transition-colors mt-4 cursor-pointer">
               <i data-lucide="shield-check" class="w-4 h-4"></i>
               <span>Access AI Command Center</span>
               <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
@@ -217,7 +221,7 @@
     </div>
 
     <!-- Live Platform Telemetry Bar -->
-    <div class="mt-12 max-w-5xl mx-auto w-full bg-white border-2 border-black rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 text-xs font-bold shadow-[4px_4px_0px_#000] text-black">
+    <div class="mt-12 max-w-5xl mx-auto w-full bg-white border-2 border-black rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 text-xs font-bold text-black">
       <div class="flex items-center gap-2 text-slate-800">
         <i data-lucide="zap" class="w-4 h-4 text-amber-500"></i>
         <span><strong>Multimodal Fusion</strong>: 3-Axis IMU (Gz), Optical Edge/Depth, Tire Acoustic dB & Citizen Verification</span>
@@ -240,7 +244,7 @@
       <div class="max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4">
         
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-amber-200 border-2 border-black flex items-center justify-center text-black shrink-0 shadow-[2px_2px_0px_#000]">
+          <div class="w-10 h-10 rounded-xl bg-amber-200 border-2 border-black flex items-center justify-center text-black shrink-0">
             <i data-lucide="phone-call" class="w-5 h-5"></i>
           </div>
           <div>
@@ -255,7 +259,7 @@
         <!-- Helpline Pills Grid -->
         <div class="flex flex-wrap items-center gap-2.5">
           <!-- NHAI 1033 -->
-          <a href="tel:1033" class="group flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white hover:bg-amber-100 border-2 border-black transition-all shadow-[2px_2px_0px_#000]">
+          <a href="tel:1033" class="group flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white hover:bg-amber-100 border-2 border-black transition-colors">
             <div class="w-6 h-6 rounded-lg bg-orange-100 border border-black flex items-center justify-center text-black font-bold text-xs">📞</div>
             <div>
               <p class="text-[10px] text-slate-600 font-bold leading-none">NHAI Highway Rescue</p>
@@ -264,7 +268,7 @@
           </a>
 
           <!-- National Emergency 112 -->
-          <a href="tel:112" class="group flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white hover:bg-red-100 border-2 border-black transition-all shadow-[2px_2px_0px_#000]">
+          <a href="tel:112" class="group flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white hover:bg-red-100 border-2 border-black transition-colors">
             <div class="w-6 h-6 rounded-lg bg-red-100 border border-black flex items-center justify-center text-black font-bold text-xs">🚨</div>
             <div>
               <p class="text-[10px] text-slate-600 font-bold leading-none">National Emergency</p>
@@ -273,7 +277,7 @@
           </a>
 
           <!-- Ambulance 108 -->
-          <a href="tel:108" class="group flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white hover:bg-emerald-100 border-2 border-black transition-all shadow-[2px_2px_0px_#000]">
+          <a href="tel:108" class="group flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white hover:bg-emerald-100 border-2 border-black transition-colors">
             <div class="w-6 h-6 rounded-lg bg-emerald-100 border border-black flex items-center justify-center text-black font-bold text-xs">🚑</div>
             <div>
               <p class="text-[10px] text-slate-600 font-bold leading-none">Trauma Ambulance</p>
@@ -282,7 +286,7 @@
           </a>
 
           <!-- Road Safety 1073 -->
-          <a href="tel:1073" class="group flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white hover:bg-blue-100 border-2 border-black transition-all shadow-[2px_2px_0px_#000]">
+          <a href="tel:1073" class="group flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white hover:bg-blue-100 border-2 border-black transition-colors">
             <div class="w-6 h-6 rounded-lg bg-blue-100 border border-black flex items-center justify-center text-black font-bold text-xs">🛡️</div>
             <div>
               <p class="text-[10px] text-slate-600 font-bold leading-none">Road Safety Hotline</p>
@@ -307,10 +311,10 @@
 
         <!-- Scroll Nav Buttons -->
         <div class="flex items-center gap-2">
-          <button onclick="scrollLoginPosters('left')" class="p-2 rounded-xl bg-white hover:bg-slate-100 border-2 border-black text-black shadow-[2px_2px_0px_#000] cursor-pointer" title="Scroll Left">
+          <button onclick="scrollLoginPosters('left')" class="p-2 rounded-xl bg-white hover:bg-slate-100 border-2 border-black text-black cursor-pointer" title="Scroll Left">
             <i data-lucide="chevron-left" class="w-4 h-4"></i>
           </button>
-          <button onclick="scrollLoginPosters('right')" class="p-2 rounded-xl bg-white hover:bg-slate-100 border-2 border-black text-black shadow-[2px_2px_0px_#000] cursor-pointer" title="Scroll Right">
+          <button onclick="scrollLoginPosters('right')" class="p-2 rounded-xl bg-white hover:bg-slate-100 border-2 border-black text-black cursor-pointer" title="Scroll Right">
             <i data-lucide="chevron-right" class="w-4 h-4"></i>
           </button>
         </div>
@@ -320,7 +324,7 @@
       <div id="login-posters-container" class="flex gap-4 overflow-x-auto pb-3 pt-1 custom-scrollbar scroll-smooth snap-x">
 
         <!-- Poster 1: Sadak Suraksha Abhiyan -->
-        <div class="min-w-[320px] sm:min-w-[350px] max-w-[350px] bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between shrink-0 snap-start shadow-[5px_5px_0px_#000] hover:shadow-[7px_7px_0px_#000] transition-all text-black relative overflow-hidden group">
+        <div class="min-w-[320px] sm:min-w-[350px] max-w-[350px] bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between shrink-0 snap-start transition-colors text-black relative overflow-hidden group">
           <div>
             <div class="flex items-center justify-between mb-3">
               <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-black font-mono bg-orange-100 text-orange-950 border border-black">
@@ -345,7 +349,7 @@
         </div>
 
         <!-- Poster 2: NHAI Emergency 1033 -->
-        <div class="min-w-[320px] sm:min-w-[350px] max-w-[350px] bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between shrink-0 snap-start shadow-[5px_5px_0px_#000] hover:shadow-[7px_7px_0px_#000] transition-all text-black relative overflow-hidden group">
+        <div class="min-w-[320px] sm:min-w-[350px] max-w-[350px] bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between shrink-0 snap-start transition-colors text-black relative overflow-hidden group">
           <div>
             <div class="flex items-center justify-between mb-3">
               <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-black font-mono bg-cyan-100 text-cyan-950 border border-black">
@@ -363,14 +367,14 @@
           </div>
           <div class="border-t-2 border-black pt-3 flex items-center justify-between text-xs">
             <span class="text-slate-700 text-[11px] font-bold">Dial Direct: <strong class="text-blue-700 font-mono">1033</strong></span>
-            <a href="tel:1033" class="px-2.5 py-1 rounded-lg bg-cyan-200 hover:bg-cyan-300 border border-black text-black font-black text-[10px] flex items-center gap-1 shadow-[2px_2px_0px_#000]">
+            <a href="tel:1033" class="px-2.5 py-1 rounded-lg bg-cyan-200 hover:bg-cyan-300 border border-black text-black font-black text-[10px] flex items-center gap-1">
               <i data-lucide="phone" class="w-3 h-3"></i> Call 1033
             </a>
           </div>
         </div>
 
         <!-- Poster 3: Good Samaritan Protection Act -->
-        <div class="min-w-[320px] sm:min-w-[350px] max-w-[350px] bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between shrink-0 snap-start shadow-[5px_5px_0px_#000] hover:shadow-[7px_7px_0px_#000] transition-all text-black relative overflow-hidden group">
+        <div class="min-w-[320px] sm:min-w-[350px] max-w-[350px] bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between shrink-0 snap-start transition-colors text-black relative overflow-hidden group">
           <div>
             <div class="flex items-center justify-between mb-3">
               <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-black font-mono bg-emerald-100 text-emerald-950 border border-black">
@@ -395,7 +399,7 @@
         </div>
 
         <!-- Poster 4: Zero Pothole Corridor Initiative -->
-        <div class="min-w-[320px] sm:min-w-[350px] max-w-[350px] bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between shrink-0 snap-start shadow-[5px_5px_0px_#000] hover:shadow-[7px_7px_0px_#000] transition-all text-black relative overflow-hidden group">
+        <div class="min-w-[320px] sm:min-w-[350px] max-w-[350px] bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between shrink-0 snap-start transition-colors text-black relative overflow-hidden group">
           <div>
             <div class="flex items-center justify-between mb-3">
               <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-black font-mono bg-purple-100 text-purple-950 border border-black">
@@ -427,7 +431,7 @@
       <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-black font-bold">
         
         <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-lg bg-white border-2 border-black flex items-center justify-center text-lg shadow-[2px_2px_0px_#000]">
+          <div class="w-8 h-8 rounded-lg bg-white border-2 border-black flex items-center justify-center text-lg">
             🏛️
           </div>
           <div>

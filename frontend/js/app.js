@@ -488,7 +488,7 @@ function renderIncidentFeed(hazards) {
     }
 
     const card = document.createElement('div');
-    card.className = 'bg-white hover:bg-amber-50 border-2 border-black rounded-xl p-3 cursor-pointer transition-all flex flex-col gap-2 group shadow-[3px_3px_0px_#000] hover:shadow-[4px_4px_0px_#000] text-black';
+    card.className = 'bg-white hover:bg-amber-50 border-2 border-black rounded-xl p-3 cursor-pointer transition-colors flex flex-col gap-2 group text-black';
     card.onclick = () => {
       openIncidentModal(h.id);
       if (gisMap) {
@@ -786,13 +786,13 @@ function renderWorkOrders(workOrders) {
   container.innerHTML = '';
 
   if (workOrders.length === 0) {
-    container.innerHTML = `<div class="col-span-3 text-center p-8 bg-white border-2 border-black rounded-2xl text-black text-xs font-bold shadow-[4px_4px_0px_#000]">No scheduled work orders for ${currentStateFilter}.</div>`;
+    container.innerHTML = `<div class="col-span-3 text-center p-8 bg-white border-2 border-black rounded-2xl text-black text-xs font-bold">No scheduled work orders for ${currentStateFilter}.</div>`;
     return;
   }
 
   workOrders.forEach(wo => {
     const card = document.createElement('div');
-    card.className = 'bg-white border-2 border-black rounded-2xl p-5 shadow-[4px_4px_0px_#000] flex flex-col justify-between gap-4 hover:shadow-[6px_6px_0px_#000] transition-all text-black';
+    card.className = 'bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between gap-4 transition-colors text-black';
 
     let tierBadge = 'bg-blue-100 text-blue-950 border-2 border-black';
     if (wo.priority_tier.includes('Tier 1')) tierBadge = 'bg-red-100 text-red-950 border-2 border-black';
@@ -849,10 +849,10 @@ function renderWorkOrders(workOrders) {
       <div class="flex items-center justify-between border-t-2 border-black pt-3 text-xs">
         <span class="text-slate-800 font-mono font-bold">Status: <strong class="text-emerald-800 font-extrabold">${wo.status.toUpperCase()}</strong></span>
         <div class="flex items-center gap-2">
-          <a href="https://www.google.com/maps/search/?api=1&query=${wo.cluster_center_lat},${wo.cluster_center_lng}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-lg bg-blue-100 hover:bg-blue-200 border-2 border-black text-black text-xs font-bold flex items-center gap-1 shadow-[2px_2px_0px_#000] transition-all">
+          <a href="https://www.google.com/maps/search/?api=1&query=${wo.cluster_center_lat},${wo.cluster_center_lng}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-lg bg-blue-100 hover:bg-blue-200 border-2 border-black text-black text-xs font-bold flex items-center gap-1 transition-colors">
             🗺️ Maps ↗
           </a>
-          <button onclick="dispatchWorkOrder('${wo.id}')" class="px-3 py-1.5 rounded-lg font-extrabold bg-amber-300 hover:bg-amber-400 border-2 border-black text-black text-xs shadow-[2px_2px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] transition-all cursor-pointer">
+          <button onclick="dispatchWorkOrder('${wo.id}')" class="px-3 py-1.5 rounded-lg font-extrabold bg-amber-300 hover:bg-amber-400 border-2 border-black text-black text-xs transition-colors cursor-pointer">
             Dispatch Crew
           </button>
         </div>
@@ -1390,34 +1390,34 @@ function renderIngestionStreams(streams) {
     const icon = sourceIcons[s.source_type] || '📡';
     const color = statusColors[s.status] || 'slate';
     return `
-      <div class="bg-[#121929] border border-slate-800 rounded-xl p-4 hover:border-${color}-500/40 transition-all">
+      <div class="bg-white border-2 border-black rounded-xl p-4 transition-colors text-black">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
             <span class="text-lg">${icon}</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400">${s.source_type.replace(/_/g, ' ')}</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider text-black">${s.source_type.replace(/_/g, ' ')}</span>
           </div>
-          <span class="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-${color}-950/60 border border-${color}-500/40 text-${color}-400">
-            <span class="w-1.5 h-1.5 rounded-full bg-${color}-400 ${s.status === 'active' ? 'animate-pulse' : ''}"></span>
+          <span class="flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-extrabold bg-emerald-100 border border-black text-emerald-950">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 ${s.status === 'active' ? 'animate-pulse' : ''}"></span>
             ${s.status.toUpperCase()}
           </span>
         </div>
-        <h4 class="text-xs font-bold text-white mb-1 leading-tight">${s.source_name}</h4>
-        <p class="text-[10px] text-slate-500 mb-3">${s.state} • ${s.city}</p>
-        <div class="grid grid-cols-3 gap-2 text-center text-[10px]">
+        <h4 class="text-xs font-extrabold text-black mb-1 leading-tight">${s.source_name}</h4>
+        <p class="text-[10px] text-slate-600 mb-3">${s.state} • ${s.city}</p>
+        <div class="grid grid-cols-3 gap-2 text-center text-[10px] bg-slate-50 p-2 rounded-lg border border-black">
           <div>
-            <p class="font-bold font-mono text-slate-200">${s.total_frames_processed.toLocaleString('en-IN')}</p>
-            <p class="text-slate-500">Frames</p>
+            <p class="font-extrabold font-mono text-black">${s.total_frames_processed.toLocaleString('en-IN')}</p>
+            <p class="text-slate-600">Frames</p>
           </div>
           <div>
-            <p class="font-bold font-mono text-amber-400">${s.hazards_detected}</p>
-            <p class="text-slate-500">Hazards</p>
+            <p class="font-extrabold font-mono text-amber-700">${s.hazards_detected}</p>
+            <p class="text-slate-600">Hazards</p>
           </div>
           <div>
-            <p class="font-bold font-mono text-emerald-400">${s.false_positives_filtered}</p>
-            <p class="text-slate-500">FP Filtered</p>
+            <p class="font-extrabold font-mono text-emerald-700">${s.false_positives_filtered}</p>
+            <p class="text-slate-600">FP Filtered</p>
           </div>
         </div>
-        ${s.last_frame_at ? `<p class="text-[9px] text-slate-600 mt-2 font-mono">Last: ${s.last_frame_at}</p>` : ''}
+        ${s.last_frame_at ? `<p class="text-[9px] text-slate-500 mt-2 font-mono">Last: ${s.last_frame_at}</p>` : ''}
       </div>
     `;
   }).join('');

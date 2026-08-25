@@ -42,24 +42,27 @@
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/static/css/styles.css">
 </head>
-<body class="bg-[#f6f6f2] text-black min-h-screen flex flex-col font-sans selection:bg-yellow-300 selection:text-black">
+<body class="bg-[#f8f9fa] text-black min-h-screen flex flex-col font-sans selection:bg-amber-200 selection:text-black">
 
   <!-- ROLE SELECTION & LOGIN GATEWAY (PRIOR SCREEN OVERLAY) -->
-  <div id="role-gateway-overlay" class="fixed inset-0 bg-[#f6f6f2] z-[100000] flex flex-col justify-between overflow-y-auto" style="z-index: 100000 !important;">
+  <div id="role-gateway-overlay" class="fixed inset-0 bg-[#f8f9fa] z-[100000] flex flex-col justify-between overflow-y-auto" style="z-index: 100000 !important;">
     
+    <!-- Top Indian Tricolour Strip -->
+    <div class="tricolor-strip"></div>
+
     <!-- Gateway Header -->
-    <header class="p-6 border-b-2 border-black bg-white sticky top-0 z-10 shadow-[0_4px_0px_#000]">
+    <header class="p-6 border-b-2 border-black bg-white sticky top-0 z-10">
       <div class="max-w-7xl mx-auto flex items-center justify-between">
         <div class="flex items-center gap-3.5">
-          <div class="w-11 h-11 rounded-xl bg-white border-2 border-black flex items-center justify-center shadow-[3px_3px_0px_#000]">
-            <i data-lucide="shield-alert" class="w-6 h-6 text-amber-500"></i>
+          <div class="w-11 h-11 rounded-xl bg-amber-200 border-2 border-black flex items-center justify-center">
+            <i data-lucide="shield-alert" class="w-6 h-6 text-black"></i>
           </div>
           <div>
             <div class="flex items-center gap-2">
-              <h1 class="text-lg font-extrabold tracking-wider text-black font-mono uppercase flex items-center gap-2">
-                SADAK-SURAKSHA
+              <h1 class="text-lg font-black tracking-wider text-black font-mono uppercase flex items-center gap-2">
+                <span>SADAK-SURAKSHA</span> <span class="text-base">🇮🇳</span>
               </h1>
-              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 border-2 border-black text-emerald-950">
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10px] font-black bg-emerald-100 border border-black text-emerald-950">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span> MoRTH & NHAI CONNECTED
               </span>
             </div>
@@ -68,8 +71,8 @@
         </div>
 
         <div class="hidden md:flex items-center gap-3 font-mono text-xs text-black">
-          <span class="px-3 py-1.5 rounded-xl bg-cyan-100 border-2 border-black text-black font-bold shadow-[2px_2px_0px_#000]">16 States Live</span>
-          <span class="px-3 py-1.5 rounded-xl bg-emerald-100 border-2 border-black text-black font-bold shadow-[2px_2px_0px_#000]">IRC:82 Compliant</span>
+          <span class="px-3 py-1.5 rounded-xl bg-orange-100 border-2 border-black text-black font-black">🇮🇳 16 States Live</span>
+          <span class="px-3 py-1.5 rounded-xl bg-emerald-100 border-2 border-black text-black font-black">IRC:82 Compliant</span>
         </div>
       </div>
     </header>
@@ -77,8 +80,8 @@
     <!-- Role Prompt Main Card Container -->
     <main class="max-w-6xl mx-auto px-6 py-10 flex-1 flex flex-col justify-center w-full">
       <div class="text-center max-w-3xl mx-auto mb-10">
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border-2 border-black text-black text-xs font-extrabold mb-3 shadow-[3px_3px_0px_#000]">
-          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i> Identity & Role Verification
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border-2 border-black text-black text-xs font-black mb-3">
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-700"></i> Identity & Role Verification
         </div>
         <h2 class="text-3xl sm:text-4xl font-black text-black tracking-tight">
           Select Your Portal
@@ -91,13 +94,13 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto w-full">
 
         <!-- 1. CITIZEN CARD -->
-        <div class="bg-white border-2 border-black rounded-2xl p-7 flex flex-col justify-between shadow-[6px_6px_0px_#000] hover:shadow-[8px_8px_0px_#000] transition-all relative overflow-hidden text-black">
+        <div class="bg-white border-2 border-black rounded-2xl p-7 flex flex-col justify-between relative overflow-hidden text-black">
           <div>
             <div class="flex items-center justify-between mb-5">
-              <div class="w-12 h-12 rounded-xl bg-emerald-100 border-2 border-black flex items-center justify-center shadow-[3px_3px_0px_#000]">
-                <i data-lucide="smartphone" class="w-6 h-6 text-emerald-800"></i>
+              <div class="w-12 h-12 rounded-xl bg-emerald-100 border-2 border-black flex items-center justify-center">
+                <i data-lucide="smartphone" class="w-6 h-6 text-black"></i>
               </div>
-              <span class="px-3 py-1 rounded-lg text-xs font-black font-mono bg-emerald-200 text-emerald-950 border-2 border-black shadow-[2px_2px_0px_#000]">
+              <span class="px-3 py-1 rounded-lg text-xs font-black font-mono bg-emerald-100 text-emerald-950 border-2 border-black">
                 PUBLIC PORTAL
               </span>
             </div>
@@ -107,7 +110,7 @@
               Report road potholes, dangerous waterlogging, broken barriers, or debris from your phone. No officer login required.
             </p>
 
-            <div class="space-y-3 mb-8 text-xs text-black font-semibold">
+            <div class="space-y-3 mb-8 text-xs text-black font-bold">
               <div class="flex items-center gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-black">
                 <i data-lucide="map-pin" class="w-4 h-4 text-emerald-700 shrink-0"></i>
                 <span>Automatic GPS Location & Google Maps Tagging</span>
@@ -124,23 +127,23 @@
           </div>
 
           <div>
-            <a href="/report" onclick="if(window.location.protocol==='file:'){event.preventDefault();window.location.href='report.html';}" class="w-full py-4 px-6 rounded-xl bg-emerald-400 hover:bg-emerald-300 border-2 border-black text-black font-black text-sm flex items-center justify-center gap-2 shadow-[4px_4px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] transition-all">
-              <i data-lucide="camera" class="w-4 h-4"></i>
+            <a href="/report" onclick="if(window.location.protocol==='file:'){event.preventDefault();window.location.href='report.html';}" class="w-full py-4 px-6 rounded-xl bg-emerald-400 hover:bg-emerald-300 border-2 border-black text-black font-black text-sm flex items-center justify-center gap-2 transition-colors">
+              <i data-lucide="camera" class="w-4 h-4 text-black"></i>
               <span>Proceed to Citizen Reporting Portal</span>
-              <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+              <i data-lucide="arrow-right" class="w-4 h-4 ml-1 text-black"></i>
             </a>
             <p class="text-[11px] text-center text-slate-600 font-bold mt-2.5">Instant public submission • No password needed</p>
           </div>
         </div>
 
         <!-- 2. GOVERNMENT OFFICIAL CARD -->
-        <div class="bg-white border-2 border-black rounded-2xl p-7 flex flex-col justify-between shadow-[6px_6px_0px_#000] hover:shadow-[8px_8px_0px_#000] transition-all relative overflow-hidden text-black">
+        <div class="bg-white border-2 border-black rounded-2xl p-7 flex flex-col justify-between relative overflow-hidden text-black">
           <div>
             <div class="flex items-center justify-between mb-5">
-              <div class="w-12 h-12 rounded-xl bg-cyan-100 border-2 border-black flex items-center justify-center shadow-[3px_3px_0px_#000]">
-                <i data-lucide="shield-check" class="w-6 h-6 text-cyan-800"></i>
+              <div class="w-12 h-12 rounded-xl bg-amber-200 border-2 border-black flex items-center justify-center">
+                <i data-lucide="shield-check" class="w-6 h-6 text-black"></i>
               </div>
-              <span class="px-3 py-1 rounded-lg text-xs font-black font-mono bg-cyan-200 text-cyan-950 border-2 border-black shadow-[2px_2px_0px_#000]">
+              <span class="px-3 py-1 rounded-lg text-xs font-black font-mono bg-amber-100 text-black border-2 border-black">
                 RESTRICTED OFFICIAL ACCESS
               </span>
             </div>
@@ -179,15 +182,15 @@
               <div id="overlay-login-error" class="hidden text-xs text-red-950 bg-red-100 border-2 border-black p-2 rounded-xl font-mono font-bold"></div>
 
               <div class="flex items-center gap-2 pt-0.5">
-                <button type="button" onclick="fillOverlayDemo('nhai')" class="text-[11px] bg-slate-100 hover:bg-slate-200 border-2 border-black text-black font-extrabold px-2.5 py-1 rounded-lg shadow-[2px_2px_0px_#000]">
+                <button type="button" onclick="fillOverlayDemo('nhai')" class="text-[11px] bg-slate-100 hover:bg-slate-200 border-2 border-black text-black font-black px-2.5 py-1 rounded-lg">
                   ⚡ NHAI Demo
                 </button>
-                <button type="button" onclick="fillOverlayDemo('pwd')" class="text-[11px] bg-slate-100 hover:bg-slate-200 border-2 border-black text-black font-extrabold px-2.5 py-1 rounded-lg shadow-[2px_2px_0px_#000]">
+                <button type="button" onclick="fillOverlayDemo('pwd')" class="text-[11px] bg-slate-100 hover:bg-slate-200 border-2 border-black text-black font-black px-2.5 py-1 rounded-lg">
                   ⚡ State PWD Demo
                 </button>
               </div>
 
-              <button type="submit" class="w-full py-4 px-6 rounded-xl bg-amber-300 hover:bg-amber-400 border-2 border-black text-black font-black text-sm flex items-center justify-center gap-2 shadow-[4px_4px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] transition-all mt-2 cursor-pointer">
+              <button type="submit" class="w-full py-4 px-6 rounded-xl bg-amber-300 hover:bg-amber-400 border-2 border-black text-black font-black text-sm flex items-center justify-center gap-2 transition-colors mt-2 cursor-pointer">
                 <i data-lucide="shield-check" class="w-4 h-4"></i>
                 <span>Verify Credentials & Enter Command Center</span>
                 <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
@@ -210,20 +213,23 @@
 
   </div>
 
+  <!-- Top Indian Tricolour Strip -->
+  <div class="tricolor-strip"></div>
+
   <!-- Top Navigation Header with Decluttered Dropdowns -->
-  <header class="bg-[#0e1626]/95 backdrop-blur-md border-b border-slate-800/80 sticky top-0 z-[1000] px-6 py-3 flex flex-wrap items-center justify-between gap-4 shadow-xl">
+  <header class="bg-white border-b-2 border-black sticky top-0 z-[1000] px-6 py-3 flex flex-wrap items-center justify-between gap-4">
     
     <!-- Branding / Home Button -->
-    <div onclick="navigateToHome()" class="flex items-center gap-3 cursor-pointer group select-none transition-transform hover:scale-[1.01]" title="Click shield to return to Main GIS Command Center">
-      <div class="w-10 h-10 rounded-xl bg-white border-2 border-black flex items-center justify-center shadow-[3px_3px_0px_#000]">
-        <i data-lucide="shield-alert" class="w-5 h-5 text-amber-500"></i>
+    <div onclick="navigateToHome()" class="flex items-center gap-3 cursor-pointer group select-none" title="Click shield to return to Main GIS Command Center">
+      <div class="w-10 h-10 rounded-xl bg-amber-200 border-2 border-black flex items-center justify-center">
+        <i data-lucide="shield-alert" class="w-5 h-5 text-black"></i>
       </div>
       <div>
         <div class="flex items-center gap-2">
-          <h1 class="text-base font-extrabold tracking-wider text-black font-mono uppercase flex items-center gap-1.5">
-            SADAK-SURAKSHA
+          <h1 class="text-base font-black tracking-wider text-black font-mono uppercase flex items-center gap-1.5">
+            <span>SADAK-SURAKSHA</span> <span class="text-base">🇮🇳</span>
           </h1>
-          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 border-2 border-black text-emerald-950">
+          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10px] font-black bg-emerald-100 border border-black text-emerald-950">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span> <span id="header-dept-text">NHAI / PWD LIVE</span>
           </span>
         </div>
@@ -238,14 +244,14 @@
 
       <!-- 1. MODULES & VIEWS DROPDOWN -->
       <div class="relative" id="dropdown-nav-wrapper">
-        <button type="button" onclick="toggleNavDropdown(event)" id="nav-dropdown-btn" class="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border-2 border-black text-xs font-black text-black shadow-[3px_3px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] transition-all">
+        <button type="button" onclick="toggleNavDropdown(event)" id="nav-dropdown-btn" class="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border-2 border-black text-xs font-black text-black transition-colors">
           <i data-lucide="layout-grid" class="w-4 h-4 text-black"></i>
           <span id="nav-dropdown-label" class="text-black font-black">GIS Hazard Map</span>
           <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-black transition-transform duration-200" id="nav-dropdown-arrow"></i>
         </button>
 
-        <!-- Dropdown Menu (White with Black Borders) -->
-        <div id="nav-dropdown-menu" class="hidden absolute top-full left-0 mt-2 w-72 bg-white border-2 border-black rounded-2xl shadow-[6px_6px_0px_#000] p-2.5 z-[1100] space-y-1.5">
+        <!-- Dropdown Menu (Flat White with Black Borders) -->
+        <div id="nav-dropdown-menu" class="hidden absolute top-full left-0 mt-2 w-72 bg-white border-2 border-black rounded-2xl p-2.5 z-[1100] space-y-1.5">
           <div class="flex items-center justify-between px-3 py-1.5 bg-slate-100 rounded-xl border border-black">
             <span class="text-[10px] font-black uppercase tracking-wider text-black font-mono flex items-center gap-1.5">
               <i data-lucide="layers" class="w-3.5 h-3.5 text-black"></i> Platform Modules
@@ -326,7 +332,7 @@
       </div>
 
       <!-- 2. STATE / REGION SELECTOR (INDIA) -->
-      <div class="flex items-center gap-2 bg-white px-3.5 py-2 rounded-xl border-2 border-black shadow-[3px_3px_0px_#000]">
+      <div class="flex items-center gap-2 bg-white px-3.5 py-2 rounded-xl border-2 border-black">
         <i data-lucide="map-pin" class="w-4 h-4 text-black"></i>
         <label for="state-selector" class="text-xs font-black text-black">State:</label>
         <select id="state-selector" onchange="handleStateChange(this.value)" class="bg-white border-none text-black font-extrabold text-xs rounded-lg px-2 py-0.5 focus:outline-none cursor-pointer">
@@ -353,14 +359,14 @@
 
       <!-- 3. ACTIONS & TOOLS DROPDOWN -->
       <div class="relative" id="dropdown-actions-wrapper">
-        <button type="button" onclick="toggleActionsDropdown(event)" id="actions-dropdown-btn" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-300 hover:bg-amber-400 border-2 border-black text-black font-black text-xs shadow-[3px_3px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] transition-all">
-          <i data-lucide="zap" class="w-4 h-4"></i>
+        <button type="button" onclick="toggleActionsDropdown(event)" id="actions-dropdown-btn" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-300 hover:bg-amber-400 border-2 border-black text-black font-black text-xs transition-colors">
+          <i data-lucide="zap" class="w-4 h-4 text-black"></i>
           <span>Actions & Tools</span>
-          <i data-lucide="chevron-down" class="w-3.5 h-3.5" id="actions-dropdown-arrow"></i>
+          <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-black" id="actions-dropdown-arrow"></i>
         </button>
 
-        <!-- Dropdown Menu (White with Black Borders) -->
-        <div id="actions-dropdown-menu" class="hidden absolute top-full right-0 mt-2 w-64 bg-white border-2 border-black rounded-2xl shadow-[6px_6px_0px_#000] p-2.5 z-[1100] space-y-1.5">
+        <!-- Dropdown Menu (Flat White with Black Borders) -->
+        <div id="actions-dropdown-menu" class="hidden absolute top-full right-0 mt-2 w-64 bg-white border-2 border-black rounded-2xl p-2.5 z-[1100] space-y-1.5">
           <div class="flex items-center justify-between px-3 py-1.5 bg-amber-50 rounded-xl border border-black">
             <span class="text-[10px] font-black uppercase tracking-wider text-black font-mono flex items-center gap-1.5">
               <i data-lucide="wrench" class="w-3.5 h-3.5 text-black"></i> Engineering Tools
@@ -409,7 +415,7 @@
   <section class="bg-[#eeeeea] border-b-2 border-black px-6 py-2.5">
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
       
-      <div class="bg-white border-2 border-black rounded-xl p-3 flex items-center gap-3 shadow-[3px_3px_0px_#000]">
+      <div class="bg-white border-2 border-black rounded-xl p-3 flex items-center gap-3">
         <div class="p-2 rounded-lg bg-red-100 border-2 border-black text-red-700">
           <i data-lucide="alert-triangle" class="w-5 h-5"></i>
         </div>
@@ -419,7 +425,7 @@
         </div>
       </div>
 
-      <div class="bg-white border-2 border-black rounded-xl p-3 flex items-center gap-3 shadow-[3px_3px_0px_#000]">
+      <div class="bg-white border-2 border-black rounded-xl p-3 flex items-center gap-3">
         <div class="p-2 rounded-lg bg-amber-100 border-2 border-black text-amber-700">
           <i data-lucide="layers" class="w-5 h-5"></i>
         </div>
@@ -429,7 +435,7 @@
         </div>
       </div>
 
-      <div class="bg-white border-2 border-black rounded-xl p-3 flex items-center gap-3 shadow-[3px_3px_0px_#000]">
+      <div class="bg-white border-2 border-black rounded-xl p-3 flex items-center gap-3">
         <div class="p-2 rounded-lg bg-emerald-100 border-2 border-black text-emerald-700">
           <i data-lucide="filter-x" class="w-5 h-5"></i>
         </div>
@@ -439,7 +445,7 @@
         </div>
       </div>
 
-      <div class="bg-white border-2 border-black rounded-xl p-3 flex items-center gap-3 shadow-[3px_3px_0px_#000]">
+      <div class="bg-white border-2 border-black rounded-xl p-3 flex items-center gap-3">
         <div class="p-2 rounded-lg bg-cyan-100 border-2 border-black text-cyan-700">
           <i data-lucide="gauge" class="w-5 h-5"></i>
         </div>
@@ -449,7 +455,7 @@
         </div>
       </div>
 
-      <div class="bg-white border-2 border-black rounded-xl p-3 flex items-center gap-3 shadow-[3px_3px_0px_#000]">
+      <div class="bg-white border-2 border-black rounded-xl p-3 flex items-center gap-3">
         <div class="p-2 rounded-lg bg-blue-100 border-2 border-black text-blue-700">
           <i data-lucide="truck" class="w-5 h-5"></i>
         </div>
@@ -459,7 +465,7 @@
         </div>
       </div>
 
-      <div class="bg-white border-2 border-black rounded-xl p-3 flex items-center gap-3 shadow-[3px_3px_0px_#000]">
+      <div class="bg-white border-2 border-black rounded-xl p-3 flex items-center gap-3">
         <div class="p-2 rounded-lg bg-purple-100 border-2 border-black text-purple-700 font-black text-base flex items-center justify-center">
           ₹
         </div>
@@ -477,13 +483,13 @@
 
     <!-- 1. GIS HAZARD MAP TAB (FULL-WIDTH HERO MAP WITH CLICK-TO-OPEN PRIORITY FEED DRAWER) -->
     <div id="view-map" class="tab-view active">
-      <div class="relative w-full h-[530px] bg-white border-2 border-black rounded-2xl overflow-hidden shadow-[4px_4px_0px_#000] z-0">
+      <div class="relative w-full h-[530px] bg-white border-2 border-black rounded-2xl overflow-hidden z-0">
         
         <!-- FULL-SCREEN GIS HERO MAP -->
         <div id="gis-map" class="w-full h-full"></div>
 
         <!-- FLOATING TOP-LEFT TOGGLE BUTTON FOR PRIORITY FEED (CLICK TO OPEN) -->
-        <button id="btn-toggle-feed-drawer" onclick="toggleFeedDrawer(true)" type="button" class="absolute top-4 left-4 z-20 flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-amber-300 hover:bg-amber-400 border-2 border-black text-black font-black text-xs shadow-[3px_3px_0px_#000] hover:scale-[1.02] active:translate-x-[1px] active:translate-y-[1px] transition-all cursor-pointer group">
+        <button id="btn-toggle-feed-drawer" onclick="toggleFeedDrawer(true)" type="button" class="absolute top-4 left-4 z-20 flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-amber-300 hover:bg-amber-400 border-2 border-black text-black font-black text-xs transition-colors cursor-pointer group">
           <div class="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse"></div>
           <i data-lucide="flame" class="w-4 h-4 text-black"></i>
           <span>Priority Backlog Feed</span>
@@ -492,7 +498,7 @@
         </button>
 
         <!-- FLOATING SLIDE-OVER PRIORITY FEED DRAWER PANEL (SHOWS ON CLICK) -->
-        <div id="priority-feed-drawer" class="hidden absolute top-4 left-4 z-30 w-96 max-w-[calc(100%-2rem)] max-h-[calc(100%-2rem)] bg-white border-2 border-black rounded-2xl shadow-[8px_8px_0px_#000] p-4 flex flex-col gap-3 transition-all duration-300 text-black">
+        <div id="priority-feed-drawer" class="hidden absolute top-4 left-4 z-30 w-96 max-w-[calc(100%-2rem)] max-h-[calc(100%-2rem)] bg-white border-2 border-black rounded-2xl p-4 flex flex-col gap-3 transition-all duration-300 text-black">
           
           <!-- Drawer Header -->
           <div class="flex items-center justify-between border-b-2 border-black pb-2.5">
@@ -507,7 +513,7 @@
             </div>
             <div class="flex items-center gap-2">
               <span id="feed-count" class="text-xs bg-black text-white px-2 py-0.5 rounded-md font-mono font-bold">0</span>
-              <button onclick="toggleFeedDrawer(false)" type="button" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-red-200 border-2 border-black text-black flex items-center justify-center transition-all cursor-pointer shadow-[2px_2px_0px_#000]" title="Close drawer and view full map">
+              <button onclick="toggleFeedDrawer(false)" type="button" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-red-200 border-2 border-black text-black flex items-center justify-center transition-colors cursor-pointer" title="Close drawer and view full map">
                 <i data-lucide="x" class="w-4 h-4"></i>
               </button>
             </div>
@@ -534,7 +540,7 @@
         </div>
 
         <!-- FLOATING TOP-RIGHT MAP CONTROLS -->
-        <div class="absolute top-4 right-4 z-20 flex items-center gap-2 bg-white border-2 border-black p-2 rounded-xl shadow-[3px_3px_0px_#000] text-black">
+        <div class="absolute top-4 right-4 z-20 flex items-center gap-2 bg-white border-2 border-black p-2 rounded-xl text-black">
           <label class="text-xs text-black font-black flex items-center gap-1.5 cursor-pointer">
             <input type="checkbox" id="toggle-heatmap" checked class="accent-black rounded">
             <span>Risk Heatmap</span>
@@ -558,26 +564,26 @@
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         <!-- Left: Image / Video Canvas Overlay -->
-        <div class="lg:col-span-7 bg-white border-2 border-black rounded-2xl p-5 flex flex-col gap-4 shadow-[4px_4px_0px_#000] text-black">
+        <div class="lg:col-span-7 bg-white border-2 border-black rounded-2xl p-5 flex flex-col gap-4 text-black">
           <div class="flex items-center justify-between border-b-2 border-black pb-3">
             <div class="flex items-center gap-3">
-              <button onclick="navigateToHome()" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 border-2 border-black text-xs font-black text-black shadow-[2px_2px_0px_#000] transition-all cursor-pointer" title="Return to GIS Map">
+              <button onclick="navigateToHome()" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 border-2 border-black text-xs font-black text-black transition-colors cursor-pointer" title="Return to GIS Map">
                 <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back to Map
               </button>
               <h2 class="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
                 <i data-lucide="eye" class="w-4 h-4 text-black"></i> Visual AI Anomaly Localization & Segmentation
               </h2>
             </div>
-            <span class="text-xs font-mono text-black bg-cyan-100 border-2 border-black font-bold px-2 py-0.5 rounded-lg shadow-[2px_2px_0px_#000]">
+            <span class="text-xs font-mono text-black bg-cyan-100 border-2 border-black font-bold px-2 py-0.5 rounded-lg">
               Gemini Vision & SAM Overlay
             </span>
           </div>
 
-          <div class="relative w-full aspect-video bg-slate-900 rounded-xl overflow-hidden border-2 border-black flex items-center justify-center shadow-[3px_3px_0px_#000]">
+          <div class="relative w-full aspect-video bg-slate-900 rounded-xl overflow-hidden border-2 border-black flex items-center justify-center">
             <img id="studio-image-display" src="" alt="Road Inspection Frame" class="w-full h-full object-cover">
             <canvas id="studio-canvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
             
-            <div id="studio-overlay-badge" class="absolute bottom-3 left-3 bg-white/95 border-2 border-black px-3 py-1.5 rounded-lg text-xs font-mono text-black font-bold flex items-center gap-2 shadow-[3px_3px_0px_#000]">
+            <div id="studio-overlay-badge" class="absolute bottom-3 left-3 bg-white/95 border-2 border-black px-3 py-1.5 rounded-lg text-xs font-mono text-black font-bold flex items-center gap-2">
               <i data-lucide="crosshair" class="w-3.5 h-3.5 text-black animate-spin"></i>
               <span id="studio-overlay-text">AI Surface Distress Detected</span>
             </div>
@@ -587,13 +593,13 @@
           <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
             <div class="flex flex-wrap items-center gap-2">
               <span class="text-xs text-black font-bold">Scenarios:</span>
-              <button onclick="loadStudioScenario('pothole')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 text-xs font-bold text-black border-2 border-black shadow-[2px_2px_0px_#000] cursor-pointer">Crater Pothole</button>
-              <button onclick="loadStudioScenario('alligator')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 text-xs font-bold text-black border-2 border-black shadow-[2px_2px_0px_#000] cursor-pointer">Alligator Cracks</button>
-              <button onclick="loadStudioScenario('shadow_fp')" class="px-2.5 py-1 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-xs font-bold text-emerald-950 border-2 border-black shadow-[2px_2px_0px_#000] cursor-pointer">Tree Shadow (FP)</button>
-              <button onclick="loadStudioScenario('submerged')" class="px-2.5 py-1 rounded-lg bg-blue-100 hover:bg-blue-200 text-xs font-bold text-blue-950 border-2 border-black shadow-[2px_2px_0px_#000] cursor-pointer">Monsoon Submerged Hole</button>
+              <button onclick="loadStudioScenario('pothole')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 text-xs font-bold text-black border-2 border-black cursor-pointer">Crater Pothole</button>
+              <button onclick="loadStudioScenario('alligator')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 text-xs font-bold text-black border-2 border-black cursor-pointer">Alligator Cracks</button>
+              <button onclick="loadStudioScenario('shadow_fp')" class="px-2.5 py-1 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-xs font-bold text-emerald-950 border-2 border-black cursor-pointer">Tree Shadow (FP)</button>
+              <button onclick="loadStudioScenario('submerged')" class="px-2.5 py-1 rounded-lg bg-blue-100 hover:bg-blue-200 text-xs font-bold text-blue-950 border-2 border-black cursor-pointer">Monsoon Submerged Hole</button>
             </div>
             <div>
-              <label class="cursor-pointer px-3 py-1.5 rounded-lg bg-amber-300 hover:bg-amber-400 text-black text-xs font-black flex items-center gap-1.5 border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] transition-all">
+              <label class="cursor-pointer px-3 py-1.5 rounded-lg bg-amber-300 hover:bg-amber-400 text-black text-xs font-black flex items-center gap-1.5 border-2 border-black transition-colors">
                 <i data-lucide="upload" class="w-3.5 h-3.5"></i> Custom Image
                 <input type="file" id="studio-file-input" accept="image/*" class="hidden" onchange="handleStudioFileUpload(event)">
               </label>
@@ -604,7 +610,7 @@
         <!-- Right: Synchronized Multimodal Telemetry & Fusion Analysis -->
         <div class="lg:col-span-5 flex flex-col gap-4">
           
-          <div class="bg-white border-2 border-black rounded-2xl p-4 shadow-[4px_4px_0px_#000] text-black">
+          <div class="bg-white border-2 border-black rounded-2xl p-4 text-black">
             <div class="flex items-center justify-between mb-2">
               <h3 class="text-xs font-black text-black uppercase tracking-wider flex items-center gap-1.5">
                 <i data-lucide="activity" class="w-4 h-4 text-black"></i> 3-Axis IMU Accelerometer Waveform (Gz Jerk)
@@ -616,12 +622,12 @@
             </div>
           </div>
 
-          <div class="bg-white border-2 border-black rounded-2xl p-4 shadow-[4px_4px_0px_#000] flex flex-col gap-3 text-black">
+          <div class="bg-white border-2 border-black rounded-2xl p-4 flex flex-col gap-3 text-black">
             <div class="flex items-center justify-between border-b-2 border-black pb-2">
               <h3 class="text-xs font-black text-black uppercase tracking-wider flex items-center gap-1.5">
                 <i data-lucide="git-merge" class="w-4 h-4 text-black"></i> Cross-Modal Attention Fusion Breakdown
               </h3>
-              <span id="fusion-status-pill" class="text-xs font-black px-2.5 py-0.5 rounded-lg font-mono bg-emerald-100 text-emerald-950 border-2 border-black shadow-[2px_2px_0px_#000]">VERIFIED INCIDENT</span>
+              <span id="fusion-status-pill" class="text-xs font-black px-2.5 py-0.5 rounded-lg font-mono bg-emerald-100 text-emerald-950 border-2 border-black">VERIFIED INCIDENT</span>
             </div>
 
             <div class="grid grid-cols-2 gap-3 text-xs">
@@ -666,7 +672,7 @@
               </div>
             </div>
 
-            <div class="bg-blue-50 border-2 border-black rounded-xl p-3 flex items-center justify-between text-xs font-mono font-bold text-black shadow-[2px_2px_0px_#000]">
+            <div class="bg-blue-50 border-2 border-black rounded-xl p-3 flex items-center justify-between text-xs font-mono font-bold text-black">
               <div>
                 <p class="text-slate-600 text-[10px]">Cavity Depth</p>
                 <p id="fuse-depth" class="text-sm font-extrabold text-blue-900">9.5 cm</p>
@@ -696,47 +702,47 @@
     <div id="view-patrol" class="tab-view hidden">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <div class="lg:col-span-4 bg-white border-2 border-black rounded-2xl p-5 flex flex-col gap-4 shadow-[4px_4px_0px_#000] text-black">
+        <div class="lg:col-span-4 bg-white border-2 border-black rounded-2xl p-5 flex flex-col gap-4 text-black">
           <div class="flex items-center justify-between border-b-2 border-black pb-3">
             <div class="flex items-center gap-2.5">
-              <button onclick="navigateToHome()" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 border-2 border-black text-xs font-black text-black shadow-[2px_2px_0px_#000] transition-all cursor-pointer" title="Return to GIS Map">
+              <button onclick="navigateToHome()" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 border-2 border-black text-xs font-black text-black transition-colors cursor-pointer" title="Return to GIS Map">
                 <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back
               </button>
               <h2 class="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
                 <i data-lucide="radio" class="w-4 h-4 text-black animate-pulse"></i> Patrol HUD
               </h2>
             </div>
-            <button id="btn-toggle-patrol" onclick="togglePatrolSimulation()" class="px-3 py-1 rounded-lg text-xs font-black bg-amber-300 hover:bg-amber-400 border-2 border-black text-black shadow-[2px_2px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] transition-all cursor-pointer">
+            <button id="btn-toggle-patrol" onclick="togglePatrolSimulation()" class="px-3 py-1 rounded-lg text-xs font-black bg-amber-300 hover:bg-amber-400 border-2 border-black text-black transition-colors cursor-pointer">
               Start Simulation
             </button>
           </div>
 
           <div class="grid grid-cols-2 gap-3">
-            <div class="bg-slate-50 border border-black p-3 rounded-xl shadow-[2px_2px_0px_#000]">
+            <div class="bg-slate-50 border border-black p-3 rounded-xl">
               <p class="text-[11px] text-slate-600 font-bold">Vehicle Speed</p>
               <p id="patrol-speed" class="text-xl font-black font-mono text-blue-700">42.0 <span class="text-xs font-bold text-slate-500">km/h</span></p>
             </div>
-            <div class="bg-slate-50 border border-black p-3 rounded-xl shadow-[2px_2px_0px_#000]">
+            <div class="bg-slate-50 border border-black p-3 rounded-xl">
               <p class="text-[11px] text-slate-600 font-bold">Vertical Shock (Gz)</p>
               <p id="patrol-gz" class="text-xl font-black font-mono text-black">1.02 <span class="text-xs font-bold text-slate-500">g</span></p>
             </div>
-            <div class="bg-slate-50 border border-black p-3 rounded-xl shadow-[2px_2px_0px_#000]">
+            <div class="bg-slate-50 border border-black p-3 rounded-xl">
               <p class="text-[11px] text-slate-600 font-bold">Roughness (IRI)</p>
               <p id="patrol-iri" class="text-xl font-black font-mono text-black">2.1 <span class="text-xs font-bold text-slate-500">m/km</span></p>
             </div>
-            <div class="bg-slate-50 border border-black p-3 rounded-xl shadow-[2px_2px_0px_#000]">
+            <div class="bg-slate-50 border border-black p-3 rounded-xl">
               <p class="text-[11px] text-slate-600 font-bold">Acoustic Level</p>
               <p id="patrol-db" class="text-xl font-black font-mono text-black">41.2 <span class="text-xs font-bold text-slate-500">dB</span></p>
             </div>
           </div>
 
-          <div class="bg-slate-50 border border-black p-3 rounded-xl shadow-[2px_2px_0px_#000]">
+          <div class="bg-slate-50 border border-black p-3 rounded-xl">
             <p class="text-[11px] text-slate-600 font-bold">Active Road Corridor</p>
             <p id="patrol-road-name" class="text-xs font-extrabold text-black mt-0.5">Hosur Road Medical Corridor (Bengaluru)</p>
             <p id="patrol-gps" class="text-[10px] font-mono text-blue-800 font-bold mt-1">12.9340° N, 77.6080° E</p>
           </div>
 
-          <div class="flex-1 border-2 border-black rounded-xl p-3 bg-slate-50 flex flex-col gap-2 overflow-hidden shadow-[2px_2px_0px_#000]">
+          <div class="flex-1 border-2 border-black rounded-xl p-3 bg-slate-50 flex flex-col gap-2 overflow-hidden">
             <p class="text-[11px] font-black uppercase tracking-wider text-black flex items-center gap-1">
               <i data-lucide="bell-ring" class="w-3.5 h-3.5 text-amber-600"></i> Live Detection Event Stream
             </p>
@@ -747,7 +753,7 @@
 
         </div>
 
-        <div class="lg:col-span-8 bg-white border-2 border-black rounded-2xl overflow-hidden shadow-[4px_4px_0px_#000] h-[520px]">
+        <div class="lg:col-span-8 bg-white border-2 border-black rounded-2xl overflow-hidden h-[520px]">
           <div id="patrol-map" class="w-full h-full"></div>
         </div>
 
@@ -758,9 +764,9 @@
     <div id="view-backlog" class="tab-view hidden">
       <div class="flex flex-col gap-6">
         
-        <div class="bg-white border-2 border-black rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4 shadow-[4px_4px_0px_#000] text-black">
+        <div class="bg-white border-2 border-black rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4 text-black">
           <div class="flex items-center gap-4">
-            <button onclick="navigateToHome()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border-2 border-black text-xs font-black text-black shadow-[2px_2px_0px_#000] transition-all shrink-0 cursor-pointer" title="Return to GIS Map">
+            <button onclick="navigateToHome()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border-2 border-black text-xs font-black text-black transition-colors shrink-0 cursor-pointer" title="Return to GIS Map">
               <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back to Map
             </button>
             <div>
@@ -771,10 +777,10 @@
             </div>
           </div>
           <div class="flex items-center gap-3">
-            <button onclick="regenerateWorkOrders()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black bg-white hover:bg-slate-100 text-black border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] transition-all cursor-pointer">
+            <button onclick="regenerateWorkOrders()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black bg-white hover:bg-slate-100 text-black border-2 border-black transition-colors cursor-pointer">
               <i data-lucide="sparkles" class="w-4 h-4 text-black"></i> Re-Optimize Clusters
             </button>
-            <button onclick="window.print()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black bg-amber-300 hover:bg-amber-400 text-black border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] transition-all cursor-pointer">
+            <button onclick="window.print()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black bg-amber-300 hover:bg-amber-400 text-black border-2 border-black transition-colors cursor-pointer">
               <i data-lucide="printer" class="w-4 h-4"></i> Export Schedule (PDF)
             </button>
           </div>
@@ -791,42 +797,42 @@
     <div id="view-copilot" class="tab-view hidden">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-230px)]">
         
-        <div class="lg:col-span-4 bg-white border-2 border-black rounded-2xl p-5 flex flex-col gap-4 shadow-[4px_4px_0px_#000] text-black">
+        <div class="lg:col-span-4 bg-white border-2 border-black rounded-2xl p-5 flex flex-col gap-4 text-black">
           <div class="flex items-center justify-between border-b-2 border-black pb-3">
             <div class="flex items-center gap-2.5">
-              <button onclick="navigateToHome()" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 border-2 border-black text-xs font-black text-black shadow-[2px_2px_0px_#000] transition-all cursor-pointer" title="Return to GIS Map">
+              <button onclick="navigateToHome()" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 border-2 border-black text-xs font-black text-black transition-colors cursor-pointer" title="Return to GIS Map">
                 <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back
               </button>
               <h2 class="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
                 <i data-lucide="bot" class="w-4 h-4 text-black"></i> AI Co-Pilot
               </h2>
             </div>
-            <span class="text-[10px] font-mono text-black font-extrabold bg-amber-100 border-2 border-black px-2 py-0.5 rounded-lg shadow-[2px_2px_0px_#000]">
+            <span class="text-[10px] font-mono text-black font-extrabold bg-amber-100 border-2 border-black px-2 py-0.5 rounded-lg">
               IRC:82 / MoRTH Grounded
             </span>
           </div>
 
           <div class="space-y-2">
             <p class="text-[11px] font-black text-black uppercase tracking-wider">Suggested Inquiries:</p>
-            <button onclick="askCopilot('Which hazards pose the greatest risk to emergency hospital transit corridors in this state?')" class="w-full text-left p-2.5 rounded-xl bg-slate-50 hover:bg-amber-50 border-2 border-black text-xs text-black font-bold shadow-[2px_2px_0px_#000] transition-all flex items-center justify-between cursor-pointer">
+            <button onclick="askCopilot('Which hazards pose the greatest risk to emergency hospital transit corridors in this state?')" class="w-full text-left p-2.5 rounded-xl bg-slate-50 hover:bg-amber-50 border-2 border-black text-xs text-black font-bold transition-colors flex items-center justify-between cursor-pointer">
               <span>🏥 Hospital Emergency Routes Risk</span>
               <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-black"></i>
             </button>
-            <button onclick="askCopilot('List the top 4 highest priority road hazards and recommend MoRTH repair techniques with cost estimates in Rupees.')" class="w-full text-left p-2.5 rounded-xl bg-slate-50 hover:bg-amber-50 border-2 border-black text-xs text-black font-bold shadow-[2px_2px_0px_#000] transition-all flex items-center justify-between cursor-pointer">
+            <button onclick="askCopilot('List the top 4 highest priority road hazards and recommend MoRTH repair techniques with cost estimates in Rupees.')" class="w-full text-left p-2.5 rounded-xl bg-slate-50 hover:bg-amber-50 border-2 border-black text-xs text-black font-bold transition-colors flex items-center justify-between cursor-pointer">
               <span>🚨 Top Priority Defects & MoRTH Repair Rates</span>
               <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-black"></i>
             </button>
-            <button onclick="askCopilot('Analyze how monsoon rainfall and waterlogging will accelerate alligator crack deterioration.')" class="w-full text-left p-2.5 rounded-xl bg-slate-50 hover:bg-amber-50 border-2 border-black text-xs text-black font-bold shadow-[2px_2px_0px_#000] transition-all flex items-center justify-between cursor-pointer">
+            <button onclick="askCopilot('Analyze how monsoon rainfall and waterlogging will accelerate alligator crack deterioration.')" class="w-full text-left p-2.5 rounded-xl bg-slate-50 hover:bg-amber-50 border-2 border-black text-xs text-black font-bold transition-colors flex items-center justify-between cursor-pointer">
               <span>🌧️ Monsoon Inundation & Hydraulic Pumping</span>
               <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-black"></i>
             </button>
-            <button onclick="askCopilot('What is the total estimated PWD maintenance budget in Rupees for the selected state and how much is saved via spatial clustering?')" class="w-full text-left p-2.5 rounded-xl bg-slate-50 hover:bg-amber-50 border-2 border-black text-xs text-black font-bold shadow-[2px_2px_0px_#000] transition-all flex items-center justify-between cursor-pointer">
+            <button onclick="askCopilot('What is the total estimated PWD maintenance budget in Rupees for the selected state and how much is saved via spatial clustering?')" class="w-full text-left p-2.5 rounded-xl bg-slate-50 hover:bg-amber-50 border-2 border-black text-xs text-black font-bold transition-colors flex items-center justify-between cursor-pointer">
               <span>💰 PWD Repair Budget & Cluster Savings in ₹</span>
               <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-black"></i>
             </button>
           </div>
 
-          <div class="mt-auto bg-slate-50 border-2 border-black p-3 rounded-xl text-xs text-slate-800 font-medium shadow-[2px_2px_0px_#000]">
+          <div class="mt-auto bg-slate-50 border-2 border-black p-3 rounded-xl text-xs text-slate-800 font-medium">
             <div class="flex items-center gap-2 text-black font-extrabold mb-1">
               <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i> Multimodal Grounding Active (India)
             </div>
@@ -834,13 +840,13 @@
           </div>
         </div>
 
-        <div class="lg:col-span-8 bg-white border-2 border-black rounded-2xl flex flex-col overflow-hidden shadow-[4px_4px_0px_#000] text-black">
+        <div class="lg:col-span-8 bg-white border-2 border-black rounded-2xl flex flex-col overflow-hidden text-black">
           <div id="copilot-chat-messages" class="flex-1 p-5 overflow-y-auto space-y-4 custom-scrollbar bg-[#fcfcf9]">
             <div class="flex gap-3">
-              <div class="w-8 h-8 rounded-lg bg-amber-300 border-2 border-black flex items-center justify-center shrink-0 shadow-[2px_2px_0px_#000]">
+              <div class="w-8 h-8 rounded-lg bg-amber-300 border-2 border-black flex items-center justify-center shrink-0">
                 <i data-lucide="bot" class="w-4 h-4 text-black"></i>
               </div>
-              <div class="bg-white border-2 border-black p-4 rounded-2xl max-w-2xl text-xs text-black leading-relaxed shadow-[3px_3px_0px_#000]">
+              <div class="bg-white border-2 border-black p-4 rounded-2xl max-w-2xl text-xs text-black leading-relaxed">
                 <p class="font-extrabold text-blue-800 mb-1">SadakSuraksha Infrastructure AI Co-Pilot (MoRTH / IRC)</p>
                 <p class="font-medium">Namaste! I am grounded in your multi-state road network database (Karnataka, Maharashtra, Delhi NCR, Tamil Nadu, Telangana). Select any state from the dropdown above or ask me about risk prioritization, MoRTH repair specifications, budget planning in ₹ INR, or emergency hospital transit corridors.</p>
               </div>
@@ -849,9 +855,9 @@
 
           <div class="p-4 border-t-2 border-black bg-white flex items-center gap-3">
             <input type="text" id="copilot-input" placeholder="Ask about road defects, PWD maintenance priority, or MoRTH repair costs in ₹..." class="flex-1 bg-white border-2 border-black rounded-xl px-4 py-2.5 text-xs text-black font-bold placeholder-slate-400 focus:outline-none focus:bg-amber-50" onkeydown="if(event.key==='Enter') sendCopilotMessage()">
-            <button onclick="sendCopilotMessage()" id="copilot-send-btn" class="px-4 py-2.5 rounded-xl bg-amber-300 hover:bg-amber-400 border-2 border-black text-black font-black text-xs flex items-center gap-2 shadow-[2px_2px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] transition-all cursor-pointer">
+            <button onclick="sendCopilotMessage()" id="copilot-send-btn" class="px-4 py-2.5 rounded-xl bg-amber-300 hover:bg-amber-400 border-2 border-black text-black font-black text-xs flex items-center gap-2 transition-colors cursor-pointer">
               <span>Ask Co-Pilot</span>
-              <i data-lucide="send" class="w-3.5 h-3.5"></i>
+              <i data-lucide="send" class="w-3.5 h-3.5 text-black"></i>
             </button>
           </div>
         </div>
@@ -863,9 +869,9 @@
     <div id="view-analytics" class="tab-view hidden">
       <div class="flex flex-col gap-6">
         
-        <div class="bg-white border-2 border-black rounded-2xl p-5 flex items-center justify-between shadow-[4px_4px_0px_#000] text-black">
+        <div class="bg-white border-2 border-black rounded-2xl p-5 flex items-center justify-between text-black">
           <div class="flex items-center gap-4">
-            <button onclick="navigateToHome()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border-2 border-black text-xs font-black text-black shadow-[2px_2px_0px_#000] transition-all shrink-0 cursor-pointer" title="Return to GIS Map">
+            <button onclick="navigateToHome()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border-2 border-black text-xs font-black text-black transition-colors shrink-0 cursor-pointer" title="Return to GIS Map">
               <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back to Map
             </button>
             <div>
@@ -879,7 +885,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <div class="lg:col-span-6 bg-white border-2 border-black rounded-2xl p-5 flex flex-col gap-4 shadow-[4px_4px_0px_#000] text-black">
+        <div class="lg:col-span-6 bg-white border-2 border-black rounded-2xl p-5 flex flex-col gap-4 text-black">
           <h2 class="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
             <i data-lucide="pie-chart" class="w-4 h-4 text-black"></i> Road Hazard Type Distribution
           </h2>
@@ -888,7 +894,7 @@
           </div>
         </div>
 
-        <div class="lg:col-span-6 bg-white border-2 border-black rounded-2xl p-5 flex flex-col gap-4 shadow-[4px_4px_0px_#000] text-black">
+        <div class="lg:col-span-6 bg-white border-2 border-black rounded-2xl p-5 flex flex-col gap-4 text-black">
           <h2 class="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
             <i data-lucide="activity" class="w-4 h-4 text-black"></i> Road Segment IRC / PCI Health
           </h2>
@@ -897,7 +903,7 @@
           </div>
         </div>
 
-        <div class="lg:col-span-12 bg-white border-2 border-black rounded-2xl p-6 shadow-[4px_4px_0px_#000] flex flex-col gap-4 text-black">
+        <div class="lg:col-span-12 bg-white border-2 border-black rounded-2xl p-6 flex flex-col gap-4 text-black">
           <div class="flex items-center justify-between border-b-2 border-black pb-3">
             <div>
               <h2 class="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
@@ -928,7 +934,7 @@
               <input type="range" id="slider-ratio" min="10" max="90" step="5" value="65" class="w-full accent-black mt-2" oninput="updateBudgetSim()">
             </div>
 
-            <div class="bg-slate-50 p-3 rounded-xl border border-black text-xs font-bold shadow-[2px_2px_0px_#000]">
+            <div class="bg-slate-50 p-3 rounded-xl border border-black text-xs font-bold">
               <p class="text-slate-600">Predicted PCI Improvement</p>
               <p id="sim-pci-gain" class="text-base font-black text-blue-800 font-mono">+12.4 PCI Points</p>
               <p class="text-[11px] text-slate-700 font-medium mt-1">Saves ₹ 6,80,000 in deferred emergency reconstruction.</p>
@@ -946,9 +952,9 @@
       <div class="flex flex-col gap-6">
 
         <!-- Header with stats -->
-        <div class="bg-white border-2 border-black rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4 shadow-[4px_4px_0px_#000] text-black">
+        <div class="bg-white border-2 border-black rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4 text-black">
           <div class="flex items-center gap-4">
-            <button onclick="navigateToHome()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border-2 border-black text-xs font-black text-black shadow-[2px_2px_0px_#000] transition-all shrink-0 cursor-pointer" title="Return to GIS Map">
+            <button onclick="navigateToHome()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border-2 border-black text-xs font-black text-black transition-colors shrink-0 cursor-pointer" title="Return to GIS Map">
               <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back to Map
             </button>
             <div>
@@ -959,7 +965,7 @@
             </div>
           </div>
           <div class="flex items-center gap-3">
-            <button onclick="refreshIngestionStreams()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black bg-amber-300 hover:bg-amber-400 text-black border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] transition-all cursor-pointer">
+            <button onclick="refreshIngestionStreams()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black bg-amber-300 hover:bg-amber-400 text-black border-2 border-black transition-colors cursor-pointer">
               <i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh Streams
             </button>
           </div>
@@ -968,7 +974,7 @@
         <!-- Ingestion Stream Cards Grid -->
         <div id="ingestion-streams-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           <!-- Dynamic Ingestion Stream Cards -->
-          <div class="bg-white border-2 border-black rounded-xl p-4 shadow-[3px_3px_0px_#000] animate-pulse">
+          <div class="bg-white border-2 border-black rounded-xl p-4 animate-pulse">
             <div class="h-4 bg-slate-200 rounded w-3/4 mb-3"></div>
             <div class="h-3 bg-slate-100 rounded w-1/2"></div>
           </div>
@@ -976,7 +982,7 @@
 
         <!-- Recent Citizen Submissions Feed -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="bg-white border-2 border-black rounded-2xl p-5 shadow-[4px_4px_0px_#000] text-black">
+          <div class="bg-white border-2 border-black rounded-2xl p-5 text-black">
             <h3 class="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2 mb-4 border-b-2 border-black pb-2">
               <i data-lucide="users" class="w-4 h-4 text-emerald-700"></i> Recent Citizen Submissions
             </h3>
@@ -985,7 +991,7 @@
             </div>
           </div>
 
-          <div class="bg-white border-2 border-black rounded-2xl p-5 shadow-[4px_4px_0px_#000] text-black">
+          <div class="bg-white border-2 border-black rounded-2xl p-5 text-black">
             <h3 class="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2 mb-4 border-b-2 border-black pb-2">
               <i data-lucide="camera" class="w-4 h-4 text-blue-700"></i> Ingestion Activity Log
             </h3>
@@ -1010,7 +1016,7 @@
       <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4">
         
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-amber-200 border-2 border-black flex items-center justify-center text-black shrink-0 shadow-[2px_2px_0px_#000]">
+          <div class="w-10 h-10 rounded-xl bg-amber-200 border-2 border-black flex items-center justify-center text-black shrink-0">
             <i data-lucide="phone-call" class="w-5 h-5"></i>
           </div>
           <div>
@@ -1025,7 +1031,7 @@
         <!-- Helpline Pills Grid -->
         <div class="flex flex-wrap items-center gap-2.5">
           <!-- NHAI 1033 -->
-          <a href="tel:1033" class="group flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white hover:bg-amber-100 border-2 border-black transition-all shadow-[2px_2px_0px_#000]">
+          <a href="tel:1033" class="group flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white hover:bg-amber-100 border-2 border-black transition-colors">
             <div class="w-6 h-6 rounded-lg bg-orange-100 border border-black flex items-center justify-center text-black font-bold text-xs">📞</div>
             <div>
               <p class="text-[10px] text-slate-600 font-bold leading-none">NHAI Highway Rescue</p>
@@ -1034,7 +1040,7 @@
           </a>
 
           <!-- National Emergency 112 -->
-          <a href="tel:112" class="group flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white hover:bg-red-100 border-2 border-black transition-all shadow-[2px_2px_0px_#000]">
+          <a href="tel:112" class="group flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white hover:bg-red-100 border-2 border-black transition-colors">
             <div class="w-6 h-6 rounded-lg bg-red-100 border border-black flex items-center justify-center text-black font-bold text-xs">🚨</div>
             <div>
               <p class="text-[10px] text-slate-600 font-bold leading-none">National Emergency</p>
@@ -1043,7 +1049,7 @@
           </a>
 
           <!-- Ambulance 108 -->
-          <a href="tel:108" class="group flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white hover:bg-emerald-100 border-2 border-black transition-all shadow-[2px_2px_0px_#000]">
+          <a href="tel:108" class="group flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white hover:bg-emerald-100 border-2 border-black transition-colors">
             <div class="w-6 h-6 rounded-lg bg-emerald-100 border border-black flex items-center justify-center text-black font-bold text-xs">🚑</div>
             <div>
               <p class="text-[10px] text-slate-600 font-bold leading-none">Trauma Ambulance</p>
@@ -1052,7 +1058,7 @@
           </a>
 
           <!-- Road Safety 1073 -->
-          <a href="tel:1073" class="group flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white hover:bg-blue-100 border-2 border-black transition-all shadow-[2px_2px_0px_#000]">
+          <a href="tel:1073" class="group flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white hover:bg-blue-100 border-2 border-black transition-colors">
             <div class="w-6 h-6 rounded-lg bg-blue-100 border border-black flex items-center justify-center text-black font-bold text-xs">🛡️</div>
             <div>
               <p class="text-[10px] text-slate-600 font-bold leading-none">Road Safety Hotline</p>
@@ -1061,7 +1067,7 @@
           </a>
 
           <!-- MoRTH Rajmargyatra -->
-          <a href="tel:1800110001" class="group hidden xl:flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white hover:bg-purple-100 border-2 border-black transition-all shadow-[2px_2px_0px_#000]">
+          <a href="tel:1800110001" class="group hidden xl:flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white hover:bg-purple-100 border-2 border-black transition-colors">
             <div class="w-6 h-6 rounded-lg bg-purple-100 border border-black flex items-center justify-center text-black font-bold text-xs">🇮🇳</div>
             <div>
               <p class="text-[10px] text-slate-600 font-bold leading-none">MoRTH Grievance</p>
@@ -1086,10 +1092,10 @@
 
         <!-- Scroll Nav Buttons -->
         <div class="flex items-center gap-2">
-          <button onclick="scrollGovPosters('left')" class="p-2 rounded-xl bg-white hover:bg-slate-100 border-2 border-black text-black shadow-[2px_2px_0px_#000] cursor-pointer" title="Scroll Left">
+          <button onclick="scrollGovPosters('left')" class="p-2 rounded-xl bg-white hover:bg-slate-100 border-2 border-black text-black cursor-pointer" title="Scroll Left">
             <i data-lucide="chevron-left" class="w-4 h-4"></i>
           </button>
-          <button onclick="scrollGovPosters('right')" class="p-2 rounded-xl bg-white hover:bg-slate-100 border-2 border-black text-black shadow-[2px_2px_0px_#000] cursor-pointer" title="Scroll Right">
+          <button onclick="scrollGovPosters('right')" class="p-2 rounded-xl bg-white hover:bg-slate-100 border-2 border-black text-black cursor-pointer" title="Scroll Right">
             <i data-lucide="chevron-right" class="w-4 h-4"></i>
           </button>
         </div>
@@ -1099,7 +1105,7 @@
       <div id="gov-posters-container" class="flex gap-4 overflow-x-auto pb-3 pt-1 custom-scrollbar scroll-smooth snap-x">
 
         <!-- Poster 1: Sadak Suraksha Abhiyan -->
-        <div class="min-w-[320px] sm:min-w-[360px] max-w-[360px] bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between shrink-0 snap-start shadow-[5px_5px_0px_#000] hover:shadow-[7px_7px_0px_#000] transition-all text-black relative overflow-hidden group">
+        <div class="min-w-[320px] sm:min-w-[360px] max-w-[360px] bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between shrink-0 snap-start transition-colors text-black relative overflow-hidden group">
           <div>
             <div class="flex items-center justify-between mb-3">
               <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-black font-mono bg-orange-100 text-orange-950 border border-black">
@@ -1124,7 +1130,7 @@
         </div>
 
         <!-- Poster 2: NHAI Emergency 1033 -->
-        <div class="min-w-[320px] sm:min-w-[360px] max-w-[360px] bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between shrink-0 snap-start shadow-[5px_5px_0px_#000] hover:shadow-[7px_7px_0px_#000] transition-all text-black relative overflow-hidden group">
+        <div class="min-w-[320px] sm:min-w-[360px] max-w-[360px] bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between shrink-0 snap-start transition-colors text-black relative overflow-hidden group">
           <div>
             <div class="flex items-center justify-between mb-3">
               <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-black font-mono bg-cyan-100 text-cyan-950 border border-black">
@@ -1142,14 +1148,14 @@
           </div>
           <div class="border-t-2 border-black pt-3 flex items-center justify-between text-xs">
             <span class="text-slate-700 text-[11px] font-bold">Dial Direct: <strong class="text-blue-700 font-mono">1033</strong></span>
-            <a href="tel:1033" class="px-2.5 py-1 rounded-lg bg-cyan-200 hover:bg-cyan-300 border border-black text-black font-black text-[10px] flex items-center gap-1 shadow-[2px_2px_0px_#000]">
+            <a href="tel:1033" class="px-2.5 py-1 rounded-lg bg-cyan-200 hover:bg-cyan-300 border border-black text-black font-black text-[10px] flex items-center gap-1">
               <i data-lucide="phone" class="w-3 h-3"></i> Call 1033
             </a>
           </div>
         </div>
 
         <!-- Poster 3: Good Samaritan Protection Act -->
-        <div class="min-w-[320px] sm:min-w-[360px] max-w-[360px] bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between shrink-0 snap-start shadow-[5px_5px_0px_#000] hover:shadow-[7px_7px_0px_#000] transition-all text-black relative overflow-hidden group">
+        <div class="min-w-[320px] sm:min-w-[360px] max-w-[360px] bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between shrink-0 snap-start transition-colors text-black relative overflow-hidden group">
           <div>
             <div class="flex items-center justify-between mb-3">
               <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-black font-mono bg-emerald-100 text-emerald-950 border border-black">
@@ -1174,7 +1180,7 @@
         </div>
 
         <!-- Poster 4: Zero Pothole Corridor Initiative -->
-        <div class="min-w-[320px] sm:min-w-[360px] max-w-[360px] bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between shrink-0 snap-start shadow-[5px_5px_0px_#000] hover:shadow-[7px_7px_0px_#000] transition-all text-black relative overflow-hidden group">
+        <div class="min-w-[320px] sm:min-w-[360px] max-w-[360px] bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between shrink-0 snap-start transition-colors text-black relative overflow-hidden group">
           <div>
             <div class="flex items-center justify-between mb-3">
               <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-black font-mono bg-purple-100 text-purple-950 border border-black">
@@ -1199,7 +1205,7 @@
         </div>
 
         <!-- Poster 5: Monsoon Hazard Advisory -->
-        <div class="min-w-[320px] sm:min-w-[360px] max-w-[360px] bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between shrink-0 snap-start shadow-[5px_5px_0px_#000] hover:shadow-[7px_7px_0px_#000] transition-all text-black relative overflow-hidden group">
+        <div class="min-w-[320px] sm:min-w-[360px] max-w-[360px] bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between shrink-0 snap-start transition-colors text-black relative overflow-hidden group">
           <div>
             <div class="flex items-center justify-between mb-3">
               <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-black font-mono bg-blue-100 text-blue-950 border border-black">
@@ -1224,7 +1230,7 @@
         </div>
 
         <!-- Poster 6: Commercial Overloading & Telematics -->
-        <div class="min-w-[320px] sm:min-w-[360px] max-w-[360px] bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between shrink-0 snap-start shadow-[5px_5px_0px_#000] hover:shadow-[7px_7px_0px_#000] transition-all text-black relative overflow-hidden group">
+        <div class="min-w-[320px] sm:min-w-[360px] max-w-[360px] bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between shrink-0 snap-start transition-colors text-black relative overflow-hidden group">
           <div>
             <div class="flex items-center justify-between mb-3">
               <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-black font-mono bg-amber-100 text-amber-950 border border-black">
@@ -1256,7 +1262,7 @@
       <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-bold">
         
         <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-lg bg-white border-2 border-black flex items-center justify-center text-lg shadow-[2px_2px_0px_#000]">
+          <div class="w-8 h-8 rounded-lg bg-white border-2 border-black flex items-center justify-center text-lg">
             🏛️
           </div>
           <div>
@@ -1284,7 +1290,7 @@
 
   <!-- INCIDENT DETAIL MODAL (in ₹ INR) -->
   <div id="incident-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] hidden flex items-center justify-center p-4" style="z-index: 99999 !important;">
-    <div class="bg-white border-2 border-black rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-[10px_10px_0px_#000] flex flex-col custom-scrollbar text-black">
+    <div class="bg-white border-2 border-black rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col custom-scrollbar text-black">
       
       <div class="p-5 border-b-2 border-black flex items-center justify-between sticky top-0 bg-white z-10">
         <div class="flex items-center gap-3">
@@ -1297,15 +1303,15 @@
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <a id="modal-gmaps-link" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black bg-blue-100 hover:bg-blue-200 border-2 border-black text-black shadow-[2px_2px_0px_#000] transition-all">
+          <a id="modal-gmaps-link" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black bg-blue-100 hover:bg-blue-200 border-2 border-black text-black transition-colors">
             <i data-lucide="map-pin" class="w-3.5 h-3.5 text-black"></i>
             <span>Google Maps ↗</span>
           </a>
-          <a id="modal-gmaps-dir" href="#" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 border-2 border-black text-black transition-all">
+          <a id="modal-gmaps-dir" href="#" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 border-2 border-black text-black transition-colors">
             <i data-lucide="navigation" class="w-3.5 h-3.5 text-black"></i>
             <span>Directions</span>
           </a>
-          <button onclick="closeIncidentModal()" class="p-2 rounded-lg bg-slate-100 hover:bg-red-200 border-2 border-black text-black transition-all cursor-pointer">
+          <button onclick="closeIncidentModal()" class="p-2 rounded-lg bg-slate-100 hover:bg-red-200 border-2 border-black text-black transition-colors cursor-pointer">
             <i data-lucide="x" class="w-4 h-4"></i>
           </button>
         </div>
@@ -1314,7 +1320,7 @@
       <div class="p-6 space-y-6">
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="relative rounded-xl overflow-hidden border-2 border-black bg-slate-900 aspect-video flex items-center justify-center shadow-[3px_3px_0px_#000]">
+          <div class="relative rounded-xl overflow-hidden border-2 border-black bg-slate-900 aspect-video flex items-center justify-center">
             <img id="modal-image" src="" alt="Incident Visual" class="w-full h-full object-cover">
             <div id="modal-fp-warning" class="hidden absolute inset-0 bg-emerald-100/90 border-2 border-black flex flex-col items-center justify-center p-4 text-center">
               <i data-lucide="check-circle-2" class="w-8 h-8 text-emerald-800 mb-2"></i>
@@ -1324,26 +1330,26 @@
           </div>
 
           <div class="grid grid-cols-2 gap-3 text-xs font-mono font-bold">
-            <div class="bg-slate-50 p-3 rounded-xl border border-black shadow-[2px_2px_0px_#000]">
+            <div class="bg-slate-50 p-3 rounded-xl border border-black">
               <p class="text-slate-600 text-[10px]">Priority Risk Score</p>
               <p id="modal-risk-score" class="text-lg font-black text-red-600">96.5 <span class="text-xs text-slate-500">/100</span></p>
             </div>
-            <div class="bg-slate-50 p-3 rounded-xl border border-black shadow-[2px_2px_0px_#000]">
+            <div class="bg-slate-50 p-3 rounded-xl border border-black">
               <p class="text-slate-600 text-[10px]">IRC/PCI Deduct</p>
               <p id="modal-pci-deduct" class="text-lg font-black text-amber-700">-58.4 pts</p>
             </div>
-            <div class="bg-slate-50 p-3 rounded-xl border border-black shadow-[2px_2px_0px_#000]">
+            <div class="bg-slate-50 p-3 rounded-xl border border-black">
               <p class="text-slate-600 text-[10px]">Cavity Depth (Verified)</p>
               <p id="modal-depth" class="text-lg font-black text-blue-800">9.5 cm</p>
             </div>
-            <div class="bg-slate-50 p-3 rounded-xl border border-black shadow-[2px_2px_0px_#000]">
+            <div class="bg-slate-50 p-3 rounded-xl border border-black">
               <p class="text-slate-600 text-[10px]">Est. PWD Repair Cost</p>
               <p id="modal-repair-cost" class="text-lg font-black text-purple-900">₹ 24,500</p>
             </div>
           </div>
         </div>
 
-        <div class="bg-white p-4 rounded-xl border-2 border-black shadow-[3px_3px_0px_#000]">
+        <div class="bg-white p-4 rounded-xl border-2 border-black">
           <p class="text-xs font-black text-black mb-2 flex items-center gap-2">
             <i data-lucide="activity" class="w-4 h-4 text-black"></i> Synchronized 3-Axis Accelerometer Transient
           </p>
@@ -1352,7 +1358,7 @@
           </div>
         </div>
 
-        <div class="bg-blue-50 border-2 border-black rounded-xl p-4 text-xs shadow-[2px_2px_0px_#000]">
+        <div class="bg-blue-50 border-2 border-black rounded-xl p-4 text-xs">
           <p class="font-black text-blue-900 uppercase tracking-wider mb-1">Recommended Engineering Repair Technique (MoRTH / IRC):</p>
           <p id="modal-repair-technique" class="text-black font-extrabold">Full-Depth Bituminous Concrete (BC) Milling & Hot Mix Compaction</p>
           <p id="modal-repair-hours" class="text-slate-700 mt-1 font-mono font-bold">Estimated Crew Hours: 3.2 hrs</p>
@@ -1365,7 +1371,7 @@
 
   <!-- API KEY CONFIG MODAL -->
   <div id="apikey-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] hidden flex items-center justify-center p-4" style="z-index: 99999 !important;">
-    <div class="bg-white border-2 border-black rounded-2xl w-full max-w-md p-6 shadow-[10px_10px_0px_#000] flex flex-col gap-4 text-black">
+    <div class="bg-white border-2 border-black rounded-2xl w-full max-w-md p-6 flex flex-col gap-4 text-black">
       <div class="flex items-center justify-between border-b-2 border-black pb-3">
         <h3 class="text-sm font-black text-black flex items-center gap-2">
           <i data-lucide="key" class="w-4 h-4 text-black"></i> Configure Google Gemini API Key
@@ -1378,14 +1384,14 @@
       <input type="password" id="input-api-key" placeholder="AIzaSy..." class="bg-white border-2 border-black rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:bg-amber-50">
       <div class="flex items-center justify-end gap-2 pt-2">
         <button onclick="closeApiKeyModal()" class="px-3 py-1.5 rounded-lg text-xs font-bold text-black hover:bg-slate-100 border border-black cursor-pointer">Cancel</button>
-        <button onclick="saveApiKey()" class="px-4 py-1.5 rounded-lg text-xs font-black bg-amber-300 hover:bg-amber-400 border-2 border-black text-black shadow-[2px_2px_0px_#000] cursor-pointer">Save Key</button>
+        <button onclick="saveApiKey()" class="px-4 py-1.5 rounded-lg text-xs font-black bg-amber-300 hover:bg-amber-400 border-2 border-black text-black cursor-pointer">Save Key</button>
       </div>
     </div>
   </div>
 
   <!-- QUICK INGEST MODAL -->
   <div id="ingest-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] hidden flex items-center justify-center p-4" style="z-index: 99999 !important;">
-    <div class="bg-white border-2 border-black rounded-2xl w-full max-w-lg p-6 shadow-[10px_10px_0px_#000] flex flex-col gap-4 text-black">
+    <div class="bg-white border-2 border-black rounded-2xl w-full max-w-lg p-6 flex flex-col gap-4 text-black">
       <div class="flex items-center justify-between border-b-2 border-black pb-3">
         <h3 class="text-sm font-black text-black flex items-center gap-2">
           <i data-lucide="plus-circle" class="w-4 h-4 text-black"></i> Ingest Multimodal Road Incident
@@ -1450,7 +1456,7 @@
 
       <div class="flex items-center justify-end gap-2 pt-2">
         <button onclick="closeIngestModal()" class="px-3 py-1.5 rounded-lg text-xs font-bold text-black hover:bg-slate-100 border border-black cursor-pointer">Cancel</button>
-        <button onclick="submitIngestModal()" class="px-4 py-2 rounded-lg text-xs font-black bg-amber-300 hover:bg-amber-400 border-2 border-black text-black flex items-center gap-1.5 shadow-[2px_2px_0px_#000] cursor-pointer">
+        <button onclick="submitIngestModal()" class="px-4 py-2 rounded-lg text-xs font-black bg-amber-300 hover:bg-amber-400 border-2 border-black text-black flex items-center gap-1.5 cursor-pointer">
           <i data-lucide="zap" class="w-3.5 h-3.5"></i> Run Multimodal AI Pipeline
         </button>
       </div>
