@@ -28,15 +28,39 @@ code, pre, .font-mono {
 }
 
 .tricolor-badge {
-  background: linear-gradient(90deg, rgba(255, 153, 51, 0.18) 0%, rgba(255, 255, 255, 0.95) 50%, rgba(19, 136, 8, 0.18) 100%);
-  border: 1.5px solid #000000;
+  background: linear-gradient(90deg, rgba(255, 153, 51, 0.15) 0%, rgba(255, 255, 255, 0.95) 50%, rgba(19, 136, 8, 0.15) 100%);
+  border: 1px solid #cbd5e1;
 }
 
 .tricolor-icon-ring {
   background: linear-gradient(135deg, #FF9933 0%, #FFFFFF 50%, #138808 100%);
   padding: 2px;
   border-radius: 12px;
-  border: 1.5px solid #000000;
+  border: 1px solid #cbd5e1;
+}
+
+/* NHAI Portal National Bulletin Background Section */
+.bulletin-hero-bg {
+  position: relative;
+  background-color: #f1f5f9;
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(248, 250, 252, 0.84) 40%, rgba(241, 245, 249, 0.95) 100%), url('../assets/highway_bg.webp');
+  background-size: cover;
+  background-position: center 30%;
+  background-repeat: no-repeat;
+}
+
+/* NHAI Card Design Reference: Clean, Minimal, Elevated */
+.nhai-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.05), 0 1px 4px -1px rgba(0, 0, 0, 0.03);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nhai-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
 }
 
 /* Indian Tricolour Theme Utility Classes */

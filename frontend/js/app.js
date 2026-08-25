@@ -473,26 +473,26 @@ function renderIncidentFeed(hazards) {
   }
 
   hazards.forEach(h => {
-    let badgeBg = 'bg-blue-100 text-blue-950 border-2 border-black';
-    let riskColor = 'text-blue-700 font-extrabold';
+    let badgeBg = 'bg-blue-50 text-blue-950 border border-blue-200';
+    let riskColor = 'text-blue-700 font-bold';
 
     if (h.fusion.is_false_positive) {
-      badgeBg = 'bg-slate-200 border-2 border-black text-slate-800';
-      riskColor = 'text-slate-600 font-bold';
+      badgeBg = 'bg-slate-100 border border-slate-200 text-slate-700';
+      riskColor = 'text-slate-500 font-bold';
     } else if (h.severity === 'critical') {
-      badgeBg = 'bg-red-200 border-2 border-black text-red-950';
-      riskColor = 'text-red-600 font-extrabold';
+      badgeBg = 'bg-red-50 border border-red-200 text-red-950';
+      riskColor = 'text-red-600 font-black';
     } else if (h.severity === 'high') {
-      badgeBg = 'bg-amber-200 border-2 border-black text-amber-950';
-      riskColor = 'text-amber-700 font-extrabold';
+      badgeBg = 'bg-amber-50 border border-amber-200 text-amber-950';
+      riskColor = 'text-amber-700 font-black';
     }
 
     const card = document.createElement('div');
     const borderLeftColor = h.fusion.is_false_positive 
       ? 'border-l-4 border-l-slate-400' 
-      : (h.severity === 'critical' ? 'border-l-4 border-l-red-600' : (h.severity === 'high' ? 'border-l-4 border-l-amber-600' : 'border-l-4 border-l-blue-600'));
+      : (h.severity === 'critical' ? 'border-l-4 border-l-red-600' : (h.severity === 'high' ? 'border-l-4 border-l-[#FF9933]' : 'border-l-4 border-l-blue-600'));
 
-    card.className = `bg-white hover:bg-orange-50/40 border-2 border-black ${borderLeftColor} rounded-none p-3 cursor-pointer transition-colors flex flex-col gap-2 group text-black overflow-hidden relative`;
+    card.className = `bg-white hover:bg-slate-50/80 border border-slate-200 ${borderLeftColor} rounded-xl p-3.5 cursor-pointer transition-all shadow-xs hover:shadow-md flex flex-col gap-2 group text-black overflow-hidden relative`;
     card.onclick = () => {
       openIncidentModal(h.id);
       if (gisMap) {
@@ -503,13 +503,13 @@ function renderIncidentFeed(hazards) {
     card.innerHTML = `
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-1.5">
-          <span class="text-[10px] font-mono px-2 py-0.5 rounded-none ${badgeBg} uppercase font-extrabold">
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded-md ${badgeBg} uppercase font-bold">
             ${h.fusion.is_false_positive ? 'FALSE POSITIVE' : h.severity}
           </span>
-          <span class="text-[10px] text-black font-bold bg-slate-100 border border-black px-1.5 py-0.5 rounded-none">${h.state}</span>
+          <span class="text-[10px] text-slate-700 font-bold bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-md">${h.state}</span>
         </div>
         <div class="flex items-center gap-2">
-          <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Open location in Google Maps" class="text-black hover:bg-slate-200 inline-flex items-center gap-0.5 text-[10px] font-mono font-bold bg-blue-100 border border-black px-1.5 py-0.5 rounded-none">
+          <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Open location in Google Maps" class="text-blue-900 hover:bg-blue-100 inline-flex items-center gap-0.5 text-[10px] font-mono font-bold bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded-md">
             🗺️ Maps ↗
           </a>
           <span class="text-xs font-mono ${riskColor}">Risk: ${h.priority.raw_risk_score}</span>
@@ -517,12 +517,12 @@ function renderIncidentFeed(hazards) {
       </div>
       <div>
         <h4 class="text-xs font-bold text-black group-hover:text-orange-700 transition-colors leading-snug">${h.title}</h4>
-        <p class="text-[11px] text-slate-700 truncate mt-0.5">${h.address}</p>
+        <p class="text-[11px] text-slate-600 truncate mt-0.5 font-medium">${h.address}</p>
       </div>
-      <div class="flex items-center justify-between text-[10px] text-black font-mono font-bold border-t border-black pt-1.5">
+      <div class="flex items-center justify-between text-[10px] text-slate-700 font-mono font-bold border-t border-slate-100 pt-2">
         <span>Depth: ${h.fusion.physical_depth_cm}cm</span>
         <span>Area: ${h.fusion.physical_area_sqm}m²</span>
-        <span class="text-purple-900 font-extrabold">${formatINR(h.priority.estimated_repair_cost_usd)}</span>
+        <span class="text-purple-900 font-black">${formatINR(h.priority.estimated_repair_cost_usd)}</span>
       </div>
     `;
 
@@ -796,25 +796,25 @@ function renderWorkOrders(workOrders) {
 
   workOrders.forEach(wo => {
     const card = document.createElement('div');
-    let tierBadge = 'bg-blue-100 text-blue-950 border border-black';
-    let borderAccent = 'border-l-6 border-l-blue-600';
+    let tierBadge = 'bg-blue-50 text-blue-950 border border-blue-200';
+    let borderAccent = 'border-l-4 border-l-blue-600';
     if (wo.priority_tier.includes('Tier 1')) {
-      tierBadge = 'bg-red-100 text-red-950 border border-black';
-      borderAccent = 'border-l-6 border-l-red-600';
+      tierBadge = 'bg-red-50 text-red-950 border border-red-200';
+      borderAccent = 'border-l-4 border-l-red-600';
     } else if (wo.priority_tier.includes('Tier 2')) {
-      tierBadge = 'bg-orange-100 text-orange-950 border border-black';
-      borderAccent = 'border-l-6 border-l-[#FF9933]';
+      tierBadge = 'bg-orange-50 text-orange-950 border border-orange-200';
+      borderAccent = 'border-l-4 border-l-[#FF9933]';
     }
 
-    card.className = `bg-white border-2 border-black ${borderAccent} rounded-none p-5 flex flex-col justify-between gap-4 transition-colors text-black overflow-hidden relative`;
+    card.className = `nhai-card bg-white border border-slate-200 ${borderAccent} rounded-2xl p-5 flex flex-col justify-between gap-4 transition-all shadow-xs hover:shadow-md text-black overflow-hidden relative`;
 
     let hazardsHtml = wo.hazards_summary.map(h => `
-      <div class="flex items-center justify-between text-xs bg-slate-50 p-2 rounded-none border border-black font-mono font-bold">
+      <div class="flex items-center justify-between text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200 font-mono font-bold">
         <div>
           <span class="text-black font-bold">${h.hazard_id}</span>
           <span class="text-slate-600 text-[11px] ml-1">(${h.hazard_type.replace('_', ' ')})</span>
         </div>
-        <span class="text-purple-900 font-extrabold">${formatINR(h.cost_inr || 15000)}</span>
+        <span class="text-purple-900 font-black">${formatINR(h.cost_inr || 15000)}</span>
       </div>
     `).join('');
 
@@ -822,47 +822,47 @@ function renderWorkOrders(workOrders) {
       <div class="flex flex-col gap-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <span class="text-xs font-mono font-bold text-black bg-slate-100 border border-black px-2 py-0.5 rounded-none">${wo.id}</span>
-            <span class="text-[10px] text-black bg-orange-100 border border-black px-1.5 py-0.5 rounded-none font-bold">${wo.state}</span>
+            <span class="text-xs font-mono font-bold text-slate-800 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-lg">${wo.id}</span>
+            <span class="text-[10px] text-slate-800 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-lg font-bold">${wo.state}</span>
           </div>
-          <span class="text-[10px] font-mono px-2 py-0.5 rounded-none font-extrabold ${tierBadge}">${wo.priority_tier}</span>
+          <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-full font-bold ${tierBadge}">${wo.priority_tier}</span>
         </div>
-        <h3 class="text-sm font-extrabold text-black leading-snug">${wo.title}</h3>
+        <h3 class="text-sm font-black text-black leading-snug">${wo.title}</h3>
         
-        <div class="grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50 p-2.5 rounded-none border border-black">
+        <div class="grid grid-cols-2 gap-2.5 text-xs font-mono bg-slate-50 p-3 rounded-xl border border-slate-200">
           <div>
-            <span class="text-slate-600 text-[10px] font-bold">Assigned Crew:</span>
-            <p class="font-extrabold text-black text-[11px] truncate">${wo.assigned_crew}</p>
+            <span class="text-slate-500 text-[10px] font-bold">Assigned Crew:</span>
+            <p class="font-bold text-black text-[11px] truncate mt-0.5">${wo.assigned_crew}</p>
           </div>
           <div>
-            <span class="text-slate-600 text-[10px] font-bold">Scheduled Window:</span>
-            <p class="font-extrabold text-black text-[11px]">${wo.scheduled_date}</p>
+            <span class="text-slate-500 text-[10px] font-bold">Scheduled Window:</span>
+            <p class="font-bold text-black text-[11px] mt-0.5">${wo.scheduled_date}</p>
           </div>
           <div class="mt-1">
-            <span class="text-slate-600 text-[10px] font-bold">Est. Shift Hours:</span>
-            <p class="font-extrabold text-blue-800 text-[11px]">${wo.estimated_hours} hrs</p>
+            <span class="text-slate-500 text-[10px] font-bold">Est. Shift Hours:</span>
+            <p class="font-bold text-blue-800 text-[11px] mt-0.5">${wo.estimated_hours} hrs</p>
           </div>
           <div class="mt-1">
-            <span class="text-slate-600 text-[10px] font-bold">Total Cost:</span>
-            <p class="font-extrabold text-purple-900 text-[11px]">${formatINR(wo.estimated_cost_usd)}</p>
+            <span class="text-slate-500 text-[10px] font-bold">Total Cost:</span>
+            <p class="font-black text-purple-900 text-[11px] mt-0.5">${formatINR(wo.estimated_cost_usd)}</p>
           </div>
         </div>
 
-        <div class="space-y-1.5">
-          <p class="text-[11px] font-extrabold text-black uppercase tracking-wider">Clustered Defects:</p>
-          <div class="space-y-1 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
+        <div class="space-y-2">
+          <p class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Clustered Defects:</p>
+          <div class="space-y-1.5 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
             ${hazardsHtml}
           </div>
         </div>
       </div>
 
-      <div class="flex items-center justify-between border-t-2 border-black pt-3 text-xs">
-        <span class="text-slate-800 font-mono font-bold">Status: <strong class="text-emerald-800 font-extrabold">${wo.status.toUpperCase()}</strong></span>
+      <div class="flex items-center justify-between border-t border-slate-100 pt-3.5 text-xs">
+        <span class="text-slate-700 font-mono font-bold">Status: <strong class="text-emerald-800 font-black">${wo.status.toUpperCase()}</strong></span>
         <div class="flex items-center gap-2">
-          <a href="https://www.google.com/maps/search/?api=1&query=${wo.cluster_center_lat},${wo.cluster_center_lng}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-none bg-[#FF9933] hover:bg-[#F28500] border-2 border-black text-black text-xs font-bold flex items-center gap-1 transition-colors">
+          <a href="https://www.google.com/maps/search/?api=1&query=${wo.cluster_center_lat},${wo.cluster_center_lng}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-950 text-xs font-bold flex items-center gap-1 transition-colors shadow-xs">
             🗺️ Maps ↗
           </a>
-          <button onclick="dispatchWorkOrder('${wo.id}')" class="px-3 py-1.5 rounded-none font-black bg-[#138808] hover:bg-[#0f6b06] border-2 border-black text-white text-xs transition-colors cursor-pointer">
+          <button onclick="dispatchWorkOrder('${wo.id}')" class="px-3.5 py-1.5 rounded-xl font-bold bg-[#138808] hover:bg-[#0f6b06] border border-emerald-700 text-white text-xs transition-colors shadow-xs cursor-pointer">
             Dispatch Crew
           </button>
         </div>
@@ -1400,34 +1400,34 @@ function renderIngestionStreams(streams) {
     const icon = sourceIcons[s.source_type] || '📡';
     const color = statusColors[s.status] || 'slate';
     return `
-      <div class="bg-white border-2 border-black border-l-4 border-l-[#FF9933] rounded-none p-4 transition-colors text-black overflow-hidden relative">
+      <div class="nhai-card bg-white border border-slate-200 border-l-4 border-l-[#FF9933] rounded-2xl p-4 transition-all text-black overflow-hidden relative shadow-xs hover:shadow-md">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
             <span class="text-lg">${icon}</span>
-            <span class="text-[10px] uppercase font-black tracking-wider text-black">${s.source_type.replace(/_/g, ' ')}</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider text-slate-800">${s.source_type.replace(/_/g, ' ')}</span>
           </div>
-          <span class="flex items-center gap-1 px-2 py-0.5 rounded-none text-[10px] font-extrabold bg-emerald-100 border border-black text-emerald-950">
+          <span class="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 border border-emerald-200 text-emerald-950">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 ${s.status === 'active' ? 'animate-pulse' : ''}"></span>
             ${s.status.toUpperCase()}
           </span>
         </div>
-        <h4 class="text-xs font-extrabold text-black mb-1 leading-tight">${s.source_name}</h4>
-        <p class="text-[10px] text-slate-600 mb-3 font-mono">${s.state} • ${s.city}</p>
-        <div class="grid grid-cols-3 gap-2 text-center text-[10px] bg-slate-50 p-2 rounded-none border border-black">
+        <h4 class="text-xs font-black text-black mb-1 leading-tight">${s.source_name}</h4>
+        <p class="text-[10px] text-slate-500 mb-3 font-mono">${s.state} • ${s.city}</p>
+        <div class="grid grid-cols-3 gap-2 text-center text-[10px] bg-slate-50 p-2.5 rounded-xl border border-slate-200">
           <div>
-            <p class="font-extrabold font-mono text-black">${s.total_frames_processed.toLocaleString('en-IN')}</p>
-            <p class="text-slate-600">Frames</p>
+            <p class="font-bold font-mono text-black">${s.total_frames_processed.toLocaleString('en-IN')}</p>
+            <p class="text-slate-500">Frames</p>
           </div>
           <div>
-            <p class="font-extrabold font-mono text-orange-700">${s.hazards_detected}</p>
-            <p class="text-slate-600">Hazards</p>
+            <p class="font-bold font-mono text-orange-700">${s.hazards_detected}</p>
+            <p class="text-slate-500">Hazards</p>
           </div>
           <div>
-            <p class="font-extrabold font-mono text-emerald-700">${s.false_positives_filtered}</p>
-            <p class="text-slate-600">FP Filtered</p>
+            <p class="font-bold font-mono text-emerald-700">${s.false_positives_filtered}</p>
+            <p class="text-slate-500">FP Filtered</p>
           </div>
         </div>
-        ${s.last_frame_at ? `<p class="text-[9px] text-slate-500 mt-2 font-mono">Last: ${s.last_frame_at}</p>` : ''}
+        ${s.last_frame_at ? `<p class="text-[9px] text-slate-400 mt-2 font-mono">Last: ${s.last_frame_at}</p>` : ''}
       </div>
     `;
   }).join('');

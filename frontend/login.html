@@ -24,16 +24,16 @@
         }
       }
     }
-  </script>
-  <style>
+  </scr  <style>
     body {
       background-color: #f8f9fa;
       color: #000000;
     }
 
-    .glass-card {
+    .nhai-card {
       background: #ffffff;
-      border: 2px solid #000000;
+      border: 1px solid #e2e8f0;
+      border-radius: 1rem;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -43,6 +43,17 @@
       width: 100%;
       background: linear-gradient(90deg, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%);
     }
+
+    /* Atmospheric Highway Background Hero Mask */
+    .bulletin-hero-bg {
+      position: relative;
+      background-image: 
+        linear-gradient(to bottom, rgba(248, 250, 252, 0.88) 0%, rgba(241, 245, 249, 0.94) 50%, rgba(226, 232, 240, 0.98) 100%),
+        url('/static/assets/highway_bg.webp');
+      background-size: cover;
+      background-position: center 35%;
+      background-repeat: no-repeat;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-amber-200 selection:text-black">
@@ -50,11 +61,11 @@
   <!-- Top Indian Tricolour Strip -->
   <div class="tricolor-strip"></div>
 
-  <!-- Top Global Header -->
-  <header class="p-6 border-b-2 border-black bg-white sticky top-0 z-40">
+  <!-- Top Global Header (Longer / Expansive) -->
+  <header class="py-5 px-8 border-b border-slate-200 bg-white sticky top-0 z-40 shadow-xs">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-3.5">
-        <div class="w-11 h-11 rounded-none bg-amber-200 border-2 border-black flex items-center justify-center">
+        <div class="w-12 h-12 rounded-2xl bg-amber-100 border border-amber-300 flex items-center justify-center shadow-xs">
           <i data-lucide="shield-alert" class="w-6 h-6 text-black"></i>
         </div>
         <div>
@@ -62,21 +73,21 @@
             <h1 class="text-lg font-black tracking-wider text-black font-mono uppercase flex items-center gap-2">
               <span>SADAK-SURAKSHA</span> <span class="text-base">🇮🇳</span>
             </h1>
-            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-none text-[10px] font-bold bg-emerald-100 border border-black text-emerald-950">
+            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 border border-emerald-300 text-emerald-950">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span> MoRTH & NHAI CONNECTED
             </span>
           </div>
-          <p class="text-xs text-slate-700 font-medium">National Multimodal Road Hazard Awareness & Maintenance Intelligence System</p>
+          <p class="text-xs text-slate-600 font-medium mt-0.5">National Multimodal Road Hazard Awareness & Maintenance Intelligence System</p>
         </div>
       </div>
 
       <div class="hidden md:flex items-center gap-3">
-        <div class="px-3.5 py-1.5 rounded-none bg-orange-100 border-2 border-black text-xs font-mono text-black font-bold flex items-center gap-2">
-          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-black"></i>
+        <div class="px-3.5 py-1.5 rounded-xl bg-orange-50 border border-orange-200 text-xs font-mono text-orange-950 font-bold flex items-center gap-2 shadow-xs">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-orange-700"></i>
           <span>16 States / UTs Active</span>
         </div>
-        <div class="px-3.5 py-1.5 rounded-none bg-emerald-100 border-2 border-black text-xs font-mono text-emerald-950 font-bold flex items-center gap-2">
-          <i data-lucide="activity" class="w-3.5 h-3.5 text-black"></i>
+        <div class="px-3.5 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs font-mono text-emerald-950 font-bold flex items-center gap-2 shadow-xs">
+          <i data-lucide="activity" class="w-3.5 h-3.5 text-emerald-700"></i>
           <span>AI Vision & IMU Live</span>
         </div>
       </div>
@@ -84,17 +95,17 @@
   </header>
 
   <!-- Hero & Gateway Section -->
-  <main class="max-w-6xl mx-auto px-6 py-12 flex-1 flex flex-col justify-center">
+  <main class="max-w-6xl mx-auto px-6 py-14 flex-1 flex flex-col justify-center">
 
     <!-- Title Section -->
     <div class="text-center max-w-3xl mx-auto mb-12">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-none bg-white border-2 border-black text-black text-xs font-black mb-4">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 shadow-xs text-black text-xs font-bold mb-4">
         <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i> Single-Sign-On & Public Reporting Gateway
       </div>
       <h2 class="text-3xl sm:text-4xl font-black text-black tracking-tight leading-tight">
         National Road Infrastructure Intelligence & Safety Gateway
       </h2>
-      <p class="text-sm sm:text-base text-slate-700 font-medium mt-3">
+      <p class="text-sm sm:text-base text-slate-600 font-medium mt-3">
         Select your role below. Citizens can report road hazards and waterlogging directly without login, while authorized officials access the AI Command Center.
       </p>
     </div>
@@ -103,13 +114,13 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto w-full">
 
       <!-- 1. CITIZEN CARD -->
-      <div class="glass-card rounded-none p-8 flex flex-col justify-between relative overflow-hidden text-black border-l-8 border-l-[#138808]">
+      <div class="nhai-card p-8 flex flex-col justify-between relative overflow-hidden text-black border-l-6 border-l-[#138808] shadow-sm hover:shadow-xl transition-all duration-300">
         <div>
           <div class="flex items-center justify-between mb-6">
-            <div class="w-14 h-14 rounded-none bg-emerald-100 border-2 border-black flex items-center justify-center">
-              <i data-lucide="smartphone" class="w-7 h-7 text-emerald-800"></i>
+            <div class="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center shadow-xs">
+              <i data-lucide="smartphone" class="w-7 h-7 text-emerald-700"></i>
             </div>
-            <span class="px-3 py-1 rounded-none text-xs font-black font-mono bg-emerald-100 text-emerald-950 border-2 border-black">
+            <span class="px-3 py-1 rounded-full text-xs font-bold font-mono bg-emerald-50 text-emerald-950 border border-emerald-300 shadow-xs">
               PUBLIC ACCESS
             </span>
           </div>
@@ -117,20 +128,20 @@
           <h3 class="text-2xl font-black text-black mb-2 flex items-center gap-2">
             <span>Indian Citizen Portal</span> <span class="text-lg">🇮🇳</span>
           </h3>
-          <p class="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed mb-6">
+          <p class="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mb-6">
             Report road hazards, potholes, monsoon waterlogging, and damaged barriers from your smartphone. AI automatically calculates cavity depth and routes your report to PWD.
           </p>
 
           <div class="space-y-3 mb-8">
-            <div class="flex items-start gap-2.5 text-xs text-slate-800 font-bold">
+            <div class="flex items-start gap-2.5 text-xs text-slate-700 font-semibold">
               <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5"></i>
               <span><strong>Instant GPS Detection</strong>: Automatically tags location with 1-click Google Maps verification.</span>
             </div>
-            <div class="flex items-start gap-2.5 text-xs text-slate-800 font-bold">
+            <div class="flex items-start gap-2.5 text-xs text-slate-700 font-semibold">
               <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5"></i>
               <span><strong>Camera Capture & Vision AI</strong>: Live upload for instant defect severity estimation.</span>
             </div>
-            <div class="flex items-start gap-2.5 text-xs text-slate-800 font-bold">
+            <div class="flex items-start gap-2.5 text-xs text-slate-700 font-semibold">
               <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5"></i>
               <span><strong>Ticket Tracking</strong>: Check real-time PWD repair status using your Ticket ID.</span>
             </div>
@@ -138,23 +149,23 @@
         </div>
 
         <div>
-          <a href="/report" onclick="if(window.location.protocol==='file:'){event.preventDefault();window.location.href='report.html';}" class="w-full py-4 px-6 rounded-none bg-[#138808] hover:bg-[#0f6b06] border-2 border-black text-white font-black text-sm flex items-center justify-center gap-2.5 transition-colors">
+          <a href="/report" onclick="if(window.location.protocol==='file:'){event.preventDefault();window.location.href='report.html';}" class="w-full py-4 px-6 rounded-xl bg-[#138808] hover:bg-[#0f6b06] border border-emerald-700 text-white font-bold text-sm flex items-center justify-center gap-2.5 shadow-xs transition-colors">
             <i data-lucide="camera" class="w-4 h-4 text-white"></i>
             <span>Enter Citizen Reporting Portal</span>
             <i data-lucide="arrow-right" class="w-4 h-4 ml-1 text-white"></i>
           </a>
-          <p class="text-[11px] text-center text-slate-600 font-bold mt-3">No login or password required • Free public service</p>
+          <p class="text-[11px] text-center text-slate-500 font-semibold mt-3">No login or password required • Free public service</p>
         </div>
       </div>
 
       <!-- 2. GOVERNMENT OFFICIAL CARD -->
-      <div class="glass-card rounded-none p-8 flex flex-col justify-between relative overflow-hidden text-black border-l-8 border-l-[#FF9933]">
+      <div class="nhai-card p-8 flex flex-col justify-between relative overflow-hidden text-black border-l-6 border-l-[#FF9933] shadow-sm hover:shadow-xl transition-all duration-300">
         <div>
           <div class="flex items-center justify-between mb-6">
-            <div class="w-14 h-14 rounded-none bg-orange-100 border-2 border-black flex items-center justify-center">
+            <div class="w-14 h-14 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center shadow-xs">
               <i data-lucide="building-2" class="w-7 h-7 text-orange-700"></i>
             </div>
-            <span class="px-3 py-1 rounded-none text-xs font-black font-mono bg-orange-100 text-orange-950 border-2 border-black">
+            <span class="px-3 py-1 rounded-full text-xs font-bold font-mono bg-orange-50 text-orange-950 border border-orange-300 shadow-xs">
               RESTRICTED ACCESS
             </span>
           </div>
@@ -162,15 +173,15 @@
           <h3 class="text-2xl font-black text-black mb-2 flex items-center gap-2">
             <span>Government Authority Login</span> <span class="text-lg">🏛️</span>
           </h3>
-          <p class="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed mb-6">
+          <p class="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mb-6">
             For NHAI Highway Engineers, State PWD Officers, Smart City ICCC Commanders, and Municipal Road Maintenance Teams.
           </p>
 
           <!-- Department Selector & Credentials Form -->
           <form id="gov-login-form" onsubmit="handleGovLogin(event)" class="space-y-3.5 mb-6">
             <div>
-              <label class="block text-xs font-black text-black mb-1">Department / Organization:</label>
-              <select id="gov-dept" class="w-full bg-white border-2 border-black rounded-none px-3.5 py-2.5 text-xs text-black font-bold focus:outline-none focus:bg-orange-50">
+              <label class="block text-xs font-bold text-black mb-1">Department / Organization:</label>
+              <select id="gov-dept" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-black font-semibold focus:outline-none focus:border-orange-500">
                 <option value="nhai">NHAI — National Highways Authority of India</option>
                 <option value="morth">MoRTH — Ministry of Road Transport & Highways</option>
                 <option value="pwd_ka">Karnataka State PWD (Bengaluru Division)</option>
@@ -184,25 +195,25 @@
 
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-xs font-black text-black mb-1">Officer Badge ID:</label>
-                <input type="text" id="officer-id" value="NHAI-ENG-8429" placeholder="e.g. NHAI-7740" class="w-full bg-white border-2 border-black rounded-none px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:bg-orange-50">
+                <label class="block text-xs font-bold text-black mb-1">Officer Badge ID:</label>
+                <input type="text" id="officer-id" value="NHAI-ENG-8429" placeholder="e.g. NHAI-7740" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:border-orange-500">
               </div>
               <div>
-                <label class="block text-xs font-black text-black mb-1">Security PIN / Token:</label>
-                <input type="password" id="officer-pin" value="••••••••" placeholder="Security PIN" class="w-full bg-white border-2 border-black rounded-none px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:bg-orange-50">
+                <label class="block text-xs font-bold text-black mb-1">Security PIN / Token:</label>
+                <input type="password" id="officer-pin" value="••••••••" placeholder="Security PIN" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:border-orange-500">
               </div>
             </div>
 
             <div class="flex items-center gap-2 pt-1">
-              <button type="button" onclick="quickDemoLogin('nhai')" class="text-[11px] bg-slate-100 hover:bg-slate-200 border-2 border-black text-black font-black px-2.5 py-1 rounded-none transition-colors cursor-pointer">
+              <button type="button" onclick="quickDemoLogin('nhai')" class="text-[11px] bg-slate-100 hover:bg-slate-200 border border-slate-300 text-black font-bold px-3 py-1 rounded-lg transition-colors cursor-pointer shadow-xs">
                 ⚡ NHAI Engineer Demo
               </button>
-              <button type="button" onclick="quickDemoLogin('pwd')" class="text-[11px] bg-slate-100 hover:bg-slate-200 border-2 border-black text-black font-black px-2.5 py-1 rounded-none transition-colors cursor-pointer">
+              <button type="button" onclick="quickDemoLogin('pwd')" class="text-[11px] bg-slate-100 hover:bg-slate-200 border border-slate-300 text-black font-bold px-3 py-1 rounded-lg transition-colors cursor-pointer shadow-xs">
                 ⚡ State PWD Demo
               </button>
             </div>
 
-            <button type="submit" class="w-full py-4 px-6 rounded-none bg-[#FF9933] hover:bg-[#F28500] border-2 border-black text-black font-black text-sm flex items-center justify-center gap-2.5 transition-colors mt-4 cursor-pointer">
+            <button type="submit" class="w-full py-4 px-6 rounded-xl bg-[#FF9933] hover:bg-[#F28500] border border-amber-600 text-black font-black text-sm flex items-center justify-center gap-2.5 shadow-xs transition-colors mt-4 cursor-pointer">
               <i data-lucide="shield-check" class="w-4 h-4"></i>
               <span>Access AI Command Center</span>
               <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
@@ -210,8 +221,8 @@
           </form>
         </div>
 
-        <div class="border-t-2 border-black pt-3">
-          <p class="text-[11px] text-slate-700 font-bold flex items-center justify-center gap-1.5">
+        <div class="border-t border-slate-100 pt-3">
+          <p class="text-[11px] text-slate-600 font-medium flex items-center justify-center gap-1.5">
             <i data-lucide="lock" class="w-3.5 h-3.5 text-black"></i>
             <span>Authorized GIS Triage, PWD Work Orders & Multimodal Inspection Access</span>
           </p>
@@ -221,7 +232,7 @@
     </div>
 
     <!-- Live Platform Telemetry Bar -->
-    <div class="mt-12 max-w-5xl mx-auto w-full bg-white border-2 border-black rounded-none p-4 flex flex-wrap items-center justify-between gap-4 text-xs font-bold text-black">
+    <div class="mt-12 max-w-5xl mx-auto w-full bg-white border border-slate-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 text-xs font-bold text-black shadow-xs">
       <div class="flex items-center gap-2 text-slate-800">
         <i data-lucide="zap" class="w-4 h-4 text-amber-500"></i>
         <span><strong>Multimodal Fusion</strong>: 3-Axis IMU (Gz), Optical Edge/Depth, Tire Acoustic dB & Citizen Verification</span>
@@ -237,60 +248,60 @@
   <!-- ==========================================
        GOVERNMENT OF INDIA HELPLINES & NOTIFICATION HUB
        ========================================== -->
-  <section class="mt-8 border-t-2 border-black bg-white text-black">
+  <section class="mt-8 border-t border-slate-300 bg-white text-black">
 
-    <!-- 1. NATIONAL EMERGENCY HELPLINE STRIP -->
-    <div class="bg-[#f0f0ea] border-b-2 border-black px-6 py-4">
-      <div class="max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4">
+    <!-- 1. NATIONAL EMERGENCY HELPLINE STRIP (Expansive Height & Clean Badges) -->
+    <div class="bg-[#f8f9fa] border-b border-slate-200 px-8 py-7">
+      <div class="max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-5">
         
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-none bg-amber-200 border-2 border-black flex items-center justify-center text-black shrink-0">
-            <i data-lucide="phone-call" class="w-5 h-5"></i>
+        <div class="flex items-center gap-3.5">
+          <div class="w-12 h-12 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center text-black shrink-0 shadow-xs">
+            <i data-lucide="phone-call" class="w-6 h-6 text-black"></i>
           </div>
           <div>
             <h4 class="text-xs font-black text-black uppercase tracking-wider flex items-center gap-2">
               <span>National Road Safety & Emergency Helplines (24x7 Toll-Free)</span>
-              <span class="px-2 py-0.5 rounded-none bg-red-200 text-red-950 border border-black text-[10px] font-mono font-bold">EMERGENCY</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-red-100 text-red-950 border border-red-200 text-[10px] font-mono font-bold">EMERGENCY</span>
             </h4>
-            <p class="text-[11px] text-slate-700 font-medium">Government of India official emergency response & highway rescue support services</p>
+            <p class="text-[11px] text-slate-600 font-medium mt-0.5">Government of India official emergency response & highway rescue support services</p>
           </div>
         </div>
 
-        <!-- Helpline Sharp Rectangles Grid -->
-        <div class="flex flex-wrap items-center gap-2.5">
+        <!-- Helpline Clean Tiles Grid -->
+        <div class="flex flex-wrap items-center gap-3">
           <!-- NHAI 1033 -->
-          <a href="tel:1033" class="group flex items-center gap-2 px-3.5 py-1.5 rounded-none bg-white hover:bg-amber-100 border-2 border-black transition-colors">
-            <div class="w-6 h-6 rounded-none bg-orange-100 border border-black flex items-center justify-center text-black font-bold text-xs">📞</div>
+          <a href="tel:1033" class="group flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white hover:bg-orange-50/80 border border-slate-200 hover:border-orange-300 shadow-xs transition-all">
+            <div class="w-7 h-7 rounded-lg bg-orange-100 border border-orange-200 flex items-center justify-center text-black font-bold text-xs shadow-xs">📞</div>
             <div>
-              <p class="text-[10px] text-slate-600 font-bold leading-none">NHAI Highway Rescue</p>
-              <p class="text-xs font-black font-mono text-orange-700">1033</p>
+              <p class="text-[10px] text-slate-500 font-bold leading-none">NHAI Highway Rescue</p>
+              <p class="text-sm font-black font-mono text-orange-700 mt-0.5">1033</p>
             </div>
           </a>
 
           <!-- National Emergency 112 -->
-          <a href="tel:112" class="group flex items-center gap-2 px-3.5 py-1.5 rounded-none bg-white hover:bg-red-100 border-2 border-black transition-colors">
-            <div class="w-6 h-6 rounded-none bg-red-100 border border-black flex items-center justify-center text-black font-bold text-xs">🚨</div>
+          <a href="tel:112" class="group flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white hover:bg-red-50/80 border border-slate-200 hover:border-red-300 shadow-xs transition-all">
+            <div class="w-7 h-7 rounded-lg bg-red-100 border border-red-200 flex items-center justify-center text-black font-bold text-xs shadow-xs">🚨</div>
             <div>
-              <p class="text-[10px] text-slate-600 font-bold leading-none">National Emergency</p>
-              <p class="text-xs font-black font-mono text-red-600">112</p>
+              <p class="text-[10px] text-slate-500 font-bold leading-none">National Emergency</p>
+              <p class="text-sm font-black font-mono text-red-600 mt-0.5">112</p>
             </div>
           </a>
 
           <!-- Ambulance 108 -->
-          <a href="tel:108" class="group flex items-center gap-2 px-3.5 py-1.5 rounded-none bg-white hover:bg-emerald-100 border-2 border-black transition-colors">
-            <div class="w-6 h-6 rounded-none bg-emerald-100 border border-black flex items-center justify-center text-black font-bold text-xs">🚑</div>
+          <a href="tel:108" class="group flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white hover:bg-emerald-50/80 border border-slate-200 hover:border-emerald-300 shadow-xs transition-all">
+            <div class="w-7 h-7 rounded-lg bg-emerald-100 border border-emerald-200 flex items-center justify-center text-black font-bold text-xs shadow-xs">🚑</div>
             <div>
-              <p class="text-[10px] text-slate-600 font-bold leading-none">Trauma Ambulance</p>
-              <p class="text-xs font-black font-mono text-emerald-700">108</p>
+              <p class="text-[10px] text-slate-500 font-bold leading-none">Trauma Ambulance</p>
+              <p class="text-sm font-black font-mono text-emerald-700 mt-0.5">108</p>
             </div>
           </a>
 
           <!-- Road Safety 1073 -->
-          <a href="tel:1073" class="group flex items-center gap-2 px-3.5 py-1.5 rounded-none bg-white hover:bg-blue-100 border-2 border-black transition-colors">
-            <div class="w-6 h-6 rounded-none bg-blue-100 border border-black flex items-center justify-center text-black font-bold text-xs">🛡️</div>
+          <a href="tel:1073" class="group flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white hover:bg-blue-50/80 border border-slate-200 hover:border-blue-300 shadow-xs transition-all">
+            <div class="w-7 h-7 rounded-lg bg-blue-100 border border-blue-200 flex items-center justify-center text-black font-bold text-xs shadow-xs">🛡️</div>
             <div>
-              <p class="text-[10px] text-slate-600 font-bold leading-none">Road Safety Hotline</p>
-              <p class="text-xs font-black font-mono text-blue-700">1073</p>
+              <p class="text-[10px] text-slate-500 font-bold leading-none">Road Safety Hotline</p>
+              <p class="text-sm font-black font-mono text-blue-700 mt-0.5">1073</p>
             </div>
           </a>
         </div>
@@ -298,139 +309,141 @@
       </div>
     </div>
 
-    <!-- 2. SHARP RECTANGULAR GOVERNMENT OF INDIA NEWS & SAFETY NOTIFICATION CENTER -->
-    <div class="px-6 py-6 max-w-6xl mx-auto">
-      
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 border-b-2 border-black pb-3">
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-none bg-orange-100 border-2 border-black flex items-center justify-center text-black shrink-0">
-            <i data-lucide="bell" class="w-4 h-4 text-orange-700"></i>
-          </div>
-          <div>
-            <h3 class="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-              <span>National Road Safety & Public Awareness Bulletins</span>
-              <span class="text-xs">🇮🇳</span>
-            </h3>
-            <p class="text-xs text-slate-700 font-medium">Official MoRTH, NHAI & Smart City Notification Center</p>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-none text-[10px] font-mono font-bold bg-emerald-100 border border-black text-emerald-950">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
-            LIVE NOTIFICATIONS
-          </span>
-        </div>
-      </div>
-
-      <!-- Clean 4-Card Sharp Rectangular Notification Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-
-        <!-- Bulletin 1: MoRTH Safety Campaign -->
-        <div class="bg-white border-2 border-black border-l-4 border-l-[#FF9933] rounded-none p-4 flex flex-col justify-between text-black relative group">
-          <div>
-            <div class="flex items-center justify-between mb-2">
-              <span class="px-1.5 py-0.5 rounded-none text-[9px] font-mono font-black bg-orange-100 text-orange-950 border border-black uppercase">
-                Campaign
-              </span>
-              <span class="text-[10px] font-mono font-bold text-slate-600">MoRTH • 2026</span>
+    <!-- 2. EXPANDED NATIONAL ROAD SAFETY BULLETINS (WITH HIGHWAY PHOTO BACKGROUND & STAGGERED ALIGNMENT) -->
+    <div class="bulletin-hero-bg px-8 py-16 border-b border-slate-300 min-h-[480px] flex flex-col justify-between">
+      <div class="max-w-6xl mx-auto w-full">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-10 pb-4 border-b border-slate-300/80">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-white/90 border border-slate-300 flex items-center justify-center text-black shrink-0 shadow-sm">
+              <i data-lucide="bell" class="w-5 h-5 text-orange-600"></i>
             </div>
-            <h4 class="text-xs font-black text-black leading-snug mb-1 group-hover:text-orange-700 transition-colors">
-              सड़क सुरक्षा, जीवन रक्षा
-            </h4>
-            <p class="text-[11px] text-slate-700 font-medium leading-relaxed mb-3">
-              Certified helmets and seatbelts reduce fatal risk by 60%. Obey corridor speed limits and avoid distracted mobile driving.
-            </p>
-          </div>
-          <div class="border-t border-black pt-2.5 flex items-center justify-between text-xs">
-            <span class="text-slate-700 text-[10px] font-bold">Helpline: <strong class="text-orange-700 font-mono">1073</strong></span>
-            <a href="tel:1073" class="px-2 py-0.5 rounded-none bg-orange-100 hover:bg-orange-200 border border-black text-black text-[10px] font-bold flex items-center gap-1">
-              <i data-lucide="phone" class="w-3 h-3"></i> Dial 1073
-            </a>
-          </div>
-        </div>
-
-        <!-- Bulletin 2: NHAI 24x7 Highway Rescue -->
-        <div class="bg-white border-2 border-black border-l-4 border-l-[#000080] rounded-none p-4 flex flex-col justify-between text-black relative group">
-          <div>
-            <div class="flex items-center justify-between mb-2">
-              <span class="px-1.5 py-0.5 rounded-none text-[9px] font-mono font-black bg-blue-100 text-blue-950 border border-black uppercase">
-                NHAI 24x7
-              </span>
-              <span class="text-[10px] font-mono font-bold text-slate-600">Toll-Free</span>
+            <div>
+              <h3 class="text-base sm:text-lg font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                <span>National Road Safety & Public Awareness Bulletins</span>
+                <span class="text-sm">🇮🇳</span>
+              </h3>
+              <p class="text-xs text-slate-700 font-semibold">Official MoRTH, NHAI & Smart City Notification Center</p>
             </div>
-            <h4 class="text-xs font-black text-black leading-snug mb-1 group-hover:text-blue-800 transition-colors">
-              Highway Emergency 1033
-            </h4>
-            <p class="text-[11px] text-slate-700 font-medium leading-relaxed mb-3">
-              Stranded on National Highways? 1033 dispatches rapid patrol response, trauma ambulance, and towing cranes free of charge.
-            </p>
           </div>
-          <div class="border-t border-black pt-2.5 flex items-center justify-between text-xs">
-            <span class="text-slate-700 text-[10px] font-bold">Emergency: <strong class="text-blue-800 font-mono">1033</strong></span>
-            <a href="tel:1033" class="px-2 py-0.5 rounded-none bg-blue-100 hover:bg-blue-200 border border-black text-black text-[10px] font-bold flex items-center gap-1">
-              <i data-lucide="phone" class="w-3 h-3"></i> Call 1033
-            </a>
+
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-mono font-bold bg-white/90 border border-emerald-400 text-emerald-950 shadow-sm">
+              <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+              LIVE NOTIFICATIONS
+            </span>
           </div>
         </div>
 
-        <!-- Bulletin 3: Good Samaritan Protection -->
-        <div class="bg-white border-2 border-black border-l-4 border-l-[#138808] rounded-none p-4 flex flex-col justify-between text-black relative group">
-          <div>
-            <div class="flex items-center justify-between mb-2">
-              <span class="px-1.5 py-0.5 rounded-none text-[9px] font-mono font-black bg-emerald-100 text-emerald-950 border border-black uppercase">
-                Legal Rights
-              </span>
-              <span class="text-[10px] font-mono font-bold text-slate-600">MV Act §134A</span>
+        <!-- Staggered 4-Card Alignment -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-2 pb-8">
+
+          <!-- Bulletin 1: MoRTH Safety Campaign (Stagger 1: Slightly Higher / Up) -->
+          <div class="nhai-card bg-white/95 backdrop-blur-md border border-slate-200/90 border-l-4 border-l-[#FF9933] p-5 flex flex-col justify-between text-black relative group shadow-sm hover:shadow-xl transition-all duration-300 md:-translate-y-4">
+            <div>
+              <div class="flex items-center justify-between mb-2.5">
+                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-orange-100 text-orange-950 border border-orange-200 uppercase">
+                  Campaign
+                </span>
+                <span class="text-[10px] font-mono font-bold text-slate-500">MoRTH • 2026</span>
+              </div>
+              <h4 class="text-sm font-black text-black leading-snug mb-1.5 group-hover:text-orange-700 transition-colors">
+                सड़क सुरक्षा, जीवन रक्षा
+              </h4>
+              <p class="text-xs text-slate-600 font-medium leading-relaxed mb-4">
+                Certified helmets and seatbelts reduce fatal risk by 60%. Obey corridor speed limits and avoid distracted mobile driving.
+              </p>
             </div>
-            <h4 class="text-xs font-black text-black leading-snug mb-1 group-hover:text-emerald-700 transition-colors">
-              Good Samaritan Protection & ₹5,000 Reward
-            </h4>
-            <p class="text-[11px] text-slate-700 font-medium leading-relaxed mb-3">
-              Helpers are protected from legal liability or hospital detention and receive a ₹5,000 cash reward for golden-hour rescue.
-            </p>
-          </div>
-          <div class="border-t border-black pt-2.5 flex items-center justify-between text-xs">
-            <span class="text-slate-700 text-[10px] font-bold">Ambulance: <strong class="text-emerald-700 font-mono">112 / 108</strong></span>
-            <a href="tel:112" class="px-2 py-0.5 rounded-none bg-emerald-100 hover:bg-emerald-200 border border-black text-black text-[10px] font-bold flex items-center gap-1">
-              <i data-lucide="phone" class="w-3 h-3"></i> Call 112
-            </a>
-          </div>
-        </div>
-
-        <!-- Bulletin 4: Monsoon & Pothole SLA -->
-        <div class="bg-white border-2 border-black border-l-4 border-l-purple-600 rounded-none p-4 flex flex-col justify-between text-black relative group">
-          <div>
-            <div class="flex items-center justify-between mb-2">
-              <span class="px-1.5 py-0.5 rounded-none text-[9px] font-mono font-black bg-purple-100 text-purple-950 border border-black uppercase">
-                IRC:82 SLA
-              </span>
-              <span class="text-[10px] font-mono font-bold text-slate-600">48-Hr Target</span>
+            <div class="border-t border-slate-100 pt-3 flex items-center justify-between text-xs">
+              <span class="text-slate-600 text-[11px] font-bold">Helpline: <strong class="text-orange-700 font-mono">1073</strong></span>
+              <a href="tel:1073" class="px-3 py-1 rounded-lg bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-950 text-xs font-bold flex items-center gap-1 transition-colors">
+                <i data-lucide="phone" class="w-3.5 h-3.5"></i> Dial 1073
+              </a>
             </div>
-            <h4 class="text-xs font-black text-black leading-snug mb-1 group-hover:text-purple-700 transition-colors">
-              Pothole-Zero & Flood Advisory
-            </h4>
-            <p class="text-[11px] text-slate-700 font-medium leading-relaxed mb-3">
-              Defects with depth >4cm trigger automated dispatch to PWD milling contractors. Underpass radar alerts municipal drainage teams.
-            </p>
           </div>
-          <div class="border-t border-black pt-2.5 flex items-center justify-between text-xs">
-            <span class="text-slate-700 text-[10px] font-bold">Drainage: <strong class="text-purple-800 font-mono">1916</strong></span>
-            <a href="tel:1916" class="px-2 py-0.5 rounded-none bg-purple-100 hover:bg-purple-200 border border-black text-black text-[10px] font-bold flex items-center gap-1">
-              <i data-lucide="phone" class="w-3 h-3"></i> Dial 1916
-            </a>
-          </div>
-        </div>
 
+          <!-- Bulletin 2: NHAI 24x7 Highway Rescue (Stagger 2: Lower / Down) -->
+          <div class="nhai-card bg-white/95 backdrop-blur-md border border-slate-200/90 border-l-4 border-l-[#000080] p-5 flex flex-col justify-between text-black relative group shadow-sm hover:shadow-xl transition-all duration-300 md:translate-y-6">
+            <div>
+              <div class="flex items-center justify-between mb-2.5">
+                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-blue-100 text-blue-950 border border-blue-200 uppercase">
+                  NHAI 24x7
+                </span>
+                <span class="text-[10px] font-mono font-bold text-slate-500">Toll-Free</span>
+              </div>
+              <h4 class="text-sm font-black text-black leading-snug mb-1.5 group-hover:text-blue-800 transition-colors">
+                Highway Emergency 1033
+              </h4>
+              <p class="text-xs text-slate-600 font-medium leading-relaxed mb-4">
+                Stranded on National Highways? 1033 dispatches rapid patrol response, trauma ambulance, and towing cranes free of charge.
+              </p>
+            </div>
+            <div class="border-t border-slate-100 pt-3 flex items-center justify-between text-xs">
+              <span class="text-slate-600 text-[11px] font-bold">Emergency: <strong class="text-blue-800 font-mono">1033</strong></span>
+              <a href="tel:1033" class="px-3 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-950 text-xs font-bold flex items-center gap-1 transition-colors">
+                <i data-lucide="phone" class="w-3.5 h-3.5"></i> Call 1033
+              </a>
+            </div>
+          </div>
+
+          <!-- Bulletin 3: Good Samaritan Protection (Stagger 3: Slightly Higher / Up) -->
+          <div class="nhai-card bg-white/95 backdrop-blur-md border border-slate-200/90 border-l-4 border-l-[#138808] p-5 flex flex-col justify-between text-black relative group shadow-sm hover:shadow-xl transition-all duration-300 md:-translate-y-2">
+            <div>
+              <div class="flex items-center justify-between mb-2.5">
+                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-emerald-100 text-emerald-950 border border-emerald-200 uppercase">
+                  Legal Rights
+                </span>
+                <span class="text-[10px] font-mono font-bold text-slate-500">MV Act §134A</span>
+              </div>
+              <h4 class="text-sm font-black text-black leading-snug mb-1.5 group-hover:text-emerald-700 transition-colors">
+                Good Samaritan Protection & ₹5,000 Reward
+              </h4>
+              <p class="text-xs text-slate-600 font-medium leading-relaxed mb-4">
+                Helpers are protected from legal liability or hospital detention and receive a ₹5,000 cash reward for golden-hour rescue.
+              </p>
+            </div>
+            <div class="border-t border-slate-100 pt-3 flex items-center justify-between text-xs">
+              <span class="text-slate-600 text-[11px] font-bold">Ambulance: <strong class="text-emerald-700 font-mono">112 / 108</strong></span>
+              <a href="tel:112" class="px-3 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-950 text-xs font-bold flex items-center gap-1 transition-colors">
+                <i data-lucide="phone" class="w-3.5 h-3.5"></i> Call 112
+              </a>
+            </div>
+          </div>
+
+          <!-- Bulletin 4: Monsoon & Pothole SLA (Stagger 4: Lower / Down) -->
+          <div class="nhai-card bg-white/95 backdrop-blur-md border border-slate-200/90 border-l-4 border-l-purple-600 p-5 flex flex-col justify-between text-black relative group shadow-sm hover:shadow-xl transition-all duration-300 md:translate-y-8">
+            <div>
+              <div class="flex items-center justify-between mb-2.5">
+                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-purple-100 text-purple-950 border border-purple-200 uppercase">
+                  IRC:82 SLA
+                </span>
+                <span class="text-[10px] font-mono font-bold text-slate-500">48-Hr Target</span>
+              </div>
+              <h4 class="text-sm font-black text-black leading-snug mb-1.5 group-hover:text-purple-700 transition-colors">
+                Pothole-Zero & Flood Advisory
+              </h4>
+              <p class="text-xs text-slate-600 font-medium leading-relaxed mb-4">
+                Defects with depth >4cm trigger automated dispatch to PWD milling contractors. Underpass radar alerts municipal drainage teams.
+              </p>
+            </div>
+            <div class="border-t border-slate-100 pt-3 flex items-center justify-between text-xs">
+              <span class="text-slate-600 text-[11px] font-bold">Drainage: <strong class="text-purple-800 font-mono">1916</strong></span>
+              <a href="tel:1916" class="px-3 py-1 rounded-lg bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-950 text-xs font-bold flex items-center gap-1 transition-colors">
+                <i data-lucide="phone" class="w-3.5 h-3.5"></i> Dial 1916
+              </a>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
 
     <!-- 3. OFFICIAL GOVERNMENT OF INDIA MANDATE & PARTNERS FOOTER -->
-    <div class="border-t-2 border-black bg-[#e5e5dc] px-6 py-6">
-      <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-black font-bold">
+    <div class="border-t border-slate-300 bg-[#e5e5dc] px-8 py-8">
+      <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5 text-xs text-black font-bold">
         
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-none bg-white border-2 border-black flex items-center justify-center text-lg">
+        <div class="flex items-center gap-3.5">
+          <div class="w-10 h-10 rounded-xl bg-white border border-slate-300 flex items-center justify-center text-xl shadow-xs">
             🏛️
           </div>
           <div>
@@ -440,11 +453,11 @@
         </div>
 
         <div class="flex flex-wrap items-center justify-center gap-4 text-[11px] font-mono">
-          <span class="text-black bg-cyan-100 border border-black px-2 py-0.5 rounded-none">IRC:82-2015 Compliant</span>
+          <span class="text-black bg-cyan-50 border border-cyan-200 px-2.5 py-1 rounded-lg">IRC:82-2015 Compliant</span>
           <span>•</span>
-          <span class="text-black bg-emerald-100 border border-black px-2 py-0.5 rounded-none">Digital India & Smart Cities Mission</span>
+          <span class="text-black bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg">Digital India & Smart Cities Mission</span>
           <span>•</span>
-          <span class="text-black bg-amber-100 border border-black px-2 py-0.5 rounded-none">Central Road Research Institute (CRRI)</span>
+          <span class="text-black bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-lg">Central Road Research Institute (CRRI)</span>
         </div>
 
         <div class="text-right">
@@ -457,10 +470,10 @@
   </section>
 
   <!-- Footer -->
-  <footer class="p-6 border-t-2 border-black bg-white text-center text-xs text-black font-bold">
+  <footer class="py-6 px-8 border-t border-slate-200 bg-white text-center text-xs text-black font-bold">
     <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
       <p>© 2026 SadakSuraksha AI 🇮🇳 — National Road Safety & Infrastructure Intelligence Platform</p>
-      <p class="font-mono text-[11px] text-slate-700">MoRTH • NHAI • State PWD • Smart Cities Mission</p>
+      <p class="font-mono text-[11px] text-slate-600">MoRTH • NHAI • State PWD • Smart Cities Mission</p>
     </div>
   </footer>
 
