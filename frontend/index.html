@@ -60,7 +60,7 @@
             SADAK-SURAKSHA <span class="text-orange-400 font-extrabold text-xs px-2 py-0.5 rounded bg-orange-950/80 border border-orange-500/30">AI 🇮🇳</span>
           </h1>
           <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-950/60 border border-emerald-500/40 text-emerald-400">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> NHAI / PWD LIVE
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> <span id="header-dept-text">NHAI / PWD LIVE</span>
           </span>
         </div>
         <p class="text-[11px] text-slate-400 group-hover:text-slate-300 transition-colors flex items-center gap-1">
@@ -121,7 +121,7 @@
       </button>
     </nav>
 
-    <!-- Header Actions / API Key -->
+    <!-- Header Actions / API Key / Switch Role -->
     <div class="flex items-center gap-2.5">
       <button onclick="openApiKeyModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-slate-300 transition-all">
         <i data-lucide="key" class="w-3.5 h-3.5 text-cyan-400"></i>
@@ -130,8 +130,9 @@
       <button onclick="triggerQuickScanModal()" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-black shadow-lg shadow-orange-500/25 transition-all">
         <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Ingest Incident
       </button>
-      <button onclick="openCitizenPortalModal()" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-black shadow-lg shadow-emerald-500/25 transition-all">
-        <i data-lucide="smartphone" class="w-3.5 h-3.5"></i> 📱 Citizen Portal
+      <button onclick="handleLogout()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800/90 hover:bg-red-950/60 border border-slate-700 hover:border-red-500/40 text-slate-300 hover:text-red-300 transition-all" title="Return to Role Selection Gateway">
+        <i data-lucide="log-out" class="w-3.5 h-3.5 text-slate-400"></i>
+        <span>Switch Role</span>
       </button>
     </div>
   </header>
@@ -669,9 +670,6 @@
             </div>
           </div>
           <div class="flex items-center gap-3">
-            <button onclick="openCitizenPortalModal()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-black transition-all">
-              <i data-lucide="smartphone" class="w-4 h-4"></i> Open Citizen Portal
-            </button>
             <button onclick="refreshIngestionStreams()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all">
               <i data-lucide="refresh-cw" class="w-4 h-4 text-cyan-400"></i> Refresh Streams
             </button>
@@ -884,61 +882,6 @@
         <button onclick="submitIngestModal()" class="px-4 py-2 rounded-lg text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-black flex items-center gap-1.5">
           <i data-lucide="zap" class="w-3.5 h-3.5"></i> Run Multimodal AI Pipeline
         </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- CITIZEN PORTAL MODAL -->
-  <div id="citizen-portal-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[99999] hidden flex items-center justify-center p-4" style="z-index: 99999 !important;">
-    <div class="bg-[#101726] border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl flex flex-col gap-4">
-      <div class="flex items-center justify-between">
-        <h3 class="text-sm font-bold text-white flex items-center gap-2">
-          <i data-lucide="smartphone" class="w-4 h-4 text-emerald-400"></i> 📱 SadakSuraksha Citizen Reporting Portal
-        </h3>
-        <button onclick="closeCitizenPortalModal()" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-      </div>
-      <p class="text-xs text-slate-400">Share this link with citizens so they can report road hazards directly from their mobile phones. Reports are processed by SadakSuraksha AI in real-time.</p>
-      
-      <div class="bg-slate-900/80 border border-emerald-500/30 rounded-xl p-4 text-center">
-        <p class="text-xs text-slate-400 mb-2">Citizen Portal URL:</p>
-        <a id="citizen-portal-link" href="/report" target="_blank" class="text-emerald-400 font-mono text-sm font-bold hover:text-emerald-300 break-all underline underline-offset-4 decoration-emerald-500/40">
-          Loading...
-        </a>
-        <button onclick="copyCitizenPortalLink()" class="mt-3 px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-black text-xs font-bold flex items-center gap-1.5 mx-auto transition-all">
-          <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Link
-        </button>
-      </div>
-
-      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 text-center">
-        <p class="text-xs text-slate-400 mb-2">Scan QR Code:</p>
-        <div class="w-40 h-40 mx-auto bg-white rounded-xl p-2 flex items-center justify-center">
-          <div class="text-4xl">📱</div>
-        </div>
-        <p class="text-[10px] text-slate-500 mt-2">Open camera app → Scan → Report hazard instantly</p>
-      </div>
-
-      <div class="grid grid-cols-3 gap-2 text-center text-xs">
-        <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
-          <p class="text-emerald-400 font-bold text-sm" id="portal-total-reports">0</p>
-          <p class="text-slate-500">Total Reports</p>
-        </div>
-        <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
-          <p class="text-cyan-400 font-bold text-sm" id="portal-verified">0</p>
-          <p class="text-slate-500">AI Verified</p>
-        </div>
-        <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
-          <p class="text-amber-400 font-bold text-sm" id="portal-pending">0</p>
-          <p class="text-slate-500">Pending</p>
-        </div>
-      </div>
-
-      <div class="flex items-center justify-end gap-2 pt-1">
-        <button onclick="closeCitizenPortalModal()" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white">Close</button>
-        <a href="/report" target="_blank" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-emerald-500 to-green-600 text-black flex items-center gap-1.5">
-          <i data-lucide="external-link" class="w-3.5 h-3.5"></i> Open Portal
-        </a>
       </div>
     </div>
   </div>

@@ -173,3 +173,26 @@ def test_ingestion_streams_list(client):
     assert "cctv_feed" in source_types
     assert "citizen_mobile" in source_types
     assert "google_maps_traffic" in source_types
+
+
+def test_html_routes_serving(client):
+    # Gateway at root
+    res_root = client.get("/")
+    assert res_root.status_code == 200
+    assert "text/html" in res_root.headers.get("content-type", "")
+
+    # Login gateway
+    res_login = client.get("/login")
+    assert res_login.status_code == 200
+    assert "text/html" in res_login.headers.get("content-type", "")
+
+    # Official Command Center Dashboard
+    res_dash = client.get("/dashboard")
+    assert res_dash.status_code == 200
+    assert "text/html" in res_dash.headers.get("content-type", "")
+
+    # Citizen Reporting Portal
+    res_report = client.get("/report")
+    assert res_report.status_code == 200
+    assert "text/html" in res_report.headers.get("content-type", "")
+

@@ -75,6 +75,7 @@ function formatINR(amount) {
 document.addEventListener('DOMContentLoaded', async () => {
   lucide.createIcons();
   updateApiKeyDisplay();
+  initSessionIdentity();
   
   // Set default state selector in UI
   const stateSelect = document.getElementById('state-selector');
@@ -93,6 +94,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize Studio with default scenario
   loadStudioScenario('pothole');
 });
+
+function initSessionIdentity() {
+  const officer = sessionStorage.getItem('sadaksuraksha_officer');
+  const dept = sessionStorage.getItem('sadaksuraksha_dept');
+  const deptText = document.getElementById('header-dept-text');
+  if (deptText && officer) {
+    deptText.textContent = `${officer} • NHAI/PWD`;
+  }
+}
 
 function updateApiKeyDisplay() {
   const btn = document.getElementById('apiKeyBtnText');
@@ -1317,36 +1327,13 @@ function renderIngestionStreams(streams) {
   lucide.createIcons();
 }
 
-// Citizen Portal Modal
-function openCitizenPortalModal() {
-  const modal = document.getElementById('citizen-portal-modal');
-  if (modal) {
-    modal.classList.remove('hidden');
-    const link = document.getElementById('citizen-portal-link');
-    if (link) {
-      const portalUrl = `${window.location.origin}/report`;
-      link.textContent = portalUrl;
-      link.href = portalUrl;
-    }
-    lucide.createIcons();
-  }
-}
-
-function closeCitizenPortalModal() {
-  const modal = document.getElementById('citizen-portal-modal');
-  if (modal) modal.classList.add('hidden');
-}
-
-function copyCitizenPortalLink() {
-  const portalUrl = `${window.location.origin}/report`;
-  navigator.clipboard.writeText(portalUrl).then(() => {
-    const btn = event.target.closest('button');
-    if (btn) {
-      const original = btn.innerHTML;
-      btn.innerHTML = '<span class="text-emerald-400">✓ Copied!</span>';
-      setTimeout(() => { btn.innerHTML = original; lucide.createIcons(); }, 2000);
-    }
-  });
+// Role switching and Logout
+function handleLogout() {
+  sessionStorage.removeItem('sadaksuraksha_auth');
+  sessionStorage.removeItem('sadaksuraksha_role');
+  sessionStorage.removeItem('sadaksuraksha_dept');
+  sessionStorage.removeItem('sadaksuraksha_officer');
+  window.location.href = '/';
 }
 
 // Load ingestion streams when switching to ingestion tab
