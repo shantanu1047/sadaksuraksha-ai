@@ -1,0 +1,51 @@
+app:
+  name: "SadakSuraksha AI"
+  version: "1.1.0"
+  environment: "production"
+  region: "India (Multi-State: Karnataka, Maharashtra, Delhi NCR, Tamil Nadu, Telangana)"
+  currency: "INR"
+  currency_symbol: "₹"
+  host: "127.0.0.1"
+  port: 8000
+  log_level: "INFO"
+
+gemini:
+  model_vision: "gemini-2.5-flash"
+  model_reasoning: "gemini-2.5-flash"
+  temperature: 0.2
+  max_output_tokens: 2048
+
+sensor_fusion:
+  weights:
+    visual: 0.45
+    inertial: 0.30
+    acoustic: 0.15
+    citizen_report: 0.10
+  false_positive_rules:
+    min_visual_conf_for_fp: 0.60
+    max_inertial_score_for_fp: 0.15
+    min_speed_kmh_for_fp: 25.0
+    risk_score_suppression_factor: 0.05
+  submerged_hazard_elevation:
+    min_imu_shock_threshold_g: 1.8
+    elevation_boost: 0.35
+
+prioritization:
+  corridor_multipliers:
+    hospital_corridor: 1.45
+    school_zone: 1.35
+    interstate: 1.30
+    arterial: 1.20
+    collector: 1.05
+    residential: 0.90
+  clustering:
+    eps_km: 1.5
+    min_samples: 1
+    max_crew_hours_per_order: 8.0
+
+costs_inr:
+  base_crew_mobilization: 8500.0
+  pothole_milling_per_sqm: 3800.0
+  pothole_depth_factor_per_cm: 650.0
+  crack_seal_per_sqm: 1200.0
+  guardrail_per_meter: 4500.0

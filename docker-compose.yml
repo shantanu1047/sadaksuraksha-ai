@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  sadaksuraksha-ai:
+    build: .
+    container_name: sadaksuraksha-ai
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+    volumes:
+      - ./backend:/app/backend
+      - ./frontend:/app/frontend
+      - ./database:/app/database
+    restart: unless-stopped

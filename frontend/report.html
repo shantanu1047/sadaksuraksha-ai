@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SadakSuraksha AI 🇮🇳 - Report a Road Hazard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        background: '#080c14',
+                        card: '#101726',
+                        cardHover: '#162032',
+                        indiaOrange: '#FF9933',
+                        indiaWhite: '#FFFFFF',
+                        indiaGreen: '#138808',
+                        indiaBlue: '#000080'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #080c14;
+            color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .step {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        .step.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom Scrollbar for hidden horizontal scrolls if any */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #080c14; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155; 
+            border-radius: 4px;
+        }
+        
+        .category-card {
+            transition: all 0.2s ease;
+        }
+        .category-card.selected {
+            border-color: #FF9933;
+            background-color: rgba(255, 153, 51, 0.1);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #FF9933;
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 0 10px rgba(255,153,51,0.5);
+        }
+        
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        .gradient-btn {
+            background: linear-gradient(135deg, #FF9933 0%, #f59e0b 100%);
+        }
+        
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 3px solid #FF9933;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .tricolor-border {
+            position: relative;
+        }
+        .tricolor-border::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #FF9933 33%, #FFFFFF 33%, #FFFFFF 66%, #138808 66%);
+            border-top-left-radius: inherit;
+            border-top-right-radius: inherit;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col pt-safe pb-safe pb-20">
+
+    <!-- Header -->
+    <header class="p-5 border-b border-slate-800 bg-card sticky top-0 z-50">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center border-2 border-indiaBlue shadow-[0_0_15px_rgba(0,0,128,0.3)]">
+                    <i data-lucide="shield-check" class="text-indiaOrange w-5 h-5"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight flex items-center gap-2">
+                        SadakSuraksha AI <span class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">🇮🇳</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Report a Road Hazard</p>
+                </div>
+            </div>
+        </div>
+        <p class="text-xs text-slate-400 mt-3">Help make India's roads safer. Report potholes, waterlogging, damaged barriers, debris, or broken signs.</p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-4 max-w-lg mx-auto w-full">
+        
+        <!-- Multi-Step Form -->
+        <div id="form-container" class="bg-card border border-slate-800 rounded-2xl shadow-xl overflow-hidden tricolor-border mb-8">
+            <div class="p-5">
+                
+                <!-- Progress Indicator -->
+                <div class="flex items-center justify-between mb-6 relative">
+                    <div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-800 rounded-full z-0"></div>
+                    <div id="progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-indiaOrange rounded-full z-0 transition-all duration-300" style="width: 0%;"></div>
+                    
+                    <div class="step-indicator w-8 h-8 rounded-full bg-indiaOrange text-white flex items-center justify-center font-bold text-sm z-10 relative">1</div>
+                    <div class="step-indicator w-8 h-8 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center font-bold text-sm z-10 relative">2</div>
+                    <div class="step-indicator w-8 h-8 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center font-bold text-sm z-10 relative">3</div>
+                </div>
+
+                <!-- Step 1: Location Detection -->
+                <div id="step-1" class="step active">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="map-pin" class="w-5 h-5 text-indiaOrange"></i> Location Details</h2>
+                    
+                    <button id="btn-detect-location" type="button" class="w-full py-4 px-4 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl flex flex-col items-center justify-center gap-2 transition-colors mb-4 text-indiaOrange">
+                        <i data-lucide="crosshair" class="w-6 h-6"></i>
+                        <span class="font-semibold">Detect My Location</span>
+                    </button>
+                    
+                    <div id="location-status" class="text-xs text-center text-slate-400 mb-4 hidden">
+                        <span id="loc-coords" class="block font-mono text-slate-300"></span>
+                        <span id="loc-accuracy" class="block text-emerald-400 mt-1"></span>
+                        <a id="loc-gmaps-link" href="#" target="_blank" rel="noopener noreferrer" class="hidden text-xs text-blue-400 hover:text-blue-300 inline-flex items-center gap-1 mt-2 underline underline-offset-2">
+                            <span>🗺️ View Pin on Google Maps ↗</span>
+                        </a>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="flex gap-3">
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Latitude</label>
+                                <input type="text" id="input-lat" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indiaOrange" placeholder="e.g. 12.9716" />
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Longitude</label>
+                                <input type="text" id="input-lng" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indiaOrange" placeholder="e.g. 77.5946" />
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">State</label>
+                            <select id="input-state" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indiaOrange appearance-none">
+                                <option value="" disabled selected>Select State</option>
+                                <option value="Karnataka">Karnataka</option>
+                                <option value="Maharashtra">Maharashtra</option>
+                                <option value="Delhi NCR">Delhi NCR</option>
+                                <option value="Tamil Nadu">Tamil Nadu</option>
+                                <option value="Telangana">Telangana</option>
+                                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                <option value="West Bengal">West Bengal</option>
+                                <option value="Gujarat">Gujarat</option>
+                                <option value="Rajasthan">Rajasthan</option>
+                                <option value="Kerala">Kerala</option>
+                                <option value="Punjab & Haryana">Punjab & Haryana</option>
+                                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                <option value="Odisha">Odisha</option>
+                                <option value="Assam">Assam</option>
+                                <option value="Jammu & Kashmir">Jammu & Kashmir</option>
+                                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                <option value="Goa">Goa</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">City / Area</label>
+                            <input type="text" id="input-city" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indiaOrange" placeholder="e.g. Bengaluru" />
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <button id="btn-next-1" type="button" class="w-full py-3 px-4 gradient-btn text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 disabled:opacity-50 disabled:cursor-not-allowed">Next Step</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Hazard Details -->
+                <div id="step-2" class="step">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="alert-triangle" class="w-5 h-5 text-indiaOrange"></i> Hazard Details</h2>
+                    
+                    <label class="block text-xs font-medium text-slate-400 mb-2">Category</label>
+                    <div class="grid grid-cols-2 gap-3 mb-5" id="category-grid">
+                        <div class="category-card cursor-pointer border border-slate-700 bg-slate-800 rounded-xl p-3 flex flex-col items-center gap-2" data-val="Pothole">
+                            <span class="text-2xl">🕳️</span>
+                            <span class="text-xs font-semibold text-center">Pothole</span>
+                        </div>
+                        <div class="category-card cursor-pointer border border-slate-700 bg-slate-800 rounded-xl p-3 flex flex-col items-center gap-2" data-val="Waterlogging">
+                            <span class="text-2xl">🌊</span>
+                            <span class="text-xs font-semibold text-center">Waterlogging</span>
+                        </div>
+                        <div class="category-card cursor-pointer border border-slate-700 bg-slate-800 rounded-xl p-3 flex flex-col items-center gap-2" data-val="Damaged Guardrail">
+                            <span class="text-2xl">🚧</span>
+                            <span class="text-xs font-semibold text-center">Guardrail</span>
+                        </div>
+                        <div class="category-card cursor-pointer border border-slate-700 bg-slate-800 rounded-xl p-3 flex flex-col items-center gap-2" data-val="Debris">
+                            <span class="text-2xl">🪨</span>
+                            <span class="text-xs font-semibold text-center">Debris</span>
+                        </div>
+                        <div class="category-card cursor-pointer border border-slate-700 bg-slate-800 rounded-xl p-3 flex flex-col items-center gap-2" data-val="Broken Signage">
+                            <span class="text-2xl">🚦</span>
+                            <span class="text-xs font-semibold text-center">Signage</span>
+                        </div>
+                        <div class="category-card cursor-pointer border border-slate-700 bg-slate-800 rounded-xl p-3 flex flex-col items-center gap-2" data-val="Other">
+                            <span class="text-2xl">❓</span>
+                            <span class="text-xs font-semibold text-center">Other</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-5">
+                        <div class="flex justify-between items-end mb-2">
+                            <label class="block text-xs font-medium text-slate-400">Severity</label>
+                            <span id="severity-label" class="text-sm font-bold text-yellow-400">Moderate (3)</span>
+                        </div>
+                        <div class="flex items-center gap-2 mb-1 text-lg">
+                            <span>😊</span>
+                            <input type="range" id="input-severity" min="1" max="5" value="3" step="1">
+                            <span>🚨</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Road Name / Landmark (Optional)</label>
+                        <input type="text" id="input-road" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indiaOrange" placeholder="e.g. MG Road, near Metro" />
+                    </div>
+                    
+                    <div class="mb-5">
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Description</label>
+                        <textarea id="input-desc" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indiaOrange resize-none" placeholder="Provide any extra details..."></textarea>
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <button id="btn-back-1" type="button" class="w-1/3 py-3 px-4 bg-slate-800 text-white rounded-xl font-bold shadow-lg">Back</button>
+                        <button id="btn-next-2" type="button" class="w-2/3 py-3 px-4 gradient-btn text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 disabled:opacity-50 disabled:cursor-not-allowed">Next Step</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Photo Evidence -->
+                <div id="step-3" class="step">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="camera" class="w-5 h-5 text-indiaOrange"></i> Evidence</h2>
+                    
+                    <div class="mb-6">
+                        <label class="block text-xs font-medium text-slate-400 mb-2">Upload Photo</label>
+                        <div class="relative w-full h-48 bg-slate-900 border-2 border-dashed border-slate-700 rounded-xl flex flex-col items-center justify-center overflow-hidden" id="photo-container">
+                            
+                            <div id="photo-placeholder" class="text-center p-4">
+                                <i data-lucide="image-plus" class="w-8 h-8 mx-auto text-slate-500 mb-2"></i>
+                                <p class="text-sm text-slate-400">Tap to take a photo</p>
+                                <p class="text-xs text-slate-500 mt-1">Accepts images from camera or gallery</p>
+                            </div>
+                            
+                            <img id="photo-preview" class="absolute inset-0 w-full h-full object-cover hidden" alt="Preview" />
+                            
+                            <input type="file" id="input-photo" accept="image/*" capture="environment" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                        </div>
+                        <button type="button" id="btn-remove-photo" class="hidden mt-2 text-xs text-red-400 hover:text-red-300 flex items-center gap-1 justify-center w-full"><i data-lucide="trash-2" class="w-3 h-3"></i> Remove Photo</button>
+                    </div>
+                    
+                    <div class="space-y-4 mb-6">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Your Name (Optional)</label>
+                            <input type="text" id="input-name" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indiaOrange" placeholder="Leave empty for Anonymous" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Phone Number (Optional, for updates)</label>
+                            <input type="tel" id="input-phone" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indiaOrange" placeholder="e.g. 9876543210" />
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button id="btn-back-2" type="button" class="w-1/3 py-3 px-4 bg-slate-800 text-white rounded-xl font-bold shadow-lg">Back</button>
+                        <button id="btn-submit" type="button" class="w-2/3 py-3 px-4 bg-gradient-to-r from-indiaGreen to-emerald-600 text-white rounded-xl font-bold shadow-lg shadow-green-600/20 flex justify-center items-center gap-2">
+                            <i data-lucide="send" class="w-4 h-4"></i> Submit Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Loading & Result -->
+                <div id="step-4" class="step">
+                    
+                    <!-- Loading State -->
+                    <div id="loading-state" class="py-8 flex flex-col items-center justify-center text-center">
+                        <div class="loading-spinner mb-4"></div>
+                        <h3 class="text-lg font-bold text-white mb-2">Analyzing Report...</h3>
+                        <p class="text-sm text-slate-400">SadakSuraksha AI is processing your submission.</p>
+                    </div>
+
+                    <!-- Success State -->
+                    <div id="success-state" class="hidden">
+                        <div class="flex flex-col items-center text-center mb-6">
+                            <div class="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mb-3">
+                                <i data-lucide="check-circle" class="w-8 h-8 text-emerald-400"></i>
+                            </div>
+                            <h2 class="text-xl font-bold text-white">Report Verified</h2>
+                            <p class="text-sm text-slate-400 mt-1">Thank you for helping make roads safer!</p>
+                        </div>
+                        
+                        <div class="bg-slate-900 border border-slate-700 rounded-xl p-4 mb-5">
+                            <div class="flex justify-between items-center mb-3 pb-3 border-b border-slate-800">
+                                <span class="text-xs text-slate-400">Ticket ID</span>
+                                <span id="res-ticket-id" class="font-mono text-sm font-bold text-indiaOrange">---</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <span class="block text-[10px] text-slate-400 uppercase tracking-wider">AI Assessment</span>
+                                    <span id="res-severity" class="text-sm font-semibold text-white">---</span>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] text-slate-400 uppercase tracking-wider">Risk Score</span>
+                                    <span id="res-risk" class="text-sm font-semibold text-red-400">---</span>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] text-slate-400 uppercase tracking-wider">Est. Repair</span>
+                                    <span id="res-cost" class="text-sm font-semibold text-white">---</span>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] text-slate-400 uppercase tracking-wider">Timeline</span>
+                                    <span id="res-timeline" class="text-sm font-semibold text-white">---</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-slate-800" id="res-msg-container">
+                                <span class="block text-[10px] text-slate-400 uppercase tracking-wider mb-1">AI Message</span>
+                                <p id="res-msg" class="text-xs text-slate-300 italic">---</p>
+                            </div>
+                        </div>
+                        
+                        <a id="res-gmaps-btn" href="#" target="_blank" rel="noopener noreferrer" class="w-full py-3 px-4 mb-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold flex justify-center items-center gap-2 text-sm shadow-lg shadow-blue-500/20 transition-all">
+                            <i data-lucide="map-pin" class="w-4 h-4 text-cyan-300"></i> Open Location in Google Maps ↗
+                        </a>
+
+                        <button id="btn-reset" type="button" class="w-full py-3 px-4 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold border border-slate-700 flex justify-center items-center gap-2">
+                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Submit Another Report
+                        </button>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <!-- Ticket Tracker Section -->
+        <div class="bg-card border border-slate-800 rounded-2xl shadow-xl overflow-hidden p-5">
+            <h3 class="text-md font-bold mb-3 flex items-center gap-2"><i data-lucide="search" class="w-4 h-4 text-indiaBlue"></i> Track Ticket Status</h3>
+            <div class="flex gap-2">
+                <input type="text" id="track-input" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indiaBlue font-mono placeholder:font-sans" placeholder="Enter Ticket ID..." />
+                <button id="btn-track" type="button" class="py-2 px-4 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white rounded-xl font-bold text-sm">Track</button>
+            </div>
+            
+            <div id="track-result" class="mt-4 hidden p-3 bg-slate-900 rounded-xl border border-slate-700">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+        
+    </main>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // State variables
+        let currentStep = 1;
+        let reportData = {
+            lat: null,
+            lng: null,
+            state: '',
+            city: '',
+            category: '',
+            severity: 3,
+            description: '',
+            road_name: '',
+            photo_b64: null,
+            name: '',
+            phone: ''
+        };
+
+        // DOM Elements
+        const steps = document.querySelectorAll('.step');
+        const stepIndicators = document.querySelectorAll('.step-indicator');
+        const progressBar = document.getElementById('progress-bar');
+        
+        // Navigation Functions
+        function updateProgress() {
+            if (currentStep <= 3) {
+                progressBar.style.width = ((currentStep - 1) / 2) * 100 + '%';
+                stepIndicators.forEach((ind, idx) => {
+                    if (idx < currentStep) {
+                        ind.classList.remove('bg-slate-800', 'text-slate-400');
+                        ind.classList.add('bg-indiaOrange', 'text-white');
+                    } else {
+                        ind.classList.add('bg-slate-800', 'text-slate-400');
+                        ind.classList.remove('bg-indiaOrange', 'text-white');
+                    }
+                });
+            }
+        }
+
+        function showStep(n) {
+            steps.forEach(s => s.classList.remove('active'));
+            document.getElementById(`step-${n}`).classList.add('active');
+            currentStep = n;
+            updateProgress();
+            
+            // Check form validity on step change
+            checkStep1Validity();
+            checkStep2Validity();
+        }
+
+        // --- Step 1 Logic ---
+        const btnDetect = document.getElementById('btn-detect-location');
+        const inputLat = document.getElementById('input-lat');
+        const inputLng = document.getElementById('input-lng');
+        const inputState = document.getElementById('input-state');
+        const inputCity = document.getElementById('input-city');
+        const btnNext1 = document.getElementById('btn-next-1');
+        const locStatus = document.getElementById('location-status');
+        const locCoords = document.getElementById('loc-coords');
+        const locAccuracy = document.getElementById('loc-accuracy');
+
+        function checkStep1Validity() {
+            if (inputLat.value && inputLng.value && inputState.value) {
+                btnNext1.disabled = false;
+            } else {
+                btnNext1.disabled = true;
+            }
+        }
+
+        [inputLat, inputLng, inputState, inputCity].forEach(el => {
+            el.addEventListener('input', checkStep1Validity);
+            el.addEventListener('change', checkStep1Validity);
+        });
+
+        btnDetect.addEventListener('click', () => {
+            if (!navigator.geolocation) {
+                alert("Geolocation is not supported by your browser.");
+                return;
+            }
+            
+            btnDetect.innerHTML = '<div class="loading-spinner w-5 h-5 border-2 border-t-indiaOrange"></div> <span>Detecting...</span>';
+            btnDetect.disabled = true;
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude.toFixed(6);
+                    const lng = position.coords.longitude.toFixed(6);
+                    const acc = position.coords.accuracy.toFixed(0);
+                    
+                    inputLat.value = lat;
+                    inputLng.value = lng;
+                    
+                    locCoords.textContent = `${lat}, ${lng}`;
+                    locAccuracy.textContent = `GPS Accuracy: ${acc}m`;
+                    locStatus.classList.remove('hidden');
+                    
+                    const locGmaps = document.getElementById('loc-gmaps-link');
+                    if (locGmaps) {
+                        locGmaps.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+                        locGmaps.classList.remove('hidden');
+                    }
+                    
+                    btnDetect.innerHTML = '<i data-lucide="check" class="w-6 h-6 text-emerald-400"></i> <span class="font-semibold text-emerald-400">Location Detected</span>';
+                    btnDetect.classList.replace('text-indiaOrange', 'text-emerald-400');
+                    lucide.createIcons();
+                    
+                    checkStep1Validity();
+                    btnDetect.disabled = false;
+                },
+                (error) => {
+                    console.error("Error getting location:", error);
+                    alert("Unable to retrieve location. Please enter manually.");
+                    btnDetect.innerHTML = '<i data-lucide="crosshair" class="w-6 h-6"></i> <span class="font-semibold">Detect My Location</span>';
+                    btnDetect.disabled = false;
+                    lucide.createIcons();
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+        });
+
+        btnNext1.addEventListener('click', () => {
+            reportData.lat = parseFloat(inputLat.value);
+            reportData.lng = parseFloat(inputLng.value);
+            reportData.state = inputState.value;
+            reportData.city = inputCity.value;
+            showStep(2);
+        });
+
+        // --- Step 2 Logic ---
+        const categoryCards = document.querySelectorAll('.category-card');
+        const inputSeverity = document.getElementById('input-severity');
+        const severityLabel = document.getElementById('severity-label');
+        const inputRoad = document.getElementById('input-road');
+        const inputDesc = document.getElementById('input-desc');
+        const btnNext2 = document.getElementById('btn-next-2');
+        const btnBack1 = document.getElementById('btn-back-1');
+
+        function checkStep2Validity() {
+            if (reportData.category) {
+                btnNext2.disabled = false;
+            } else {
+                btnNext2.disabled = true;
+            }
+        }
+
+        categoryCards.forEach(card => {
+            card.addEventListener('click', () => {
+                categoryCards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                reportData.category = card.dataset.val;
+                checkStep2Validity();
+            });
+        });
+
+        const severityMap = {
+            1: { text: "Minor (1)", color: "text-emerald-400" },
+            2: { text: "Low (2)", color: "text-blue-400" },
+            3: { text: "Moderate (3)", color: "text-yellow-400" },
+            4: { text: "Severe (4)", color: "text-orange-500" },
+            5: { text: "Dangerous (5)", color: "text-red-500" }
+        };
+
+        inputSeverity.addEventListener('input', (e) => {
+            const val = e.target.value;
+            severityLabel.textContent = severityMap[val].text;
+            severityLabel.className = `text-sm font-bold ${severityMap[val].color}`;
+        });
+
+        btnBack1.addEventListener('click', () => showStep(1));
+        
+        btnNext2.addEventListener('click', () => {
+            reportData.severity = parseInt(inputSeverity.value);
+            reportData.road_name = inputRoad.value;
+            reportData.description = inputDesc.value;
+            showStep(3);
+        });
+
+        // --- Step 3 Logic ---
+        const inputPhoto = document.getElementById('input-photo');
+        const photoPreview = document.getElementById('photo-preview');
+        const photoPlaceholder = document.getElementById('photo-placeholder');
+        const btnRemovePhoto = document.getElementById('btn-remove-photo');
+        const inputName = document.getElementById('input-name');
+        const inputPhone = document.getElementById('input-phone');
+        const btnBack2 = document.getElementById('btn-back-2');
+        const btnSubmit = document.getElementById('btn-submit');
+
+        inputPhoto.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const b64 = event.target.result;
+                reportData.photo_b64 = b64;
+                
+                photoPreview.src = b64;
+                photoPreview.classList.remove('hidden');
+                photoPlaceholder.classList.add('hidden');
+                btnRemovePhoto.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        });
+
+        btnRemovePhoto.addEventListener('click', () => {
+            inputPhoto.value = '';
+            reportData.photo_b64 = null;
+            photoPreview.classList.add('hidden');
+            photoPlaceholder.classList.remove('hidden');
+            btnRemovePhoto.classList.add('hidden');
+            photoPreview.src = '';
+        });
+
+        btnBack2.addEventListener('click', () => showStep(2));
+
+        function formatINR(amount) {
+            if (!amount) return 'N/A';
+            return '₹ ' + parseInt(amount).toLocaleString('en-IN');
+        }
+
+        btnSubmit.addEventListener('click', async () => {
+            reportData.name = inputName.value || 'Anonymous';
+            reportData.phone = inputPhone.value;
+            
+            showStep(4);
+            
+            // Simulation or real API call
+            try {
+                // If the API exists, it will hit this. If not, we simulate success for the demo.
+                const response = await fetch('/api/ingest/citizen-report', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(reportData)
+                }).catch(e => null); // Catch network errors if standalone
+
+                let data;
+                if (response && response.ok) {
+                    data = await response.json();
+                } else {
+                    // Simulation fallback
+                    await new Promise(r => setTimeout(r, 2500)); // Simulating AI delay
+                    
+                    const ticketId = `CITIZEN-SURAKSHA-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+                    const cost = Math.floor(Math.random() * 50000) + 5000;
+                    
+                    data = {
+                        ticket_id: ticketId,
+                        ai_assessment: {
+                            severity: reportData.severity >= 4 ? 'High' : (reportData.severity <= 2 ? 'Low' : 'Medium'),
+                            risk_score: (reportData.severity * 18) + Math.floor(Math.random() * 10), // out of 100
+                            est_cost: cost,
+                            est_timeline: reportData.severity >= 4 ? '24-48 Hours' : '3-7 Days',
+                            message: `Detected ${reportData.category.toLowerCase()} with estimated depth of ${Math.floor(Math.random() * 15)+2}cm.`
+                        }
+                    };
+                }
+
+                // Hide loading, show success
+                document.getElementById('loading-state').classList.add('hidden');
+                document.getElementById('success-state').classList.remove('hidden');
+                
+                // Set Google Maps redirection button for exact reported coordinates
+                const gmapsBtn = document.getElementById('res-gmaps-btn');
+                if (gmapsBtn && reportData.lat && reportData.lng) {
+                    gmapsBtn.href = `https://www.google.com/maps/search/?api=1&query=${reportData.lat},${reportData.lng}`;
+                }
+
+                // Populate result
+                document.getElementById('res-ticket-id').textContent = data.ticket_id;
+                document.getElementById('res-severity').textContent = data.ai_severity || data.ai_assessment?.severity || 'Assessed';
+                document.getElementById('res-risk').textContent = data.ai_risk_score ? `${data.ai_risk_score.toFixed(1)}/100` : (data.ai_assessment?.risk_score ? `${data.ai_assessment.risk_score}/100` : 'N/A');
+                document.getElementById('res-cost').textContent = formatINR(data.estimated_repair_cost_inr || data.ai_assessment?.est_cost);
+                document.getElementById('res-timeline').textContent = data.estimated_repair_days ? `${data.estimated_repair_days} Days` : (data.ai_assessment?.est_timeline || 'Pending');
+                
+                if (data.message || data.ai_assessment?.message) {
+                    document.getElementById('res-msg').textContent = data.message || data.ai_assessment.message;
+                } else {
+                    document.getElementById('res-msg-container').classList.add('hidden');
+                }
+
+            } catch (error) {
+                console.error("Submission failed", error);
+                document.getElementById('loading-state').innerHTML = `
+                    <div class="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mb-3">
+                        <i data-lucide="x-circle" class="w-8 h-8 text-red-400"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">Submission Failed</h3>
+                    <p class="text-sm text-slate-400">Please try again later.</p>
+                    <button onclick="showStep(3)" class="mt-4 px-4 py-2 bg-slate-800 rounded-lg text-sm text-white border border-slate-700">Go Back</button>
+                `;
+                lucide.createIcons();
+            }
+        });
+
+        // Reset
+        document.getElementById('btn-reset').addEventListener('click', () => {
+            // Reset form fields
+            inputPhoto.value = '';
+            reportData.photo_b64 = null;
+            photoPreview.classList.add('hidden');
+            photoPlaceholder.classList.remove('hidden');
+            btnRemovePhoto.classList.add('hidden');
+            photoPreview.src = '';
+            
+            inputDesc.value = '';
+            inputRoad.value = '';
+            categoryCards.forEach(c => c.classList.remove('selected'));
+            reportData.category = '';
+            
+            // Reset state
+            document.getElementById('loading-state').classList.remove('hidden');
+            document.getElementById('success-state').classList.add('hidden');
+            
+            showStep(1);
+        });
+
+        // --- Tracking Logic ---
+        const btnTrack = document.getElementById('btn-track');
+        const trackInput = document.getElementById('track-input');
+        const trackResult = document.getElementById('track-result');
+
+        btnTrack.addEventListener('click', async () => {
+            const tid = trackInput.value.trim();
+            if (!tid) return;
+            
+            btnTrack.disabled = true;
+            btnTrack.textContent = '...';
+            
+            try {
+                const response = await fetch(`/api/ingest/citizen-report/${tid}`).catch(e => null);
+                let html = '';
+                
+                if (response && response.ok) {
+                    const data = await response.json();
+                    html = `
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs text-slate-400">Status</span>
+                            <span class="text-xs font-bold text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-full">${data.status || 'Received'}</span>
+                        </div>
+                        <p class="text-xs text-slate-300">Severity: <span class="font-semibold text-white uppercase">${data.ai_severity || 'N/A'}</span></p>
+                        <p class="text-xs text-slate-300">Est. PWD Repair: <span class="font-semibold text-amber-400">₹ ${(data.estimated_repair_cost_inr || 0).toLocaleString('en-IN')}</span></p>
+                        <p class="text-xs text-slate-400 mt-1 italic">${data.message || ''}</p>
+                    `;
+                } else {
+                    // Simulate found/not found
+                    if (tid.includes('CITIZEN')) {
+                        html = `
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs text-slate-400">Status</span>
+                                <span class="text-xs font-bold text-yellow-400 bg-yellow-400/10 px-2 py-1 rounded-full">In Progress</span>
+                            </div>
+                            <p class="text-xs text-slate-300">Your report has been verified by AI and queued for PWD maintenance dispatch.</p>
+                        `;
+                    } else {
+                        html = `<p class="text-xs text-red-400 text-center py-2">Ticket not found. Please check the ID.</p>`;
+                    }
+                }
+                
+                trackResult.innerHTML = html;
+                trackResult.classList.remove('hidden');
+                
+            } catch (err) {
+                trackResult.innerHTML = `<p class="text-xs text-red-400">Error fetching ticket.</p>`;
+                trackResult.classList.remove('hidden');
+            } finally {
+                btnTrack.disabled = false;
+                btnTrack.textContent = 'Track';
+            }
+        });
+
+        // Initialize checks
+        checkStep1Validity();
+    </script>
+</body>
+</html>

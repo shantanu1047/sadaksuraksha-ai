@@ -1,0 +1,477 @@
+"""
+FastAPI Main Application Server for Multimodal Road Hazard AI Platform.
+India Sector Deployment with Multi-State Filtering (Karnataka, Maharashtra, Delhi NCR, Tamil Nadu, Telangana).
+All costs formatted in Indian Rupees (₹ INR).
+"""
+
+import os
+import json
+import asyncio
+import logging
+from typing import List, Optional, Dict, Any
+from pathlib import Path
+
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, UploadFile, File, Form, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, JSONResponse
+
+from backend.models.schemas import (
+    HazardIncident,
+    RoadSegment,
+    WorkOrder,
+    HazardType,
+    SeverityLevel,
+    RoadClassification,
+    MultimodalUploadRequest,
+    CopilotQuery,
+    CopilotResponse,
+    PatrolTelemetryFrame,
+    TelemetrySample,
+    AcousticFeature,
+    CitizenReport,
+    EnvironmentalContext,
+    CitizenSubmissionRequest,
+    CitizenTicketResponse,
+    CctvFrameIngestRequest,
+    GoogleMapsAnomalyRequest,
+    IngestionStreamStatus,
+)
+from backend.services.ingestion_service import IngestionService
+from backend.core.vision_engine import VisionEngine
+from backend.core.sensor_fusion import SensorFusionEngine
+from backend.core.prioritization_engine import PrioritizationEngine
+from backend.services.copilot_service import CopilotService
+from backend.data.demo_data import get_demo_hazards, get_demo_road_segments, generate_sample_telemetry_trace
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("RoadHazardAI")
+
+app = FastAPI(
+    title="SadakSuraksha AI // Multimodal Road Hazard AI & Maintenance Prioritization API",
+    version="1.1.0",
+    description="Multimodal platform for road distress detection and maintenance scheduling across Indian States (₹ INR).",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+vision_engine = VisionEngine()
+fusion_engine = SensorFusionEngine()
+prioritization_engine = PrioritizationEngine()
+copilot_service = CopilotService()
+ingestion_service = IngestionService()
+
+hazards_db: List[HazardIncident] = get_demo_hazards()
+roads_db: List[RoadSegment] = get_demo_road_segments()
+work_orders_db: List[WorkOrder] = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+
+
+@app.get("/api/health")
+async def health_check():
+    return {
+        "status": "healthy",
+        "service": "SadakSuraksha-AI",
+        "region": "All India (Multi-State)",
+        "currency": "INR (₹)",
+        "gemini_api_configured": bool(os.environ.get("GEMINI_API_KEY")),
+        "active_incidents": len(hazards_db),
+        "active_work_orders": len(work_orders_db),
+    }
+
+
+@app.get("/api/states")
+async def list_states():
+    """Returns available Indian States with regional incident statistics."""
+    states_dict = {}
+    for h in hazards_db:
+        st = h.state
+        if st not in states_dict:
+            states_dict[st] = {
+                "state": st,
+                "city": h.city,
+                "incident_count": 0,
+                "critical_count": 0,
+                "total_repair_cost_inr": 0.0,
+            }
+        states_dict[st]["incident_count"] += 1
+        if h.severity == SeverityLevel.CRITICAL and not h.fusion.is_false_positive:
+            states_dict[st]["critical_count"] += 1
+        if not h.fusion.is_false_positive:
+            states_dict[st]["total_repair_cost_inr"] += h.priority.estimated_repair_cost_usd
+
+    return list(states_dict.values())
+
+
+@app.get("/api/hazards", response_model=List[HazardIncident])
+async def list_hazards(
+    state: Optional[str] = None,
+    city: Optional[str] = None,
+    hazard_type: Optional[HazardType] = None,
+    severity: Optional[SeverityLevel] = None,
+    road_class: Optional[RoadClassification] = None,
+    min_risk: Optional[float] = None,
+    exclude_false_positives: bool = False,
+):
+    results = hazards_db
+    if state and state.lower() != "all":
+        results = [h for h in results if h.state.lower() == state.lower()]
+    if city and city.lower() != "all":
+        results = [h for h in results if h.city.lower() == city.lower()]
+    if hazard_type:
+        results = [h for h in results if h.hazard_type == hazard_type]
+    if severity:
+        results = [h for h in results if h.severity == severity]
+    if road_class:
+        results = [h for h in results if h.road_class == road_class]
+    if min_risk is not None:
+        results = [h for h in results if h.priority.raw_risk_score >= min_risk]
+    if exclude_false_positives:
+        results = [h for h in results if not h.fusion.is_false_positive]
+    return results
+
+
+@app.get("/api/hazards/{hazard_id}", response_model=HazardIncident)
+async def get_hazard_detail(hazard_id: str):
+    for h in hazards_db:
+        if h.id.upper() == hazard_id.upper():
+            return h
+    raise HTTPException(status_code=404, detail=f"Hazard incident '{hazard_id}' not found.")
+
+
+@app.post("/api/hazards/inspect", response_model=HazardIncident)
+async def inspect_multimodal(payload: MultimodalUploadRequest):
+    detections = vision_engine.analyze_image(
+        image_b64=payload.image_base64,
+        image_url=payload.image_url,
+    )
+    primary_det = detections[0] if detections else None
+
+    telemetry = TelemetrySample(
+        timestamp="2026-08-25 13:00:00",
+        latitude=payload.latitude,
+        longitude=payload.longitude,
+        speed_kmh=payload.speed_kmh,
+        acc_x_g=0.08,
+        acc_y_g=0.12,
+        acc_z_g=payload.acc_z_g,
+        vertical_jerk_g_s=payload.vertical_jerk,
+        iri_roughness_m_km=round(abs(payload.acc_z_g - 1.0) * 3.5 + 2.0, 1),
+    )
+
+    acoustic = AcousticFeature(
+        timestamp="2026-08-25 13:00:00",
+        dominant_freq_hz=950.0 if payload.acc_z_g > 1.4 else 320.0,
+        impact_energy_db=payload.acoustic_db,
+        acoustic_anomaly_score=min(1.0, max(0.0, (payload.acoustic_db - 35.0) / 45.0)),
+        signature_type="dry_impact" if payload.acc_z_g > 1.5 else "smooth",
+    )
+
+    citizen = None
+    if payload.citizen_text and payload.citizen_text.strip():
+        citizen = CitizenReport(
+            report_id=f"CITIZEN-LIVE-{len(hazards_db)+1:03d}",
+            timestamp="2026-08-25 13:00:00",
+            text_content=payload.citizen_text.strip(),
+            reporter_urgency=4 if payload.acc_z_g > 1.8 else 3,
+            citizen_category="Live Field Inspection",
+        )
+
+    env = EnvironmentalContext(
+        temperature_c=28.0,
+        precipitation_mm=10.0,
+        freeze_thaw_cycles_24h=0,
+        aadt_traffic_volume=65000,
+        is_emergency_route=(payload.road_class == RoadClassification.HOSPITAL_CORRIDOR),
+        is_public_transit_corridor=(payload.road_class == RoadClassification.ARTERIAL),
+    )
+
+    fusion = fusion_engine.fuse(
+        visual=primary_det,
+        telemetry=telemetry,
+        acoustic=acoustic,
+        citizen_report=citizen,
+        env_context=env,
+    )
+
+    if fusion.fused_confidence > 0.85 and (fusion.physical_depth_cm > 6.0 or payload.road_class == RoadClassification.HOSPITAL_CORRIDOR):
+        sev = SeverityLevel.CRITICAL
+    elif fusion.fused_confidence > 0.70 or fusion.physical_depth_cm > 4.0:
+        sev = SeverityLevel.HIGH
+    elif fusion.fused_confidence > 0.40:
+        sev = SeverityLevel.MEDIUM
+    else:
+        sev = SeverityLevel.LOW
+
+    ht = primary_det.hazard_type if primary_det else HazardType.POTHOLE
+
+    priority = prioritization_engine.calculate_priority_metrics(
+        hazard_type=ht,
+        severity=sev,
+        fusion=fusion,
+        road_class=payload.road_class,
+        env_context=env,
+    )
+
+    new_id = f"HAZ-{len(hazards_db)+1:03d}"
+    road_title = payload.road_name or f"{payload.road_class.value.replace('_', ' ').title()} Corridor"
+
+    trace = generate_sample_telemetry_trace(acc_z_peak=payload.acc_z_g, is_bump=(payload.acc_z_g > 1.3))
+
+    incident = HazardIncident(
+        id=new_id,
+        title=f"Detected {ht.value.replace('_', ' ').title()} ({sev.value.title()})",
+        hazard_type=ht,
+        severity=sev,
+        state=payload.state,
+        city=payload.city,
+        road_id="ROAD-IN-LIVE",
+        road_name=road_title,
+        road_class=payload.road_class,
+        latitude=payload.latitude,
+        longitude=payload.longitude,
+        address=f"Geotag: {payload.latitude:.4f}°N, {payload.longitude:.4f}°E ({road_title}, {payload.city}, {payload.state})",
+        detected_at="2026-08-25 13:00:00",
+        visual_detections=[primary_det] if primary_det else [],
+        telemetry=telemetry,
+        acoustic=acoustic,
+        citizen_report=citizen,
+        env_context=env,
+        fusion=fusion,
+        priority=priority,
+        status="Active",
+        telemetry_trace=trace,
+    )
+
+    hazards_db.insert(0, incident)
+    global work_orders_db
+    work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+
+    return incident
+
+
+@app.get("/api/roads", response_model=List[RoadSegment])
+async def list_roads(state: Optional[str] = None):
+    if state and state.lower() != "all":
+        return [r for r in roads_db if r.state.lower() == state.lower()]
+    return roads_db
+
+
+@app.get("/api/work-orders", response_model=List[WorkOrder])
+async def list_work_orders(state: Optional[str] = None):
+    if state and state.lower() != "all":
+        return [wo for wo in work_orders_db if wo.state.lower() == state.lower()]
+    return work_orders_db
+
+
+@app.post("/api/work-orders/generate", response_model=List[WorkOrder])
+async def regenerate_work_orders():
+    global work_orders_db
+    work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+    return work_orders_db
+
+
+@app.post("/api/work-orders/{order_id}/status")
+async def update_work_order_status(order_id: str, status: str = Form(...)):
+    for wo in work_orders_db:
+        if wo.id.upper() == order_id.upper():
+            wo.status = status
+            return {"success": True, "order_id": order_id, "new_status": status}
+    raise HTTPException(status_code=404, detail="Work order not found")
+
+
+@app.post("/api/copilot/chat", response_model=CopilotResponse)
+async def copilot_chat(query: CopilotQuery):
+    active_hazards = hazards_db
+    if query.state_filter and query.state_filter.lower() != "all":
+        active_hazards = [h for h in hazards_db if h.state.lower() == query.state_filter.lower()]
+    return copilot_service.query(query, active_hazards, work_orders_db)
+
+
+@app.get("/api/analytics/summary")
+async def get_analytics_summary(state: Optional[str] = None):
+    subset_hazards = hazards_db
+    subset_roads = roads_db
+    subset_work_orders = work_orders_db
+
+    if state and state.lower() != "all":
+        subset_hazards = [h for h in hazards_db if h.state.lower() == state.lower()]
+        subset_roads = [r for r in roads_db if r.state.lower() == state.lower()]
+        subset_work_orders = [wo for wo in work_orders_db if wo.state.lower() == state.lower()]
+
+    actionable = [h for h in subset_hazards if not h.fusion.is_false_positive]
+    false_positives = [h for h in subset_hazards if h.fusion.is_false_positive]
+    critical_count = sum(1 for h in actionable if h.severity == SeverityLevel.CRITICAL)
+    high_count = sum(1 for h in actionable if h.severity == SeverityLevel.HIGH)
+    med_count = sum(1 for h in actionable if h.severity == SeverityLevel.MEDIUM)
+    low_count = sum(1 for h in actionable if h.severity == SeverityLevel.LOW)
+
+    total_cost_inr = sum(h.priority.estimated_repair_cost_usd for h in actionable)
+    avg_pci = (sum(r.current_pci for r in subset_roads) / max(1, len(subset_roads))) if subset_roads else 65.0
+
+    hazard_dist: Dict[str, int] = {}
+    for h in actionable:
+        k = h.hazard_type.value
+        hazard_dist[k] = hazard_dist.get(k, 0) + 1
+
+    return {
+        "currency": "INR",
+        "currency_symbol": "₹",
+        "selected_state": state or "All India",
+        "total_active_hazards": len(actionable),
+        "critical_hazards": critical_count,
+        "high_hazards": high_count,
+        "medium_hazards": med_count,
+        "low_hazards": low_count,
+        "false_positives_filtered": len(false_positives),
+        "total_estimated_repair_cost_usd": round(total_cost_inr, 2),
+        "average_network_pci": round(avg_pci, 1),
+        "active_work_orders_count": len(subset_work_orders),
+        "hazard_type_distribution": hazard_dist,
+    }
+
+
+# ==========================================
+# MULTI-SOURCE INGESTION ENDPOINTS
+# ==========================================
+
+@app.post("/api/ingest/citizen-report", response_model=CitizenTicketResponse)
+async def ingest_citizen_report(req: CitizenSubmissionRequest):
+    """Public endpoint for citizen mobile portal submissions."""
+    incident, ticket = ingestion_service.process_citizen_report(req, hazards_db)
+    hazards_db.insert(0, incident)
+    global work_orders_db
+    work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+    return ticket
+
+
+@app.get("/api/ingest/citizen-report/{ticket_id}", response_model=CitizenTicketResponse)
+async def get_citizen_ticket_status(ticket_id: str):
+    """Public endpoint for citizens to track their report status."""
+    ticket = ingestion_service.get_ticket_status(ticket_id)
+    if not ticket:
+        raise HTTPException(status_code=404, detail=f"Ticket '{ticket_id}' not found.")
+    return ticket
+
+
+@app.post("/api/ingest/cctv-feed")
+async def ingest_cctv_frame(req: CctvFrameIngestRequest):
+    """Webhook for Smart City / NHAI CCTV camera frame ingestion."""
+    incident = ingestion_service.process_cctv_frame(req, hazards_db)
+    if incident:
+        hazards_db.insert(0, incident)
+        global work_orders_db
+        work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+        return {"status": "hazard_detected", "hazard_id": incident.id, "severity": incident.severity.value}
+    return {"status": "no_hazard_detected", "message": "Frame processed, no actionable defect found."}
+
+
+@app.post("/api/ingest/google-maps-traffic")
+async def ingest_google_maps_anomaly(req: GoogleMapsAnomalyRequest):
+    """Webhook for Google Maps / telematics traffic anomaly data."""
+    incident = ingestion_service.process_google_maps_anomaly(req, hazards_db)
+    if incident:
+        hazards_db.insert(0, incident)
+        global work_orders_db
+        work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+        return {"status": "hazard_correlated", "hazard_id": incident.id, "severity": incident.severity.value}
+    return {"status": "traffic_only", "message": "Speed anomaly not correlated with road surface damage."}
+
+
+@app.get("/api/ingest/streams", response_model=List[IngestionStreamStatus])
+async def list_ingestion_streams():
+    """Returns status of all active ingestion feeds."""
+    return ingestion_service.get_stream_statuses()
+
+
+# WebSocket Live Patrol Vehicle Simulation
+@app.websocket("/ws/patrol-simulation")
+async def websocket_patrol_simulation(websocket: WebSocket):
+    await websocket.accept()
+    logger.info("Patrol simulation client connected (Multi-State India).")
+
+    waypoints = [
+        {"lat": 12.9340, "lng": 77.6080, "road": "Hosur Road Medical Corridor", "state": "Karnataka", "city": "Bengaluru", "speed": 42.0, "bump": True, "hazard_id": "HAZ-001"},
+        {"lat": 12.9360, "lng": 77.6910, "road": "Outer Ring Road IT Corridor", "state": "Karnataka", "city": "Bengaluru", "speed": 45.0, "bump": True, "hazard_id": "HAZ-006"},
+        {"lat": 13.0350, "lng": 77.5970, "road": "NH-44 Airport Expressway", "state": "Karnataka", "city": "Bengaluru", "speed": 75.0, "bump": True, "hazard_id": "HAZ-002"},
+        {"lat": 19.1136, "lng": 72.8697, "road": "Western Express Highway", "state": "Maharashtra", "city": "Mumbai", "speed": 55.0, "bump": True, "hazard_id": "HAZ-011"},
+        {"lat": 18.7500, "lng": 73.3700, "road": "Mumbai-Pune Expressway", "state": "Maharashtra", "city": "Pune", "speed": 80.0, "bump": True, "hazard_id": "HAZ-012"},
+        {"lat": 28.5672, "lng": 77.2100, "road": "Ring Road AIIMS Emergency Corridor", "state": "Delhi NCR", "city": "New Delhi", "speed": 48.0, "bump": True, "hazard_id": "HAZ-014"},
+        {"lat": 28.4900, "lng": 77.0850, "road": "Delhi-Gurugram Expressway NH-48", "state": "Delhi NCR", "city": "Gurugram", "speed": 70.0, "bump": True, "hazard_id": "HAZ-015"},
+        {"lat": 12.9850, "lng": 80.2450, "road": "Rajiv Gandhi Salai OMR IT Expressway", "state": "Tamil Nadu", "city": "Chennai", "speed": 52.0, "bump": True, "hazard_id": "HAZ-017"},
+        {"lat": 17.4500, "lng": 78.3800, "road": "HITEC City Cyber Towers Corridor", "state": "Telangana", "city": "Hyderabad", "speed": 38.0, "bump": True, "hazard_id": "HAZ-020"},
+        {"lat": 27.5200, "lng": 77.6600, "road": "Yamuna Expressway", "state": "Uttar Pradesh", "city": "Agra", "speed": 90.0, "bump": True, "hazard_id": "HAZ-021"},
+        {"lat": 22.5120, "lng": 88.3990, "road": "EM Bypass Medical Corridor", "state": "West Bengal", "city": "Kolkata", "speed": 46.0, "bump": True, "hazard_id": "HAZ-023"},
+        {"lat": 23.0300, "lng": 72.5080, "road": "Sarkhej-Gandhinagar (SG) Highway", "state": "Gujarat", "city": "Ahmedabad", "speed": 60.0, "bump": True, "hazard_id": "HAZ-025"},
+        {"lat": 26.8920, "lng": 75.8150, "road": "Tonk Road SMS Hospital Corridor", "state": "Rajasthan", "city": "Jaipur", "speed": 40.0, "bump": True, "hazard_id": "HAZ-027"},
+        {"lat": 9.9680, "lng": 76.3200, "road": "NH-66 Edappally-Vyttila Corridor", "state": "Kerala", "city": "Kochi", "speed": 44.0, "bump": True, "hazard_id": "HAZ-029"},
+        {"lat": 30.7650, "lng": 76.7780, "road": "Madhya Marg PGIMER Trauma Corridor", "state": "Punjab & Haryana", "city": "Chandigarh", "speed": 50.0, "bump": True, "hazard_id": "HAZ-031"},
+    ]
+
+    try:
+        step = 0
+        while True:
+            wp = waypoints[step % len(waypoints)]
+            
+            if wp["bump"]:
+                acc_z = 2.65 + (step % 3) * 0.15
+                jerk = 13.5
+                db = 76.0
+                iri = 7.5
+            else:
+                acc_z = 1.0 + 0.04 * ((step % 3) - 1)
+                jerk = 0.5
+                db = 41.0
+                iri = 2.1
+
+            detected_h = None
+            if wp["hazard_id"]:
+                for h in hazards_db:
+                    if h.id == wp["hazard_id"]:
+                        detected_h = h
+                        break
+
+            frame = PatrolTelemetryFrame(
+                step_id=step,
+                timestamp="2026-08-25 13:10:00",
+                latitude=wp["lat"],
+                longitude=wp["lng"],
+                speed_kmh=wp["speed"],
+                acc_x=0.03 * ((step % 2) - 0.5),
+                acc_y=0.02 * ((step % 4) - 1.5),
+                acc_z=round(acc_z, 3),
+                vertical_jerk=round(jerk, 2),
+                iri_roughness=round(iri, 2),
+                acoustic_db=round(db, 1),
+                hazard_detected=detected_h,
+                active_road_name=wp["road"],
+                state=wp["state"],
+                city=wp["city"],
+            )
+
+            await websocket.send_text(frame.model_dump_json())
+            step += 1
+            await asyncio.sleep(1.8)
+
+    except WebSocketDisconnect:
+        logger.info("Patrol simulation client disconnected.")
+    except Exception as e:
+        logger.error(f"WebSocket error: {e}")
+
+
+frontend_dir = Path(__file__).parent.parent / "frontend"
+if frontend_dir.exists():
+    app.mount("/static", StaticFiles(directory=str(frontend_dir)), name="static")
+
+    @app.get("/")
+    async def serve_index():
+        return FileResponse(str(frontend_dir / "index.html"))
+
+    @app.get("/report")
+    async def serve_citizen_report():
+        return FileResponse(str(frontend_dir / "report.html"))
