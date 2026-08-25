@@ -341,7 +341,7 @@ function initGisMap() {
 
   L.control.zoom({ position: 'bottomright' }).addTo(gisMap);
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; CartoDB &copy; OpenStreetMap',
     maxZoom: 19,
     subdomains: 'abcd'
@@ -459,7 +459,12 @@ function refreshMapData() {
 
 function renderIncidentFeed(hazards) {
   const container = document.getElementById('incident-feed-list');
-  document.getElementById('feed-count').textContent = hazards.length;
+  const feedCount = document.getElementById('feed-count');
+  if (feedCount) feedCount.textContent = hazards.length;
+  const drawerBadge = document.getElementById('feed-drawer-badge');
+  if (drawerBadge) drawerBadge.textContent = hazards.length;
+  
+  if (!container) return;
   container.innerHTML = '';
 
   if (hazards.length === 0) {
@@ -468,22 +473,22 @@ function renderIncidentFeed(hazards) {
   }
 
   hazards.forEach(h => {
-    let badgeBg = 'bg-slate-800 text-slate-300';
-    let riskColor = 'text-cyan-400';
+    let badgeBg = 'bg-blue-100 text-blue-950 border-2 border-black';
+    let riskColor = 'text-blue-700 font-extrabold';
 
     if (h.fusion.is_false_positive) {
-      badgeBg = 'bg-slate-800 border border-slate-600 text-slate-400';
-      riskColor = 'text-slate-500';
+      badgeBg = 'bg-slate-200 border-2 border-black text-slate-800';
+      riskColor = 'text-slate-600 font-bold';
     } else if (h.severity === 'critical') {
-      badgeBg = 'bg-red-950/80 border border-red-500/40 text-red-300';
-      riskColor = 'text-red-400';
+      badgeBg = 'bg-red-200 border-2 border-black text-red-950';
+      riskColor = 'text-red-600 font-extrabold';
     } else if (h.severity === 'high') {
-      badgeBg = 'bg-amber-950/80 border border-amber-500/40 text-amber-300';
-      riskColor = 'text-amber-400';
+      badgeBg = 'bg-amber-200 border-2 border-black text-amber-950';
+      riskColor = 'text-amber-700 font-extrabold';
     }
 
     const card = document.createElement('div');
-    card.className = 'bg-[#141d30] hover:bg-[#18233a] border border-slate-800 hover:border-cyan-500/50 rounded-xl p-3 cursor-pointer transition-all flex flex-col gap-2 group';
+    card.className = 'bg-white hover:bg-amber-50 border-2 border-black rounded-xl p-3 cursor-pointer transition-all flex flex-col gap-2 group shadow-[3px_3px_0px_#000] hover:shadow-[4px_4px_0px_#000] text-black';
     card.onclick = () => {
       openIncidentModal(h.id);
       if (gisMap) {
@@ -494,26 +499,26 @@ function renderIncidentFeed(hazards) {
     card.innerHTML = `
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-1.5">
-          <span class="text-[10px] font-mono px-2 py-0.5 rounded ${badgeBg} uppercase font-bold">
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded-lg ${badgeBg} uppercase font-extrabold">
             ${h.fusion.is_false_positive ? 'FALSE POSITIVE' : h.severity}
           </span>
-          <span class="text-[10px] text-slate-400 font-semibold bg-slate-900 px-1.5 py-0.5 rounded">${h.state}</span>
+          <span class="text-[10px] text-black font-bold bg-slate-100 border border-black px-1.5 py-0.5 rounded-md">${h.state}</span>
         </div>
         <div class="flex items-center gap-2">
-          <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Open location in Google Maps" class="text-blue-400 hover:text-blue-300 hover:underline inline-flex items-center gap-0.5 text-[10px] font-mono font-bold bg-blue-950/60 border border-blue-500/30 px-1.5 py-0.5 rounded">
+          <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Open location in Google Maps" class="text-black hover:bg-slate-200 inline-flex items-center gap-0.5 text-[10px] font-mono font-bold bg-blue-100 border border-black px-1.5 py-0.5 rounded">
             🗺️ Maps ↗
           </a>
-          <span class="text-xs font-mono font-bold ${riskColor}">Risk: ${h.priority.raw_risk_score}</span>
+          <span class="text-xs font-mono ${riskColor}">Risk: ${h.priority.raw_risk_score}</span>
         </div>
       </div>
       <div>
-        <h4 class="text-xs font-bold text-slate-100 group-hover:text-cyan-400 transition-colors leading-snug">${h.title}</h4>
-        <p class="text-[11px] text-slate-400 truncate mt-0.5">${h.address}</p>
+        <h4 class="text-xs font-bold text-black group-hover:text-blue-700 transition-colors leading-snug">${h.title}</h4>
+        <p class="text-[11px] text-slate-700 truncate mt-0.5">${h.address}</p>
       </div>
-      <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono border-t border-slate-800/80 pt-1.5">
+      <div class="flex items-center justify-between text-[10px] text-black font-mono font-bold border-t-2 border-black pt-1.5">
         <span>Depth: ${h.fusion.physical_depth_cm}cm</span>
         <span>Area: ${h.fusion.physical_area_sqm}m²</span>
-        <span class="text-purple-300 font-semibold">${formatINR(h.priority.estimated_repair_cost_usd)}</span>
+        <span class="text-purple-900 font-extrabold">${formatINR(h.priority.estimated_repair_cost_usd)}</span>
       </div>
     `;
 
@@ -699,7 +704,7 @@ function initPatrolMap() {
 
   L.control.zoom({ position: 'bottomright' }).addTo(patrolMap);
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; CartoDB &copy; OpenStreetMap',
     maxZoom: 19
   }).addTo(patrolMap);
@@ -777,28 +782,29 @@ function updatePatrolHud(frame) {
 // ==========================================
 function renderWorkOrders(workOrders) {
   const container = document.getElementById('work-orders-container');
+  if (!container) return;
   container.innerHTML = '';
 
   if (workOrders.length === 0) {
-    container.innerHTML = `<div class="col-span-3 text-center p-8 bg-slate-900/60 border border-slate-800 rounded-2xl text-slate-400 text-xs italic">No scheduled work orders for ${currentStateFilter}.</div>`;
+    container.innerHTML = `<div class="col-span-3 text-center p-8 bg-white border-2 border-black rounded-2xl text-black text-xs font-bold shadow-[4px_4px_0px_#000]">No scheduled work orders for ${currentStateFilter}.</div>`;
     return;
   }
 
   workOrders.forEach(wo => {
     const card = document.createElement('div');
-    card.className = 'bg-[#101726] border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col justify-between gap-4 hover:border-slate-700 transition-all';
+    card.className = 'bg-white border-2 border-black rounded-2xl p-5 shadow-[4px_4px_0px_#000] flex flex-col justify-between gap-4 hover:shadow-[6px_6px_0px_#000] transition-all text-black';
 
-    let tierBadge = 'bg-cyan-950/80 text-cyan-300 border-cyan-500/40';
-    if (wo.priority_tier.includes('Tier 1')) tierBadge = 'bg-red-950/80 text-red-300 border-red-500/40';
-    else if (wo.priority_tier.includes('Tier 2')) tierBadge = 'bg-amber-950/80 text-amber-300 border-amber-500/40';
+    let tierBadge = 'bg-blue-100 text-blue-950 border-2 border-black';
+    if (wo.priority_tier.includes('Tier 1')) tierBadge = 'bg-red-100 text-red-950 border-2 border-black';
+    else if (wo.priority_tier.includes('Tier 2')) tierBadge = 'bg-amber-100 text-amber-950 border-2 border-black';
 
     let hazardsHtml = wo.hazards_summary.map(h => `
-      <div class="flex items-center justify-between text-xs bg-slate-900/90 p-2 rounded-lg border border-slate-800">
+      <div class="flex items-center justify-between text-xs bg-slate-50 p-2 rounded-lg border border-black font-mono font-bold">
         <div>
-          <span class="font-bold text-slate-200">${h.hazard_id}</span>
-          <span class="text-slate-400 text-[11px] ml-1">(${h.hazard_type.replace('_', ' ')})</span>
+          <span class="text-black font-bold">${h.hazard_id}</span>
+          <span class="text-slate-600 text-[11px] ml-1">(${h.hazard_type.replace('_', ' ')})</span>
         </div>
-        <span class="font-mono text-purple-300 font-bold">${formatINR(h.cost_inr || 15000)}</span>
+        <span class="text-purple-900 font-extrabold">${formatINR(h.cost_inr || 15000)}</span>
       </div>
     `).join('');
 
@@ -806,47 +812,47 @@ function renderWorkOrders(workOrders) {
       <div class="flex flex-col gap-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <span class="text-xs font-mono font-bold text-cyan-400">${wo.id}</span>
-            <span class="text-[10px] text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded font-semibold">${wo.state}</span>
+            <span class="text-xs font-mono font-bold text-black bg-slate-100 border border-black px-2 py-0.5 rounded">${wo.id}</span>
+            <span class="text-[10px] text-black bg-slate-100 border border-black px-1.5 py-0.5 rounded font-bold">${wo.state}</span>
           </div>
-          <span class="text-[10px] font-mono px-2.5 py-0.5 rounded border font-bold ${tierBadge}">${wo.priority_tier}</span>
+          <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-lg font-extrabold ${tierBadge}">${wo.priority_tier}</span>
         </div>
-        <h3 class="text-sm font-bold text-white">${wo.title}</h3>
+        <h3 class="text-sm font-extrabold text-black leading-snug">${wo.title}</h3>
         
-        <div class="grid grid-cols-2 gap-2 text-xs font-mono bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/80">
+        <div class="grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50 p-2.5 rounded-xl border border-black">
           <div>
-            <span class="text-slate-400 text-[10px]">Assigned Crew:</span>
-            <p class="font-bold text-slate-200 text-[11px] truncate">${wo.assigned_crew}</p>
+            <span class="text-slate-600 text-[10px] font-bold">Assigned Crew:</span>
+            <p class="font-extrabold text-black text-[11px] truncate">${wo.assigned_crew}</p>
           </div>
           <div>
-            <span class="text-slate-400 text-[10px]">Scheduled Window:</span>
-            <p class="font-bold text-slate-200 text-[11px]">${wo.scheduled_date}</p>
+            <span class="text-slate-600 text-[10px] font-bold">Scheduled Window:</span>
+            <p class="font-extrabold text-black text-[11px]">${wo.scheduled_date}</p>
           </div>
           <div class="mt-1">
-            <span class="text-slate-400 text-[10px]">Est. Shift Hours:</span>
-            <p class="font-bold text-cyan-300 text-[11px]">${wo.estimated_hours} hrs</p>
+            <span class="text-slate-600 text-[10px] font-bold">Est. Shift Hours:</span>
+            <p class="font-extrabold text-blue-800 text-[11px]">${wo.estimated_hours} hrs</p>
           </div>
           <div class="mt-1">
-            <span class="text-slate-400 text-[10px]">Total Cost:</span>
-            <p class="font-bold text-purple-300 text-[11px]">${formatINR(wo.estimated_cost_usd)}</p>
+            <span class="text-slate-600 text-[10px] font-bold">Total Cost:</span>
+            <p class="font-extrabold text-purple-900 text-[11px]">${formatINR(wo.estimated_cost_usd)}</p>
           </div>
         </div>
 
         <div class="space-y-1.5">
-          <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Clustered Hazard Defects:</p>
+          <p class="text-[11px] font-extrabold text-black uppercase tracking-wider">Clustered Defects:</p>
           <div class="space-y-1 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
             ${hazardsHtml}
           </div>
         </div>
       </div>
 
-      <div class="flex items-center justify-between border-t border-slate-800 pt-3 text-xs">
-        <span class="text-slate-400 font-mono">Status: <strong class="text-emerald-400 font-bold">${wo.status.toUpperCase()}</strong></span>
+      <div class="flex items-center justify-between border-t-2 border-black pt-3 text-xs">
+        <span class="text-slate-800 font-mono font-bold">Status: <strong class="text-emerald-800 font-extrabold">${wo.status.toUpperCase()}</strong></span>
         <div class="flex items-center gap-2">
-          <a href="https://www.google.com/maps/search/?api=1&query=${wo.cluster_center_lat},${wo.cluster_center_lng}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-lg bg-blue-950/60 border border-blue-500/40 text-blue-300 hover:text-white text-xs font-bold flex items-center gap-1 transition-all">
+          <a href="https://www.google.com/maps/search/?api=1&query=${wo.cluster_center_lat},${wo.cluster_center_lng}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-lg bg-blue-100 hover:bg-blue-200 border-2 border-black text-black text-xs font-bold flex items-center gap-1 shadow-[2px_2px_0px_#000] transition-all">
             🗺️ Maps ↗
           </a>
-          <button onclick="dispatchWorkOrder('${wo.id}')" class="px-3 py-1.5 rounded-lg font-bold bg-cyan-500 hover:bg-cyan-400 text-black text-xs transition-all">
+          <button onclick="dispatchWorkOrder('${wo.id}')" class="px-3 py-1.5 rounded-lg font-extrabold bg-amber-300 hover:bg-amber-400 border-2 border-black text-black text-xs shadow-[2px_2px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] transition-all cursor-pointer">
             Dispatch Crew
           </button>
         </div>
@@ -988,9 +994,9 @@ function initCharts() {
           {
             label: 'Vertical Acceleration (Gz)',
             data: [],
-            borderColor: '#00f0ff',
-            backgroundColor: 'rgba(0, 240, 255, 0.1)',
-            borderWidth: 2,
+            borderColor: '#0284c7',
+            backgroundColor: 'rgba(2, 132, 199, 0.15)',
+            borderWidth: 2.5,
             tension: 0.3,
             fill: true,
             pointRadius: 0
@@ -998,8 +1004,8 @@ function initCharts() {
           {
             label: 'Vertical Jerk (g/s)',
             data: [],
-            borderColor: '#f59e0b',
-            borderWidth: 1.5,
+            borderColor: '#d97706',
+            borderWidth: 2,
             borderDash: [3, 3],
             tension: 0.3,
             pointRadius: 0
@@ -1011,8 +1017,8 @@ function initCharts() {
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          x: { display: true, grid: { color: '#1e293b' }, ticks: { color: '#64748b', maxTicksLimit: 6 } },
-          y: { display: true, grid: { color: '#1e293b' }, ticks: { color: '#64748b' }, min: 0.5, max: 3.5 }
+          x: { display: true, grid: { color: '#e2e8f0' }, ticks: { color: '#000000', maxTicksLimit: 6, font: { weight: 'bold' } } },
+          y: { display: true, grid: { color: '#e2e8f0' }, ticks: { color: '#000000', font: { weight: 'bold' } }, min: 0.5, max: 3.5 }
         }
       }
     });
@@ -1027,14 +1033,15 @@ function initCharts() {
         datasets: [{
           data: [4, 2, 1, 1, 1, 1],
           backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6', '#10b981', '#64748b'],
-          borderWidth: 0
+          borderColor: '#000000',
+          borderWidth: 2
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 11 } } }
+          legend: { position: 'right', labels: { color: '#000000', font: { size: 11, weight: 'bold' } } }
         }
       }
     });
@@ -1050,6 +1057,8 @@ function initCharts() {
           label: 'IRC / PCI Health Index',
           data: [],
           backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#ef4444', '#10b981'],
+          borderColor: '#000000',
+          borderWidth: 2,
           borderRadius: 6
         }]
       },
@@ -1058,8 +1067,8 @@ function initCharts() {
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          x: { grid: { color: '#1e293b' }, ticks: { color: '#cbd5e1', font: { size: 10 } } },
-          y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' }, min: 0, max: 100 }
+          x: { grid: { color: '#e2e8f0' }, ticks: { color: '#000000', font: { size: 10, weight: 'bold' } } },
+          y: { grid: { color: '#e2e8f0' }, ticks: { color: '#000000', font: { weight: 'bold' } }, min: 0, max: 100 }
         }
       }
     });
@@ -1443,4 +1452,127 @@ window.switchTab = function(tabId) {
 };
 // Override the global function
 switchTab = window.switchTab;
+
+// Scroll Government Posters Carousel
+function scrollGovPosters(direction) {
+  const container = document.getElementById('gov-posters-container');
+  if (container) {
+    const scrollAmount = direction === 'left' ? -380 : 380;
+    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  }
+}
+window.scrollGovPosters = scrollGovPosters;
+
+// ==========================================
+// DECLUTTERED NAVIGATION & ACTION DROPDOWNS
+// ==========================================
+const TAB_LABELS = {
+  map: 'GIS Hazard Map',
+  studio: 'Inspection Studio',
+  patrol: 'Patrol Simulator',
+  backlog: 'Work Orders',
+  copilot: 'AI Co-Pilot',
+  analytics: 'Analytics & Reports',
+  ingestion: 'Multi-Source Ingestion'
+};
+
+function toggleNavDropdown(event) {
+  if (event) event.stopPropagation();
+  const menu = document.getElementById('nav-dropdown-menu');
+  const arrow = document.getElementById('nav-dropdown-arrow');
+  const actionsMenu = document.getElementById('actions-dropdown-menu');
+  const actionsArrow = document.getElementById('actions-dropdown-arrow');
+  
+  if (actionsMenu) actionsMenu.classList.add('hidden');
+  if (actionsArrow) actionsArrow.style.transform = 'rotate(0deg)';
+  
+  if (menu) {
+    const isHidden = menu.classList.contains('hidden');
+    menu.classList.toggle('hidden');
+    if (arrow) arrow.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+    lucide.createIcons();
+  }
+}
+window.toggleNavDropdown = toggleNavDropdown;
+
+function toggleActionsDropdown(event) {
+  if (event) event.stopPropagation();
+  const menu = document.getElementById('actions-dropdown-menu');
+  const arrow = document.getElementById('actions-dropdown-arrow');
+  const navMenu = document.getElementById('nav-dropdown-menu');
+  const navArrow = document.getElementById('nav-dropdown-arrow');
+  
+  if (navMenu) navMenu.classList.add('hidden');
+  if (navArrow) navArrow.style.transform = 'rotate(0deg)';
+  
+  if (menu) {
+    const isHidden = menu.classList.contains('hidden');
+    menu.classList.toggle('hidden');
+    if (arrow) arrow.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+    lucide.createIcons();
+  }
+}
+window.toggleActionsDropdown = toggleActionsDropdown;
+
+function closeAllDropdowns() {
+  const navMenu = document.getElementById('nav-dropdown-menu');
+  const navArrow = document.getElementById('nav-dropdown-arrow');
+  const actionsMenu = document.getElementById('actions-dropdown-menu');
+  const actionsArrow = document.getElementById('actions-dropdown-arrow');
+  
+  if (navMenu) navMenu.classList.add('hidden');
+  if (navArrow) navArrow.style.transform = 'rotate(0deg)';
+  if (actionsMenu) actionsMenu.classList.add('hidden');
+  if (actionsArrow) actionsArrow.style.transform = 'rotate(0deg)';
+}
+window.closeAllDropdowns = closeAllDropdowns;
+
+// Global click listener to close dropdowns when clicking outside
+document.addEventListener('click', (e) => {
+  const navWrapper = document.getElementById('dropdown-nav-wrapper');
+  const actionsWrapper = document.getElementById('dropdown-actions-wrapper');
+  if (navWrapper && !navWrapper.contains(e.target) && actionsWrapper && !actionsWrapper.contains(e.target)) {
+    closeAllDropdowns();
+  }
+});
+
+function selectNavTab(tabId, label) {
+  switchTab(tabId);
+  const labelElem = document.getElementById('nav-dropdown-label');
+  if (labelElem) {
+    labelElem.textContent = label || TAB_LABELS[tabId] || 'GIS Hazard Map';
+  }
+  closeAllDropdowns();
+}
+window.selectNavTab = selectNavTab;
+
+function navigateToHome() {
+  selectNavTab('map', 'GIS Hazard Map');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+window.navigateToHome = navigateToHome;
+
+// ==========================================
+// PRIORITY BACKLOG FEED DRAWER TOGGLER
+// ==========================================
+function toggleFeedDrawer(explicitState) {
+  const drawer = document.getElementById('priority-feed-drawer');
+  const btn = document.getElementById('btn-toggle-feed-drawer');
+  if (!drawer) return;
+  
+  const shouldOpen = explicitState !== undefined ? explicitState : drawer.classList.contains('hidden');
+  
+  if (shouldOpen) {
+    drawer.classList.remove('hidden');
+    if (btn) btn.classList.add('hidden');
+  } else {
+    drawer.classList.add('hidden');
+    if (btn) btn.classList.remove('hidden');
+  }
+  lucide.createIcons();
+}
+window.toggleFeedDrawer = toggleFeedDrawer;
+
+
+
 

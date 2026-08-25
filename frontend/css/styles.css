@@ -1,11 +1,11 @@
-/* Modern High-Tech Municipal UI Styles */
+/* Neo-Brutalist Clean White & Bold Black Borders Theme */
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
 
 body {
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: #080c14;
-  color: #f1f5f9;
+  background-color: #f6f6f2;
+  color: #000000;
 }
 
 code, pre, .font-mono {
@@ -18,109 +18,134 @@ code, pre, .font-mono {
   height: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #0d1322;
+  background: #ffffff;
+  border-left: 1px solid #000000;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 4px;
+  background: #000000;
+  border-radius: 0px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #334155;
 }
 
-/* Navigation Tabs */
+/* Neo-Brutalist Navigation Tabs & Filter Pills */
 .active-tab {
-  background: linear-gradient(135deg, rgba(0, 240, 255, 0.15) 0%, rgba(59, 130, 246, 0.2) 100%);
-  border: 1px solid rgba(0, 240, 255, 0.4);
-  color: #00f0ff !important;
-  box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #000000 !important;
+  box-shadow: 3px 3px 0px #000000 !important;
+}
+
+.filter-pill {
+  background-color: #ffffff;
+  color: #000000;
+  border: 2px solid #000000;
+  box-shadow: 2px 2px 0px #000000;
+  font-weight: 700;
+  transition: all 0.1s ease;
+}
+
+.filter-pill:hover {
+  background-color: #f1f5f9;
 }
 
 .filter-pill.active {
-  background-color: #0284c7;
-  color: #ffffff;
-  font-weight: 700;
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #000000 !important;
+  box-shadow: 2px 2px 0px #000000 !important;
 }
 
-/* Leaflet Customization */
+/* Leaflet Customization & Stacking Isolation */
 .leaflet-container {
-  background-color: #0d1322 !important;
+  background-color: #f8fafc !important;
+  z-index: 1 !important;
+  position: relative;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-/* Custom Map Hazard Marker Pins */
+#gis-map,
+#patrol-map {
+  isolation: isolate;
+  z-index: 1;
+  position: relative;
+}
+
+.leaflet-pane {
+  z-index: 2 !important;
+}
+
+.leaflet-top,
+.leaflet-bottom,
+.leaflet-control-container {
+  z-index: 5 !important;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #ffffff !important;
+  border: 2px solid #000000 !important;
+  border-radius: 12px !important;
+  box-shadow: 4px 4px 0px #000000 !important;
+  color: #000000 !important;
+  padding: 0 !important;
+}
+
+.leaflet-popup-tip {
+  background: #000000 !important;
+}
+
+/* Custom Map Hazard Marker Pins (Neo-Brutalist High-Contrast) */
 .custom-hazard-pin {
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  box-shadow: 0 0 14px rgba(0,0,0,0.8);
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 2px solid #000000;
+  box-shadow: 2px 2px 0px #000000;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .custom-hazard-pin:hover {
   transform: scale(1.25);
-  z-index: 1000 !important;
+  z-index: 10 !important;
 }
 
 .pin-critical {
-  background: radial-gradient(circle, #ef4444 0%, #991b1b 100%);
-  border: 2px solid #fecaca;
-  box-shadow: 0 0 16px rgba(239, 68, 68, 0.8);
+  background: #ef4444;
+  color: #ffffff;
 }
 
 .pin-high {
-  background: radial-gradient(circle, #f59e0b 0%, #b45309 100%);
-  border: 2px solid #fef3c7;
-  box-shadow: 0 0 14px rgba(245, 158, 11, 0.8);
+  background: #f59e0b;
+  color: #000000;
 }
 
 .pin-medium {
-  background: radial-gradient(circle, #3b82f6 0%, #1d4ed8 100%);
-  border: 2px solid #dbeafe;
-  box-shadow: 0 0 12px rgba(59, 130, 246, 0.8);
+  background: #3b82f6;
+  color: #ffffff;
 }
 
 .pin-low {
-  background: radial-gradient(circle, #10b981 0%, #047857 100%);
-  border: 2px solid #a7f3d0;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
+  background: #10b981;
+  color: #ffffff;
 }
 
 .pin-fp {
-  background: radial-gradient(circle, #64748b 0%, #334155 100%);
-  border: 2px dashed #cbd5e1;
-  opacity: 0.6;
+  background: #94a3b8;
+  color: #000000;
+  border: 2px dashed #000000;
 }
 
 /* Car Patrol Pin */
 .patrol-car-pin {
-  background: #00f0ff;
-  border: 3px solid #ffffff;
+  background: #0284c7;
+  border: 2px solid #000000;
   border-radius: 50%;
-  box-shadow: 0 0 20px #00f0ff, 0 0 35px #00f0ff;
+  box-shadow: 3px 3px 0px #000000;
 }
 
-/* Glassmorphic Cards */
-.glass-panel {
-  background: rgba(18, 25, 41, 0.75);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-/* Animation utilities */
-@keyframes glowPulse {
-  0%, 100% { opacity: 0.8; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.05); }
-}
-
-.animate-glow {
-  animation: glowPulse 2.5s infinite ease-in-out;
-}
-
-/* ==========================================
-   MODAL & LEAFLET Z-INDEX LAYERING
-   Ensures modals ALWAYS stay on top of maps
-   ========================================== */
+/* Modals & Z-Index Layering */
 #incident-modal,
 #apikey-modal,
 #ingest-modal,
@@ -129,20 +154,20 @@ code, pre, .font-mono {
   z-index: 99999 !important;
 }
 
-/* Prevent Leaflet panes and controls from bleeding through */
-.leaflet-container {
-  z-index: 1 !important;
+/* Clean White & Black Form Selects */
+select, option {
+  background-color: #ffffff !important;
+  color: #000000 !important;
 }
 
-.leaflet-pane {
-  z-index: 20 !important;
+select option {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  padding: 8px 12px;
 }
 
-.leaflet-top,
-.leaflet-bottom {
-  z-index: 30 !important;
-}
-
-.leaflet-control {
-  z-index: 35 !important;
+select option:hover,
+select option:checked {
+  background-color: #f1f5f9 !important;
+  color: #000000 !important;
 }
