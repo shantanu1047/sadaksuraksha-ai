@@ -131,16 +131,25 @@
     <!-- Header -->
     <header class="p-5 border-b border-slate-800 bg-card sticky top-0 z-50">
         <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center border-2 border-indiaBlue shadow-[0_0_15px_rgba(0,0,128,0.3)]">
-                    <i data-lucide="shield-check" class="text-indiaOrange w-5 h-5"></i>
+            <a href="/" title="Click shield to return to Main GIS Command Center" class="flex items-center gap-3 cursor-pointer group select-none transition-transform hover:scale-[1.01]">
+                <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center border-2 border-indiaBlue shadow-[0_0_15px_rgba(0,0,128,0.3)] group-hover:border-orange-400 transition-colors">
+                    <i data-lucide="shield-check" class="text-indiaOrange w-5 h-5 group-hover:text-amber-300"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg leading-tight flex items-center gap-2">
+                    <h1 class="font-bold text-lg leading-tight flex items-center gap-2 group-hover:text-cyan-400 transition-colors">
                         SadakSuraksha AI <span class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">🇮🇳</span>
                     </h1>
-                    <p class="text-xs text-slate-400">Report a Road Hazard</p>
+                    <p class="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5">
+                        <span>Report a Road Hazard</span>
+                        <span class="text-[10px] text-cyan-400 bg-slate-800 px-1.5 py-0.2 rounded font-mono border border-slate-700">🏠 Home</span>
+                    </p>
                 </div>
+            </a>
+            <div>
+                <a href="/" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-all shadow-sm">
+                    <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
+                    <span>Command Center</span>
+                </a>
             </div>
         </div>
         <p class="text-xs text-slate-400 mt-3">Help make India's roads safer. Report potholes, waterlogging, damaged barriers, debris, or broken signs.</p>

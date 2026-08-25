@@ -1022,6 +1022,26 @@ function switchTab(tabId) {
   }
 }
 
+function navigateToHome() {
+  // Close any open modals
+  closeIncidentModal();
+  closeIngestModal();
+  closeApiKeyModal();
+  if (typeof closeCitizenPortalModal === 'function') closeCitizenPortalModal();
+
+  // Switch to the main GIS Map tab
+  switchTab('map');
+
+  // Reset map view to the current state center or all India center
+  if (gisMap) {
+    const vp = STATE_VIEWPORTS[currentStateFilter] || STATE_VIEWPORTS.all;
+    gisMap.flyTo(vp.center, vp.zoom, { duration: 0.8 });
+  }
+
+  // Scroll window smoothly to the top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function openIncidentModal(hazardId) {
   const h = allHazards.find(item => item.id === hazardId);
   if (!h) return;
