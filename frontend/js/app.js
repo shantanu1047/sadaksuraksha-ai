@@ -488,7 +488,11 @@ function renderIncidentFeed(hazards) {
     }
 
     const card = document.createElement('div');
-    card.className = 'bg-white hover:bg-orange-50/40 border-2 border-black rounded-xl p-3 cursor-pointer transition-colors flex flex-col gap-2 group text-black overflow-hidden relative';
+    const borderLeftColor = h.fusion.is_false_positive 
+      ? 'border-l-4 border-l-slate-400' 
+      : (h.severity === 'critical' ? 'border-l-4 border-l-red-600' : (h.severity === 'high' ? 'border-l-4 border-l-amber-600' : 'border-l-4 border-l-blue-600'));
+
+    card.className = `bg-white hover:bg-orange-50/40 border-2 border-black ${borderLeftColor} rounded-none p-3 cursor-pointer transition-colors flex flex-col gap-2 group text-black overflow-hidden relative`;
     card.onclick = () => {
       openIncidentModal(h.id);
       if (gisMap) {
@@ -497,16 +501,15 @@ function renderIncidentFeed(hazards) {
     };
 
     card.innerHTML = `
-      <div class="tricolor-strip-sm -mx-3 -mt-3 mb-1"></div>
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-1.5">
-          <span class="text-[10px] font-mono px-2 py-0.5 rounded-lg ${badgeBg} uppercase font-extrabold">
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded-none ${badgeBg} uppercase font-extrabold">
             ${h.fusion.is_false_positive ? 'FALSE POSITIVE' : h.severity}
           </span>
-          <span class="text-[10px] text-black font-bold bg-slate-100 border border-black px-1.5 py-0.5 rounded-md">${h.state}</span>
+          <span class="text-[10px] text-black font-bold bg-slate-100 border border-black px-1.5 py-0.5 rounded-none">${h.state}</span>
         </div>
         <div class="flex items-center gap-2">
-          <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Open location in Google Maps" class="text-black hover:bg-slate-200 inline-flex items-center gap-0.5 text-[10px] font-mono font-bold bg-blue-100 border border-black px-1.5 py-0.5 rounded">
+          <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Open location in Google Maps" class="text-black hover:bg-slate-200 inline-flex items-center gap-0.5 text-[10px] font-mono font-bold bg-blue-100 border border-black px-1.5 py-0.5 rounded-none">
             🗺️ Maps ↗
           </a>
           <span class="text-xs font-mono ${riskColor}">Risk: ${h.priority.raw_risk_score}</span>
@@ -516,7 +519,7 @@ function renderIncidentFeed(hazards) {
         <h4 class="text-xs font-bold text-black group-hover:text-orange-700 transition-colors leading-snug">${h.title}</h4>
         <p class="text-[11px] text-slate-700 truncate mt-0.5">${h.address}</p>
       </div>
-      <div class="flex items-center justify-between text-[10px] text-black font-mono font-bold border-t-2 border-black pt-1.5">
+      <div class="flex items-center justify-between text-[10px] text-black font-mono font-bold border-t border-black pt-1.5">
         <span>Depth: ${h.fusion.physical_depth_cm}cm</span>
         <span>Area: ${h.fusion.physical_area_sqm}m²</span>
         <span class="text-purple-900 font-extrabold">${formatINR(h.priority.estimated_repair_cost_usd)}</span>
@@ -787,20 +790,26 @@ function renderWorkOrders(workOrders) {
   container.innerHTML = '';
 
   if (workOrders.length === 0) {
-    container.innerHTML = `<div class="col-span-3 text-center p-8 bg-white border-2 border-black rounded-2xl text-black text-xs font-bold">No scheduled work orders for ${currentStateFilter}.</div>`;
+    container.innerHTML = `<div class="col-span-3 text-center p-8 bg-white border-2 border-black rounded-none text-black text-xs font-bold">No scheduled work orders for ${currentStateFilter}.</div>`;
     return;
   }
 
   workOrders.forEach(wo => {
     const card = document.createElement('div');
-    card.className = 'bg-white border-2 border-black rounded-2xl p-5 flex flex-col justify-between gap-4 transition-colors text-black overflow-hidden relative';
+    let tierBadge = 'bg-blue-100 text-blue-950 border border-black';
+    let borderAccent = 'border-l-6 border-l-blue-600';
+    if (wo.priority_tier.includes('Tier 1')) {
+      tierBadge = 'bg-red-100 text-red-950 border border-black';
+      borderAccent = 'border-l-6 border-l-red-600';
+    } else if (wo.priority_tier.includes('Tier 2')) {
+      tierBadge = 'bg-orange-100 text-orange-950 border border-black';
+      borderAccent = 'border-l-6 border-l-[#FF9933]';
+    }
 
-    let tierBadge = 'bg-blue-100 text-blue-950 border-2 border-black';
-    if (wo.priority_tier.includes('Tier 1')) tierBadge = 'bg-red-100 text-red-950 border-2 border-black';
-    else if (wo.priority_tier.includes('Tier 2')) tierBadge = 'bg-orange-100 text-orange-950 border-2 border-black';
+    card.className = `bg-white border-2 border-black ${borderAccent} rounded-none p-5 flex flex-col justify-between gap-4 transition-colors text-black overflow-hidden relative`;
 
     let hazardsHtml = wo.hazards_summary.map(h => `
-      <div class="flex items-center justify-between text-xs bg-slate-50 p-2 rounded-lg border border-black font-mono font-bold">
+      <div class="flex items-center justify-between text-xs bg-slate-50 p-2 rounded-none border border-black font-mono font-bold">
         <div>
           <span class="text-black font-bold">${h.hazard_id}</span>
           <span class="text-slate-600 text-[11px] ml-1">(${h.hazard_type.replace('_', ' ')})</span>
@@ -810,18 +819,17 @@ function renderWorkOrders(workOrders) {
     `).join('');
 
     card.innerHTML = `
-      <div class="tricolor-strip-sm -mx-5 -mt-5 mb-1"></div>
       <div class="flex flex-col gap-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <span class="text-xs font-mono font-bold text-black bg-slate-100 border border-black px-2 py-0.5 rounded">${wo.id}</span>
-            <span class="text-[10px] text-black bg-orange-100 border border-black px-1.5 py-0.5 rounded font-bold">${wo.state}</span>
+            <span class="text-xs font-mono font-bold text-black bg-slate-100 border border-black px-2 py-0.5 rounded-none">${wo.id}</span>
+            <span class="text-[10px] text-black bg-orange-100 border border-black px-1.5 py-0.5 rounded-none font-bold">${wo.state}</span>
           </div>
-          <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-lg font-extrabold ${tierBadge}">${wo.priority_tier}</span>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded-none font-extrabold ${tierBadge}">${wo.priority_tier}</span>
         </div>
         <h3 class="text-sm font-extrabold text-black leading-snug">${wo.title}</h3>
         
-        <div class="grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50 p-2.5 rounded-xl border border-black">
+        <div class="grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50 p-2.5 rounded-none border border-black">
           <div>
             <span class="text-slate-600 text-[10px] font-bold">Assigned Crew:</span>
             <p class="font-extrabold text-black text-[11px] truncate">${wo.assigned_crew}</p>
@@ -851,10 +859,10 @@ function renderWorkOrders(workOrders) {
       <div class="flex items-center justify-between border-t-2 border-black pt-3 text-xs">
         <span class="text-slate-800 font-mono font-bold">Status: <strong class="text-emerald-800 font-extrabold">${wo.status.toUpperCase()}</strong></span>
         <div class="flex items-center gap-2">
-          <a href="https://www.google.com/maps/search/?api=1&query=${wo.cluster_center_lat},${wo.cluster_center_lng}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-lg bg-[#FF9933] hover:bg-[#F28500] border-2 border-black text-black text-xs font-bold flex items-center gap-1 transition-colors">
+          <a href="https://www.google.com/maps/search/?api=1&query=${wo.cluster_center_lat},${wo.cluster_center_lng}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-none bg-[#FF9933] hover:bg-[#F28500] border-2 border-black text-black text-xs font-bold flex items-center gap-1 transition-colors">
             🗺️ Maps ↗
           </a>
-          <button onclick="dispatchWorkOrder('${wo.id}')" class="px-3 py-1.5 rounded-lg font-black bg-[#138808] hover:bg-[#0f6b06] border-2 border-black text-white text-xs transition-colors cursor-pointer">
+          <button onclick="dispatchWorkOrder('${wo.id}')" class="px-3 py-1.5 rounded-none font-black bg-[#138808] hover:bg-[#0f6b06] border-2 border-black text-white text-xs transition-colors cursor-pointer">
             Dispatch Crew
           </button>
         </div>
@@ -1392,21 +1400,20 @@ function renderIngestionStreams(streams) {
     const icon = sourceIcons[s.source_type] || '📡';
     const color = statusColors[s.status] || 'slate';
     return `
-      <div class="bg-white border-2 border-black rounded-xl p-4 transition-colors text-black overflow-hidden relative">
-        <div class="tricolor-strip-sm -mx-4 -mt-4 mb-2.5"></div>
+      <div class="bg-white border-2 border-black border-l-4 border-l-[#FF9933] rounded-none p-4 transition-colors text-black overflow-hidden relative">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
             <span class="text-lg">${icon}</span>
             <span class="text-[10px] uppercase font-black tracking-wider text-black">${s.source_type.replace(/_/g, ' ')}</span>
           </div>
-          <span class="flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-extrabold bg-emerald-100 border border-black text-emerald-950">
+          <span class="flex items-center gap-1 px-2 py-0.5 rounded-none text-[10px] font-extrabold bg-emerald-100 border border-black text-emerald-950">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 ${s.status === 'active' ? 'animate-pulse' : ''}"></span>
             ${s.status.toUpperCase()}
           </span>
         </div>
         <h4 class="text-xs font-extrabold text-black mb-1 leading-tight">${s.source_name}</h4>
-        <p class="text-[10px] text-slate-600 mb-3">${s.state} • ${s.city}</p>
-        <div class="grid grid-cols-3 gap-2 text-center text-[10px] bg-slate-50 p-2 rounded-lg border border-black">
+        <p class="text-[10px] text-slate-600 mb-3 font-mono">${s.state} • ${s.city}</p>
+        <div class="grid grid-cols-3 gap-2 text-center text-[10px] bg-slate-50 p-2 rounded-none border border-black">
           <div>
             <p class="font-extrabold font-mono text-black">${s.total_frames_processed.toLocaleString('en-IN')}</p>
             <p class="text-slate-600">Frames</p>
@@ -1456,15 +1463,7 @@ window.switchTab = function(tabId) {
 // Override the global function
 switchTab = window.switchTab;
 
-// Scroll Government Posters Carousel
-function scrollGovPosters(direction) {
-  const container = document.getElementById('gov-posters-container');
-  if (container) {
-    const scrollAmount = direction === 'left' ? -380 : 380;
-    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-  }
-}
-window.scrollGovPosters = scrollGovPosters;
+// Decluttered Navigation & Action Dropdowns
 
 // ==========================================
 // DECLUTTERED NAVIGATION & ACTION DROPDOWNS
