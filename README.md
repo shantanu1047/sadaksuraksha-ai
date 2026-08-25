@@ -197,4 +197,4 @@ See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for full branch naming conventi
 ---
 
 ## 📄 License
-This project is licensed under the MIT License.
+This project is licensed under the BIT License.
