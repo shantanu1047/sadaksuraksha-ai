@@ -116,3 +116,33 @@ code, pre, .font-mono {
 .animate-glow {
   animation: glowPulse 2.5s infinite ease-in-out;
 }
+
+/* ==========================================
+   MODAL & LEAFLET Z-INDEX LAYERING
+   Ensures modals ALWAYS stay on top of maps
+   ========================================== */
+#incident-modal,
+#apikey-modal,
+#ingest-modal,
+#citizen-portal-modal,
+.fixed.inset-0 {
+  z-index: 99999 !important;
+}
+
+/* Prevent Leaflet panes and controls from bleeding through */
+.leaflet-container {
+  z-index: 1 !important;
+}
+
+.leaflet-pane {
+  z-index: 20 !important;
+}
+
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 30 !important;
+}
+
+.leaflet-control {
+  z-index: 35 !important;
+}
