@@ -1611,52 +1611,6 @@ function navigateToHome() {
 window.navigateToHome = navigateToHome;
 
 // ==========================================
-// MAP FULLSCREEN CONTROLLER
-// ==========================================
-function toggleMapFullscreen() {
-  const mapWrapper = document.getElementById('map-wrapper');
-  if (!mapWrapper) return;
-
-  const isFullscreen = mapWrapper.classList.contains('map-fullscreen-active');
-  const textEl = document.getElementById('text-map-fullscreen');
-  const iconEl = document.getElementById('icon-map-fullscreen');
-
-  if (!isFullscreen) {
-    mapWrapper.classList.add('map-fullscreen-active');
-    document.body.classList.add('overflow-hidden');
-    if (textEl) textEl.textContent = 'Exit Fullscreen';
-    if (iconEl) iconEl.setAttribute('data-lucide', 'minimize-2');
-  } else {
-    mapWrapper.classList.remove('map-fullscreen-active');
-    document.body.classList.remove('overflow-hidden');
-    if (textEl) textEl.textContent = 'Fullscreen';
-    if (iconEl) iconEl.setAttribute('data-lucide', 'maximize-2');
-  }
-
-  if (window.lucide && typeof window.lucide.createIcons === 'function') {
-    window.lucide.createIcons();
-  }
-
-  // Allow layout recalculation then invalidate map size
-  setTimeout(() => {
-    if (gisMap) {
-      gisMap.invalidateSize();
-    }
-  }, 120);
-}
-window.toggleMapFullscreen = toggleMapFullscreen;
-
-// Support Escape key to exit fullscreen
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    const mapWrapper = document.getElementById('map-wrapper');
-    if (mapWrapper && mapWrapper.classList.contains('map-fullscreen-active')) {
-      toggleMapFullscreen();
-    }
-  }
-});
-
-// ==========================================
 // PRIORITY BACKLOG FEED DRAWER TOGGLER
 // ==========================================
 function toggleFeedDrawer(explicitState) {
@@ -1673,10 +1627,9 @@ function toggleFeedDrawer(explicitState) {
     drawer.classList.add('hidden');
     if (btn) btn.classList.remove('hidden');
   }
-  if (window.lucide) lucide.createIcons();
+  lucide.createIcons();
 }
 window.toggleFeedDrawer = toggleFeedDrawer;
-
 
 // ==========================================
 // FEATURE 1: AI ROAD FORECAST ENGINE
@@ -2410,7 +2363,59 @@ function runAutoAllocation() {
 }
 window.runAutoAllocation = runAutoAllocation;
 
+// ==========================================
+// MAP FULLSCREEN CONTROL
+// ==========================================
+function toggleMapFullscreen() {
+  const mapWrapper = document.getElementById('map-container-box');
+  if (!mapWrapper) return;
 
+  if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+    if (mapWrapper.requestFullscreen) {
+      mapWrapper.requestFullscreen();
+    } else if (mapWrapper.webkitRequestFullscreen) {
+      mapWrapper.webkitRequestFullscreen();
+    } else if (mapWrapper.msRequestFullscreen) {
+      mapWrapper.msRequestFullscreen();
+    }
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+    }
+  }
+}
+window.toggleMapFullscreen = toggleMapFullscreen;
 
+function handleMapFullscreenChange() {
+  const icon = document.getElementById('icon-map-fullscreen');
+  const text = document.getElementById('text-map-fullscreen');
+  const mapWrapper = document.getElementById('map-container-box');
+  const isFs = (document.fullscreenElement === mapWrapper) || 
+               (document.webkitFullscreenElement === mapWrapper) || 
+               (document.msFullscreenElement === mapWrapper);
 
+  if (isFs) {
+    if (icon) icon.setAttribute('data-lucide', 'minimize-2');
+    if (text) text.textContent = 'Exit Fullscreen';
+  } else {
+    if (icon) icon.setAttribute('data-lucide', 'maximize-2');
+    if (text) text.textContent = 'Fullscreen';
+  }
 
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    window.lucide.createIcons();
+  }
+
+  if (gisMap) {
+    setTimeout(() => gisMap.invalidateSize(), 100);
+    setTimeout(() => gisMap.invalidateSize(), 300);
+  }
+}
+
+document.addEventListener('fullscreenchange', handleMapFullscreenChange);
+document.addEventListener('webkitfullscreenchange', handleMapFullscreenChange);
+document.addEventListener('msfullscreenchange', handleMapFullscreenChange);
