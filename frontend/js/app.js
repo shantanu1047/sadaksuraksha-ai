@@ -2441,3 +2441,43 @@ function handleMapFullscreenChange() {
 document.addEventListener('fullscreenchange', handleMapFullscreenChange);
 document.addEventListener('webkitfullscreenchange', handleMapFullscreenChange);
 document.addEventListener('msfullscreenchange', handleMapFullscreenChange);
+
+// ==========================================
+// BULLETPROOF FIXED / STICKY FILTER BAR ON SCROLL
+// ==========================================
+function initStickyFilterDock() {
+  const filterDock = document.getElementById('sticky-filter-dock');
+  const filterWrapper = document.getElementById('sticky-filter-wrapper');
+  if (!filterDock || !filterWrapper) return;
+
+  function updateDock() {
+    const wrapperRect = filterWrapper.getBoundingClientRect();
+    if (wrapperRect.top <= 0) {
+      if (!filterDock.classList.contains('is-docked')) {
+        filterWrapper.style.height = `${filterDock.offsetHeight}px`;
+        filterDock.classList.add('is-docked');
+      }
+    } else {
+      if (filterDock.classList.contains('is-docked')) {
+        filterDock.classList.remove('is-docked');
+        filterWrapper.style.height = 'auto';
+      }
+    }
+  }
+
+  window.addEventListener('scroll', updateDock, { passive: true });
+  document.addEventListener('scroll', updateDock, { passive: true });
+  window.addEventListener('resize', () => {
+    if (!filterDock.classList.contains('is-docked')) {
+      filterWrapper.style.height = 'auto';
+    }
+  });
+  updateDock();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initStickyFilterDock);
+} else {
+  initStickyFilterDock();
+}
+

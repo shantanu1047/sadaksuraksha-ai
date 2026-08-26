@@ -305,10 +305,12 @@
     </div>
 
     <!-- =========================================================
-         3. SLEEK ELEVATED NHAI FILTER & CONTROLS DOCK (Seamless Sticky Bar)
+         3. SLEEK ELEVATED NHAI FILTER & CONTROLS DOCK (Sticky / Fixed on Scroll)
          ========================================================= -->
-    <div class="sticky top-0 z-[1000] px-6 md:px-10 py-2.5 relative">
-      <div class="max-w-7xl mx-auto nhai-filter-container p-3 flex flex-wrap items-center justify-between gap-3 text-black">
+    <div id="sticky-filter-wrapper" class="w-full relative z-40">
+      <div id="sticky-filter-dock" class="px-6 md:px-10 py-2.5 transition-all w-full relative">
+        <div class="max-w-7xl mx-auto nhai-filter-container p-3 flex flex-wrap items-center justify-between gap-3 text-black">
+
 
 
 
@@ -534,7 +536,9 @@
         </div>
 
       </div>
+      </div>
     </div>
+
 
     <!-- =========================================================
          4. SUNSET HIGHWAY INFRASTRUCTURE PANORAMIC STATS STRIP
@@ -669,7 +673,8 @@
 
 
   <!-- Main View Container with Uploaded Highway Photo Overlay Background -->
-  <main class="flex-1 p-6 overflow-y-auto gis-section-bg">
+  <main class="flex-1 p-6 gis-section-bg">
+
 
     <!-- 1. GIS HAZARD MAP TAB (LEFT: DROPDOWN FEED BOX | RIGHT: CONTAINED MAP BOX) -->
     <div id="view-map" class="tab-view active">
