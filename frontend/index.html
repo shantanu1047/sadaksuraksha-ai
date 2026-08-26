@@ -213,251 +213,325 @@
 
   </div>
 
-  <!-- Top Indian Tricolour Strip -->
+  <!-- =========================================================
+       1. OFFICIAL GOVERNMENT OF INDIA & MoRTH TOP UTILITY BAR
+       ========================================================= -->
   <div class="tricolor-strip"></div>
-
-  <!-- Top Navigation Header (Longer, Expansive & Clean NHAI Style) -->
-  <header class="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-[1000] px-8 py-4.5 flex flex-wrap items-center justify-between gap-4 shadow-xs">
-    
-    <!-- Branding / Home Button -->
-    <div onclick="navigateToHome()" class="flex items-center gap-3.5 cursor-pointer group select-none" title="Click shield to return to Main GIS Command Center">
-      <div class="w-11 h-11 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center shadow-xs">
-        <i data-lucide="shield-alert" class="w-5 h-5 text-black"></i>
+  <div class="gov-top-bar px-6 md:px-10 py-1.5 flex flex-wrap items-center justify-between gap-3 text-[11px] font-sans">
+    <div class="flex items-center gap-3">
+      <!-- National Ashoka Emblem SVG -->
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-amber-500 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07l14.14-14.14" stroke="currentColor" stroke-width="1.2"/>
+        </svg>
+        <span class="font-bold text-slate-200 tracking-wide">भारत सरकार | Government of India</span>
       </div>
-      <div>
-        <div class="flex items-center gap-2">
-          <h1 class="text-base font-black tracking-wider text-black font-mono uppercase flex items-center gap-1.5">
-            <span>SADAK-SURAKSHA</span> <span class="text-base">🇮🇳</span>
-          </h1>
-          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 border border-emerald-300 text-emerald-950">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span> <span id="header-dept-text">NHAI / PWD LIVE</span>
-          </span>
-        </div>
-        <p class="text-[11px] text-slate-700 font-medium">
-          National Multimodal Road Safety & Maintenance Intelligence Platform
-        </p>
-      </div>
+      <span class="text-slate-600 hidden sm:inline">•</span>
+      <span class="text-slate-400 font-medium hidden sm:inline">सड़क परिवहन और राजमार्ग मंत्रालय | Ministry of Road Transport & Highways</span>
     </div>
 
-    <!-- Center Navigation & Action Controls (Decluttered Dropdown Manner) -->
-    <div class="flex flex-wrap items-center gap-3">
+    <div class="flex items-center gap-4 text-slate-300 font-mono text-[10px]">
+      <span class="hidden md:flex items-center gap-1">
+        <i data-lucide="phone" class="w-3 h-3 text-[#F47216]"></i>
+        <span>NHAI 24/7 Helpline: <strong class="text-white font-bold">1073</strong></span>
+      </span>
+      <span class="text-slate-700 hidden md:inline">|</span>
+      <span class="flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="text-emerald-400 font-bold tracking-wider">IRC:82 LIVE TELEMETRY</span>
+      </span>
+    </div>
+  </div>
 
-      <!-- 1. MODULES & VIEWS DROPDOWN -->
-      <div class="relative" id="dropdown-nav-wrapper">
-        <button type="button" onclick="toggleNavDropdown(event)" id="nav-dropdown-btn" class="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-xs font-bold text-black shadow-xs transition-all cursor-pointer">
-          <i data-lucide="layout-grid" class="w-4 h-4 text-orange-600"></i>
-          <span id="nav-dropdown-label" class="text-black font-extrabold">GIS Hazard Map</span>
-          <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-600 transition-transform duration-200" id="nav-dropdown-arrow"></i>
-        </button>
+  <!-- =========================================================
+       2. EXECUTIVE NHAI NAVY BLUE COMMAND HEADER
+       ========================================================= -->
+  <header class="nhai-portal-header text-white px-6 md:px-10 pt-7 pb-10">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-6 relative z-10">
+      
+      <!-- Brand & Mandate Title -->
+      <div onclick="navigateToHome()" class="flex items-center gap-4 cursor-pointer group select-none">
+        <!-- NHAI Emblem / Insignia -->
+        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-[#0c3b75] to-[#04162e] border-2 border-amber-500/40 p-2 flex items-center justify-center shrink-0 shadow-lg group-hover:border-amber-400 transition-all">
+          <svg viewBox="0 0 36 36" fill="none" class="w-full h-full">
+            <!-- Road Vector Highway -->
+            <path d="M4 32 C8 24, 12 14, 20 4 L26 4 C18 14, 15 24, 17 32 Z" fill="#FF9933" />
+            <path d="M19 32 C17 24, 19 14, 27 4 L32 4 C24 14, 21 24, 23 32 Z" fill="#138808" />
+            <circle cx="18" cy="18" r="4" fill="#0A3161" stroke="#ffffff" stroke-width="1.5" />
+          </svg>
+        </div>
 
-        <!-- Dropdown Menu (Clean Minimal NHAI Style) -->
-        <div id="nav-dropdown-menu" class="hidden absolute top-full left-0 mt-1.5 w-76 bg-white border border-slate-200 rounded-2xl p-2.5 z-[1100] space-y-1.5 shadow-xl overflow-hidden">
-          <div class="tricolor-strip -mx-2.5 -mt-2.5 mb-2"></div>
-          
-          <div class="flex items-center justify-between px-3 py-1.5 bg-slate-50 rounded-lg border border-slate-200">
-            <span class="text-[10px] font-black uppercase tracking-wider text-slate-700 font-mono flex items-center gap-1.5">
-              <i data-lucide="layers" class="w-3.5 h-3.5 text-black"></i> Platform Modules
+        <div>
+          <div class="flex items-center gap-2.5 flex-wrap">
+            <h1 class="text-2xl md:text-3xl font-black tracking-tight text-white font-sans flex items-center gap-2">
+              <span>SADAK-SURAKSHA</span>
+              <span class="text-[#FF9933]">AI</span>
+              <span class="text-xl">🇮🇳</span>
+            </h1>
+            <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-md text-[10px] font-black bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-mono tracking-wider">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span id="header-dept-text">NHAI • NATIONAL COMMAND</span>
             </span>
-            <span class="text-[9px] bg-slate-900 text-white font-mono px-2 py-0.5 rounded-full font-bold">9 Views</span>
           </div>
-
-          <!-- 1. Saffron Module -->
-          <button type="button" onclick="selectNavTab('map', 'GIS Hazard Map')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-orange-50/70 border border-transparent hover:border-orange-200 transition-all text-left group cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-orange-100 border border-orange-200 flex items-center justify-center shrink-0">
-              <i data-lucide="map" class="w-4 h-4 text-orange-700"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-black group-hover:text-orange-700 transition-colors leading-none">GIS Hazard Map</p>
-              <p class="text-[11px] text-slate-600 font-medium mt-1">Spatial priority backlog & live pins</p>
-            </div>
-          </button>
-
-          <!-- 2. Purple Module: AI Road Forecast -->
-          <button type="button" onclick="selectNavTab('forecast', 'AI Road Forecast')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-purple-50/70 border border-transparent hover:border-purple-200 transition-all text-left group cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-purple-100 border border-purple-200 flex items-center justify-center shrink-0">
-              <i data-lucide="trending-up" class="w-4 h-4 text-purple-700"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-black group-hover:text-purple-700 transition-colors leading-none">AI Road Forecast</p>
-              <p class="text-[11px] text-slate-600 font-medium mt-1">Predictive 7-day failure risk & weather</p>
-            </div>
-          </button>
-
-          <!-- 3. Cyan Module: Resource Intelligence -->
-          <button type="button" onclick="selectNavTab('resource-intel', 'Resource Intelligence')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-cyan-50/70 border border-transparent hover:border-cyan-200 transition-all text-left group cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-cyan-100 border border-cyan-200 flex items-center justify-center shrink-0">
-              <i data-lucide="cpu" class="w-4 h-4 text-cyan-700"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-black group-hover:text-cyan-700 transition-colors leading-none">Resource Intelligence</p>
-              <p class="text-[11px] text-slate-600 font-medium mt-1">Auto-dispatch PWD repair units & fleet</p>
-            </div>
-          </button>
-
-          <!-- 4. Navy Module -->
-          <button type="button" onclick="selectNavTab('studio', 'Inspection Studio')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-blue-50/70 border border-transparent hover:border-blue-200 transition-all text-left group cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-blue-100 border border-blue-200 flex items-center justify-center shrink-0">
-              <i data-lucide="scan" class="w-4 h-4 text-blue-800"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-black group-hover:text-blue-800 transition-colors leading-none">Inspection Studio</p>
-              <p class="text-[11px] text-slate-600 font-medium mt-1">Visual AI & 4-modal sensor fusion</p>
-            </div>
-          </button>
-
-          <!-- 5. Green Module -->
-          <button type="button" onclick="selectNavTab('patrol', 'Patrol Simulator')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-emerald-50/70 border border-transparent hover:border-emerald-200 transition-all text-left group cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-emerald-100 border border-emerald-200 flex items-center justify-center shrink-0">
-              <i data-lucide="car" class="w-4 h-4 text-emerald-700"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-black group-hover:text-emerald-700 transition-colors leading-none">Patrol Simulator</p>
-              <p class="text-[11px] text-slate-600 font-medium mt-1">Live vehicle telemetry & roughness</p>
-            </div>
-          </button>
-
-          <!-- 6. Saffron Module -->
-          <button type="button" onclick="selectNavTab('backlog', 'Work Orders')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-orange-50/70 border border-transparent hover:border-orange-200 transition-all text-left group cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-orange-100 border border-orange-200 flex items-center justify-center shrink-0">
-              <i data-lucide="clipboard-list" class="w-4 h-4 text-orange-700"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-black group-hover:text-orange-700 transition-colors leading-none">Work Orders</p>
-              <p class="text-[11px] text-slate-600 font-medium mt-1">Clustered PWD repair schedule</p>
-            </div>
-          </button>
-
-          <!-- 7. Navy Module -->
-          <button type="button" onclick="selectNavTab('copilot', 'AI Co-Pilot')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-blue-50/70 border border-transparent hover:border-blue-200 transition-all text-left group cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-blue-100 border border-blue-200 flex items-center justify-center shrink-0">
-              <i data-lucide="bot" class="w-4 h-4 text-blue-800"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-black group-hover:text-blue-800 transition-colors leading-none">AI Co-Pilot</p>
-              <p class="text-[11px] text-slate-600 font-medium mt-1">MoRTH & IRC engineering chat</p>
-            </div>
-          </button>
-
-          <!-- 8. Green Module -->
-          <button type="button" onclick="selectNavTab('analytics', 'Analytics & Reports')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-emerald-50/70 border border-transparent hover:border-emerald-200 transition-all text-left group cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-emerald-100 border border-emerald-200 flex items-center justify-center shrink-0">
-              <i data-lucide="bar-chart-3" class="w-4 h-4 text-emerald-700"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-black group-hover:text-emerald-700 transition-colors leading-none">Analytics & Reports</p>
-              <p class="text-[11px] text-slate-600 font-medium mt-1">Defect distribution & cost charts</p>
-            </div>
-          </button>
-
-          <!-- 9. Saffron Module -->
-          <button type="button" onclick="selectNavTab('ingestion', 'Multi-Source Ingestion')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-orange-50/70 border border-transparent hover:border-orange-200 transition-all text-left group cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-orange-100 border border-orange-200 flex items-center justify-center shrink-0">
-              <i data-lucide="radio-tower" class="w-4 h-4 text-orange-700"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-black group-hover:text-orange-700 transition-colors leading-none">Multi-Source Ingestion</p>
-              <p class="text-[11px] text-slate-600 font-medium mt-1">CCTV, Google Maps & Citizen 311</p>
-            </div>
-          </button>
+          <p class="text-xs md:text-sm text-slate-200 font-medium tracking-wide mt-1 leading-relaxed">
+            National Multimodal AI Road Hazard & Infrastructure Maintenance Intelligence Platform
+          </p>
+          <p class="text-[11px] text-amber-300/90 font-mono font-semibold mt-0.5 flex items-center gap-2">
+            <span>MoRTH IRC:82 Standard Pavement Monitoring</span>
+            <span class="text-slate-400">•</span>
+            <span>16 State Transport Corridors</span>
+          </p>
         </div>
       </div>
 
-      <!-- 2. STATE / REGION SELECTOR (INDIA) -->
-      <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-300 shadow-xs hover:border-slate-400 transition-colors">
-        <span class="text-xs">🇮🇳</span>
-        <label for="state-selector" class="text-xs font-bold text-slate-800">State:</label>
-        <select id="state-selector" onchange="handleStateChange(this.value)" class="bg-white border-none text-black font-extrabold text-xs rounded-lg px-1.5 py-0.5 focus:outline-none cursor-pointer">
-          <option value="all">🇮🇳 All India (16 States)</option>
-          <option value="Karnataka" selected>📍 Karnataka (Bengaluru)</option>
-          <option value="Maharashtra">📍 Maharashtra (Mumbai / Pune)</option>
-          <option value="Delhi NCR">📍 Delhi NCR (New Delhi / Gurugram)</option>
-          <option value="Tamil Nadu">📍 Tamil Nadu (Chennai)</option>
-          <option value="Telangana">📍 Telangana (Hyderabad)</option>
-          <option value="Uttar Pradesh">📍 Uttar Pradesh (Agra / Lucknow)</option>
-          <option value="West Bengal">📍 West Bengal (Kolkata)</option>
-          <option value="Gujarat">📍 Gujarat (Ahmedabad)</option>
-          <option value="Rajasthan">📍 Rajasthan (Jaipur)</option>
-          <option value="Kerala">📍 Kerala (Kochi)</option>
-          <option value="Punjab & Haryana">📍 Punjab & Haryana (Chandigarh)</option>
-          <option value="Madhya Pradesh">📍 Madhya Pradesh (Indore / Bhopal)</option>
-          <option value="Odisha">📍 Odisha (Bhubaneswar)</option>
-          <option value="Assam">📍 Assam (Guwahati)</option>
-          <option value="Jammu & Kashmir">📍 Jammu & Kashmir (Srinagar)</option>
-          <option value="Andhra Pradesh">📍 Andhra Pradesh (Visakhapatnam)</option>
-          <option value="Goa">📍 Goa (Panaji)</option>
-        </select>
-      </div>
+      <!-- Quick Executive Actions & Stats -->
+      <div class="flex items-center gap-3 ml-auto">
+        <a href="/report" target="_blank" class="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-white/20 text-white text-xs font-bold transition-all shadow-sm">
+          <i data-lucide="smartphone" class="w-4 h-4 text-amber-400"></i>
+          <span>Citizen Portal ↗</span>
+        </a>
 
-      <!-- 3. CITY SELECTOR -->
-      <div class="hidden sm:flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-300 shadow-xs hover:border-slate-400 transition-colors">
-        <label for="city-selector" class="text-xs font-bold text-slate-800">City:</label>
-        <select id="city-selector" onchange="handleCityChange(this.value)" class="bg-white border-none text-black font-extrabold text-xs rounded-lg px-1 py-0.5 focus:outline-none cursor-pointer">
-          <option value="all">All Cities</option>
-        </select>
-      </div>
-
-      <!-- 4. LANGUAGE SWITCHER (EN / HI 🇮🇳) -->
-      <div class="flex items-center bg-white p-1 rounded-xl border border-slate-300 shadow-xs">
-        <button id="lang-btn-en" onclick="setLanguage('en')" class="px-2.5 py-1 rounded-lg text-xs font-black transition-all bg-slate-900 text-white cursor-pointer">EN</button>
-        <button id="lang-btn-hi" onclick="setLanguage('hi')" class="px-2.5 py-1 rounded-lg text-xs font-black transition-all text-slate-700 hover:text-black cursor-pointer">हिंदी</button>
-      </div>
-
-
-      <!-- 3. ACTIONS & TOOLS DROPDOWN -->
-      <div class="relative" id="dropdown-actions-wrapper">
-        <button type="button" onclick="toggleActionsDropdown(event)" id="actions-dropdown-btn" class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#FF9933] hover:bg-[#F28500] border border-amber-600 text-black font-black text-xs shadow-xs transition-colors cursor-pointer">
-          <i data-lucide="zap" class="w-4 h-4 text-black"></i>
-          <span>Actions & Tools</span>
-          <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-black" id="actions-dropdown-arrow"></i>
+        <button type="button" onclick="handleLogout()" class="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-red-950/60 hover:bg-red-900/70 border border-red-500/40 text-red-200 text-xs font-bold transition-all shadow-sm cursor-pointer" title="Exit to Role Gateway">
+          <i data-lucide="log-out" class="w-4 h-4 text-red-400"></i>
+          <span class="hidden md:inline">Exit Session</span>
         </button>
-
-        <!-- Dropdown Menu (Clean Minimal NHAI Style) -->
-        <div id="actions-dropdown-menu" class="hidden absolute top-full right-0 mt-1.5 w-68 bg-white border border-slate-200 rounded-2xl p-2.5 z-[1100] space-y-1.5 shadow-xl overflow-hidden">
-          <div class="tricolor-strip -mx-2.5 -mt-2.5 mb-2"></div>
-
-          <div class="flex items-center justify-between px-3 py-1.5 bg-orange-50 rounded-lg border border-orange-200">
-            <span class="text-[10px] font-black uppercase tracking-wider text-orange-950 font-mono flex items-center gap-1.5">
-              <i data-lucide="wrench" class="w-3.5 h-3.5 text-orange-700"></i> Engineering Tools
-            </span>
-            <span class="text-[9px] bg-[#FF9933] text-black font-mono px-2 py-0.5 rounded-full font-bold border border-amber-600">Active</span>
-          </div>
-          
-          <button type="button" onclick="triggerQuickScanModal(); closeAllDropdowns();" class="w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-orange-50/70 border border-transparent hover:border-orange-200 transition-all text-left group cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-orange-100 border border-orange-200 flex items-center justify-center shrink-0">
-              <i data-lucide="plus-circle" class="w-4 h-4 text-orange-700"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-black group-hover:text-orange-800 transition-colors leading-none">Ingest Road Incident</p>
-              <p class="text-[11px] text-slate-600 font-medium mt-1">Submit manual shock / defect data</p>
-            </div>
-          </button>
-
-          <button type="button" onclick="openApiKeyModal(); closeAllDropdowns();" class="w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-blue-50/70 border border-transparent hover:border-blue-200 transition-all text-left group cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-blue-100 border border-blue-200 flex items-center justify-center shrink-0">
-              <i data-lucide="key" class="w-4 h-4 text-blue-800"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-black group-hover:text-blue-800 transition-colors leading-none" id="apiKeyBtnText">Gemini API Key</p>
-              <p class="text-[11px] text-slate-600 font-medium mt-1">Configure cloud multimodal AI</p>
-            </div>
-          </button>
-
-          <div class="border-t border-slate-200 my-1"></div>
-
-          <button type="button" onclick="handleLogout(); closeAllDropdowns();" class="w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-red-50/70 border border-transparent hover:border-red-200 transition-all text-left group cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-red-100 border border-red-200 flex items-center justify-center shrink-0">
-              <i data-lucide="log-out" class="w-4 h-4 text-red-600"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-red-600 group-hover:text-red-700 transition-colors leading-none">Switch Role / Exit</p>
-              <p class="text-[11px] text-slate-600 font-medium mt-1">Return to role gateway</p>
-            </div>
-          </button>
-        </div>
       </div>
 
     </div>
   </header>
+
+  <!-- =========================================================
+       3. SLEEK ELEVATED NHAI FILTER & CONTROLS DOCK (The Red Box Area)
+       ========================================================= -->
+  <section class="px-6 md:px-10 -mt-6 relative z-30">
+    <div class="max-w-7xl mx-auto nhai-filter-container p-3 flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Left Controls: Platform Modules, State, City -->
+      <div class="flex flex-wrap items-center gap-2.5 flex-1 min-w-[300px]">
+        
+        <!-- 1. MODULES & VIEWS DROPDOWN -->
+        <div class="relative" id="dropdown-nav-wrapper">
+          <button type="button" onclick="toggleNavDropdown(event)" id="nav-dropdown-btn" class="nhai-input-field flex items-center gap-2.5 px-3.5 py-2 text-xs font-extrabold cursor-pointer shadow-2xs">
+            <i data-lucide="layout-grid" class="w-4 h-4 text-[#F47216]"></i>
+            <span id="nav-dropdown-label" class="text-slate-900 font-black">GIS Hazard Map</span>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-500 transition-transform duration-200" id="nav-dropdown-arrow"></i>
+          </button>
+
+          <!-- Dropdown Menu (Structured NHAI Style) -->
+          <div id="nav-dropdown-menu" class="hidden absolute top-full left-0 mt-2 w-80 bg-white border border-slate-300 rounded-xl p-2 z-[1100] space-y-1 shadow-2xl overflow-hidden">
+            <div class="tricolor-strip -mx-2 -mt-2 mb-2"></div>
+            
+            <div class="flex items-center justify-between px-3 py-1.5 bg-slate-100 rounded-md border border-slate-200">
+              <span class="text-[10px] font-black uppercase tracking-wider text-slate-800 font-mono flex items-center gap-1.5">
+                <i data-lucide="layers" class="w-3.5 h-3.5 text-[#0A3161]"></i> Platform Modules
+              </span>
+              <span class="text-[9px] bg-[#0A3161] text-white font-mono px-2 py-0.5 rounded-sm font-bold">9 Views</span>
+            </div>
+
+            <!-- 1. GIS Hazard Map -->
+            <button type="button" onclick="selectNavTab('map', 'GIS Hazard Map')" class="dropdown-nav-item w-full flex items-center gap-3 p-2 rounded-lg hover:bg-slate-100 border border-transparent hover:border-slate-300 transition-all text-left group cursor-pointer">
+              <div class="w-8 h-8 rounded-md bg-amber-100 border border-amber-300 flex items-center justify-center shrink-0">
+                <i data-lucide="map" class="w-4 h-4 text-[#F47216]"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-900 leading-none">GIS Hazard Map</p>
+                <p class="text-[11px] text-slate-600 font-medium mt-1">Spatial priority backlog & live pins</p>
+              </div>
+            </button>
+
+            <!-- 2. AI Road Forecast -->
+            <button type="button" onclick="selectNavTab('forecast', 'AI Road Forecast')" class="dropdown-nav-item w-full flex items-center gap-3 p-2 rounded-lg hover:bg-purple-50 border border-transparent hover:border-purple-200 transition-all text-left group cursor-pointer">
+              <div class="w-8 h-8 rounded-md bg-purple-100 border border-purple-300 flex items-center justify-center shrink-0">
+                <i data-lucide="trending-up" class="w-4 h-4 text-purple-700"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-900 leading-none">AI Road Forecast</p>
+                <p class="text-[11px] text-slate-600 font-medium mt-1">Predictive 7-day failure risk & weather</p>
+              </div>
+            </button>
+
+            <!-- 3. Resource Intelligence -->
+            <button type="button" onclick="selectNavTab('resource-intel', 'Resource Intelligence')" class="dropdown-nav-item w-full flex items-center gap-3 p-2 rounded-lg hover:bg-cyan-50 border border-transparent hover:border-cyan-200 transition-all text-left group cursor-pointer">
+              <div class="w-8 h-8 rounded-md bg-cyan-100 border border-cyan-300 flex items-center justify-center shrink-0">
+                <i data-lucide="cpu" class="w-4 h-4 text-cyan-800"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-900 leading-none">Resource Intelligence</p>
+                <p class="text-[11px] text-slate-600 font-medium mt-1">Auto-dispatch PWD repair units & fleet</p>
+              </div>
+            </button>
+
+            <!-- 4. Inspection Studio -->
+            <button type="button" onclick="selectNavTab('studio', 'Inspection Studio')" class="dropdown-nav-item w-full flex items-center gap-3 p-2 rounded-lg hover:bg-blue-50 border border-transparent hover:border-blue-200 transition-all text-left group cursor-pointer">
+              <div class="w-8 h-8 rounded-md bg-blue-100 border border-blue-300 flex items-center justify-center shrink-0">
+                <i data-lucide="scan" class="w-4 h-4 text-[#0A3161]"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-900 leading-none">Inspection Studio</p>
+                <p class="text-[11px] text-slate-600 font-medium mt-1">Visual AI & 4-modal sensor fusion</p>
+              </div>
+            </button>
+
+            <!-- 5. Patrol Simulator -->
+            <button type="button" onclick="selectNavTab('patrol', 'Patrol Simulator')" class="dropdown-nav-item w-full flex items-center gap-3 p-2 rounded-lg hover:bg-emerald-50 border border-transparent hover:border-emerald-200 transition-all text-left group cursor-pointer">
+              <div class="w-8 h-8 rounded-md bg-emerald-100 border border-emerald-300 flex items-center justify-center shrink-0">
+                <i data-lucide="car" class="w-4 h-4 text-emerald-800"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-900 leading-none">Patrol Simulator</p>
+                <p class="text-[11px] text-slate-600 font-medium mt-1">Live vehicle telemetry & roughness</p>
+              </div>
+            </button>
+
+            <!-- 6. Work Orders -->
+            <button type="button" onclick="selectNavTab('backlog', 'Work Orders')" class="dropdown-nav-item w-full flex items-center gap-3 p-2 rounded-lg hover:bg-orange-50 border border-transparent hover:border-orange-200 transition-all text-left group cursor-pointer">
+              <div class="w-8 h-8 rounded-md bg-orange-100 border border-orange-300 flex items-center justify-center shrink-0">
+                <i data-lucide="clipboard-list" class="w-4 h-4 text-orange-700"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-900 leading-none">Work Orders</p>
+                <p class="text-[11px] text-slate-600 font-medium mt-1">Clustered PWD repair schedule</p>
+              </div>
+            </button>
+
+            <!-- 7. AI Co-Pilot -->
+            <button type="button" onclick="selectNavTab('copilot', 'AI Co-Pilot')" class="dropdown-nav-item w-full flex items-center gap-3 p-2 rounded-lg hover:bg-blue-50 border border-transparent hover:border-blue-200 transition-all text-left group cursor-pointer">
+              <div class="w-8 h-8 rounded-md bg-blue-100 border border-blue-300 flex items-center justify-center shrink-0">
+                <i data-lucide="bot" class="w-4 h-4 text-[#0A3161]"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-900 leading-none">AI Co-Pilot</p>
+                <p class="text-[11px] text-slate-600 font-medium mt-1">MoRTH & IRC engineering chat</p>
+              </div>
+            </button>
+
+            <!-- 8. Analytics & Reports -->
+            <button type="button" onclick="selectNavTab('analytics', 'Analytics & Reports')" class="dropdown-nav-item w-full flex items-center gap-3 p-2 rounded-lg hover:bg-emerald-50 border border-transparent hover:border-emerald-200 transition-all text-left group cursor-pointer">
+              <div class="w-8 h-8 rounded-md bg-emerald-100 border border-emerald-300 flex items-center justify-center shrink-0">
+                <i data-lucide="bar-chart-3" class="w-4 h-4 text-emerald-800"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-900 leading-none">Analytics & Reports</p>
+                <p class="text-[11px] text-slate-600 font-medium mt-1">Defect distribution & cost charts</p>
+              </div>
+            </button>
+
+            <!-- 9. Ingestion -->
+            <button type="button" onclick="selectNavTab('ingestion', 'Multi-Source Ingestion')" class="dropdown-nav-item w-full flex items-center gap-3 p-2 rounded-lg hover:bg-orange-50 border border-transparent hover:border-orange-200 transition-all text-left group cursor-pointer">
+              <div class="w-8 h-8 rounded-md bg-orange-100 border border-orange-200 flex items-center justify-center shrink-0">
+                <i data-lucide="radio-tower" class="w-4 h-4 text-orange-700"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-900 leading-none">Multi-Source Ingestion</p>
+                <p class="text-[11px] text-slate-600 font-medium mt-1">CCTV, Google Maps & Citizen 311</p>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. STATE SELECTOR -->
+        <div class="flex items-center gap-1.5">
+          <label for="state-selector" class="text-xs font-bold text-slate-700">State:</label>
+          <select id="state-selector" onchange="handleStateChange(this.value)" class="nhai-input-field px-3 py-2 cursor-pointer">
+            <option value="all">🇮🇳 All India (16 States)</option>
+            <option value="Karnataka" selected>📍 Karnataka (Bengaluru)</option>
+            <option value="Maharashtra">📍 Maharashtra (Mumbai / Pune)</option>
+            <option value="Delhi NCR">📍 Delhi NCR (New Delhi / Gurugram)</option>
+            <option value="Tamil Nadu">📍 Tamil Nadu (Chennai)</option>
+            <option value="Telangana">📍 Telangana (Hyderabad)</option>
+            <option value="Uttar Pradesh">📍 Uttar Pradesh (Agra / Lucknow)</option>
+            <option value="West Bengal">📍 West Bengal (Kolkata)</option>
+            <option value="Gujarat">📍 Gujarat (Ahmedabad)</option>
+            <option value="Rajasthan">📍 Rajasthan (Jaipur)</option>
+            <option value="Kerala">📍 Kerala (Kochi)</option>
+            <option value="Punjab & Haryana">📍 Punjab & Haryana (Chandigarh)</option>
+            <option value="Madhya Pradesh">📍 Madhya Pradesh (Indore / Bhopal)</option>
+            <option value="Odisha">📍 Odisha (Bhubaneswar)</option>
+            <option value="Assam">📍 Assam (Guwahati)</option>
+            <option value="Jammu & Kashmir">📍 Jammu & Kashmir (Srinagar)</option>
+            <option value="Andhra Pradesh">📍 Andhra Pradesh (Visakhapatnam)</option>
+            <option value="Goa">📍 Goa (Panaji)</option>
+          </select>
+        </div>
+
+        <!-- 3. CITY SELECTOR -->
+        <div class="hidden sm:flex items-center gap-1.5">
+          <label for="city-selector" class="text-xs font-bold text-slate-700">City:</label>
+          <select id="city-selector" onchange="handleCityChange(this.value)" class="nhai-input-field px-3 py-2 cursor-pointer">
+            <option value="all">All Cities</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- Right Controls: Language Switcher & Actions & Tools CTA -->
+      <div class="flex items-center gap-3">
+        
+        <!-- 4. LANGUAGE SWITCHER (EN / HI) -->
+        <div class="nhai-lang-switch">
+          <button id="lang-btn-en" onclick="setLanguage('en')" class="nhai-lang-btn active">EN</button>
+          <button id="lang-btn-hi" onclick="setLanguage('hi')" class="nhai-lang-btn">हिंदी</button>
+        </div>
+
+        <!-- 5. NHAI SIGNATURE ACTIONS & TOOLS CTA -->
+        <div class="relative" id="dropdown-actions-wrapper">
+          <button type="button" onclick="toggleActionsDropdown(event)" id="actions-dropdown-btn" class="nhai-btn-saffron flex items-center gap-2 px-4 py-2 text-xs cursor-pointer">
+            <i data-lucide="wrench" class="w-4 h-4 text-white"></i>
+            <span>Actions & Tools</span>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-white" id="actions-dropdown-arrow"></i>
+          </button>
+
+          <!-- Dropdown Menu (Clean NHAI Style) -->
+          <div id="actions-dropdown-menu" class="hidden absolute top-full right-0 mt-2 w-72 bg-white border border-slate-300 rounded-xl p-2 z-[1100] space-y-1 shadow-2xl overflow-hidden">
+            <div class="tricolor-strip -mx-2 -mt-2 mb-2"></div>
+
+            <div class="flex items-center justify-between px-3 py-1.5 bg-amber-50 rounded-md border border-amber-200">
+              <span class="text-[10px] font-black uppercase tracking-wider text-amber-950 font-mono flex items-center gap-1.5">
+                <i data-lucide="wrench" class="w-3.5 h-3.5 text-[#F47216]"></i> Engineering Tools
+              </span>
+              <span class="text-[9px] bg-[#F47216] text-white font-mono px-2 py-0.5 rounded-sm font-bold">Active</span>
+            </div>
+            
+            <button type="button" onclick="triggerQuickScanModal(); closeAllDropdowns();" class="w-full flex items-center gap-3 p-2.5 rounded-lg hover:bg-amber-50/70 border border-transparent hover:border-amber-200 transition-all text-left group cursor-pointer">
+              <div class="w-8 h-8 rounded-md bg-amber-100 border border-amber-200 flex items-center justify-center shrink-0">
+                <i data-lucide="plus-circle" class="w-4 h-4 text-[#F47216]"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-900 group-hover:text-amber-800 transition-colors leading-none">Ingest Road Incident</p>
+                <p class="text-[11px] text-slate-600 font-medium mt-1">Submit manual shock / defect data</p>
+              </div>
+            </button>
+
+            <button type="button" onclick="openApiKeyModal(); closeAllDropdowns();" class="w-full flex items-center gap-3 p-2.5 rounded-lg hover:bg-blue-50/70 border border-transparent hover:border-blue-200 transition-all text-left group cursor-pointer">
+              <div class="w-8 h-8 rounded-md bg-blue-100 border border-blue-200 flex items-center justify-center shrink-0">
+                <i data-lucide="key" class="w-4 h-4 text-[#0A3161]"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-900 group-hover:text-blue-900 transition-colors leading-none" id="apiKeyBtnText">Gemini API Key</p>
+                <p class="text-[11px] text-slate-600 font-medium mt-1">Configure cloud multimodal AI</p>
+              </div>
+            </button>
+
+            <div class="border-t border-slate-200 my-1"></div>
+
+            <button type="button" onclick="handleLogout(); closeAllDropdowns();" class="w-full flex items-center gap-3 p-2.5 rounded-lg hover:bg-red-50/70 border border-transparent hover:border-red-200 transition-all text-left group cursor-pointer">
+              <div class="w-8 h-8 rounded-md bg-red-100 border border-red-200 flex items-center justify-center shrink-0">
+                <i data-lucide="log-out" class="w-4 h-4 text-red-600"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-red-600 group-hover:text-red-700 transition-colors leading-none">Switch Role / Exit</p>
+                <p class="text-[11px] text-slate-600 font-medium mt-1">Return to role gateway</p>
+              </div>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
 
   <!-- Asymmetrical Key Metrics Data Ledger (Clean NHAI Style with Subtle Curves) -->
   <section class="bg-slate-100/90 border-b border-slate-200 px-8 py-4">

@@ -499,13 +499,14 @@
     const btnHi = document.getElementById('lang-btn-hi');
     if (btnEn && btnHi) {
       if (currentLang === 'hi') {
-        btnHi.className = 'px-2 py-0.5 rounded-lg text-xs font-bold transition-all bg-orange-600 text-white shadow-sm cursor-pointer';
-        btnEn.className = 'px-2 py-0.5 rounded-lg text-xs font-medium transition-all text-slate-300 hover:text-white cursor-pointer';
+        btnHi.className = 'nhai-lang-btn active';
+        btnEn.className = 'nhai-lang-btn';
       } else {
-        btnEn.className = 'px-2 py-0.5 rounded-lg text-xs font-bold transition-all bg-cyan-600 text-white shadow-sm cursor-pointer';
-        btnHi.className = 'px-2 py-0.5 rounded-lg text-xs font-medium transition-all text-slate-300 hover:text-white cursor-pointer';
+        btnEn.className = 'nhai-lang-btn active';
+        btnHi.className = 'nhai-lang-btn';
       }
     }
+
 
     // 6. Update document lang attribute
     document.documentElement.lang = currentLang;

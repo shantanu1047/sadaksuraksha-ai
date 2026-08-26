@@ -1,16 +1,133 @@
-/* Flat Clean White & Bold Black Borders Theme with Indian Tricolour Accents */
+/* Official NHAI Government Portal Design System */
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Roboto:wght@400;500;700;900&display=swap');
 
 body {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: #f8f9fa;
-  color: #000000;
+  color: #0f172a;
 }
 
 code, pre, .font-mono {
   font-family: 'JetBrains Mono', monospace;
 }
+
+/* =========================================================
+   NHAI OFFICIAL GOVERNMENT PORTAL DESIGN SYSTEM
+   ========================================================= */
+
+/* Executive NHAI Navy Blue Gradient Header */
+.nhai-portal-header {
+  background: linear-gradient(135deg, #05162e 0%, #0a3161 50%, #0c3b75 100%);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px -2px rgba(5, 22, 46, 0.4);
+}
+
+/* Subtle Highway Grid & Infrastructure Texture Overlay */
+.nhai-portal-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(circle at 80% 20%, rgba(244, 114, 22, 0.08) 0%, transparent 40%),
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px, 32px 32px;
+  pointer-events: none;
+}
+
+/* Government Top Utility Bar */
+.gov-top-bar {
+  background: #041021;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 11px;
+  color: #cbd5e1;
+}
+
+/* Elevated NHAI Navigation & Filter Bar (The Red Box Area) */
+.nhai-filter-container {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(10, 49, 97, 0.12), 0 4px 10px -2px rgba(0, 0, 0, 0.04);
+  position: relative;
+  z-index: 40;
+}
+
+/* Structured Enterprise Inputs & Selects */
+.nhai-input-field {
+  background-color: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 12px;
+  transition: all 0.15s ease-in-out;
+}
+
+.nhai-input-field:hover {
+  background-color: #ffffff;
+  border-color: #94a3b8;
+}
+
+.nhai-input-field:focus {
+  background-color: #ffffff;
+  border-color: #0a3161;
+  outline: 2px solid rgba(10, 49, 97, 0.2);
+}
+
+/* NHAI Signature Saffron Call-To-Action Button */
+.nhai-btn-saffron {
+  background: linear-gradient(180deg, #F47216 0%, #EA580C 100%);
+  border: 1px solid #C2410C;
+  color: #ffffff !important;
+  font-weight: 800;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px -1px rgba(234, 88, 12, 0.35);
+  transition: all 0.15s ease-in-out;
+}
+
+.nhai-btn-saffron:hover {
+  background: linear-gradient(180deg, #FB923C 0%, #F47216 100%);
+  border-color: #9A3412;
+  box-shadow: 0 4px 12px -2px rgba(234, 88, 12, 0.45);
+  transform: translateY(-1px);
+}
+
+/* Segmented Language Switcher */
+.nhai-lang-switch {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 2px;
+  display: inline-flex;
+}
+
+.nhai-lang-btn {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.nhai-lang-btn.active {
+  background: #0A3161;
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.nhai-lang-btn:not(.active) {
+  color: #475569;
+}
+
+.nhai-lang-btn:not(.active):hover {
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.7);
+}
+
 
 /* Indian Tricolour Top Bar & Accents */
 .tricolor-strip {
