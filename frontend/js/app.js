@@ -1616,38 +1616,39 @@ function navigateToHome() {
 window.navigateToHome = navigateToHome;
 
 // ==========================================
-// PRIORITY BACKLOG FEED POPUP / DROPDOWN TOGGLER
+// PRIORITY BACKLOG FEED DROPDOWN BOX TOGGLER
 // ==========================================
-function toggleFeedPopup(event) {
-  if (event) event.stopPropagation();
-  const popup = document.getElementById('priority-feed-popup') || document.getElementById('priority-feed-drawer');
-  const chevron = document.getElementById('feed-popup-chevron');
-  if (!popup) return;
+function toggleFeedDropdown(explicitOpen) {
+  const content = document.getElementById('priority-feed-content');
+  const chevron = document.getElementById('feed-dropdown-chevron');
+  const subtext = document.getElementById('feed-dropdown-subtext');
+  const btn = document.getElementById('btn-toggle-feed-dropdown');
+  if (!content) return;
 
-  const isHidden = popup.classList.contains('hidden');
-  if (isHidden) {
-    popup.classList.remove('hidden');
+  const willOpen = explicitOpen !== undefined ? explicitOpen : content.classList.contains('hidden');
+
+  if (willOpen) {
+    content.classList.remove('hidden');
+    content.classList.add('flex');
     if (chevron) chevron.style.transform = 'rotate(180deg)';
+    if (subtext) subtext.textContent = 'Click to close backlog';
+    if (btn) btn.setAttribute('aria-expanded', 'true');
   } else {
-    popup.classList.add('hidden');
+    content.classList.add('hidden');
+    content.classList.remove('flex');
     if (chevron) chevron.style.transform = 'rotate(0deg)';
+    if (subtext) subtext.textContent = 'Click to open backlog';
+    if (btn) btn.setAttribute('aria-expanded', 'false');
   }
+
   if (window.lucide && typeof window.lucide.createIcons === 'function') {
     window.lucide.createIcons();
   }
 }
-window.toggleFeedPopup = toggleFeedPopup;
-window.toggleFeedDrawer = toggleFeedPopup;
+window.toggleFeedDropdown = toggleFeedDropdown;
+window.toggleFeedPopup = toggleFeedDropdown;
+window.toggleFeedDrawer = toggleFeedDropdown;
 
-document.addEventListener('click', (e) => {
-  const wrapper = document.getElementById('priority-feed-wrapper');
-  const popup = document.getElementById('priority-feed-popup');
-  const chevron = document.getElementById('feed-popup-chevron');
-  if (wrapper && !wrapper.contains(e.target) && popup && !popup.classList.contains('hidden')) {
-    popup.classList.add('hidden');
-    if (chevron) chevron.style.transform = 'rotate(0deg)';
-  }
-});
 
 
 
