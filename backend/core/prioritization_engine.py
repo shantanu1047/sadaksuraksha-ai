@@ -219,7 +219,7 @@ class PrioritizationEngine:
         """
         actionable = [
             h for h in hazards
-            if not h.fusion.is_false_positive and h.status.lower() in ["active", "pending"]
+            if not h.fusion.is_false_positive and h.status.lower() in ["active", "pending", "unresolved", "in progress", "in_progress", "scheduled", "assigned"]
         ]
 
         if not actionable:

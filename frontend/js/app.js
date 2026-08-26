@@ -10,10 +10,32 @@ let allHazards = [];
 let allRoads = [];
 let allWorkOrders = [];
 let currentStateFilter = 'Karnataka';
+let currentCityFilter = 'all';
 let currentCategoryFilter = 'all';
 let currentSearchQuery = '';
 let selectedHazard = null;
 let userApiKey = localStorage.getItem('SADAKSURAKSHA_GEMINI_KEY') || localStorage.getItem('SADAKSUKHA_GEMINI_KEY') || localStorage.getItem('AERO_GEMINI_KEY') || '';
+
+const CITY_OPTIONS_BY_STATE = {
+  all: ["All Cities"],
+  Karnataka: ["All Cities", "Bengaluru", "Mysuru", "Hubballi", "Mangaluru"],
+  Maharashtra: ["All Cities", "Mumbai", "Pune", "Nagpur", "Nashik", "Thane"],
+  "Delhi NCR": ["All Cities", "New Delhi", "Gurugram", "Noida", "Faridabad", "Ghaziabad"],
+  "Tamil Nadu": ["All Cities", "Chennai", "Coimbatore", "Madurai", "Tiruchirappalli"],
+  Telangana: ["All Cities", "Hyderabad", "Warangal", "Nizamabad"],
+  "Uttar Pradesh": ["All Cities", "Agra", "Lucknow", "Kanpur", "Varanasi", "Noida"],
+  "West Bengal": ["All Cities", "Kolkata", "Howrah", "Siliguri", "Durgapur"],
+  Gujarat: ["All Cities", "Ahmedabad", "Surat", "Vadodara", "Rajkot"],
+  Rajasthan: ["All Cities", "Jaipur", "Jodhpur", "Udaipur", "Kota"],
+  Kerala: ["All Cities", "Kochi", "Thiruvananthapuram", "Kozhikode"],
+  "Punjab & Haryana": ["All Cities", "Chandigarh", "Ludhiana", "Amritsar", "Gurugram"],
+  "Madhya Pradesh": ["All Cities", "Indore", "Bhopal", "Gwalior", "Jabalpur"],
+  Odisha: ["All Cities", "Bhubaneswar", "Cuttack", "Rourkela"],
+  Assam: ["All Cities", "Guwahati", "Dibrugarh", "Silchar"],
+  "Jammu & Kashmir": ["All Cities", "Srinagar", "Jammu", "Anantnag"],
+  "Andhra Pradesh": ["All Cities", "Visakhapatnam", "Vijayawada", "Guntur"],
+  Goa: ["All Cities", "Panaji", "Margao", "Vasco da Gama"]
+};
 
 // Indian Geographic Center Coordinates by State
 const STATE_VIEWPORTS = {
@@ -230,10 +252,24 @@ async function refreshAllData() {
 }
 
 // ==========================================
-// STATE-WISE & KEYWORD FILTERING
+// STATE-WISE & CITY-WISE FILTERING
 // ==========================================
+function populateCityDropdown(selectedState) {
+  const citySelect = document.getElementById('city-selector');
+  if (!citySelect) return;
+  const cities = CITY_OPTIONS_BY_STATE[selectedState] || ["All Cities"];
+  citySelect.innerHTML = cities.map(c => `<option value="${c}">${c === 'All Cities' ? 'All Cities' : c}</option>`).join('');
+  currentCityFilter = 'all';
+}
+
+function handleCityChange(selectedCity) {
+  currentCityFilter = selectedCity;
+  applyStateAndSearchFilters();
+}
+
 function handleStateChange(selectedState) {
   currentStateFilter = selectedState;
+  populateCityDropdown(selectedState);
 
   // Smoothly pan map to selected State viewport
   const vp = STATE_VIEWPORTS[selectedState] || STATE_VIEWPORTS.Karnataka;
@@ -270,7 +306,13 @@ function getFilteredHazards() {
     // 1. State Filter
     const matchesState = (currentStateFilter === 'all') || (h.state && h.state.toLowerCase() === currentStateFilter.toLowerCase());
     
-    // 2. Category Filter
+    // 2. City Filter
+    let matchesCity = true;
+    if (currentCityFilter && currentCityFilter !== 'all' && currentCityFilter !== 'All Cities') {
+      matchesCity = (h.city && h.city.toLowerCase() === currentCityFilter.toLowerCase());
+    }
+
+    // 3. Category Filter
     let matchesCategory = true;
     if (currentCategoryFilter === 'critical') {
       matchesCategory = (h.severity === 'critical' && !h.fusion.is_false_positive);
@@ -280,16 +322,17 @@ function getFilteredHazards() {
       matchesCategory = (h.road_class === 'hospital_corridor' && !h.fusion.is_false_positive);
     }
 
-    // 3. Search Query Filter (State, City, Road Name, Title, Type)
+    // 4. Search Query Filter (State, City, Road Name, Title, Type)
     let matchesSearch = true;
     if (currentSearchQuery) {
       const haystack = `${h.id} ${h.title} ${h.state} ${h.city} ${h.road_name} ${h.address} ${h.hazard_type}`.toLowerCase();
       matchesSearch = haystack.includes(currentSearchQuery);
     }
 
-    return matchesState && matchesCategory && matchesSearch;
+    return matchesState && matchesCity && matchesCategory && matchesSearch;
   });
 }
+
 
 function applyStateAndSearchFilters() {
   const filteredHazards = getFilteredHazards();
@@ -1138,7 +1181,17 @@ function switchTab(tabId) {
   if (tabId === 'patrol' && patrolMap) {
     setTimeout(() => patrolMap.invalidateSize(), 200);
   }
+  if (tabId === 'forecast') {
+    if (typeof initForecastView === 'function') initForecastView();
+  }
+  if (tabId === 'resource-intel') {
+    if (typeof initResourceIntelligenceView === 'function') initResourceIntelligenceView();
+  }
+  if (tabId === 'ingestion') {
+    if (typeof refreshIngestionStreams === 'function') refreshIngestionStreams();
+  }
 }
+
 
 function navigateToHome() {
   // Close any open modals
@@ -1146,6 +1199,7 @@ function navigateToHome() {
   closeIngestModal();
   closeApiKeyModal();
   if (typeof closeCitizenPortalModal === 'function') closeCitizenPortalModal();
+  if (typeof closeForecastDetailModal === 'function') closeForecastDetailModal();
 
   // Switch to the main GIS Map tab
   switchTab('map');
@@ -1470,6 +1524,8 @@ switchTab = window.switchTab;
 // ==========================================
 const TAB_LABELS = {
   map: 'GIS Hazard Map',
+  forecast: 'AI Road Forecast',
+  'resource-intel': 'Resource Intelligence',
   studio: 'Inspection Studio',
   patrol: 'Patrol Simulator',
   backlog: 'Work Orders',
@@ -1574,6 +1630,739 @@ function toggleFeedDrawer(explicitState) {
   lucide.createIcons();
 }
 window.toggleFeedDrawer = toggleFeedDrawer;
+
+// ==========================================
+// FEATURE 1: AI ROAD FORECAST ENGINE
+// ==========================================
+let forecastMap = null;
+let forecastMarkersLayer = null;
+
+const ROAD_FORECAST_DATA = [
+  {
+    id: "FC-5201",
+    road_name: "NH-52 (Jaipur–Sikar Expressway)",
+    location: "Jaipur, Rajasthan",
+    road_class: "National Highway",
+    coordinates: [26.9124, 75.7873],
+    current_risk: "Medium",
+    current_score: 54,
+    forecast_risk: "High",
+    forecast_score: 87,
+    confidence: 89,
+    predicted_issue: "Pothole & Surface Cavity",
+    expected_window: "Next 3–5 Days",
+    expected_date: "Nov 28–30",
+    risk_trend: "+33 pts",
+    explanation: "Heavy multi-axle freight volume (1,450 trucks/hr) coupled with 45mm recent monsoon saturation and 78 dB acoustic telemetry indicates high-velocity aggregate detachment.",
+    factors: [
+      "Daily Freight Volume: 1,450 commercial trucks/hr",
+      "Sub-base Moisture Content: 82% (High)",
+      "Surface Age: 3.8 years without seal coat",
+      "Acoustic Resonance: 78 dB tire-pavement shock"
+    ],
+    action: "Deploy cold-mix asphalt patching within 48 hours to prevent structural base collapse."
+  },
+  {
+    id: "FC-4402",
+    road_name: "Hosur Road Technology Corridor",
+    location: "Bengaluru, Karnataka",
+    road_class: "Major Arterial Flyover",
+    coordinates: [12.9716, 77.5946],
+    current_risk: "Medium",
+    current_score: 58,
+    forecast_risk: "Critical",
+    forecast_score: 92,
+    confidence: 94,
+    predicted_issue: "Severe Deep Pothole & Edge Cavity",
+    expected_window: "Next 24–48 Hours",
+    expected_date: "Nov 27–28",
+    risk_trend: "+34 pts",
+    explanation: "Accelerated cyclic vibration spikes (2.85 Gz) on right-hand flyover ramp under continuous 42,000 PCU/day traffic volume.",
+    factors: [
+      "Traffic Density: 42,000 vehicles/day",
+      "Structural Jerk Peak: 2.85 Gz",
+      "Micro-crack Network: 14m continuous fissure",
+      "Drainage Backlog: Moderate overflow"
+    ],
+    action: "Immediate hot-mix asphalt patching & compaction within 24 hours."
+  },
+  {
+    id: "FC-4803",
+    road_name: "NH-48 Western Express Corridor",
+    location: "Mumbai, Maharashtra",
+    road_class: "Arterial Expressway",
+    coordinates: [19.0760, 72.8777],
+    current_risk: "Low",
+    current_score: 38,
+    forecast_risk: "High",
+    forecast_score: 79,
+    confidence: 86,
+    predicted_issue: "Monsoon Waterlogging & Stripping",
+    expected_window: "Next 4–6 Days",
+    expected_date: "Nov 29 – Dec 1",
+    risk_trend: "+41 pts",
+    explanation: "Clogged stormwater inlet drains adjacent to median divider; tidal overflow modeling projects 18cm standing water during upcoming rain.",
+    factors: [
+      "Inlet Drainage Blockage: 65% obstruction",
+      "Forecast Rainfall: 70mm over 48 hours",
+      "Low-lying Gradient: -2.1% sag curve",
+      "Traffic Volume: Critical suburban artery"
+    ],
+    action: "Deploy suction pump truck and clear median drainage channels."
+  },
+  {
+    id: "FC-6504",
+    road_name: "Outer Ring Road (Gachibowli Corridor)",
+    location: "Hyderabad, Telangana",
+    road_class: "Expressway",
+    coordinates: [17.3850, 78.4867],
+    current_risk: "Low",
+    current_score: 32,
+    forecast_risk: "Medium",
+    forecast_score: 68,
+    confidence: 82,
+    predicted_issue: "Longitudinal Cracking & Rutting",
+    expected_window: "Next 5–7 Days",
+    expected_date: "Dec 1–3",
+    risk_trend: "+36 pts",
+    explanation: "High-speed multi-axle freight traffic causing subgrade flexure; surface micro-fissures widening by 1.2mm/day.",
+    factors: [
+      "Subgrade Deflection: 0.8mm dynamic movement",
+      "Ambient Temperature Cycles: 34°C - 19°C",
+      "Asphalt Binder Oxidation: Moderate",
+      "Axle Load Count: High"
+    ],
+    action: "Schedule polymer-modified crack sealing before monsoon onset."
+  },
+  {
+    id: "FC-2405",
+    road_name: "Delhi–Meerut Expressway Corridor",
+    location: "Delhi NCR",
+    road_class: "National Expressway",
+    coordinates: [28.6139, 77.2090],
+    current_risk: "Medium",
+    current_score: 48,
+    forecast_risk: "High",
+    forecast_score: 84,
+    confidence: 91,
+    predicted_issue: "Expansion Joint & Guardrail Displacement",
+    expected_window: "Next 2–4 Days",
+    expected_date: "Nov 28–30",
+    risk_trend: "+36 pts",
+    explanation: "Thermal expansion stress coupled with heavy commuter buses has displaced bridge expansion seal by 12mm.",
+    factors: [
+      "Bridge Joint Displacement: 12mm",
+      "Heavy Bus Frequency: 320/hr",
+      "Impact Acoustic Level: 81 dB",
+      "Safety Margin: Reduced"
+    ],
+    action: "Tighten elastomeric bridge joints and reinforce safety barrier anchors."
+  },
+  {
+    id: "FC-1906",
+    road_name: "Grand Trunk (GT) Road Corridor",
+    location: "Kanpur–Lucknow, Uttar Pradesh",
+    road_class: "National Highway",
+    coordinates: [26.8467, 80.9462],
+    current_risk: "Medium",
+    current_score: 51,
+    forecast_risk: "High",
+    forecast_score: 81,
+    confidence: 85,
+    predicted_issue: "Alligator Cracking & Base Subsidence",
+    expected_window: "Next 3–5 Days",
+    expected_date: "Nov 28–30",
+    risk_trend: "+30 pts",
+    explanation: "Water infiltration into lower unbound gravel layer causing localized bearing capacity reduction under freight trucks.",
+    factors: [
+      "Base Layer Saturation: 76%",
+      "Freight Route Class: National Trunk",
+      "Rutting Depth: 22mm",
+      "Pavement Age: 4.2 years"
+    ],
+    action: "Milling of distressed 40mm wearing course followed by high-density asphalt overlay."
+  }
+];
+
+function initForecastView() {
+  renderForecastCards('all');
+  initForecastMap();
+  lucide.createIcons();
+}
+window.initForecastView = initForecastView;
+
+function initForecastMap() {
+  const mapContainer = document.getElementById('forecast-map');
+  if (!mapContainer) return;
+
+  if (!forecastMap) {
+    forecastMap = L.map('forecast-map', {
+      center: [21.5, 78.5],
+      zoom: 5,
+      zoomControl: true,
+      attributionControl: false
+    });
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; CartoDB &copy; OpenStreetMap',
+      maxZoom: 19,
+      subdomains: 'abcd'
+    }).addTo(forecastMap);
+
+    forecastMarkersLayer = L.layerGroup().addTo(forecastMap);
+  }
+
+  setTimeout(() => {
+    if (forecastMap) {
+      forecastMap.invalidateSize();
+      renderForecastMapMarkers('all');
+    }
+  }, 200);
+}
+
+function renderForecastMapMarkers(filter) {
+  if (!forecastMarkersLayer || !forecastMap) return;
+  forecastMarkersLayer.clearLayers();
+
+  const items = ROAD_FORECAST_DATA.filter(item => {
+    if (!filter || filter === 'all') return true;
+    if (filter === 'high') return item.forecast_risk.toLowerCase() === 'high' || item.forecast_risk.toLowerCase() === 'critical';
+    if (filter === 'medium') return item.forecast_risk.toLowerCase() === 'medium';
+    if (filter === 'low') return item.forecast_risk.toLowerCase() === 'low';
+    return true;
+  });
+
+  items.forEach(item => {
+    const isHigh = item.forecast_risk.toLowerCase() === 'high' || item.forecast_risk.toLowerCase() === 'critical';
+    const color = isHigh ? '#dc2626' : (item.forecast_risk.toLowerCase() === 'medium' ? '#f59e0b' : '#16a34a');
+    const borderColor = isHigh ? '#fecaca' : (item.forecast_risk.toLowerCase() === 'medium' ? '#fef3c7' : '#bbf7d0');
+
+    const iconHtml = `
+      <div style="width: 28px; height: 28px; border-radius: 50%; background: ${color}; border: 2px solid ${borderColor}; box-shadow: 0 2px 8px rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold; cursor: pointer;">
+        🔮
+      </div>
+    `;
+
+    const customIcon = L.divIcon({
+      html: iconHtml,
+      className: 'forecast-custom-pin',
+      iconSize: [28, 28],
+      iconAnchor: [14, 14]
+    });
+
+    const marker = L.marker(item.coordinates, { icon: customIcon }).addTo(forecastMarkersLayer);
+    
+    marker.bindPopup(`
+      <div style="background:#ffffff; color:#000; padding:10px; border-radius:10px; font-family:inherit; min-width:190px; border: 1px solid #cbd5e1;">
+        <span style="font-size:10px; font-weight:bold; color:${color}; text-transform:uppercase; letter-spacing:0.5px;">${item.forecast_risk} Risk Forecast</span>
+        <h4 style="font-size:12px; font-weight:bold; margin:4px 0 2px 0;">${item.road_name}</h4>
+        <p style="font-size:11px; color:#475569; margin:0 0 6px 0;">${item.location}</p>
+        <div style="display:flex; justify-content:space-between; font-size:11px; border-top:1px solid #e2e8f0; padding-top:6px;">
+          <span>Risk: <strong style="color:${color}">${item.forecast_score}/100</strong></span>
+          <span>Conf: <strong>${item.confidence}%</strong></span>
+        </div>
+      </div>
+    `);
+
+    marker.on('click', () => {
+      openForecastDetailModal(item.id);
+    });
+  });
+}
+
+function renderForecastCards(filter) {
+  const container = document.getElementById('forecast-corridors-list');
+  if (!container) return;
+
+  const items = ROAD_FORECAST_DATA.filter(item => {
+    if (!filter || filter === 'all') return true;
+    if (filter === 'high') return item.forecast_risk.toLowerCase() === 'high' || item.forecast_risk.toLowerCase() === 'critical';
+    if (filter === 'medium') return item.forecast_risk.toLowerCase() === 'medium';
+    if (filter === 'low') return item.forecast_risk.toLowerCase() === 'low';
+    return true;
+  });
+
+  const countBadge = document.getElementById('forecast-roads-count');
+  if (countBadge) {
+    countBadge.textContent = `Showing ${items.length} Predictions`;
+  }
+
+  container.innerHTML = items.map(item => {
+    const isCritical = item.forecast_risk.toLowerCase() === 'critical';
+    const isHigh = item.forecast_risk.toLowerCase() === 'high' || isCritical;
+    const badgeBg = isHigh ? 'bg-red-100 border-red-300 text-red-900' : (item.forecast_risk.toLowerCase() === 'medium' ? 'bg-amber-100 border-amber-300 text-amber-900' : 'bg-emerald-100 border-emerald-300 text-emerald-900');
+    const scoreColor = isHigh ? 'text-red-600' : (item.forecast_risk.toLowerCase() === 'medium' ? 'text-amber-600' : 'text-emerald-700');
+
+    return `
+      <div onclick="openForecastDetailModal('${item.id}')" class="bg-white hover:bg-slate-50 border border-slate-200 hover:border-purple-500 rounded-xl p-4 transition-all cursor-pointer shadow-xs group">
+        <div class="flex items-start justify-between gap-3 mb-2">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 rounded text-[10px] font-black font-mono uppercase border ${badgeBg}">
+                ${item.forecast_risk} Forecast
+              </span>
+              <span class="text-[11px] text-purple-700 font-mono font-bold">${item.confidence}% Confidence</span>
+            </div>
+            <h4 class="text-sm font-black text-black group-hover:text-purple-700 transition-colors">${item.road_name}</h4>
+            <p class="text-xs text-slate-600 font-medium">${item.location} • ${item.road_class}</p>
+          </div>
+          <div class="text-right shrink-0">
+            <span class="text-[10px] text-slate-500 font-mono font-bold block">Forecast Risk</span>
+            <span class="text-xl font-black font-mono ${scoreColor}">${item.forecast_score}<span class="text-xs text-slate-500 font-normal">/100</span></span>
+            <span class="text-[10px] text-purple-700 font-mono font-bold block">${item.risk_trend}</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs mb-3">
+          <div>
+            <span class="text-[10px] text-slate-500 font-bold block">Predicted Issue</span>
+            <span class="font-bold text-slate-900">${item.predicted_issue}</span>
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-500 font-bold block">Expected Window</span>
+            <span class="font-bold text-amber-700 font-mono">${item.expected_window} (${item.expected_date})</span>
+          </div>
+        </div>
+
+        <p class="text-xs text-slate-600 line-clamp-2 italic mb-3 leading-relaxed font-medium">
+          "${item.explanation}"
+        </p>
+
+        <div class="flex items-center justify-between pt-2 border-t border-slate-200 text-xs">
+          <span class="text-emerald-700 font-bold text-[11px] flex items-center gap-1">
+            <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i> Preventive Action Available
+          </span>
+          <span class="text-purple-700 font-black text-[11px] group-hover:translate-x-0.5 transition-transform flex items-center gap-1">
+            Inspect Corridor <i data-lucide="arrow-right" class="w-3 h-3"></i>
+          </span>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  lucide.createIcons();
+}
+
+function handleForecastFilterChange(filterVal) {
+  renderForecastCards(filterVal);
+  renderForecastMapMarkers(filterVal);
+}
+window.handleForecastFilterChange = handleForecastFilterChange;
+
+function refreshForecastData() {
+  const btn = document.querySelector('[onclick="refreshForecastData()"]');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 text-purple-200 animate-spin"></i> Updating Forecasts...`;
+    lucide.createIcons();
+  }
+
+  setTimeout(() => {
+    ROAD_FORECAST_DATA.forEach(d => {
+      d.confidence = Math.min(98, Math.max(80, d.confidence + Math.floor((Math.random() - 0.5) * 3)));
+    });
+    renderForecastCards('all');
+    renderForecastMapMarkers('all');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 text-purple-200"></i> Run AI Forecast`;
+      lucide.createIcons();
+    }
+  }, 600);
+}
+window.refreshForecastData = refreshForecastData;
+
+function openForecastDetailModal(forecastId) {
+  const item = ROAD_FORECAST_DATA.find(d => d.id === forecastId);
+  if (!item) return;
+
+  const modal = document.getElementById('road-forecast-modal');
+  if (!modal) return;
+
+  const badge = document.getElementById('fc-modal-badge-level');
+  if (badge) {
+    badge.textContent = `${item.forecast_risk.toUpperCase()} RISK`;
+    badge.className = item.forecast_risk.toLowerCase() === 'high' || item.forecast_risk.toLowerCase() === 'critical'
+      ? 'px-2.5 py-1 rounded text-xs font-black font-mono bg-red-100 border border-red-300 text-red-900'
+      : 'px-2.5 py-1 rounded text-xs font-black font-mono bg-amber-100 border border-amber-300 text-amber-900';
+  }
+
+  const nameElem = document.getElementById('fc-modal-road-name');
+  if (nameElem) nameElem.textContent = item.road_name;
+
+  const locElem = document.getElementById('fc-modal-location');
+  if (locElem) locElem.textContent = `${item.location} • ${item.road_class}`;
+
+  const riskElem = document.getElementById('fc-modal-risk-score');
+  if (riskElem) riskElem.textContent = `${item.forecast_score} / 100`;
+
+  const confElem = document.getElementById('fc-modal-confidence');
+  if (confElem) confElem.textContent = `${item.confidence}%`;
+
+  const winElem = document.getElementById('fc-modal-window');
+  if (winElem) winElem.textContent = item.expected_window;
+
+  const expElem = document.getElementById('fc-modal-explanation');
+  if (expElem) expElem.textContent = item.explanation;
+
+  const factorsElem = document.getElementById('fc-modal-factors');
+  if (factorsElem) {
+    factorsElem.innerHTML = item.factors.map(f => `
+      <div class="flex items-center gap-2 p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-800 font-medium">
+        <i data-lucide="check" class="w-3.5 h-3.5 text-purple-700 shrink-0"></i>
+        <span>${f}</span>
+      </div>
+    `).join('');
+  }
+
+  const actElem = document.getElementById('fc-modal-action');
+  if (actElem) actElem.textContent = item.action;
+
+  const gmapsElem = document.getElementById('fc-modal-gmaps-link');
+  if (gmapsElem) {
+    gmapsElem.href = `https://www.google.com/maps/search/?api=1&query=${item.coordinates[0]},${item.coordinates[1]}`;
+  }
+
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  lucide.createIcons();
+}
+window.openForecastDetailModal = openForecastDetailModal;
+
+function closeForecastDetailModal() {
+  const modal = document.getElementById('road-forecast-modal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}
+window.closeForecastDetailModal = closeForecastDetailModal;
+
+// ==========================================
+// FEATURE 2: RESOURCE INTELLIGENCE ENGINE
+// ==========================================
+const RESOURCE_TEAMS_DATA = [
+  {
+    id: "TEAM-A",
+    name: "TEAM A (Rapid Asphalt Crew 1)",
+    zone: "North Zone",
+    status: "Available",
+    workload: 20,
+    equipment: "Jet Patcher (JP-04), Asphalt Roller",
+    crew_size: "6 Technicians",
+    recommended_assignment: "NH-52 Jaipur Pothole Cluster",
+    priority: "HIGH"
+  },
+  {
+    id: "TEAM-B",
+    name: "TEAM B (Heavy Infrastructure Crew)",
+    zone: "South Zone",
+    status: "Busy",
+    workload: 85,
+    equipment: "Heavy Road Milling Machine (RM-02), Paver",
+    crew_size: "8 Technicians",
+    recommended_assignment: "Hosur Road Flyover Ramp Repair",
+    priority: "CRITICAL"
+  },
+  {
+    id: "TEAM-C",
+    name: "TEAM C (Monsoon Drainage & Guardrail Unit)",
+    zone: "West Zone",
+    status: "Available",
+    workload: 15,
+    equipment: "High-Capacity Suction Pump (SP-01), Trench Digger",
+    crew_size: "5 Technicians",
+    recommended_assignment: "NH-48 Western Express Drainage Clearing",
+    priority: "HIGH"
+  },
+  {
+    id: "TEAM-D",
+    name: "TEAM D (Signage & Safety Markings Team)",
+    zone: "Central Zone",
+    status: "Available",
+    workload: 30,
+    equipment: "Thermal Road Marking Truck, Crane Lifter",
+    crew_size: "4 Technicians",
+    recommended_assignment: "Delhi-Meerut Expressway Guardrail Anchors",
+    priority: "MEDIUM"
+  },
+  {
+    id: "TEAM-E",
+    name: "TEAM E (Emergency Response Flying Squad)",
+    zone: "City Metro Division",
+    status: "Available",
+    workload: 10,
+    equipment: "Rapid Response Van, Polymer Cold Patch Kit",
+    crew_size: "4 Specialists",
+    recommended_assignment: "Hospital Emergency Corridor Standby",
+    priority: "CRITICAL"
+  },
+  {
+    id: "TEAM-F",
+    name: "TEAM F (Structural Base & Concrete Team)",
+    zone: "East Zone",
+    status: "Busy",
+    workload: 90,
+    equipment: "Concrete Mixer, Vibratory Compactor, Breakers",
+    crew_size: "7 Technicians",
+    recommended_assignment: "GT Road Kanpur Base Subsidence",
+    priority: "HIGH"
+  }
+];
+
+const PRIORITY_ALLOCATION_DATA = [
+  {
+    id: "HAZ-001",
+    hazard_title: "Major Pothole Cluster (12cm Deep)",
+    location: "NH-52 (Jaipur–Sikar Expressway)",
+    severity: "CRITICAL",
+    risk_score: 96,
+    required_equipment: "Jet Patcher, Roller",
+    recommended_crew: "TEAM A (North Zone)",
+    est_duration: "3.5 Hours",
+    status: "Ready for Dispatch"
+  },
+  {
+    id: "HAZ-002",
+    hazard_title: "Active Monsoon Waterlogging (18cm)",
+    location: "NH-48 Western Express (Mumbai)",
+    severity: "HIGH",
+    risk_score: 84,
+    required_equipment: "High-Capacity Suction Pump",
+    recommended_crew: "TEAM C (West Zone)",
+    est_duration: "2.0 Hours",
+    status: "Ready for Dispatch"
+  },
+  {
+    id: "HAZ-003",
+    hazard_title: "High-Impact Guardrail Deformation",
+    location: "Delhi–Meerut Expressway (Delhi NCR)",
+    severity: "HIGH",
+    risk_score: 79,
+    required_equipment: "Crane Lifter, Hydraulic Bender",
+    recommended_crew: "TEAM D (Central Zone)",
+    est_duration: "4.0 Hours",
+    status: "Ready for Dispatch"
+  },
+  {
+    id: "HAZ-004",
+    hazard_title: "Flyover Ramp Edge Collapse Risk",
+    location: "Hosur Road Corridor (Bengaluru)",
+    severity: "CRITICAL",
+    risk_score: 92,
+    required_equipment: "Milling Machine, Rapid Polymer Kit",
+    recommended_crew: "TEAM E (Flying Squad)",
+    est_duration: "1.5 Hours",
+    status: "Allocated"
+  },
+  {
+    id: "HAZ-005",
+    hazard_title: "Subgrade Base Fissure & Cavity",
+    location: "GT Road (Kanpur–Lucknow, UP)",
+    severity: "HIGH",
+    risk_score: 81,
+    required_equipment: "Concrete Mixer, Compactor",
+    recommended_crew: "TEAM F (East Zone)",
+    est_duration: "5.0 Hours",
+    status: "In Progress"
+  }
+];
+
+function initResourceIntelligenceView() {
+  renderResourceTeams('all');
+  renderAllocationTable();
+  updateResourceKPIs();
+  lucide.createIcons();
+}
+window.initResourceIntelligenceView = initResourceIntelligenceView;
+
+function updateResourceKPIs() {
+  const availableCount = RESOURCE_TEAMS_DATA.filter(t => t.status.toLowerCase() === 'available').length;
+  const busyCount = RESOURCE_TEAMS_DATA.filter(t => t.status.toLowerCase() === 'busy').length;
+  
+  const availEl = document.getElementById('res-kpi-available-teams');
+  if (availEl) availEl.textContent = `${availableCount} Teams`;
+
+  const busyEl = document.getElementById('res-kpi-busy-teams');
+  if (busyEl) busyEl.textContent = `${busyCount} Teams`;
+
+  const avgWorkload = Math.round(RESOURCE_TEAMS_DATA.reduce((acc, t) => acc + t.workload, 0) / RESOURCE_TEAMS_DATA.length);
+  const utilEl = document.getElementById('res-kpi-utilization');
+  if (utilEl) utilEl.textContent = `${avgWorkload}%`;
+}
+
+function renderResourceTeams(filter) {
+  const container = document.getElementById('resource-teams-grid');
+  if (!container) return;
+
+  const items = RESOURCE_TEAMS_DATA.filter(team => {
+    if (!filter || filter === 'all') return true;
+    return team.status.toLowerCase() === filter.toLowerCase();
+  });
+
+  container.innerHTML = items.map(team => {
+    const isAvail = team.status.toLowerCase() === 'available';
+    const statusBg = isAvail ? 'bg-emerald-100 border-emerald-300 text-emerald-900' : 'bg-amber-100 border-amber-300 text-amber-900';
+    const workloadColor = team.workload > 75 ? 'bg-red-600' : (team.workload > 40 ? 'bg-amber-500' : 'bg-emerald-600');
+
+    return `
+      <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-xs flex flex-col justify-between gap-3 text-black">
+        <div>
+          <div class="flex items-start justify-between gap-2 mb-2">
+            <div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-black font-mono uppercase border ${statusBg}">
+                ${team.status}
+              </span>
+              <h4 class="text-sm font-black text-black mt-1">${team.name}</h4>
+              <p class="text-xs text-slate-600 font-medium">${team.zone} • ${team.crew_size}</p>
+            </div>
+            <span class="text-xs font-mono font-black ${team.priority === 'CRITICAL' ? 'text-red-600' : (team.priority === 'HIGH' ? 'text-amber-600' : 'text-blue-800')}">
+              ${team.priority}
+            </span>
+          </div>
+
+          <div class="space-y-1 mb-3">
+            <div class="flex justify-between text-[11px] font-mono font-bold text-slate-600">
+              <span>Workload Capacity</span>
+              <span class="text-black font-black">${team.workload}%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+              <div class="${workloadColor} h-1.5 rounded-full transition-all duration-500" style="width: ${team.workload}%"></div>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs space-y-1.5 mb-2">
+            <div>
+              <span class="text-[10px] text-slate-500 font-bold block uppercase font-mono">Assigned Equipment</span>
+              <span class="text-black font-bold">${team.equipment}</span>
+            </div>
+            <div class="pt-1 border-t border-slate-200">
+              <span class="text-[10px] text-slate-500 font-bold block uppercase font-mono">Recommended Task</span>
+              <span class="text-cyan-900 font-bold">${team.recommended_assignment}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-slate-200 flex items-center justify-between">
+          <span class="text-[11px] text-slate-500 font-mono font-bold">ID: ${team.id}</span>
+          <button onclick="dispatchRepairTeam('${team.id}')" ${!isAvail ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg text-xs font-black ${isAvail ? 'bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer shadow-xs' : 'bg-slate-200 text-slate-400 cursor-not-allowed'} transition-all">
+            ${isAvail ? 'Dispatch Crew ↗' : 'Active On Site'}
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  lucide.createIcons();
+}
+
+function filterResourceTeams(status) {
+  document.querySelectorAll('.res-team-filter').forEach(btn => {
+    btn.classList.remove('bg-slate-900', 'text-white', 'border', 'border-slate-700');
+    btn.classList.add('bg-white', 'text-slate-700', 'border', 'border-slate-300');
+  });
+
+  const activeBtn = document.getElementById(`res-filter-${status}`);
+  if (activeBtn) {
+    activeBtn.classList.remove('bg-white', 'text-slate-700', 'border', 'border-slate-300');
+    activeBtn.classList.add('bg-slate-900', 'text-white', 'border', 'border-slate-700');
+  }
+
+  renderResourceTeams(status);
+}
+window.filterResourceTeams = filterResourceTeams;
+
+function renderAllocationTable() {
+  const tbody = document.getElementById('resource-allocation-table-body');
+  if (!tbody) return;
+
+  tbody.innerHTML = PRIORITY_ALLOCATION_DATA.map(item => {
+    const isCrit = item.severity === 'CRITICAL';
+    const sevBadge = isCrit ? 'bg-red-100 border-red-300 text-red-900' : 'bg-amber-100 border-amber-300 text-amber-900';
+    const isAllocated = item.status === 'Allocated' || item.status === 'In Progress';
+
+    return `
+      <tr class="hover:bg-slate-50 transition-colors">
+        <td class="py-3 px-3">
+          <p class="font-black text-black">${item.hazard_title}</p>
+          <span class="text-[10px] font-mono font-bold text-slate-500">ID: ${item.id}</span>
+        </td>
+        <td class="py-3 px-3 text-slate-700 font-medium">${item.location}</td>
+        <td class="py-3 px-3">
+          <span class="px-2 py-0.5 rounded text-[10px] font-black font-mono border ${sevBadge}">${item.severity}</span>
+          <span class="text-xs font-mono font-bold text-slate-700 ml-1.5">${item.risk_score} pts</span>
+        </td>
+        <td class="py-3 px-3 text-slate-700 font-mono text-[11px] font-bold">${item.required_equipment}</td>
+        <td class="py-3 px-3 font-bold text-cyan-900">${item.recommended_crew}</td>
+        <td class="py-3 px-3 font-mono font-bold text-slate-600">${item.est_duration}</td>
+        <td class="py-3 px-3 text-right">
+          <button onclick="dispatchRepairTask('${item.id}')" ${isAllocated ? 'disabled' : ''} class="px-3 py-1 rounded-lg text-xs font-black ${isAllocated ? 'bg-slate-200 text-slate-500 cursor-not-allowed' : 'bg-cyan-600 hover:bg-cyan-700 text-white cursor-pointer shadow-xs'} transition-all">
+            ${isAllocated ? 'Dispatched ✓' : 'Auto-Allocate'}
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  lucide.createIcons();
+}
+
+function dispatchRepairTeam(teamId) {
+  const team = RESOURCE_TEAMS_DATA.find(t => t.id === teamId);
+  if (!team) return;
+
+  team.status = "Busy";
+  team.workload = Math.min(100, team.workload + 40);
+  renderResourceTeams('all');
+  updateResourceKPIs();
+  alert(`Dispatched ${team.name} to ${team.recommended_assignment}!`);
+}
+window.dispatchRepairTeam = dispatchRepairTeam;
+
+function dispatchRepairTask(taskId) {
+  const task = PRIORITY_ALLOCATION_DATA.find(t => t.id === taskId);
+  if (!task) return;
+
+  task.status = "Allocated";
+  renderAllocationTable();
+  alert(`Allocated ${task.recommended_crew} to ${task.hazard_title}!`);
+}
+window.dispatchRepairTask = dispatchRepairTask;
+
+function runAutoAllocation() {
+  const btn = document.querySelector('[onclick="runAutoAllocation()"]');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Optimizing Allocations...`;
+    lucide.createIcons();
+  }
+
+  setTimeout(() => {
+    PRIORITY_ALLOCATION_DATA.forEach(task => {
+      task.status = "Allocated";
+    });
+    RESOURCE_TEAMS_DATA.forEach(t => {
+      if (t.status === "Available") {
+        t.workload = Math.min(85, t.workload + 35);
+      }
+    });
+    renderResourceTeams('all');
+    renderAllocationTable();
+    updateResourceKPIs();
+
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4"></i> Auto-Allocation Complete ✓`;
+      lucide.createIcons();
+      setTimeout(() => {
+        btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4"></i> Run AI Auto-Allocation`;
+        lucide.createIcons();
+      }, 3000);
+    }
+  }, 700);
+}
+window.runAutoAllocation = runAutoAllocation;
+
 
 
 
