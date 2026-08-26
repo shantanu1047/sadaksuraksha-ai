@@ -244,7 +244,7 @@ async def inspect_multimodal(payload: MultimodalUploadRequest):
         env_context=env,
         fusion=fusion,
         priority=priority,
-        status="Active",
+        status="Unresolved",
         telemetry_trace=trace,
     )
 
@@ -469,27 +469,9 @@ if frontend_dir.exists():
     app.mount("/static", StaticFiles(directory=str(frontend_dir)), name="static")
 
     @app.get("/")
-    async def serve_gateway():
-        """National Gateway & Role Selection Screen."""
-        return FileResponse(str(frontend_dir / "login.html"))
-
-    @app.get("/login")
-    async def serve_login():
-        """Login and role gateway."""
-        return FileResponse(str(frontend_dir / "login.html"))
-
-    @app.get("/dashboard")
-    async def serve_dashboard():
-        """Government Official AI Command Center."""
-        return FileResponse(str(frontend_dir / "index.html"))
-
-    @app.get("/admin")
-    async def serve_admin():
-        """Government Official AI Command Center alias."""
+    async def serve_index():
         return FileResponse(str(frontend_dir / "index.html"))
 
     @app.get("/report")
     async def serve_citizen_report():
-        """Indian Citizen Mobile Reporting Portal."""
         return FileResponse(str(frontend_dir / "report.html"))
-

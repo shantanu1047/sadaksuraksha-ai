@@ -9,32 +9,138 @@
 let allHazards = [];
 let allRoads = [];
 let allWorkOrders = [];
-let currentStateFilter = 'Karnataka';
+let currentStateFilter = 'all';
+let currentCityFilter = 'all';
 let currentCategoryFilter = 'all';
+let currentMapSeverityFilter = 'all';
 let currentSearchQuery = '';
 let selectedHazard = null;
 let userApiKey = localStorage.getItem('SADAKSURAKSHA_GEMINI_KEY') || localStorage.getItem('SADAKSUKHA_GEMINI_KEY') || localStorage.getItem('AERO_GEMINI_KEY') || '';
 
 // Indian Geographic Center Coordinates by State
 const STATE_VIEWPORTS = {
-  all: { center: [22.5937, 78.9629], zoom: 5 },
-  Karnataka: { center: [12.9550, 77.6400], zoom: 12 },
-  Maharashtra: { center: [19.0000, 73.0000], zoom: 10 },
+  all: { center: [22.5937, 78.9629], zoom: 4.8 },
+  "Andhra Pradesh": { center: [17.7200, 83.3200], zoom: 11 },
+  Assam: { center: [26.1600, 91.7700], zoom: 11 },
   "Delhi NCR": { center: [28.5672, 77.1800], zoom: 11 },
+  Goa: { center: [15.5000, 73.8350], zoom: 11 },
+  Gujarat: { center: [23.0300, 72.5300], zoom: 11 },
+  "Jammu & Kashmir": { center: [34.0600, 74.8300], zoom: 11 },
+  Karnataka: { center: [12.9550, 77.6400], zoom: 12 },
+  Kerala: { center: [9.9700, 76.3200], zoom: 11 },
+  "Madhya Pradesh": { center: [22.7500, 75.8900], zoom: 11 },
+  Maharashtra: { center: [19.0000, 73.0000], zoom: 10 },
+  Odisha: { center: [20.2700, 85.8000], zoom: 11 },
+  "Punjab & Haryana": { center: [30.7500, 76.7800], zoom: 11 },
+  Rajasthan: { center: [26.8900, 75.8000], zoom: 11 },
   "Tamil Nadu": { center: [13.0100, 80.2400], zoom: 12 },
   Telangana: { center: [17.4200, 78.3600], zoom: 12 },
   "Uttar Pradesh": { center: [27.1800, 78.0100], zoom: 9 },
-  "West Bengal": { center: [22.5400, 88.3900], zoom: 12 },
-  Gujarat: { center: [23.0300, 72.5300], zoom: 11 },
-  Rajasthan: { center: [26.8900, 75.8000], zoom: 11 },
-  Kerala: { center: [9.9700, 76.3200], zoom: 11 },
-  "Punjab & Haryana": { center: [30.7500, 76.7800], zoom: 11 },
-  "Madhya Pradesh": { center: [22.7500, 75.8900], zoom: 11 },
-  Odisha: { center: [20.2700, 85.8000], zoom: 11 },
-  Assam: { center: [26.1600, 91.7700], zoom: 11 },
-  "Jammu & Kashmir": { center: [34.0600, 74.8300], zoom: 11 },
-  "Andhra Pradesh": { center: [17.7200, 83.3200], zoom: 11 },
-  Goa: { center: [15.5000, 73.8350], zoom: 11 }
+  "West Bengal": { center: [22.5400, 88.3900], zoom: 12 }
+};
+
+// State-to-City Directory (Alphabetically Sorted Cities)
+const STATE_CITY_MAPPING = {
+  all: [],
+  "Andhra Pradesh": ["Guntur", "Tirupati", "Vijayawada", "Visakhapatnam"],
+  Assam: ["Dibrugarh", "Guwahati", "Jorhat", "Silchar"],
+  "Delhi NCR": ["Faridabad", "Ghaziabad", "Gurugram", "New Delhi", "Noida"],
+  Goa: ["Mapusa", "Margao", "Panaji", "Vasco da Gama"],
+  Gujarat: ["Ahmedabad", "Gandhinagar", "Rajkot", "Surat", "Vadodara"],
+  "Jammu & Kashmir": ["Anantnag", "Baramulla", "Jammu", "Srinagar"],
+  Karnataka: ["Belagavi", "Bengaluru", "Hubballi-Dharwad", "Mangaluru", "Mysuru"],
+  Kerala: ["Kochi", "Kozhikode", "Thiruvananthapuram", "Thrissur"],
+  "Madhya Pradesh": ["Bhopal", "Gwalior", "Indore", "Jabalpur", "Ujjain"],
+  Maharashtra: ["Aurangabad", "Mumbai", "Nagpur", "Nashik", "Pune", "Thane"],
+  Odisha: ["Bhubaneswar", "Cuttack", "Puri", "Rourkela"],
+  "Punjab & Haryana": ["Amritsar", "Chandigarh", "Jalandhar", "Ludhiana"],
+  Rajasthan: ["Ajmer", "Jaipur", "Jodhpur", "Kota", "Udaipur"],
+  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Salem", "Tiruchirappalli"],
+  Telangana: ["Hyderabad", "Karimnagar", "Nizamabad", "Warangal"],
+  "Uttar Pradesh": ["Agra", "Kanpur", "Lucknow", "Noida", "Prayagraj", "Varanasi"],
+  "West Bengal": ["Asansol", "Durgapur", "Howrah", "Kolkata", "Siliguri"]
+};
+
+// City Geographic Viewports for Smooth Zoom & Panning
+const CITY_VIEWPORTS = {
+  Bengaluru: { center: [12.9716, 77.5946], zoom: 12 },
+  Belagavi: { center: [15.8497, 74.4977], zoom: 12 },
+  "Hubballi-Dharwad": { center: [15.3647, 75.1240], zoom: 12 },
+  Mangaluru: { center: [12.9141, 74.8560], zoom: 12 },
+  Mysuru: { center: [12.2958, 76.6394], zoom: 12 },
+  Mumbai: { center: [19.0760, 72.8777], zoom: 11 },
+  Pune: { center: [18.5204, 73.8567], zoom: 12 },
+  Aurangabad: { center: [19.8762, 75.3433], zoom: 12 },
+  Nagpur: { center: [21.1458, 79.0882], zoom: 12 },
+  Nashik: { center: [19.9975, 73.7898], zoom: 12 },
+  Thane: { center: [19.2183, 72.9781], zoom: 12 },
+  "New Delhi": { center: [28.6139, 77.2090], zoom: 12 },
+  Faridabad: { center: [28.4089, 77.3178], zoom: 12 },
+  Ghaziabad: { center: [28.6692, 77.4538], zoom: 12 },
+  Gurugram: { center: [28.4595, 77.0266], zoom: 12 },
+  Noida: { center: [28.5355, 77.3910], zoom: 12 },
+  Chennai: { center: [13.0827, 80.2707], zoom: 12 },
+  Coimbatore: { center: [11.0168, 76.9558], zoom: 12 },
+  Madurai: { center: [9.9252, 78.1198], zoom: 12 },
+  Salem: { center: [11.6643, 78.1460], zoom: 12 },
+  Tiruchirappalli: { center: [10.7905, 78.7047], zoom: 12 },
+  Hyderabad: { center: [17.3850, 78.4867], zoom: 12 },
+  Karimnagar: { center: [18.4386, 79.1288], zoom: 12 },
+  Nizamabad: { center: [18.6725, 78.0941], zoom: 12 },
+  Warangal: { center: [17.9689, 79.5941], zoom: 12 },
+  Agra: { center: [27.1767, 78.0081], zoom: 12 },
+  Kanpur: { center: [26.4499, 80.3319], zoom: 12 },
+  Lucknow: { center: [26.8467, 80.9462], zoom: 12 },
+  Prayagraj: { center: [25.4358, 81.8463], zoom: 12 },
+  Varanasi: { center: [25.3176, 82.9739], zoom: 12 },
+  Kolkata: { center: [22.5726, 88.3639], zoom: 12 },
+  Asansol: { center: [23.6739, 86.9524], zoom: 12 },
+  Durgapur: { center: [23.5204, 87.3119], zoom: 12 },
+  Howrah: { center: [22.5958, 88.2636], zoom: 12 },
+  Siliguri: { center: [26.7271, 88.3953], zoom: 12 },
+  Ahmedabad: { center: [23.0225, 72.5714], zoom: 12 },
+  Gandhinagar: { center: [23.2156, 72.6369], zoom: 12 },
+  Rajkot: { center: [22.3039, 70.8022], zoom: 12 },
+  Surat: { center: [21.1702, 72.8311], zoom: 12 },
+  Vadodara: { center: [22.3072, 73.1812], zoom: 12 },
+  Jaipur: { center: [26.9124, 75.7873], zoom: 12 },
+  Ajmer: { center: [26.4499, 74.6399], zoom: 12 },
+  Jodhpur: { center: [26.2389, 73.0243], zoom: 12 },
+  Kota: { center: [25.2138, 75.8648], zoom: 12 },
+  Udaipur: { center: [24.5854, 73.7125], zoom: 12 },
+  Kochi: { center: [9.9312, 76.2673], zoom: 12 },
+  Kozhikode: { center: [11.2588, 75.7804], zoom: 12 },
+  Thiruvananthapuram: { center: [8.5241, 76.9366], zoom: 12 },
+  Thrissur: { center: [10.5276, 76.2144], zoom: 12 },
+  Chandigarh: { center: [30.7333, 76.7794], zoom: 12 },
+  Amritsar: { center: [31.6340, 74.8723], zoom: 12 },
+  Jalandhar: { center: [31.3260, 75.5762], zoom: 12 },
+  Ludhiana: { center: [30.9010, 75.8573], zoom: 12 },
+  Indore: { center: [22.7196, 75.8577], zoom: 12 },
+  Bhopal: { center: [23.2599, 77.4126], zoom: 12 },
+  Gwalior: { center: [26.2183, 78.1828], zoom: 12 },
+  Jabalpur: { center: [23.1815, 79.9864], zoom: 12 },
+  Ujjain: { center: [23.1765, 75.7885], zoom: 12 },
+  Bhubaneswar: { center: [20.2961, 85.8245], zoom: 12 },
+  Cuttack: { center: [20.4625, 85.8828], zoom: 12 },
+  Puri: { center: [19.8135, 85.8312], zoom: 12 },
+  Rourkela: { center: [22.2604, 84.8536], zoom: 12 },
+  Guwahati: { center: [26.1445, 91.7362], zoom: 12 },
+  Dibrugarh: { center: [27.4728, 94.9120], zoom: 12 },
+  Jorhat: { center: [26.7509, 94.2037], zoom: 12 },
+  Silchar: { center: [24.8333, 92.7789], zoom: 12 },
+  Srinagar: { center: [34.0837, 74.7973], zoom: 12 },
+  Anantnag: { center: [33.7311, 75.1500], zoom: 12 },
+  Baramulla: { center: [34.1980, 74.3636], zoom: 12 },
+  Jammu: { center: [32.7266, 74.8570], zoom: 12 },
+  Visakhapatnam: { center: [17.6868, 83.2185], zoom: 12 },
+  Guntur: { center: [16.3067, 80.4365], zoom: 12 },
+  Tirupati: { center: [13.6288, 79.4192], zoom: 12 },
+  Vijayawada: { center: [16.5062, 80.6480], zoom: 12 },
+  Panaji: { center: [15.4909, 73.8278], zoom: 12 },
+  Mapusa: { center: [15.5937, 73.8142], zoom: 12 },
+  Margao: { center: [15.2832, 73.9862], zoom: 12 },
+  "Vasco da Gama": { center: [15.3982, 73.8113], zoom: 12 }
 };
 
 // Map instances
@@ -74,13 +180,15 @@ function formatINR(amount) {
 // ==========================================
 document.addEventListener('DOMContentLoaded', async () => {
   lucide.createIcons();
-  checkAuthStatus();
   updateApiKeyDisplay();
-  initSessionIdentity();
+  setupGlobalInteractionHandlers();
   
-  // Set default state selector in UI
+  // Set default state selector and populate dependent city dropdown
   const stateSelect = document.getElementById('state-selector');
-  if (stateSelect) stateSelect.value = currentStateFilter;
+  if (stateSelect) {
+    stateSelect.value = currentStateFilter;
+    populateCityDropdown(currentStateFilter);
+  }
 
   // Initialize Maps
   initGisMap();
@@ -95,103 +203,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize Studio with default scenario
   loadStudioScenario('pothole');
 });
-
-// ==========================================
-// ROLE GATEWAY & AUTHENTICATION
-// ==========================================
-function checkAuthStatus() {
-  const isAuth = sessionStorage.getItem('sadaksuraksha_auth') === 'true';
-  const overlay = document.getElementById('role-gateway-overlay');
-  if (overlay) {
-    if (isAuth) {
-      overlay.classList.add('hidden');
-    } else {
-      overlay.classList.remove('hidden');
-    }
-  }
-}
-
-function fillOverlayDemo(type) {
-  const deptElem = document.getElementById('overlay-dept');
-  const idElem = document.getElementById('overlay-officer-id');
-  const pinElem = document.getElementById('overlay-officer-pin');
-  const errElem = document.getElementById('overlay-login-error');
-  if (errElem) errElem.classList.add('hidden');
-
-  if (type === 'nhai') {
-    if (deptElem) deptElem.value = 'nhai';
-    if (idElem) idElem.value = 'NHAI-CHIEF-019';
-    if (pinElem) pinElem.value = 'NHAI2026';
-  } else {
-    if (deptElem) deptElem.value = 'pwd_ka';
-    if (idElem) idElem.value = 'PWD-KA-INSPECT-44';
-    if (pinElem) pinElem.value = 'PWD123';
-  }
-}
-
-function handleOverlayGovLogin(e) {
-  if (e) e.preventDefault();
-  const dept = document.getElementById('overlay-dept')?.value || 'nhai';
-  const officerId = document.getElementById('overlay-officer-id')?.value.trim();
-  const pin = document.getElementById('overlay-officer-pin')?.value.trim();
-  const errorElem = document.getElementById('overlay-login-error');
-
-  if (!officerId || !pin) {
-    if (errorElem) {
-      errorElem.textContent = '❌ Please enter both Officer Badge ID and Security PIN.';
-      errorElem.classList.remove('hidden');
-    }
-    return;
-  }
-
-  // Save session credentials
-  sessionStorage.setItem('sadaksuraksha_auth', 'true');
-  sessionStorage.setItem('sadaksuraksha_role', 'gov_agent');
-  sessionStorage.setItem('sadaksuraksha_dept', dept);
-  sessionStorage.setItem('sadaksuraksha_officer', officerId);
-
-  // Update header badge text
-  const deptText = document.getElementById('header-dept-text');
-  if (deptText) {
-    deptText.textContent = `${officerId} • ${dept.toUpperCase()}`;
-  }
-
-  // Hide overlay
-  const overlay = document.getElementById('role-gateway-overlay');
-  if (overlay) {
-    overlay.classList.add('hidden');
-  }
-
-  // Ensure Leaflet map sizes correctly
-  if (gisMap) {
-    setTimeout(() => gisMap.invalidateSize(), 200);
-  }
-}
-
-function handleLogout() {
-  sessionStorage.removeItem('sadaksuraksha_auth');
-  sessionStorage.removeItem('sadaksuraksha_role');
-  sessionStorage.removeItem('sadaksuraksha_dept');
-  sessionStorage.removeItem('sadaksuraksha_officer');
-  
-  const overlay = document.getElementById('role-gateway-overlay');
-  if (overlay) {
-    overlay.classList.remove('hidden');
-    lucide.createIcons();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  } else {
-    window.location.href = '/';
-  }
-}
-
-function initSessionIdentity() {
-  const officer = sessionStorage.getItem('sadaksuraksha_officer');
-  const dept = sessionStorage.getItem('sadaksuraksha_dept');
-  const deptText = document.getElementById('header-dept-text');
-  if (deptText && officer) {
-    deptText.textContent = `${officer} • ${(dept || 'NHAI').toUpperCase()}`;
-  }
-}
 
 function updateApiKeyDisplay() {
   const btn = document.getElementById('apiKeyBtnText');
@@ -209,11 +220,12 @@ function updateApiKeyDisplay() {
 // ==========================================
 async function refreshAllData() {
   try {
+    const stateParam = currentStateFilter === 'all' ? '' : `?state=${encodeURIComponent(currentStateFilter)}`;
     const [hazardsRes, roadsRes, workOrdersRes, analyticsRes] = await Promise.all([
       fetch('/api/hazards'),
       fetch('/api/roads'),
       fetch('/api/work-orders'),
-      fetch(`/api/analytics/summary?state=${encodeURIComponent(currentStateFilter)}`)
+      fetch(`/api/analytics/summary${stateParam}`)
     ]);
 
     allHazards = await hazardsRes.json();
@@ -230,13 +242,48 @@ async function refreshAllData() {
 }
 
 // ==========================================
-// STATE-WISE & KEYWORD FILTERING
+// STATE-WISE & CITY-WISE FILTERING
 // ==========================================
+function populateCityDropdown(selectedState) {
+  const citySelect = document.getElementById('city-selector');
+  if (!citySelect) return;
+
+  const rawCities = STATE_CITY_MAPPING[selectedState] || [];
+  const sortedCities = [...rawCities].sort((a, b) => a.localeCompare(b));
+
+  citySelect.innerHTML = '<option value="all">Select City</option>' + 
+    sortedCities.map(c => `<option value="${c}">${c}</option>`).join('');
+
+  citySelect.value = 'all';
+  currentCityFilter = 'all';
+}
+window.populateCityDropdown = populateCityDropdown;
+
+function handleCityChange(selectedCity) {
+  currentCityFilter = selectedCity;
+  dismissActiveOverlays();
+
+  if (selectedCity !== 'all' && CITY_VIEWPORTS[selectedCity] && gisMap) {
+    gisMap.flyTo(CITY_VIEWPORTS[selectedCity].center, CITY_VIEWPORTS[selectedCity].zoom, { duration: 1.2 });
+  } else if (selectedCity === 'all' && STATE_VIEWPORTS[currentStateFilter] && gisMap) {
+    gisMap.flyTo(STATE_VIEWPORTS[currentStateFilter].center, STATE_VIEWPORTS[currentStateFilter].zoom, { duration: 1.2 });
+  }
+
+  applyStateAndSearchFilters();
+}
+window.handleCityChange = handleCityChange;
+
 function handleStateChange(selectedState) {
   currentStateFilter = selectedState;
 
+  // Populate & reset dependent city dropdown
+  populateCityDropdown(selectedState);
+
+  // Dismiss any open modals and popups
+  dismissActiveOverlays();
+
   // Smoothly pan map to selected State viewport
-  const vp = STATE_VIEWPORTS[selectedState] || STATE_VIEWPORTS.Karnataka;
+  const vp = STATE_VIEWPORTS[selectedState] || STATE_VIEWPORTS.all;
   if (gisMap) {
     gisMap.flyTo(vp.center, vp.zoom, { duration: 1.4 });
   }
@@ -245,58 +292,301 @@ function handleStateChange(selectedState) {
   applyStateAndSearchFilters();
 
   // Refresh analytics for selected state
-  fetch(`/api/analytics/summary?state=${encodeURIComponent(selectedState)}`)
+  const stateParam = selectedState === 'all' ? '' : `?state=${encodeURIComponent(selectedState)}`;
+  fetch(`/api/analytics/summary${stateParam}`)
     .then(r => r.json())
     .then(analytics => {
       updateKpiBar(analytics);
       updateAnalyticsCharts(analytics, allRoads);
     });
 }
+window.handleStateChange = handleStateChange;
 
 function handleSearchFilter(query) {
   currentSearchQuery = query.toLowerCase().trim();
   applyStateAndSearchFilters();
 }
 
-function filterMap(category) {
-  currentCategoryFilter = category;
-  document.querySelectorAll('.filter-pill').forEach(btn => btn.classList.remove('active'));
-  if (event && event.target) event.target.classList.add('active');
+let currentWorkflowFilter = 'all';
+
+function setWorkflowFilter(status) {
+  currentWorkflowFilter = status;
+  dismissActiveOverlays();
+
+  document.querySelectorAll('.workflow-pill').forEach(btn => {
+    if (btn.getAttribute('data-workflow') === status) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+
   applyStateAndSearchFilters();
+}
+window.setWorkflowFilter = setWorkflowFilter;
+
+function getHazardWorkflowStatus(h) {
+  const s = (h.status || '').toLowerCase().trim();
+  if (s === 'resolved' || s === 'completed') return 'resolved';
+  if (s === 'in progress' || s === 'in_progress' || s === 'assigned' || s === 'scheduled') return 'in_progress';
+  if (s === 'unresolved' || s === 'active' || s === 'open') return 'unresolved';
+  if (s === 'needs review' || s === 'needs_review' || s === 'pending_review') return 'needs_review';
+
+  if (allWorkOrders && allWorkOrders.some(wo => wo.status === 'completed' && wo.target_hazard_ids && wo.target_hazard_ids.includes(h.id))) {
+    return 'resolved';
+  }
+  if (allWorkOrders && allWorkOrders.some(wo => (wo.status === 'in_progress' || wo.status === 'scheduled' || wo.status === 'assigned') && wo.target_hazard_ids && wo.target_hazard_ids.includes(h.id))) {
+    return 'in_progress';
+  }
+
+  return 'unresolved';
+}
+window.getHazardWorkflowStatus = getHazardWorkflowStatus;
+
+function getHazardIconName(hazardType) {
+  const ht = (hazardType || '').toLowerCase().trim();
+  if (ht === 'pothole') return 'circle-dot';
+  if (ht === 'standing_water' || ht === 'waterlogging') return 'waves';
+  if (ht === 'damaged_guardrail' || ht === 'guardrail') return 'shield-alert';
+  if (ht === 'debris') return 'mountain';
+  if (ht === 'obscured_sign' || ht === 'signage') return 'signpost';
+  return 'help-circle';
+}
+window.getHazardIconName = getHazardIconName;
+
+// ==========================================
+// MAP SEVERITY QUICK FILTER (BOTTOM-LEFT MAP OVERLAY)
+// ==========================================
+function filterMapSeverity(severity) {
+  currentMapSeverityFilter = (severity || 'all').toLowerCase();
+
+  // Update map severity UI buttons active state
+  document.querySelectorAll('#map-severity-filter .map-severity-btn').forEach(btn => {
+    if (btn.getAttribute('data-severity') === currentMapSeverityFilter) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+
+  dismissActiveOverlays();
+  applyStateAndSearchFilters();
+}
+window.filterMapSeverity = filterMapSeverity;
+
+// ==========================================
+// ADVANCED SORT & FILTER INTELLIGENCE
+// ==========================================
+let advFilters = {
+  type: 'all',
+  auth: 'all',
+  timeline: 'all',
+  cost: 'all',
+  sort: 'risk_desc'
+};
+
+function toggleAdvancedFilterPopover() {
+  const pop = document.getElementById('adv-filter-popover');
+  if (!pop) return;
+  if (pop.classList.contains('hidden')) {
+    syncAdvFilterFormValues();
+    pop.classList.remove('hidden');
+    if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+  } else {
+    pop.classList.add('hidden');
+  }
+}
+window.toggleAdvancedFilterPopover = toggleAdvancedFilterPopover;
+
+function closeAdvancedFilterPopover() {
+  const pop = document.getElementById('adv-filter-popover');
+  if (pop) pop.classList.add('hidden');
+}
+window.closeAdvancedFilterPopover = closeAdvancedFilterPopover;
+
+function syncAdvFilterFormValues() {
+  const setVal = (id, val) => {
+    const el = document.getElementById(id);
+    if (el && val !== undefined) el.value = val;
+  };
+  setVal('adv-filter-type', advFilters.type);
+  setVal('adv-filter-auth', advFilters.auth);
+  setVal('adv-filter-timeline', advFilters.timeline);
+  setVal('adv-filter-cost', advFilters.cost);
+  setVal('adv-filter-sort', advFilters.sort);
+}
+
+function applyAdvancedFilters() {
+  const getVal = (id, fallback = 'all') => {
+    const el = document.getElementById(id);
+    return el ? el.value : fallback;
+  };
+
+  advFilters.type = getVal('adv-filter-type');
+  advFilters.auth = getVal('adv-filter-auth');
+  advFilters.timeline = getVal('adv-filter-timeline');
+  advFilters.cost = getVal('adv-filter-cost');
+  advFilters.sort = getVal('adv-filter-sort', 'risk_desc');
+
+  closeAdvancedFilterPopover();
+  applyStateAndSearchFilters();
+}
+window.applyAdvancedFilters = applyAdvancedFilters;
+
+function resetAdvancedFilters() {
+  advFilters = {
+    type: 'all',
+    auth: 'all',
+    timeline: 'all',
+    cost: 'all',
+    sort: 'risk_desc'
+  };
+  syncAdvFilterFormValues();
+  closeAdvancedFilterPopover();
+  applyStateAndSearchFilters();
+}
+window.resetAdvancedFilters = resetAdvancedFilters;
+
+function countActiveAdvFilters() {
+  let count = 0;
+  if (advFilters.type !== 'all') count++;
+  if (advFilters.auth !== 'all') count++;
+  if (advFilters.timeline !== 'all') count++;
+  if (advFilters.cost !== 'all') count++;
+  if (advFilters.sort !== 'risk_desc') count++;
+  return count;
 }
 
 function getFilteredHazards() {
-  return allHazards.filter(h => {
-    // 1. State Filter
+  const filtered = allHazards.filter(h => {
+    // 1. State Filter (Global state selector in header)
     const matchesState = (currentStateFilter === 'all') || (h.state && h.state.toLowerCase() === currentStateFilter.toLowerCase());
+    if (!matchesState) return false;
     
-    // 2. Category Filter
-    let matchesCategory = true;
-    if (currentCategoryFilter === 'critical') {
-      matchesCategory = (h.severity === 'critical' && !h.fusion.is_false_positive);
-    } else if (currentCategoryFilter === 'pothole') {
-      matchesCategory = (h.hazard_type === 'pothole' && !h.fusion.is_false_positive);
-    } else if (currentCategoryFilter === 'hospital') {
-      matchesCategory = (h.road_class === 'hospital_corridor' && !h.fusion.is_false_positive);
+    // 2. City Filter (Global header city selector if selected)
+    const matchesCity = (currentCityFilter === 'all') || (h.city && h.city.toLowerCase() === currentCityFilter.toLowerCase());
+    if (!matchesCity) return false;
+
+    // 3. Map Severity Filter (Bottom-left map control: ALL / CRITICAL / HIGH / LOW)
+    if (currentMapSeverityFilter !== 'all') {
+      if ((h.severity || '').toLowerCase() !== currentMapSeverityFilter) {
+        return false;
+      }
     }
 
-    // 3. Search Query Filter (State, City, Road Name, Title, Type)
+    // 4. Workflow Status Filter (Quick filter pills if selected)
+    const matchesWorkflow = (currentWorkflowFilter === 'all') || (getHazardWorkflowStatus(h) === currentWorkflowFilter);
+    if (!matchesWorkflow) return false;
+
+    // 5. Adv Issue Type Filter (All, Pothole, Waterlogging, Guardrail, Debris, Signage, Other)
+    let matchesAdvType = true;
+    if (advFilters.type !== 'all') {
+      const ht = (h.hazard_type || '').toLowerCase();
+      if (advFilters.type === 'pothole') {
+        matchesAdvType = (ht === 'pothole');
+      } else if (advFilters.type === 'waterlogging' || advFilters.type === 'standing_water') {
+        matchesAdvType = (ht === 'standing_water' || ht === 'waterlogging');
+      } else if (advFilters.type === 'guardrail' || advFilters.type === 'damaged_guardrail') {
+        matchesAdvType = (ht === 'damaged_guardrail' || ht === 'guardrail');
+      } else if (advFilters.type === 'debris') {
+        matchesAdvType = (ht === 'debris');
+      } else if (advFilters.type === 'signage' || advFilters.type === 'obscured_sign') {
+        matchesAdvType = (ht === 'obscured_sign' || ht === 'signage');
+      } else if (advFilters.type === 'other') {
+        matchesAdvType = (ht === 'other' || ht === 'alligator_crack' || ht === 'longitudinal_crack' || ht === 'rutting');
+      }
+      if (!matchesAdvType) return false;
+    }
+
+    // 6. Authenticity / AI Verification Filter
+    if (advFilters.auth !== 'all') {
+      const isFP = h.fusion && h.fusion.is_false_positive;
+      if (advFilters.auth === 'verified_only' && isFP) return false;
+      if (advFilters.auth === 'exclude_fp' && isFP) return false;
+    }
+
+    // 7. Adv Repair Timeline Filter
+    let matchesAdvTimeline = true;
+    if (advFilters.timeline !== 'all') {
+      const urg = (h.priority && h.priority.dispatch_urgency ? h.priority.dispatch_urgency.toLowerCase() : '');
+      const risk = (h.priority && h.priority.raw_risk_score) || 0;
+      if (advFilters.timeline === '24h') {
+        matchesAdvTimeline = (h.severity === 'critical' || urg.includes('immediate') || urg.includes('24') || risk >= 80);
+      } else if (advFilters.timeline === '1_3d') {
+        matchesAdvTimeline = (h.severity === 'high' || (risk >= 60 && risk < 80) || urg.includes('scheduled'));
+      } else if (advFilters.timeline === '3_7d') {
+        matchesAdvTimeline = (h.severity === 'medium' || (risk >= 40 && risk < 60));
+      } else if (advFilters.timeline === '7d_plus') {
+        matchesAdvTimeline = (h.severity === 'low' || risk < 40 || urg.includes('deferred') || urg.includes('routine'));
+      }
+      if (!matchesAdvTimeline) return false;
+    }
+
+    // 8. Adv Repair Cost Filter
+    let matchesAdvCost = true;
+    if (advFilters.cost !== 'all') {
+      const costVal = (h.priority && h.priority.estimated_repair_cost_usd) || 0;
+      if (advFilters.cost === 'under_10k') matchesAdvCost = (costVal < 10000);
+      else if (advFilters.cost === '10k_25k') matchesAdvCost = (costVal >= 10000 && costVal <= 25000);
+      else if (advFilters.cost === '25k_50k') matchesAdvCost = (costVal > 25000 && costVal <= 50000);
+      else if (advFilters.cost === 'above_50k') matchesAdvCost = (costVal > 50000);
+      if (!matchesAdvCost) return false;
+    }
+
+    // 9. Search Query Filter (State, City, Road Name, Title, Type)
     let matchesSearch = true;
     if (currentSearchQuery) {
       const haystack = `${h.id} ${h.title} ${h.state} ${h.city} ${h.road_name} ${h.address} ${h.hazard_type}`.toLowerCase();
       matchesSearch = haystack.includes(currentSearchQuery);
+      if (!matchesSearch) return false;
     }
 
-    return matchesState && matchesCategory && matchesSearch;
+    return matchesState && matchesCity && matchesWorkflow && matchesAdvType && matchesAdvTimeline && matchesAdvCost && matchesSearch;
   });
+
+  // Apply Sorting
+  filtered.sort((a, b) => {
+    const riskA = (a.priority && a.priority.raw_risk_score) || 0;
+    const riskB = (b.priority && b.priority.raw_risk_score) || 0;
+    const costA = (a.priority && a.priority.estimated_repair_cost_usd) || 0;
+    const costB = (b.priority && b.priority.estimated_repair_cost_usd) || 0;
+
+    switch (advFilters.sort) {
+      case 'risk_asc':
+        return riskA - riskB;
+      case 'newest':
+        return (b.id || '').localeCompare(a.id || '');
+      case 'oldest':
+        return (a.id || '').localeCompare(b.id || '');
+      case 'cost_desc':
+        return costB - costA;
+      case 'cost_asc':
+        return costA - costB;
+      case 'fastest':
+        return riskB - riskA;
+      case 'longest':
+        return riskA - riskB;
+      case 'risk_desc':
+      default:
+        return riskB - riskA;
+    }
+  });
+
+  return filtered;
 }
 
 function applyStateAndSearchFilters() {
+  dismissActiveOverlays();
+
   const filteredHazards = getFilteredHazards();
+  const filteredHazardIds = new Set(filteredHazards.map(h => h.id));
   
-  const filteredWorkOrders = (currentStateFilter === 'all')
-    ? allWorkOrders
-    : allWorkOrders.filter(wo => wo.state && wo.state.toLowerCase() === currentStateFilter.toLowerCase());
+  const filteredWorkOrders = allWorkOrders.filter(wo => {
+    const matchesState = (currentStateFilter === 'all') || (wo.state && wo.state.toLowerCase() === currentStateFilter.toLowerCase());
+    const matchesCity = (currentCityFilter === 'all') || (wo.city && wo.city.toLowerCase() === currentCityFilter.toLowerCase());
+    const hasMatchingHazard = wo.target_hazard_ids && wo.target_hazard_ids.some(id => filteredHazardIds.has(id));
+    return matchesState && matchesCity && hasMatchingHazard;
+  });
 
   renderIncidentFeed(filteredHazards);
   renderMapMarkers(filteredHazards);
@@ -308,11 +598,17 @@ function applyStateAndSearchFilters() {
   const fp = filteredHazards.filter(h => h.fusion.is_false_positive).length;
   const totalCost = actionable.reduce((acc, h) => acc + h.priority.estimated_repair_cost_usd, 0);
 
-  document.getElementById('kpi-critical').textContent = critical;
-  document.getElementById('kpi-total').textContent = actionable.length;
-  document.getElementById('kpi-fp').textContent = fp;
-  document.getElementById('kpi-work-orders').textContent = filteredWorkOrders.length;
-  document.getElementById('kpi-cost').textContent = formatINR(totalCost);
+  const kpiCrit = document.getElementById('kpi-critical');
+  const kpiTot = document.getElementById('kpi-total');
+  const kpiFp = document.getElementById('kpi-fp');
+  const kpiWo = document.getElementById('kpi-work-orders');
+  const kpiCost = document.getElementById('kpi-cost');
+
+  if (kpiCrit) kpiCrit.textContent = critical;
+  if (kpiTot) kpiTot.textContent = actionable.length;
+  if (kpiFp) kpiFp.textContent = fp;
+  if (kpiWo) kpiWo.textContent = filteredWorkOrders.length;
+  if (kpiCost) kpiCost.textContent = formatINR(totalCost);
 }
 
 function updateKpiBar(analytics) {
@@ -336,19 +632,49 @@ function initGisMap() {
   gisMap = L.map('gis-map', {
     center: defaultVp.center,
     zoom: defaultVp.zoom,
-    zoomControl: false
+    zoomControl: false,
+    zoomSnap: 0.5,
+    zoomDelta: 0.5,
+    wheelDebounceTime: 40,
+    wheelPxPerZoomLevel: 100,
+    zoomAnimation: true,
+    fadeAnimation: true,
+    markerZoomAnimation: true,
+    inertia: true,
+    inertiaDeceleration: 3000,
+    inertiaMaxSpeed: 2000,
+    easeLinearity: 0.2,
+    scrollWheelZoom: true,
+    doubleClickZoom: true,
+    touchZoom: true,
+    dragging: true,
+    tap: false
   });
 
   L.control.zoom({ position: 'bottomright' }).addTo(gisMap);
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; CartoDB &copy; OpenStreetMap',
-    maxZoom: 19,
-    subdomains: 'abcd'
+    maxZoom: 20,
+    minZoom: 4,
+    subdomains: 'abcd',
+    detectRetina: true,
+    keepBuffer: 6,
+    updateWhenIdle: false,
+    updateWhenZooming: true
   }).addTo(gisMap);
 
   gisMarkerLayer = L.layerGroup().addTo(gisMap);
   gisClusterLayer = L.layerGroup().addTo(gisMap);
+
+  // Click on empty area of Leaflet map: dismiss active selection & close popup
+  gisMap.on('click', () => {
+    if (gisMap) {
+      gisMap.closePopup();
+    }
+    selectedHazard = null;
+    clearFeedHighlights();
+  });
 
   document.getElementById('toggle-clusters').addEventListener('change', (e) => {
     if (e.target.checked) {
@@ -357,6 +683,32 @@ function initGisMap() {
       gisMap.removeLayer(gisClusterLayer);
     }
   });
+
+  const filterPanel = document.getElementById('map-severity-filter');
+  if (filterPanel && typeof L !== 'undefined' && L.DomEvent) {
+    L.DomEvent.disableClickPropagation(filterPanel);
+    L.DomEvent.disableScrollPropagation(filterPanel);
+  }
+}
+
+async function refreshMapData() {
+  await refreshAllData();
+}
+window.refreshMapData = refreshMapData;
+
+function highlightFeedCard(hazardId) {
+  clearFeedHighlights();
+  const card = document.getElementById(`feed-card-${hazardId}`);
+  if (card) {
+    card.classList.add('ring-1', 'ring-cyan-400', 'border-cyan-500/80', 'bg-[#1a263d]');
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+function clearFeedHighlights() {
+  document.querySelectorAll('#incident-feed-list > div').forEach(el => {
+    el.classList.remove('ring-1', 'ring-cyan-400', 'border-cyan-500/80', 'bg-[#1a263d]');
+  });
 }
 
 function renderMapMarkers(hazards) {
@@ -364,74 +716,125 @@ function renderMapMarkers(hazards) {
   gisMarkerLayer.clearLayers();
   gisClusterLayer.clearLayers();
 
+  const activeHazardIds = new Set(hazards.map(h => h.id));
+
   hazards.forEach(h => {
     let pinClass = 'pin-medium';
-    let iconName = 'alert-circle';
     let size = 32;
 
-    if (h.fusion.is_false_positive) {
+    if (h.fusion && h.fusion.is_false_positive) {
       pinClass = 'pin-fp';
-      iconName = 'eye-off';
       size = 26;
     } else if (h.severity === 'critical') {
       pinClass = 'pin-critical';
-      iconName = 'alert-octagon';
       size = 38;
     } else if (h.severity === 'high') {
       pinClass = 'pin-high';
-      iconName = 'alert-triangle';
       size = 34;
     } else if (h.severity === 'low') {
       pinClass = 'pin-low';
-      iconName = 'check-circle';
       size = 28;
     }
 
+    const iconName = getHazardIconName(h.hazard_type);
+
     const customIcon = L.divIcon({
       className: `custom-hazard-pin ${pinClass}`,
-      html: `<i data-lucide="${iconName}" style="width:${size*0.5}px;height:${size*0.5}px;color:white;"></i>`,
+      html: `<i data-lucide="${iconName}" style="width:${Math.round(size*0.5)}px;height:${Math.round(size*0.5)}px;color:white;"></i>`,
       iconSize: [size, size],
       iconAnchor: [size / 2, size / 2]
     });
 
     const marker = L.marker([h.latitude, h.longitude], { icon: customIcon });
 
+    marker.on('click', () => {
+      selectedHazard = h;
+      highlightFeedCard(h.id);
+    });
+
+    marker.on('popupclose', () => {
+      if (selectedHazard && selectedHazard.id === h.id) {
+        selectedHazard = null;
+        clearFeedHighlights();
+      }
+    });
+
+    const wfStatus = getHazardWorkflowStatus(h);
+    let wfBadgeStyle = 'background:#fef2f2;border:1px solid #f87171;color:#b91c1c;';
+    let wfLabel = 'UNRESOLVED';
+    let wfColor = '#ef4444';
+
+    if (wfStatus === 'in_progress') {
+      wfBadgeStyle = 'background:#fffbeb;border:1px solid #fbbf24;color:#b45309;';
+      wfLabel = 'IN PROGRESS';
+      wfColor = '#d97706';
+    } else if (wfStatus === 'resolved') {
+      wfBadgeStyle = 'background:#ecfdf5;border:1px solid #34d399;color:#047857;';
+      wfLabel = 'RESOLVED';
+      wfColor = '#059669';
+    }
+
     const popupHtml = `
-      <div class="p-3 text-xs font-sans text-black" style="min-width:250px;">
-        <div class="flex items-center justify-between font-bold border-b-2 border-black pb-1.5 mb-2">
-          <span class="font-mono text-xs font-black text-[#000080]">${h.id} (${h.state})</span>
-          <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-extrabold border border-black ${h.severity === 'critical' ? 'bg-red-200 text-red-950' : 'bg-orange-200 text-orange-950'} uppercase">${h.severity}</span>
+      <div class="p-2 text-xs font-sans" style="color:#0f172a;min-width:250px;">
+        <div class="flex items-center justify-between font-bold border-b pb-1 mb-1.5">
+          <span style="color:#0284c7;font-weight:bold;">${h.id} (${h.city}, ${h.state})</span>
+          <span style="color:${h.severity === 'critical' ? '#dc2626' : (h.severity === 'high' ? '#d97706' : '#059669')};text-transform:uppercase;font-weight:bold;">${h.severity}</span>
         </div>
-        <p class="font-extrabold text-xs text-black mb-1 leading-snug">${h.title}</p>
-        <p class="text-[11px] text-slate-700 mb-2 leading-tight font-medium">${h.address}</p>
-        <div class="bg-slate-50 p-2 rounded-lg font-mono text-[10px] mb-2.5 border border-black space-y-0.5">
-          <div class="flex justify-between"><strong>Risk Priority:</strong> <span class="text-red-600 font-extrabold">${h.priority.raw_risk_score}/100</span></div>
-          <div class="flex justify-between"><strong>Cavity Depth:</strong> <span class="text-blue-800 font-extrabold">${h.fusion.physical_depth_cm} cm</span></div>
-          <div class="flex justify-between"><strong>PWD Repair:</strong> <span class="text-purple-900 font-extrabold">${formatINR(h.priority.estimated_repair_cost_usd)}</span></div>
+        <div class="mb-1.5 flex items-center justify-between">
+          <span style="font-size:10px;font-weight:bold;${wfBadgeStyle}padding:2px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:0.5px;">Status: ${wfLabel}</span>
+          <span style="font-size:10px;color:#475569;font-weight:600;text-transform:capitalize;">${(h.hazard_type || '').replace('_', ' ')}</span>
+        </div>
+        <p class="font-bold text-sm mb-1" style="color:#0f172a;line-height:1.25;">${h.title}</p>
+        <p class="text-slate-600 mb-1.5 leading-tight text-[11px]">${h.address}</p>
+        <div class="bg-slate-100 p-2 rounded font-mono text-[11px] mb-2 border border-slate-200">
+          <div style="display:flex;justify-content:space-between;margin-bottom:2px;">
+            <strong style="color:#334155;">Status:</strong>
+            <strong style="color:${wfColor};">${wfLabel}</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:2px;">
+            <strong style="color:#334155;">Risk Level:</strong>
+            <strong style="color:${h.severity === 'critical' ? '#dc2626' : '#d97706'};">${h.priority.raw_risk_score}/100</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:2px;">
+            <strong style="color:#334155;">Depth / Area:</strong>
+            <span>${h.fusion.physical_depth_cm > 0 ? h.fusion.physical_depth_cm + ' cm' : h.fusion.physical_area_sqm + ' m²'}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <strong style="color:#334155;">Est. Repair Cost:</strong>
+            <strong style="color:#7c3aed;">${formatINR(h.priority.estimated_repair_cost_usd)}</strong>
+          </div>
         </div>
         <div class="space-y-1.5">
-          <button onclick="openIncidentModal('${h.id}')" style="background:#FF9933;color:#000000;padding:6px 10px;border-radius:8px;width:100%;font-weight:900;cursor:pointer;border:2px solid #000000;font-size:11px;display:flex;align-items:center;justify-content:center;gap:4px;">
-            <span>🇮🇳 View Multimodal Dossier</span>
+          <button onclick="openIncidentModal('${h.id}')" style="background:#0284c7;color:white;padding:6px 8px;border-radius:6px;width:100%;font-weight:bold;cursor:pointer;border:none;font-size:11px;box-shadow:0 1px 2px rgba(0,0,0,0.1);">
+            View Full Incident Details
           </button>
-          <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;gap:4px;background:#000080;color:#ffffff;padding:5px 8px;border-radius:8px;width:100%;font-weight:800;text-decoration:none;font-size:11px;border:2px solid #000000;box-sizing:border-box;">
+          <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;gap:4px;background:#2563eb;color:white;padding:5px 8px;border-radius:6px;width:100%;font-weight:bold;text-decoration:none;font-size:11px;box-sizing:border-box;">
             🗺️ Open in Google Maps ↗
           </a>
-          <a href="https://www.google.com/maps/dir/?api=1&destination=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;color:#138808;font-size:10px;text-decoration:none;font-weight:800;margin-top:2px;">
-            🧭 Navigate Route
+          <a href="https://www.google.com/maps/dir/?api=1&destination=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;color:#0284c7;font-size:10px;text-decoration:none;font-weight:600;">
+            🧭 Navigate to Location
           </a>
         </div>
       </div>
     `;
 
-    marker.bindPopup(popupHtml);
+    marker.bindPopup(popupHtml, { autoClose: true, closeOnClick: true });
     gisMarkerLayer.addLayer(marker);
   });
 
-  // Render Clustered Work Order Outlines
+  // Render Clustered Work Order Outlines ONLY for work orders matching active hazards
   allWorkOrders.forEach(wo => {
     if (currentStateFilter !== 'all' && wo.state && wo.state.toLowerCase() !== currentStateFilter.toLowerCase()) {
       return;
     }
+    if (currentCityFilter !== 'all' && wo.city && wo.city.toLowerCase() !== currentCityFilter.toLowerCase()) {
+      return;
+    }
+    const matchingHazardsCount = wo.target_hazard_ids ? wo.target_hazard_ids.filter(id => activeHazardIds.has(id)).length : 0;
+    if (matchingHazardsCount === 0) {
+      return;
+    }
+
     const circle = L.circle([wo.cluster_center_lat, wo.cluster_center_lng], {
       radius: 650,
       color: '#00f0ff',
@@ -441,7 +844,7 @@ function renderMapMarkers(hazards) {
       dashArray: '4, 8'
     });
 
-    circle.bindTooltip(`<strong>${wo.id}</strong><br/>${wo.title} (${wo.target_hazard_ids.length} defects)`, {
+    circle.bindTooltip(`<strong>${wo.id}</strong><br/>${wo.title} (${matchingHazardsCount} active issues)`, {
       permanent: false,
       direction: 'top',
       className: 'bg-slate-900 text-white text-xs border border-cyan-500 rounded p-1 font-sans'
@@ -450,7 +853,9 @@ function renderMapMarkers(hazards) {
     gisClusterLayer.addLayer(circle);
   });
 
-  lucide.createIcons();
+  if (typeof lucide !== 'undefined' && lucide.createIcons) {
+    lucide.createIcons();
+  }
 }
 
 function refreshMapData() {
@@ -459,41 +864,72 @@ function refreshMapData() {
 
 function renderIncidentFeed(hazards) {
   const container = document.getElementById('incident-feed-list');
-  const feedCount = document.getElementById('feed-count');
-  if (feedCount) feedCount.textContent = hazards.length;
-  const drawerBadge = document.getElementById('feed-drawer-badge');
-  if (drawerBadge) drawerBadge.textContent = hazards.length;
-  
-  if (!container) return;
+  const countElem = document.getElementById('feed-count');
+  if (countElem) countElem.textContent = hazards.length;
+
+  const activeAdvCount = countActiveAdvFilters();
+  const subElem = document.getElementById('feed-status-subtitle');
+  if (subElem) {
+    if (activeAdvCount > 0) {
+      subElem.innerHTML = `<span class="text-cyan-400 font-bold">${hazards.length} issues</span> <span class="text-slate-500">·</span> <span class="text-amber-400 font-semibold">${activeAdvCount} filter${activeAdvCount > 1 ? 's' : ''} active</span>`;
+    } else {
+      subElem.innerHTML = `<span class="text-slate-400 font-mono"><span id="feed-count">${hazards.length}</span> issues</span>`;
+    }
+  }
+
+  const btnFilter = document.getElementById('btn-toggle-adv-filter');
+  if (btnFilter) {
+    if (activeAdvCount > 0) {
+      btnFilter.classList.add('border-cyan-500', 'bg-cyan-950/60', 'text-cyan-300');
+    } else {
+      btnFilter.classList.remove('border-cyan-500', 'bg-cyan-950/60', 'text-cyan-300');
+    }
+  }
+
   container.innerHTML = '';
 
   if (hazards.length === 0) {
-    container.innerHTML = `<div class="text-xs text-slate-500 italic p-4 text-center">No defects found for ${currentStateFilter}.</div>`;
+    container.innerHTML = `<div class="text-xs text-slate-500 italic p-4 text-center">No road issues found matching the selected filters.</div>`;
     return;
   }
 
   hazards.forEach(h => {
-    let badgeBg = 'bg-blue-50 text-blue-950 border border-blue-200';
-    let riskColor = 'text-blue-700 font-bold';
+    let badgeBg = 'bg-slate-800 text-slate-300';
+    let riskColor = 'text-cyan-400';
 
     if (h.fusion.is_false_positive) {
-      badgeBg = 'bg-slate-100 border border-slate-200 text-slate-700';
-      riskColor = 'text-slate-500 font-bold';
+      badgeBg = 'bg-slate-800 border border-slate-600 text-slate-400';
+      riskColor = 'text-slate-500';
     } else if (h.severity === 'critical') {
-      badgeBg = 'bg-red-50 border border-red-200 text-red-950';
-      riskColor = 'text-red-600 font-black';
+      badgeBg = 'bg-red-950/80 border border-red-500/40 text-red-300';
+      riskColor = 'text-red-400';
     } else if (h.severity === 'high') {
-      badgeBg = 'bg-amber-50 border border-amber-200 text-amber-950';
-      riskColor = 'text-amber-700 font-black';
+      badgeBg = 'bg-amber-950/80 border border-amber-500/40 text-amber-300';
+      riskColor = 'text-amber-400';
     }
 
-    const card = document.createElement('div');
-    const borderLeftColor = h.fusion.is_false_positive 
-      ? 'border-l-4 border-l-slate-400' 
-      : (h.severity === 'critical' ? 'border-l-4 border-l-red-600' : (h.severity === 'high' ? 'border-l-4 border-l-[#FF9933]' : 'border-l-4 border-l-blue-600'));
+    const wfStatus = getHazardWorkflowStatus(h);
+    let wfBadgeBg = 'bg-rose-950/80 border border-rose-500/40 text-rose-300';
+    let wfLabel = 'UNRESOLVED';
+    if (wfStatus === 'in_progress') {
+      wfBadgeBg = 'bg-amber-950/80 border border-amber-500/40 text-amber-300';
+      wfLabel = 'IN PROGRESS';
+    } else if (wfStatus === 'resolved') {
+      wfBadgeBg = 'bg-emerald-950/80 border border-emerald-500/40 text-emerald-300';
+      wfLabel = 'RESOLVED';
+    }
 
-    card.className = `bg-white hover:bg-slate-50/80 border border-slate-200 ${borderLeftColor} rounded-xl p-3.5 cursor-pointer transition-all shadow-xs hover:shadow-md flex flex-col gap-2 group text-black overflow-hidden relative`;
+    const iconName = getHazardIconName(h.hazard_type);
+
+    const isSelected = selectedHazard && selectedHazard.id === h.id;
+    const selectClasses = isSelected ? 'ring-1 ring-cyan-400 border-cyan-500/80 bg-[#1a263d]' : '';
+
+    const card = document.createElement('div');
+    card.id = `feed-card-${h.id}`;
+    card.className = `bg-[#141d30] hover:bg-[#18233a] border border-slate-800 hover:border-cyan-500/50 rounded-xl p-3 cursor-pointer transition-all flex flex-col gap-2 group ${selectClasses}`;
     card.onclick = () => {
+      selectedHazard = h;
+      highlightFeedCard(h.id);
       openIncidentModal(h.id);
       if (gisMap) {
         gisMap.flyTo([h.latitude, h.longitude], 16, { duration: 1.2 });
@@ -502,32 +938,38 @@ function renderIncidentFeed(hazards) {
 
     card.innerHTML = `
       <div class="flex items-center justify-between">
-        <div class="flex items-center gap-1.5">
-          <span class="text-[10px] font-mono px-2 py-0.5 rounded-md ${badgeBg} uppercase font-bold">
-            ${h.fusion.is_false_positive ? 'FALSE POSITIVE' : h.severity}
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded ${badgeBg} uppercase font-bold flex items-center gap-1">
+            <i data-lucide="${iconName}" class="w-3 h-3"></i>
+            ${h.fusion.is_false_positive ? 'FALSE ALERT' : h.severity}
           </span>
-          <span class="text-[10px] text-slate-700 font-bold bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-md">${h.state}</span>
+          <span class="text-[9px] font-mono px-1.5 py-0.5 rounded ${wfBadgeBg} uppercase font-semibold">${wfLabel}</span>
+          <span class="text-[10px] text-slate-400 font-semibold bg-slate-900 px-1.5 py-0.5 rounded">${h.state}</span>
         </div>
         <div class="flex items-center gap-2">
-          <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Open location in Google Maps" class="text-blue-900 hover:bg-blue-100 inline-flex items-center gap-0.5 text-[10px] font-mono font-bold bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded-md">
+          <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Open location in Google Maps" class="text-blue-400 hover:text-blue-300 hover:underline inline-flex items-center gap-0.5 text-[10px] font-mono font-bold bg-blue-950/60 border border-blue-500/30 px-1.5 py-0.5 rounded">
             🗺️ Maps ↗
           </a>
-          <span class="text-xs font-mono ${riskColor}">Risk: ${h.priority.raw_risk_score}</span>
+          <span class="text-xs font-mono font-bold ${riskColor}">Risk: ${h.priority.raw_risk_score}</span>
         </div>
       </div>
       <div>
-        <h4 class="text-xs font-bold text-black group-hover:text-orange-700 transition-colors leading-snug">${h.title}</h4>
-        <p class="text-[11px] text-slate-600 truncate mt-0.5 font-medium">${h.address}</p>
+        <h4 class="text-xs font-bold text-slate-100 group-hover:text-cyan-400 transition-colors leading-snug">${h.title}</h4>
+        <p class="text-[11px] text-slate-400 truncate mt-0.5">${h.address}</p>
       </div>
-      <div class="flex items-center justify-between text-[10px] text-slate-700 font-mono font-bold border-t border-slate-100 pt-2">
+      <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono border-t border-slate-800/80 pt-1.5">
         <span>Depth: ${h.fusion.physical_depth_cm}cm</span>
         <span>Area: ${h.fusion.physical_area_sqm}m²</span>
-        <span class="text-purple-900 font-black">${formatINR(h.priority.estimated_repair_cost_usd)}</span>
+        <span class="text-purple-300 font-semibold">${formatINR(h.priority.estimated_repair_cost_usd)}</span>
       </div>
     `;
 
     container.appendChild(card);
   });
+
+  if (typeof lucide !== 'undefined' && lucide.createIcons) {
+    lucide.createIcons();
+  }
 }
 
 // ==========================================
@@ -620,7 +1062,7 @@ function updateStudioTelemetry(hazard) {
   }
 
   const maxGz = Math.max(...gzData);
-  document.getElementById('imu-peak-badge').textContent = `Peak Shock: ${maxGz.toFixed(2)}g`;
+  document.getElementById('imu-peak-badge').textContent = `Peak: ${maxGz.toFixed(2)}g`;
 
   const f = hazard.fusion;
   document.getElementById('fuse-vis-score').textContent = `${(f.visual_score * 100).toFixed(0)}%`;
@@ -644,12 +1086,12 @@ function updateStudioTelemetry(hazard) {
 
   if (f.is_false_positive) {
     pill.className = 'text-xs font-bold px-2.5 py-0.5 rounded font-mono bg-emerald-950/80 text-emerald-300 border border-emerald-500/40';
-    pill.textContent = 'OPTICAL FALSE POSITIVE REJECTED';
-    reasonBox.textContent = f.false_positive_reason || 'Tree shadow & oil stain filtered: 0.01g vertical response confirms undamaged road surface.';
+    pill.textContent = 'FALSE ALERT (NOT A REAL ISSUE)';
+    reasonBox.textContent = f.false_positive_reason || 'Tree shadow or surface stain: 0.01g vibration response confirms road surface is smooth.';
   } else {
     pill.className = 'text-xs font-bold px-2.5 py-0.5 rounded font-mono bg-cyan-950/80 text-cyan-300 border border-cyan-500/40';
-    pill.textContent = 'VERIFIED STRUCTURAL HAZARD';
-    reasonBox.textContent = `Cross-modal confirmation: Visual defect matches ${maxGz.toFixed(2)}g vertical transient. Safety ranking: High Priority.`;
+    pill.textContent = 'VERIFIED ROAD ISSUE';
+    reasonBox.textContent = `Confirmed: Camera detection matches ${maxGz.toFixed(2)}g vibration impact. Priority: High.`;
   }
 }
 
@@ -703,14 +1145,35 @@ function initPatrolMap() {
   patrolMap = L.map('patrol-map', {
     center: [12.9340, 77.6080],
     zoom: 14,
-    zoomControl: false
+    zoomControl: false,
+    zoomSnap: 0.5,
+    zoomDelta: 0.5,
+    wheelDebounceTime: 40,
+    wheelPxPerZoomLevel: 100,
+    zoomAnimation: true,
+    fadeAnimation: true,
+    markerZoomAnimation: true,
+    inertia: true,
+    inertiaDeceleration: 3000,
+    inertiaMaxSpeed: 2000,
+    scrollWheelZoom: true,
+    doubleClickZoom: true,
+    touchZoom: true,
+    dragging: true,
+    tap: false
   });
 
   L.control.zoom({ position: 'bottomright' }).addTo(patrolMap);
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; CartoDB &copy; OpenStreetMap',
-    maxZoom: 19
+    maxZoom: 20,
+    minZoom: 4,
+    subdomains: 'abcd',
+    detectRetina: true,
+    keepBuffer: 6,
+    updateWhenIdle: false,
+    updateWhenZooming: true
   }).addTo(patrolMap);
 
   const carIcon = L.divIcon({
@@ -786,35 +1249,28 @@ function updatePatrolHud(frame) {
 // ==========================================
 function renderWorkOrders(workOrders) {
   const container = document.getElementById('work-orders-container');
-  if (!container) return;
   container.innerHTML = '';
 
   if (workOrders.length === 0) {
-    container.innerHTML = `<div class="col-span-3 text-center p-8 bg-white border-2 border-black rounded-none text-black text-xs font-bold">No scheduled work orders for ${currentStateFilter}.</div>`;
+    container.innerHTML = `<div class="col-span-3 text-center p-8 bg-slate-900/60 border border-slate-800 rounded-2xl text-slate-400 text-xs italic">No scheduled repair tasks for ${currentStateFilter}.</div>`;
     return;
   }
 
   workOrders.forEach(wo => {
     const card = document.createElement('div');
-    let tierBadge = 'bg-blue-50 text-blue-950 border border-blue-200';
-    let borderAccent = 'border-l-4 border-l-blue-600';
-    if (wo.priority_tier.includes('Tier 1')) {
-      tierBadge = 'bg-red-50 text-red-950 border border-red-200';
-      borderAccent = 'border-l-4 border-l-red-600';
-    } else if (wo.priority_tier.includes('Tier 2')) {
-      tierBadge = 'bg-orange-50 text-orange-950 border border-orange-200';
-      borderAccent = 'border-l-4 border-l-[#FF9933]';
-    }
+    card.className = 'bg-[#101726] border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col justify-between gap-4 hover:border-slate-700 transition-all';
 
-    card.className = `nhai-card bg-white border border-slate-200 ${borderAccent} rounded-2xl p-5 flex flex-col justify-between gap-4 transition-all shadow-xs hover:shadow-md text-black overflow-hidden relative`;
+    let tierBadge = 'bg-cyan-950/80 text-cyan-300 border-cyan-500/40';
+    if (wo.priority_tier.includes('Tier 1')) tierBadge = 'bg-red-950/80 text-red-300 border-red-500/40';
+    else if (wo.priority_tier.includes('Tier 2')) tierBadge = 'bg-amber-950/80 text-amber-300 border-amber-500/40';
 
     let hazardsHtml = wo.hazards_summary.map(h => `
-      <div class="flex items-center justify-between text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200 font-mono font-bold">
+      <div class="flex items-center justify-between text-xs bg-slate-900/90 p-2 rounded-lg border border-slate-800">
         <div>
-          <span class="text-black font-bold">${h.hazard_id}</span>
-          <span class="text-slate-600 text-[11px] ml-1">(${h.hazard_type.replace('_', ' ')})</span>
+          <span class="font-bold text-slate-200">${h.hazard_id}</span>
+          <span class="text-slate-400 text-[11px] ml-1">(${h.hazard_type.replace('_', ' ')})</span>
         </div>
-        <span class="text-purple-900 font-black">${formatINR(h.cost_inr || 15000)}</span>
+        <span class="font-mono text-purple-300 font-bold">${formatINR(h.cost_inr || 15000)}</span>
       </div>
     `).join('');
 
@@ -822,47 +1278,47 @@ function renderWorkOrders(workOrders) {
       <div class="flex flex-col gap-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <span class="text-xs font-mono font-bold text-slate-800 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-lg">${wo.id}</span>
-            <span class="text-[10px] text-slate-800 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-lg font-bold">${wo.state}</span>
+            <span class="text-xs font-mono font-bold text-cyan-400">${wo.id}</span>
+            <span class="text-[10px] text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded font-semibold">${wo.state}</span>
           </div>
-          <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-full font-bold ${tierBadge}">${wo.priority_tier}</span>
+          <span class="text-[10px] font-mono px-2.5 py-0.5 rounded border font-bold ${tierBadge}">${wo.priority_tier}</span>
         </div>
-        <h3 class="text-sm font-black text-black leading-snug">${wo.title}</h3>
+        <h3 class="text-sm font-bold text-white">${wo.title}</h3>
         
-        <div class="grid grid-cols-2 gap-2.5 text-xs font-mono bg-slate-50 p-3 rounded-xl border border-slate-200">
+        <div class="grid grid-cols-2 gap-2 text-xs font-mono bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/80">
           <div>
-            <span class="text-slate-500 text-[10px] font-bold">Assigned Crew:</span>
-            <p class="font-bold text-black text-[11px] truncate mt-0.5">${wo.assigned_crew}</p>
+            <span class="text-slate-400 text-[10px]">Assigned Crew:</span>
+            <p class="font-bold text-slate-200 text-[11px] truncate">${wo.assigned_crew}</p>
           </div>
           <div>
-            <span class="text-slate-500 text-[10px] font-bold">Scheduled Window:</span>
-            <p class="font-bold text-black text-[11px] mt-0.5">${wo.scheduled_date}</p>
+            <span class="text-slate-400 text-[10px]">Scheduled Window:</span>
+            <p class="font-bold text-slate-200 text-[11px]">${wo.scheduled_date}</p>
           </div>
           <div class="mt-1">
-            <span class="text-slate-500 text-[10px] font-bold">Est. Shift Hours:</span>
-            <p class="font-bold text-blue-800 text-[11px] mt-0.5">${wo.estimated_hours} hrs</p>
+            <span class="text-slate-400 text-[10px]">Est. Shift Hours:</span>
+            <p class="font-bold text-cyan-300 text-[11px]">${wo.estimated_hours} hrs</p>
           </div>
           <div class="mt-1">
-            <span class="text-slate-500 text-[10px] font-bold">Total Cost:</span>
-            <p class="font-black text-purple-900 text-[11px] mt-0.5">${formatINR(wo.estimated_cost_usd)}</p>
+            <span class="text-slate-400 text-[10px]">Total Cost:</span>
+            <p class="font-bold text-purple-300 text-[11px]">${formatINR(wo.estimated_cost_usd)}</p>
           </div>
         </div>
 
-        <div class="space-y-2">
-          <p class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Clustered Defects:</p>
-          <div class="space-y-1.5 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
+        <div class="space-y-1.5">
+          <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Grouped Road Issues:</p>
+          <div class="space-y-1 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
             ${hazardsHtml}
           </div>
         </div>
       </div>
 
-      <div class="flex items-center justify-between border-t border-slate-100 pt-3.5 text-xs">
-        <span class="text-slate-700 font-mono font-bold">Status: <strong class="text-emerald-800 font-black">${wo.status.toUpperCase()}</strong></span>
+      <div class="flex items-center justify-between border-t border-slate-800 pt-3 text-xs">
+        <span class="text-slate-400 font-mono">Status: <strong class="text-emerald-400 font-bold">${wo.status.toUpperCase()}</strong></span>
         <div class="flex items-center gap-2">
-          <a href="https://www.google.com/maps/search/?api=1&query=${wo.cluster_center_lat},${wo.cluster_center_lng}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-950 text-xs font-bold flex items-center gap-1 transition-colors shadow-xs">
+          <a href="https://www.google.com/maps/search/?api=1&query=${wo.cluster_center_lat},${wo.cluster_center_lng}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-lg bg-blue-950/60 border border-blue-500/40 text-blue-300 hover:text-white text-xs font-bold flex items-center gap-1 transition-all">
             🗺️ Maps ↗
           </a>
-          <button onclick="dispatchWorkOrder('${wo.id}')" class="px-3.5 py-1.5 rounded-xl font-bold bg-[#138808] hover:bg-[#0f6b06] border border-emerald-700 text-white text-xs transition-colors shadow-xs cursor-pointer">
+          <button onclick="dispatchWorkOrder('${wo.id}')" class="px-3 py-1.5 rounded-lg font-bold bg-cyan-500 hover:bg-cyan-400 text-black text-xs transition-all">
             Dispatch Crew
           </button>
         </div>
@@ -916,7 +1372,7 @@ async function sendCopilotMessage() {
     appendChatMessage('assistant', data.answer);
   } catch (err) {
     removeChatLoading(loadingId);
-    appendChatMessage('assistant', 'Error communicating with AI Co-Pilot. Please verify server connection.');
+    appendChatMessage('assistant', 'Error communicating with Road Safety AI Assistant. Please verify server connection.');
   }
 }
 
@@ -954,7 +1410,7 @@ function appendChatMessage(role, content) {
         <i data-lucide="bot" class="w-4 h-4 text-black"></i>
       </div>
       <div class="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl max-w-2xl text-xs text-slate-200 leading-relaxed shadow-lg">
-        <p class="font-bold text-cyan-300 mb-1">SadakSuraksha Infrastructure AI Co-Pilot (MoRTH / IRC)</p>
+        <p class="font-bold text-cyan-300 mb-1">SadakSuraksha Road Safety AI Assistant</p>
         <div class="space-y-1.5">${formatted}</div>
       </div>
     `;
@@ -976,7 +1432,7 @@ function appendChatLoading() {
       <i data-lucide="loader-2" class="w-4 h-4 text-cyan-400 animate-spin"></i>
     </div>
     <div class="bg-slate-900/60 border border-slate-800 p-3 rounded-2xl text-xs text-slate-400 italic">
-      Synthesizing sensor telemetry & IRC / MoRTH guidelines in ₹ INR...
+      Analyzing sensor data and road repair standards in ₹ Rupees...
     </div>
   `;
   container.appendChild(msg);
@@ -1004,9 +1460,9 @@ function initCharts() {
           {
             label: 'Vertical Acceleration (Gz)',
             data: [],
-            borderColor: '#0284c7',
-            backgroundColor: 'rgba(2, 132, 199, 0.15)',
-            borderWidth: 2.5,
+            borderColor: '#00f0ff',
+            backgroundColor: 'rgba(0, 240, 255, 0.1)',
+            borderWidth: 2,
             tension: 0.3,
             fill: true,
             pointRadius: 0
@@ -1014,8 +1470,8 @@ function initCharts() {
           {
             label: 'Vertical Jerk (g/s)',
             data: [],
-            borderColor: '#d97706',
-            borderWidth: 2,
+            borderColor: '#f59e0b',
+            borderWidth: 1.5,
             borderDash: [3, 3],
             tension: 0.3,
             pointRadius: 0
@@ -1027,8 +1483,8 @@ function initCharts() {
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          x: { display: true, grid: { color: '#e2e8f0' }, ticks: { color: '#000000', maxTicksLimit: 6, font: { weight: 'bold' } } },
-          y: { display: true, grid: { color: '#e2e8f0' }, ticks: { color: '#000000', font: { weight: 'bold' } }, min: 0.5, max: 3.5 }
+          x: { display: true, grid: { color: '#1e293b' }, ticks: { color: '#64748b', maxTicksLimit: 6 } },
+          y: { display: true, grid: { color: '#1e293b' }, ticks: { color: '#64748b' }, min: 0.5, max: 3.5 }
         }
       }
     });
@@ -1043,15 +1499,14 @@ function initCharts() {
         datasets: [{
           data: [4, 2, 1, 1, 1, 1],
           backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6', '#10b981', '#64748b'],
-          borderColor: '#000000',
-          borderWidth: 2
+          borderWidth: 0
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: 'right', labels: { color: '#000000', font: { size: 11, weight: 'bold' } } }
+          legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 11 } } }
         }
       }
     });
@@ -1067,8 +1522,6 @@ function initCharts() {
           label: 'IRC / PCI Health Index',
           data: [],
           backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#ef4444', '#10b981'],
-          borderColor: '#000000',
-          borderWidth: 2,
           borderRadius: 6
         }]
       },
@@ -1077,8 +1530,8 @@ function initCharts() {
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          x: { grid: { color: '#e2e8f0' }, ticks: { color: '#000000', font: { size: 10, weight: 'bold' } } },
-          y: { grid: { color: '#e2e8f0' }, ticks: { color: '#000000', font: { weight: 'bold' } }, min: 0, max: 100 }
+          x: { grid: { color: '#1e293b' }, ticks: { color: '#cbd5e1', font: { size: 10 } } },
+          y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' }, min: 0, max: 100 }
         }
       }
     });
@@ -1120,9 +1573,90 @@ function updateBudgetSim() {
 }
 
 // ==========================================
-// MODALS & NAVIGATION
+// MODALS & NAVIGATION CONTROLLER
 // ==========================================
+function closeAllModals() {
+  const modalIds = ['incident-modal', 'apikey-modal', 'ingest-modal', 'citizen-portal-modal'];
+  modalIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.add('hidden');
+      el.classList.remove('flex');
+    }
+  });
+}
+
+function dismissActiveOverlays() {
+  // 1. Close and remove all modals
+  closeAllModals();
+
+  // 2. Explicitly close any open Leaflet popups on all layers
+  if (gisMap) {
+    gisMap.closePopup();
+  }
+  if (gisMarkerLayer) {
+    gisMarkerLayer.eachLayer(layer => {
+      if (layer && typeof layer.closePopup === 'function') {
+        layer.closePopup();
+      }
+    });
+  }
+  if (patrolMap) {
+    patrolMap.closePopup();
+  }
+  
+  // 3. Forcibly remove any popup DOM nodes from the DOM tree
+  document.querySelectorAll('.leaflet-popup').forEach(el => el.remove());
+
+  // 4. Close Sort & Filter popover if open
+  const advPop = document.getElementById('adv-filter-popover');
+  if (advPop) advPop.classList.add('hidden');
+
+  // 5. Clear active hazard selection and feed highlights
+  selectedHazard = null;
+  if (typeof clearFeedHighlights === 'function') {
+    clearFeedHighlights();
+  }
+}
+
+function setupGlobalInteractionHandlers() {
+  // 1. Backdrop click dismissal for all modals
+  const modalIds = ['incident-modal', 'apikey-modal', 'ingest-modal', 'citizen-portal-modal'];
+  modalIds.forEach(id => {
+    const modalEl = document.getElementById(id);
+    if (modalEl) {
+      modalEl.addEventListener('click', (e) => {
+        if (e.target === modalEl) {
+          dismissActiveOverlays();
+        }
+      });
+    }
+  });
+
+  // 2. Escape key dismissal for modals and map popups
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      dismissActiveOverlays();
+    }
+  });
+
+  // 3. Click outside Sort & Filter popover to close it
+  document.addEventListener('click', (e) => {
+    const pop = document.getElementById('adv-filter-popover');
+    const btn = document.getElementById('btn-toggle-adv-filter');
+    if (pop && !pop.classList.contains('hidden')) {
+      if (!pop.contains(e.target) && btn && !btn.contains(e.target)) {
+        pop.classList.add('hidden');
+      }
+    }
+  });
+}
+
 function switchTab(tabId) {
+  // 1. Dismiss all open modals, map popups, and active hazard selections
+  dismissActiveOverlays();
+
+  // 2. Update tab buttons and tab views
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active-tab'));
   document.querySelectorAll('.tab-view').forEach(v => v.classList.add('hidden'));
 
@@ -1132,47 +1666,100 @@ function switchTab(tabId) {
   if (tabBtn) tabBtn.classList.add('active-tab');
   if (viewElem) viewElem.classList.remove('hidden');
 
+  // 3. Tab-specific lifecycle activations
   if (tabId === 'map' && gisMap) {
-    setTimeout(() => gisMap.invalidateSize(), 200);
+    setTimeout(() => gisMap.invalidateSize(), 150);
+  } else if (tabId === 'patrol' && patrolMap) {
+    setTimeout(() => patrolMap.invalidateSize(), 150);
+  } else if (tabId === 'ingestion') {
+    if (typeof refreshIngestionStreams === 'function') {
+      refreshIngestionStreams();
+    }
+  } else if (tabId === 'studio') {
+    setTimeout(() => {
+      if (studioImuChart) studioImuChart.resize();
+    }, 150);
+  } else if (tabId === 'analytics') {
+    setTimeout(() => {
+      if (hazardDistChart) hazardDistChart.resize();
+      if (roadPciChart) roadPciChart.resize();
+    }, 150);
   }
-  if (tabId === 'patrol' && patrolMap) {
-    setTimeout(() => patrolMap.invalidateSize(), 200);
-  }
+
+  lucide.createIcons();
 }
-
-function navigateToHome() {
-  // Close any open modals
-  closeIncidentModal();
-  closeIngestModal();
-  closeApiKeyModal();
-  if (typeof closeCitizenPortalModal === 'function') closeCitizenPortalModal();
-
-  // Switch to the main GIS Map tab
-  switchTab('map');
-
-  // Reset map view to the current state center or all India center
-  if (gisMap) {
-    const vp = STATE_VIEWPORTS[currentStateFilter] || STATE_VIEWPORTS.all;
-    gisMap.flyTo(vp.center, vp.zoom, { duration: 0.8 });
-  }
-
-  // Scroll window smoothly to the top
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+window.switchTab = switchTab;
 
 function openIncidentModal(hazardId) {
   const h = allHazards.find(item => item.id === hazardId);
   if (!h) return;
 
+  // Dismiss any previously open modals and Leaflet popups first
+  dismissActiveOverlays();
+
   selectedHazard = h;
+  const isFP = h.fusion && h.fusion.is_false_positive;
+
+  // Title & Location
   document.getElementById('modal-title').textContent = h.title;
-  document.getElementById('modal-address').textContent = `${h.address} (${h.road_name})`;
-  document.getElementById('modal-risk-score').innerHTML = `${h.priority.raw_risk_score} <span class="text-xs text-slate-500">/100</span>`;
-  document.getElementById('modal-pci-deduct').textContent = `-${h.priority.pci_deduct_value} pts`;
-  document.getElementById('modal-depth').textContent = `${h.fusion.physical_depth_cm} cm`;
-  document.getElementById('modal-repair-cost').textContent = formatINR(h.priority.estimated_repair_cost_usd);
-  document.getElementById('modal-repair-technique').textContent = h.priority.recommended_repair_technique;
-  document.getElementById('modal-repair-hours').textContent = `Estimated Crew Hours: ${h.priority.estimated_crew_hours} hrs`;
+  document.getElementById('modal-address').textContent = `${h.address} (${h.road_name}, ${h.city || 'Bengaluru'}, ${h.state || 'Karnataka'})`;
+  
+  // Risk Score & Badges
+  const riskElem = document.getElementById('modal-risk-score');
+  if (riskElem) {
+    if (isFP) {
+      riskElem.innerHTML = `<span class="text-slate-400">0.0 (False Alert)</span>`;
+      riskElem.className = 'font-bold text-slate-400 font-mono';
+    } else {
+      riskElem.innerHTML = `${h.priority.raw_risk_score} <span class="text-xs text-slate-500">/100</span>`;
+      riskElem.className = h.severity === 'critical' ? 'font-bold text-red-400 font-mono' : 'font-bold text-amber-400 font-mono';
+    }
+  }
+
+  const confElem = document.getElementById('modal-confidence');
+  if (confElem) {
+    const confVal = h.fusion && h.fusion.fused_confidence ? (h.fusion.fused_confidence * 100).toFixed(0) : '94';
+    confElem.textContent = `${confVal}%`;
+  }
+
+  const pciDeductElem = document.getElementById('modal-pci-deduct');
+  if (pciDeductElem) {
+    pciDeductElem.textContent = isFP ? '0.0 pts' : `-${h.priority.pci_deduct_value || 42.0} pts`;
+  }
+
+  const depthElem = document.getElementById('modal-depth');
+  if (depthElem) {
+    depthElem.textContent = `${h.fusion ? h.fusion.physical_depth_cm : 0} cm`;
+  }
+
+  const costElem = document.getElementById('modal-repair-cost');
+  if (costElem) {
+    costElem.textContent = isFP ? '₹ 0 (False Alert)' : formatINR(h.priority.estimated_repair_cost_usd);
+  }
+
+  const techElem = document.getElementById('modal-repair-technique');
+  if (techElem) {
+    techElem.textContent = isFP ? 'No Repair Required (Road Surface Safe)' : h.priority.recommended_repair_technique;
+  }
+
+  const hoursElem = document.getElementById('modal-repair-hours');
+  if (hoursElem) {
+    hoursElem.textContent = isFP ? '0.0 hrs' : `${h.priority.estimated_crew_hours} hrs`;
+  }
+
+  const timelineElem = document.getElementById('modal-dispatch-timeline');
+  if (timelineElem) {
+    if (isFP) {
+      timelineElem.textContent = 'False Alert (No Repair Required)';
+      timelineElem.className = 'text-[11px] font-bold text-emerald-400 font-mono';
+    } else if (h.severity === 'critical') {
+      timelineElem.textContent = 'Immediate Repair (Within 24–48 hours)';
+      timelineElem.className = 'text-[11px] font-bold text-red-400 font-mono';
+    } else {
+      timelineElem.textContent = 'Scheduled Repair (Within 5–7 days)';
+      timelineElem.className = 'text-[11px] font-bold text-amber-400 font-mono';
+    }
+  }
 
   // Set Google Maps redirection links
   const modalGmaps = document.getElementById('modal-gmaps-link');
@@ -1184,24 +1771,77 @@ function openIncidentModal(hazardId) {
     modalGmapsDir.href = `https://www.google.com/maps/dir/?api=1&destination=${h.latitude},${h.longitude}`;
   }
 
+  // Severity badge & False Positive overlay
   const badge = document.getElementById('modal-badge-severity');
-  if (h.fusion.is_false_positive) {
+  const fpWarning = document.getElementById('modal-fp-warning');
+  if (isFP) {
     badge.className = 'px-2.5 py-1 rounded text-xs font-bold font-mono bg-slate-800 text-slate-400 border border-slate-700';
-    badge.textContent = 'FALSE POSITIVE';
-    document.getElementById('modal-fp-warning').classList.remove('hidden');
+    badge.textContent = 'FALSE ALERT';
+    if (fpWarning) fpWarning.classList.remove('hidden');
   } else {
-    badge.className = `px-2.5 py-1 rounded text-xs font-bold font-mono ${h.severity === 'critical' ? 'bg-red-950 text-red-400 border border-red-500/40' : 'bg-amber-950 text-amber-400 border border-amber-500/40'}`;
+    badge.className = `px-2.5 py-1 rounded text-xs font-bold font-mono ${h.severity === 'critical' ? 'bg-red-950 text-red-400 border border-red-500/40' : (h.severity === 'high' ? 'bg-amber-950 text-amber-400 border border-amber-500/40' : 'bg-emerald-950 text-emerald-400 border border-emerald-500/40')}`;
     badge.textContent = h.severity.toUpperCase();
-    document.getElementById('modal-fp-warning').classList.add('hidden');
+    if (fpWarning) fpWarning.classList.add('hidden');
+  }
+
+  // Workflow Status badge & metrics
+  const wfStatus = getHazardWorkflowStatus(h);
+  const statusBadge = document.getElementById('modal-badge-status');
+  const statusText = document.getElementById('modal-status-text');
+  const sevText = document.getElementById('modal-severity-text');
+  const typeBadge = document.getElementById('modal-badge-type');
+
+  if (sevText) {
+    sevText.textContent = (h.severity || 'HIGH').toUpperCase();
+    sevText.className = h.severity === 'critical' ? 'font-bold text-red-400' : (h.severity === 'high' ? 'font-bold text-amber-400' : 'font-bold text-emerald-400');
+  }
+
+  let wfLabel = 'UNRESOLVED';
+  let wfClass = 'bg-rose-950/80 border border-rose-500/40 text-rose-300';
+  let wfTextClass = 'font-bold text-rose-400 font-mono';
+
+  if (wfStatus === 'in_progress') {
+    wfLabel = 'IN PROGRESS';
+    wfClass = 'bg-amber-950/80 border border-amber-500/40 text-amber-300';
+    wfTextClass = 'font-bold text-amber-400 font-mono';
+  } else if (wfStatus === 'resolved') {
+    wfLabel = 'RESOLVED';
+    wfClass = 'bg-emerald-950/80 border border-emerald-500/40 text-emerald-300';
+    wfTextClass = 'font-bold text-emerald-400 font-mono';
+  }
+
+  if (statusBadge) {
+    statusBadge.className = `px-2.5 py-1 rounded text-xs font-bold font-mono ${wfClass}`;
+    statusBadge.textContent = wfLabel;
+  }
+  if (statusText) {
+    statusText.className = wfTextClass;
+    statusText.textContent = wfLabel;
+  }
+  if (typeBadge) {
+    typeBadge.textContent = (h.hazard_type || '').replace('_', ' ').toUpperCase();
   }
 
   document.getElementById('modal-image').src = SCENARIO_IMAGES[h.hazard_type] || SCENARIO_IMAGES.pothole;
 
+  // Render Dynamic AI Why Evidence Checklist
+  renderModalWhyEvidence(h);
+
+  // Synchronized Accelerometer Waveform Chart
   setTimeout(() => {
     const ctx = document.getElementById('modal-imu-chart');
     if (ctx) {
       if (modalImuChart) modalImuChart.destroy();
-      const trace = h.telemetry_trace || generateSampleTelemetry(2.2);
+      const peakShock = isFP ? 0.01 : (h.telemetry?.acc_z_g || 2.45);
+      const imuPeakElem = document.getElementById('modal-imu-peak');
+      if (imuPeakElem) {
+        imuPeakElem.textContent = `Peak: ${peakShock.toFixed(2)}g`;
+        imuPeakElem.className = isFP 
+          ? 'text-[11px] font-mono text-emerald-400 bg-slate-800 px-2 py-0.5 rounded border border-slate-700' 
+          : 'text-[11px] font-mono text-amber-400 bg-slate-800 px-2 py-0.5 rounded border border-slate-700';
+      }
+
+      const trace = h.telemetry_trace || generateSampleTelemetry(peakShock);
       modalImuChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -1209,10 +1849,12 @@ function openIncidentModal(hazardId) {
           datasets: [{
             label: 'Vertical Shock (Gz)',
             data: trace.map(t => t.acc_z),
-            borderColor: '#00f0ff',
-            backgroundColor: 'rgba(0, 240, 255, 0.1)',
+            borderColor: isFP ? '#94a3b8' : '#00f0ff',
+            backgroundColor: isFP ? 'rgba(148, 163, 184, 0.05)' : 'rgba(0, 240, 255, 0.1)',
             fill: true,
-            tension: 0.3
+            tension: 0.3,
+            borderWidth: 2,
+            pointRadius: 0
           }]
         },
         options: {
@@ -1220,28 +1862,166 @@ function openIncidentModal(hazardId) {
           maintainAspectRatio: false,
           plugins: { legend: { display: false } },
           scales: {
-            x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } },
-            y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } }
+            x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b', maxTicksLimit: 6 } },
+            y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' }, min: isFP ? 0.8 : 0.5, max: isFP ? 1.2 : 3.5 }
           }
         }
       });
     }
   }, 100);
 
-  document.getElementById('incident-modal').classList.remove('hidden');
+  const incidentModal = document.getElementById('incident-modal');
+  if (incidentModal) {
+    incidentModal.classList.remove('hidden');
+    incidentModal.classList.add('flex');
+  }
+  lucide.createIcons();
+}
+
+function renderModalWhyEvidence(h) {
+  const container = document.getElementById('modal-why-evidence-list');
+  const sourcesContainer = document.getElementById('modal-detection-sources');
+  if (!container) return;
+
+  const isFP = h.fusion && h.fusion.is_false_positive;
+  let evidenceHtml = '';
+
+  // 1. Vision Evidence
+  const visScore = h.fusion && h.fusion.visual_score ? (h.fusion.visual_score * 100).toFixed(0) : '94';
+  const defectArea = h.fusion ? h.fusion.physical_area_sqm : 0.8;
+  if (!isFP) {
+    evidenceHtml += `
+      <div class="evidence-item">
+        <span class="text-emerald-400 font-bold text-sm shrink-0">✓</span>
+        <div>
+          <strong class="text-slate-200">Camera Detection:</strong>
+          <span class="text-slate-300"> ${h.hazard_type.replace('_', ' ').toUpperCase()} verified with ${visScore}% visual match (damaged area ${defectArea} m²).</span>
+        </div>
+      </div>
+    `;
+  } else {
+    evidenceHtml += `
+      <div class="evidence-item border-amber-500/40 bg-amber-950/20">
+        <span class="text-amber-400 font-bold text-sm shrink-0">⚠</span>
+        <div>
+          <strong class="text-amber-300">Camera Misread (Shadow / Surface Mark):</strong>
+          <span class="text-slate-300"> High surface dark contrast detected (${visScore}% visual match), but physical vibration sensors confirmed road surface is smooth.</span>
+        </div>
+      </div>
+    `;
+  }
+
+  // 2. Inertial/Accelerometer Sensor Evidence
+  const shockG = isFP ? 0.01 : (h.telemetry?.acc_z_g || 2.85);
+  const depthCm = h.fusion ? h.fusion.physical_depth_cm : 9.5;
+  if (!isFP) {
+    evidenceHtml += `
+      <div class="evidence-item">
+        <span class="text-emerald-400 font-bold text-sm shrink-0">✓</span>
+        <div>
+          <strong class="text-slate-200">Vibration Sensor:</strong>
+          <span class="text-slate-300"> 3-Axis vibration sensor recorded ${shockG.toFixed(2)}g impact shock, confirming ${depthCm} cm cavity depth.</span>
+        </div>
+      </div>
+    `;
+  } else {
+    evidenceHtml += `
+      <div class="evidence-item border-emerald-500/40 bg-emerald-950/20">
+        <span class="text-emerald-400 font-bold text-sm shrink-0">✓</span>
+        <div>
+          <strong class="text-emerald-300">Vibration Sensor (No Impact):</strong>
+          <span class="text-slate-300"> 0.01g response confirms smooth road surface (no vertical bump — tree shadow or surface mark).</span>
+        </div>
+      </div>
+    `;
+  }
+
+  // 3. Acoustic Evidence
+  const acousticDb = h.acoustic?.impact_energy_db || (isFP ? 41 : 76);
+  if (!isFP) {
+    evidenceHtml += `
+      <div class="evidence-item">
+        <span class="text-emerald-400 font-bold text-sm shrink-0">✓</span>
+        <div>
+          <strong class="text-slate-200">Sound Detection:</strong>
+          <span class="text-slate-300"> ${acousticDb.toFixed(0)} dB tyre impact sound matches physical pothole impact.</span>
+        </div>
+      </div>
+    `;
+  } else {
+    evidenceHtml += `
+      <div class="evidence-item">
+        <span class="text-slate-400 font-bold text-sm shrink-0">―</span>
+        <div>
+          <strong class="text-slate-300">Sound Detection (Normal):</strong>
+          <span class="text-slate-400"> Normal ${acousticDb.toFixed(0)} dB tyre sound confirms no wheel rim impact.</span>
+        </div>
+      </div>
+    `;
+  }
+
+  // 4. Corridor & Traffic Urgency
+  const roadClassLabel = (h.road_class || 'arterial').replace('_', ' ').toUpperCase();
+  const isEmergency = (h.env_context && h.env_context.is_emergency_route) || h.road_class === 'hospital_corridor';
+  const aadt = h.env_context?.aadt_traffic_volume || 38000;
+  
+  if (!isFP) {
+    evidenceHtml += `
+      <div class="evidence-item">
+        <span class="text-emerald-400 font-bold text-sm shrink-0">✓</span>
+        <div>
+          <strong class="text-slate-200">Road Importance & Traffic:</strong>
+          <span class="text-slate-300"> ${roadClassLabel} road (${h.road_name}) with daily traffic of ${aadt.toLocaleString()} vehicles/day. ${isEmergency ? '<strong class="text-amber-400 font-semibold">(🚨 Emergency / Hospital Route — High Priority)</strong>' : ''}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  // 5. Citizen 311 Report (if available)
+  if (h.citizen_report && h.citizen_report.text_content) {
+    evidenceHtml += `
+      <div class="evidence-item border-cyan-500/30">
+        <span class="text-cyan-400 font-bold text-sm shrink-0">📱</span>
+        <div>
+          <strong class="text-cyan-300">Citizen Report (${h.citizen_report.source || 'Citizen App'}):</strong>
+          <span class="text-slate-300"> Urgency Rating ${h.citizen_report.reporter_urgency || 4}/5: "${h.citizen_report.text_content}"</span>
+        </div>
+      </div>
+    `;
+  }
+
+  container.innerHTML = evidenceHtml;
+
+  // Detection Sources Linked Badges
+  if (sourcesContainer) {
+    let sourcesHtml = `
+      <span class="evidence-tag"><i data-lucide="camera" class="w-3 h-3 text-cyan-400"></i> Camera</span>
+      <span class="evidence-tag"><i data-lucide="activity" class="w-3 h-3 text-amber-400"></i> Vibration Sensor</span>
+      <span class="evidence-tag"><i data-lucide="volume-2" class="w-3 h-3 text-purple-400"></i> Sound Sensor</span>
+    `;
+    if (h.citizen_report && h.citizen_report.text_content) {
+      sourcesHtml += `<span class="evidence-tag"><i data-lucide="smartphone" class="w-3 h-3 text-emerald-400"></i> Citizen Report</span>`;
+    }
+    sourcesContainer.innerHTML = sourcesHtml;
+  }
 }
 
 function closeIncidentModal() {
-  document.getElementById('incident-modal').classList.add('hidden');
+  dismissActiveOverlays();
 }
 
 function openApiKeyModal() {
+  dismissActiveOverlays();
   document.getElementById('input-api-key').value = userApiKey;
-  document.getElementById('apikey-modal').classList.remove('hidden');
+  const modal = document.getElementById('apikey-modal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
 }
 
 function closeApiKeyModal() {
-  document.getElementById('apikey-modal').classList.add('hidden');
+  dismissActiveOverlays();
 }
 
 function saveApiKey() {
@@ -1252,46 +2032,148 @@ function saveApiKey() {
 }
 
 function triggerQuickScanModal() {
-  document.getElementById('ingest-modal').classList.remove('hidden');
+  dismissActiveOverlays();
+  const modal = document.getElementById('ingest-modal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
 }
 
 function closeIngestModal() {
-  document.getElementById('ingest-modal').classList.add('hidden');
+  dismissActiveOverlays();
 }
+window.closeIngestModal = closeIngestModal;
+
+function handleIngestStateChange(selectedState) {
+  const citySelect = document.getElementById('ingest-city');
+  if (!citySelect) return;
+  const rawCities = STATE_CITY_MAPPING[selectedState] || ['City Center'];
+  citySelect.innerHTML = rawCities.map(c => `<option value="${c}">${c}</option>`).join('');
+}
+window.handleIngestStateChange = handleIngestStateChange;
 
 async function submitIngestModal() {
-  const stateVal = document.getElementById('ingest-state').value;
-  const roadClass = document.getElementById('ingest-road-class').value;
-  const accZ = parseFloat(document.getElementById('ingest-acc-z').value);
-  const acousticDb = parseFloat(document.getElementById('ingest-acoustic-db').value);
-  const citizenText = document.getElementById('ingest-citizen-text').value;
+  const stateVal = (document.getElementById('ingest-state') && document.getElementById('ingest-state').value) || 'Karnataka';
+  const cityVal = (document.getElementById('ingest-city') && document.getElementById('ingest-city').value) || 'Bengaluru';
+  const roadName = (document.getElementById('ingest-road-name') && document.getElementById('ingest-road-name').value.trim()) || `${cityVal} Sector Route`;
+  const roadClass = (document.getElementById('ingest-road-class') && document.getElementById('ingest-road-class').value) || 'arterial';
+  const hazardType = (document.getElementById('ingest-hazard-type') && document.getElementById('ingest-hazard-type').value) || 'pothole';
+  const severityVal = (document.getElementById('ingest-severity') && document.getElementById('ingest-severity').value) || 'high';
+  const sourceVal = (document.getElementById('ingest-source') && document.getElementById('ingest-source').value) || 'Citizen Report';
+  const citizenText = (document.getElementById('ingest-citizen-text') && document.getElementById('ingest-citizen-text').value.trim()) || `Reported ${hazardType} hazard on ${roadName}, ${cityVal}`;
+
+  const submitBtn = document.getElementById('btn-submit-road-issue');
+  const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '';
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> Analyzing Road Issue with AI...`;
+    if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+  }
+
+  // Derive realistic geographic coordinates based on City or State center
+  const vp = CITY_VIEWPORTS[cityVal] || STATE_VIEWPORTS[stateVal] || { center: [12.9716, 77.5946] };
+  const lat = parseFloat((vp.center[0] + (Math.random() - 0.5) * 0.035).toFixed(4));
+  const lng = parseFloat((vp.center[1] + (Math.random() - 0.5) * 0.035).toFixed(4));
+
+  // Automatically compute realistic physical telemetry & acoustic measurements based on severity
+  let accZ = 2.05;
+  let acousticDb = 68.0;
+  if (severityVal === 'critical') {
+    accZ = 2.85;
+    acousticDb = 78.0;
+  } else if (severityVal === 'high') {
+    accZ = 2.10;
+    acousticDb = 68.0;
+  } else if (severityVal === 'medium') {
+    accZ = 1.45;
+    acousticDb = 55.0;
+  } else {
+    accZ = 1.15;
+    acousticDb = 44.0;
+  }
+
+  // Read uploaded image if user provided one
+  const fileInput = document.getElementById('ingest-photo-input');
+  let imageB64 = null;
+  if (fileInput && fileInput.files && fileInput.files[0]) {
+    try {
+      imageB64 = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(fileInput.files[0]);
+      });
+    } catch (e) {
+      console.warn('Image read error:', e);
+    }
+  }
 
   try {
     const res = await fetch('/api/hazards/inspect', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        latitude: stateVal === 'Maharashtra' ? 19.1136 : (stateVal === 'Delhi NCR' ? 28.5672 : 12.9340),
-        longitude: stateVal === 'Maharashtra' ? 72.8697 : (stateVal === 'Delhi NCR' ? 77.2100 : 77.6080),
+        image_base64: imageB64,
+        image_url: null,
+        latitude: lat,
+        longitude: lng,
         state: stateVal,
-        city: stateVal === 'Maharashtra' ? 'Mumbai' : (stateVal === 'Delhi NCR' ? 'New Delhi' : 'Bengaluru'),
+        city: cityVal,
+        speed_kmh: 45.0,
         acc_z_g: accZ,
-        vertical_jerk: accZ * 4.2,
+        vertical_jerk: parseFloat((Math.abs(accZ - 1.0) * 12.0).toFixed(1)),
         acoustic_db: acousticDb,
         citizen_text: citizenText,
         road_class: roadClass,
-        road_name: `${stateVal} Sector Route`
+        road_name: roadName
       })
     });
 
     const newH = await res.json();
+
+    // Ensure status is explicitly UNRESOLVED and hazard_type/severity/title match user input
+    newH.status = 'Unresolved';
+    if (hazardType) newH.hazard_type = hazardType;
+    if (severityVal) newH.severity = severityVal;
+    newH.title = `Detected ${hazardType.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase())} (${severityVal.toUpperCase()})`;
+    if (sourceVal && newH.citizen_report) {
+      newH.citizen_report.citizen_category = sourceVal;
+    }
+
     closeIngestModal();
-    await refreshAllData();
-    openIncidentModal(newH.id);
+
+    // Prepend new incident to live database
+    allHazards.unshift(newH);
+
+    // Refresh UI filters, map, and feed
+    applyStateAndSearchFilters();
+
+    // Smoothly fly GIS map to the newly reported road hazard
+    if (gisMap) {
+      gisMap.flyTo([newH.latitude, newH.longitude], 15.5, { duration: 1.2 });
+    }
+
+    // Highlight the card in the feed
+    highlightFeedCard(newH.id);
+
+    // Open detail modal showcasing the AI analysis results
+    setTimeout(() => {
+      openIncidentModal(newH.id);
+    }, 400);
+
   } catch (err) {
-    console.error('Ingest failed:', err);
+    console.error('Report submission failed:', err);
+    alert('Unable to analyze road issue. Please check network connection and try again.');
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnHtml || `<i data-lucide="send" class="w-3.5 h-3.5"></i> Submit Road Issue`;
+      if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    }
   }
 }
+window.submitIngestModal = submitIngestModal;
 
 // ==========================================
 // SYNTHETIC SVG & DATA GENERATORS
@@ -1400,34 +2282,34 @@ function renderIngestionStreams(streams) {
     const icon = sourceIcons[s.source_type] || '📡';
     const color = statusColors[s.status] || 'slate';
     return `
-      <div class="nhai-card bg-white border border-slate-200 border-l-4 border-l-[#FF9933] rounded-2xl p-4 transition-all text-black overflow-hidden relative shadow-xs hover:shadow-md">
+      <div class="bg-[#121929] border border-slate-800 rounded-xl p-4 hover:border-${color}-500/40 transition-all">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
             <span class="text-lg">${icon}</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider text-slate-800">${s.source_type.replace(/_/g, ' ')}</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400">${s.source_type.replace(/_/g, ' ')}</span>
           </div>
-          <span class="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 border border-emerald-200 text-emerald-950">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 ${s.status === 'active' ? 'animate-pulse' : ''}"></span>
+          <span class="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-${color}-950/60 border border-${color}-500/40 text-${color}-400">
+            <span class="w-1.5 h-1.5 rounded-full bg-${color}-400 ${s.status === 'active' ? 'animate-pulse' : ''}"></span>
             ${s.status.toUpperCase()}
           </span>
         </div>
-        <h4 class="text-xs font-black text-black mb-1 leading-tight">${s.source_name}</h4>
-        <p class="text-[10px] text-slate-500 mb-3 font-mono">${s.state} • ${s.city}</p>
-        <div class="grid grid-cols-3 gap-2 text-center text-[10px] bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+        <h4 class="text-xs font-bold text-white mb-1 leading-tight">${s.source_name}</h4>
+        <p class="text-[10px] text-slate-500 mb-3">${s.state} • ${s.city}</p>
+        <div class="grid grid-cols-3 gap-2 text-center text-[10px]">
           <div>
-            <p class="font-bold font-mono text-black">${s.total_frames_processed.toLocaleString('en-IN')}</p>
+            <p class="font-bold font-mono text-slate-200">${s.total_frames_processed.toLocaleString('en-IN')}</p>
             <p class="text-slate-500">Frames</p>
           </div>
           <div>
-            <p class="font-bold font-mono text-orange-700">${s.hazards_detected}</p>
+            <p class="font-bold font-mono text-amber-400">${s.hazards_detected}</p>
             <p class="text-slate-500">Hazards</p>
           </div>
           <div>
-            <p class="font-bold font-mono text-emerald-700">${s.false_positives_filtered}</p>
+            <p class="font-bold font-mono text-emerald-400">${s.false_positives_filtered}</p>
             <p class="text-slate-500">FP Filtered</p>
           </div>
         </div>
-        ${s.last_frame_at ? `<p class="text-[9px] text-slate-400 mt-2 font-mono">Last: ${s.last_frame_at}</p>` : ''}
+        ${s.last_frame_at ? `<p class="text-[9px] text-slate-600 mt-2 font-mono">Last: ${s.last_frame_at}</p>` : ''}
       </div>
     `;
   }).join('');
@@ -1435,146 +2317,43 @@ function renderIngestionStreams(streams) {
   lucide.createIcons();
 }
 
-
-
-// Load ingestion streams when switching to ingestion tab
-const originalSwitchTab = window.switchTab;
-window.switchTab = function(tabId) {
-  // Call original tab logic
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active-tab'));
-  document.querySelectorAll('.tab-view').forEach(v => v.classList.add('hidden'));
-
-  const tabBtn = document.getElementById(`tab-${tabId}`);
-  const viewElem = document.getElementById(`view-${tabId}`);
-
-  if (tabBtn) tabBtn.classList.add('active-tab');
-  if (viewElem) viewElem.classList.remove('hidden');
-
-  if (tabId === 'map' && gisMap) {
-    setTimeout(() => gisMap.invalidateSize(), 200);
-  }
-  if (tabId === 'patrol' && patrolMap) {
-    setTimeout(() => patrolMap.invalidateSize(), 200);
-  }
-  if (tabId === 'ingestion') {
-    refreshIngestionStreams();
-  }
-};
-// Override the global function
-switchTab = window.switchTab;
-
-// Decluttered Navigation & Action Dropdowns
-
-// ==========================================
-// DECLUTTERED NAVIGATION & ACTION DROPDOWNS
-// ==========================================
-const TAB_LABELS = {
-  map: 'GIS Hazard Map',
-  studio: 'Inspection Studio',
-  patrol: 'Patrol Simulator',
-  backlog: 'Work Orders',
-  copilot: 'AI Co-Pilot',
-  analytics: 'Analytics & Reports',
-  ingestion: 'Multi-Source Ingestion'
-};
-
-function toggleNavDropdown(event) {
-  if (event) event.stopPropagation();
-  const menu = document.getElementById('nav-dropdown-menu');
-  const arrow = document.getElementById('nav-dropdown-arrow');
-  const actionsMenu = document.getElementById('actions-dropdown-menu');
-  const actionsArrow = document.getElementById('actions-dropdown-arrow');
-  
-  if (actionsMenu) actionsMenu.classList.add('hidden');
-  if (actionsArrow) actionsArrow.style.transform = 'rotate(0deg)';
-  
-  if (menu) {
-    const isHidden = menu.classList.contains('hidden');
-    menu.classList.toggle('hidden');
-    if (arrow) arrow.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+// Citizen Portal Modal
+function openCitizenPortalModal() {
+  dismissActiveOverlays();
+  const modal = document.getElementById('citizen-portal-modal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    const link = document.getElementById('citizen-portal-link');
+    if (link) {
+      const portalUrl = `${window.location.origin}/report`;
+      link.textContent = portalUrl;
+      link.href = portalUrl;
+    }
     lucide.createIcons();
   }
 }
-window.toggleNavDropdown = toggleNavDropdown;
+window.openCitizenPortalModal = openCitizenPortalModal;
 
-function toggleActionsDropdown(event) {
-  if (event) event.stopPropagation();
-  const menu = document.getElementById('actions-dropdown-menu');
-  const arrow = document.getElementById('actions-dropdown-arrow');
-  const navMenu = document.getElementById('nav-dropdown-menu');
-  const navArrow = document.getElementById('nav-dropdown-arrow');
-  
-  if (navMenu) navMenu.classList.add('hidden');
-  if (navArrow) navArrow.style.transform = 'rotate(0deg)';
-  
-  if (menu) {
-    const isHidden = menu.classList.contains('hidden');
-    menu.classList.toggle('hidden');
-    if (arrow) arrow.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
-    lucide.createIcons();
+function closeCitizenPortalModal() {
+  dismissActiveOverlays();
+}
+window.closeCitizenPortalModal = closeCitizenPortalModal;
+
+function copyCitizenPortalLink(evt) {
+  const portalUrl = `${window.location.origin}/report`;
+  const targetBtn = evt ? evt.target.closest('button') : (window.event ? window.event.target.closest('button') : null);
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(portalUrl).then(() => {
+      if (targetBtn) {
+        const original = targetBtn.innerHTML;
+        targetBtn.innerHTML = '<span class="text-emerald-400">✓ Copied!</span>';
+        setTimeout(() => { targetBtn.innerHTML = original; lucide.createIcons(); }, 2000);
+      }
+    }).catch(err => {
+      console.warn('Clipboard write failed:', err);
+    });
   }
 }
-window.toggleActionsDropdown = toggleActionsDropdown;
-
-function closeAllDropdowns() {
-  const navMenu = document.getElementById('nav-dropdown-menu');
-  const navArrow = document.getElementById('nav-dropdown-arrow');
-  const actionsMenu = document.getElementById('actions-dropdown-menu');
-  const actionsArrow = document.getElementById('actions-dropdown-arrow');
-  
-  if (navMenu) navMenu.classList.add('hidden');
-  if (navArrow) navArrow.style.transform = 'rotate(0deg)';
-  if (actionsMenu) actionsMenu.classList.add('hidden');
-  if (actionsArrow) actionsArrow.style.transform = 'rotate(0deg)';
-}
-window.closeAllDropdowns = closeAllDropdowns;
-
-// Global click listener to close dropdowns when clicking outside
-document.addEventListener('click', (e) => {
-  const navWrapper = document.getElementById('dropdown-nav-wrapper');
-  const actionsWrapper = document.getElementById('dropdown-actions-wrapper');
-  if (navWrapper && !navWrapper.contains(e.target) && actionsWrapper && !actionsWrapper.contains(e.target)) {
-    closeAllDropdowns();
-  }
-});
-
-function selectNavTab(tabId, label) {
-  switchTab(tabId);
-  const labelElem = document.getElementById('nav-dropdown-label');
-  if (labelElem) {
-    labelElem.textContent = label || TAB_LABELS[tabId] || 'GIS Hazard Map';
-  }
-  closeAllDropdowns();
-}
-window.selectNavTab = selectNavTab;
-
-function navigateToHome() {
-  selectNavTab('map', 'GIS Hazard Map');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-window.navigateToHome = navigateToHome;
-
-// ==========================================
-// PRIORITY BACKLOG FEED DRAWER TOGGLER
-// ==========================================
-function toggleFeedDrawer(explicitState) {
-  const drawer = document.getElementById('priority-feed-drawer');
-  const btn = document.getElementById('btn-toggle-feed-drawer');
-  if (!drawer) return;
-  
-  const shouldOpen = explicitState !== undefined ? explicitState : drawer.classList.contains('hidden');
-  
-  if (shouldOpen) {
-    drawer.classList.remove('hidden');
-    if (btn) btn.classList.add('hidden');
-  } else {
-    drawer.classList.add('hidden');
-    if (btn) btn.classList.remove('hidden');
-  }
-  lucide.createIcons();
-}
-window.toggleFeedDrawer = toggleFeedDrawer;
-
-
-
+window.copyCitizenPortalLink = copyCitizenPortalLink;
 

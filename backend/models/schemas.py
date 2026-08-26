@@ -18,6 +18,7 @@ class HazardType(str, Enum):
     OBSCURED_SIGN = "obscured_sign"
     STANDING_WATER = "standing_water"
     DEBRIS = "debris"
+    OTHER = "other"
 
 
 class SeverityLevel(str, Enum):

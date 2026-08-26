@@ -42,445 +42,218 @@
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/static/css/styles.css">
 </head>
-<body class="bg-[#f8f9fa] text-black min-h-screen flex flex-col font-sans selection:bg-amber-200 selection:text-black">
+<body class="bg-[#080c14] text-slate-100 min-h-screen flex flex-col font-sans selection:bg-cyan-500 selection:text-black">
 
-  <!-- ROLE SELECTION & LOGIN GATEWAY (PRIOR SCREEN OVERLAY) -->
-  <div id="role-gateway-overlay" class="fixed inset-0 bg-[#f8f9fa] z-[100000] flex flex-col justify-between overflow-y-auto" style="z-index: 100000 !important;">
+  <!-- 1. Top Command Header (Two-Zone Layout) -->
+  <header class="bg-[#0a101d]/95 backdrop-blur-md border-b border-slate-800/80 sticky top-0 z-50 px-6 py-2.5 flex items-center justify-between gap-4 shadow-xl">
     
-    <!-- Top Indian Tricolour Strip -->
-    <div class="tricolor-strip"></div>
+    <!-- LEFT ZONE: Branding & Operational Status -->
+    <div class="flex items-center gap-3.5">
+      <!-- SadakSuraksha Civic Road Safety & Traffic Signal Logo -->
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 shrink-0" role="img" aria-label="SadakSuraksha Road Safety Logo">
+        <!-- 1. Sweeping Highway Pavement in Perspective -->
+        <path d="M3 28.5 C6.5 21, 10 12.5, 17.5 4.5 L22.5 4.5 C16.5 12.5, 13.5 21, 15.5 28.5 Z" 
+              fill="#1e293b" 
+              stroke="#334155" 
+              stroke-width="0.75" 
+              stroke-linejoin="round"/>
+        
+        <!-- 2. Amber Safety Shoulder Line (Left Edge) -->
+        <path d="M3 28.5 C6.5 21, 10 12.5, 17.5 4.5" 
+              stroke="#f59e0b" 
+              stroke-width="1.25" 
+              stroke-linecap="round"/>
+        
+        <!-- 3. Crisp White Outer Edge (Right Boundary) -->
+        <path d="M15.5 28.5 C13.5 21, 16.5 12.5, 22.5 4.5" 
+              stroke="#ffffff" 
+              stroke-width="0.8" 
+              stroke-linecap="round" 
+              opacity="0.9"/>
+        
+        <!-- 4. Center Dashed Highway Markings -->
+        <path d="M9.2 28.5 C10 21, 13.2 12.5, 20 4.5" 
+              stroke="#ffffff" 
+              stroke-width="1.1" 
+              stroke-dasharray="2.5 2" 
+              stroke-linecap="round"/>
 
-    <!-- Gateway Header (Expansive & Modern) -->
-    <header class="px-8 py-5 border-b border-slate-200 bg-white sticky top-0 z-10 shadow-xs">
-      <div class="max-w-7xl mx-auto flex items-center justify-between">
-        <div class="flex items-center gap-3.5">
-          <div class="w-12 h-12 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center shadow-xs">
-            <i data-lucide="shield-alert" class="w-6 h-6 text-black"></i>
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <h1 class="text-lg font-black tracking-wider text-black font-mono uppercase flex items-center gap-2">
-                <span>SADAK-SURAKSHA</span> <span class="text-base">🇮🇳</span>
-              </h1>
-              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 border border-emerald-300 text-emerald-950">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span> MoRTH & NHAI CONNECTED
-              </span>
-            </div>
-            <p class="text-xs text-slate-700 font-medium">National Multimodal Road Hazard Awareness & Maintenance Intelligence System</p>
-          </div>
-        </div>
+        <!-- 5. Traffic Signal Post / Mast -->
+        <line x1="26.5" y1="21" x2="26.5" y2="28" 
+              stroke="#475569" 
+              stroke-width="1.2" 
+              stroke-linecap="round"/>
 
-        <div class="hidden md:flex items-center gap-3 font-mono text-xs text-black">
-          <span class="px-3 py-1.5 rounded-lg bg-orange-50 border border-orange-200 text-orange-950 font-bold">🇮🇳 16 States Live</span>
-          <span class="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-950 font-bold">IRC:82 Compliant</span>
-        </div>
-      </div>
-    </header>
+        <!-- 6. Traffic Signal Housing (Charcoal Capsule) -->
+        <rect x="23.5" y="4.5" width="6" height="17" rx="3" 
+              fill="#0f172a" 
+              stroke="#475569" 
+              stroke-width="0.85"/>
 
-    <!-- Role Prompt Main Card Container -->
-    <main class="max-w-6xl mx-auto px-6 py-12 flex-1 flex flex-col justify-center w-full">
-      <div class="text-center max-w-3xl mx-auto mb-10">
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-slate-200 text-black text-xs font-bold shadow-xs mb-3">
-          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-700"></i> Identity & Role Verification
-        </div>
-        <h2 class="text-3xl sm:text-4xl font-black text-black tracking-tight">
-          Select Your Portal
-        </h2>
-        <p class="text-sm text-slate-700 font-medium mt-2">
-          Are you an Indian Citizen reporting road damage or an authorized Government Infrastructure Official?
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto w-full">
-
-        <!-- 1. CITIZEN CARD -->
-        <div class="nhai-card p-8 flex flex-col justify-between relative overflow-hidden text-black border-l-4 border-l-[#138808]">
-          <div>
-            <div class="flex items-center justify-between mb-6">
-              <div class="w-13 h-13 rounded-xl bg-emerald-100 border border-emerald-300 flex items-center justify-center shadow-xs">
-                <i data-lucide="smartphone" class="w-7 h-7 text-emerald-800"></i>
-              </div>
-              <span class="px-3 py-1 rounded-full text-xs font-bold font-mono bg-emerald-50 text-emerald-900 border border-emerald-200">
-                PUBLIC PORTAL
-              </span>
-            </div>
-
-            <h3 class="text-2xl font-black text-black mb-2">Indian Citizen / Commuter</h3>
-            <p class="text-xs sm:text-sm text-slate-700 mb-6 leading-relaxed font-medium">
-              Report road potholes, dangerous waterlogging, broken barriers, or debris from your phone. No officer login required.
-            </p>
-
-            <div class="space-y-3 mb-8 text-xs text-black font-bold">
-              <div class="flex items-center gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                <i data-lucide="map-pin" class="w-4 h-4 text-emerald-700 shrink-0"></i>
-                <span>Automatic GPS Location & Google Maps Tagging</span>
-              </div>
-              <div class="flex items-center gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                <i data-lucide="camera" class="w-4 h-4 text-emerald-700 shrink-0"></i>
-                <span>Live Camera Defect Capture & AI Depth Estimation</span>
-              </div>
-              <div class="flex items-center gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                <i data-lucide="ticket" class="w-4 h-4 text-emerald-700 shrink-0"></i>
-                <span>Instant Ticket ID & Real-Time PWD Repair Tracking</span>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <a href="/report" onclick="if(window.location.protocol==='file:'){event.preventDefault();window.location.href='report.html';}" class="w-full py-4 px-6 rounded-xl bg-[#138808] hover:bg-[#0f6b06] border border-emerald-700 text-white font-black text-sm flex items-center justify-center gap-2 shadow-xs transition-colors">
-              <i data-lucide="camera" class="w-4 h-4 text-white"></i>
-              <span>Proceed to Citizen Reporting Portal</span>
-              <i data-lucide="arrow-right" class="w-4 h-4 ml-1 text-white"></i>
-            </a>
-            <p class="text-[11px] text-center text-slate-600 font-bold mt-2.5">Instant public submission • No password needed</p>
-          </div>
-        </div>
-
-        <!-- 2. GOVERNMENT OFFICIAL CARD -->
-        <div class="nhai-card p-8 flex flex-col justify-between relative overflow-hidden text-black border-l-4 border-l-[#FF9933]">
-          <div>
-            <div class="flex items-center justify-between mb-6">
-              <div class="w-13 h-13 rounded-xl bg-orange-100 border border-orange-300 flex items-center justify-center shadow-xs">
-                <i data-lucide="shield-check" class="w-7 h-7 text-orange-700"></i>
-              </div>
-              <span class="px-3 py-1 rounded-full text-xs font-bold font-mono bg-orange-50 text-orange-950 border border-orange-200">
-                RESTRICTED OFFICIAL ACCESS
-              </span>
-            </div>
-
-            <h3 class="text-2xl font-black text-black mb-2">Government Official / Engineer</h3>
-            <p class="text-xs sm:text-sm text-slate-700 mb-4 leading-relaxed font-medium">
-              For NHAI Engineers, State PWD Officers, Smart City Commanders, and Municipal Road Teams. Enter valid details to unlock the Command Center.
-            </p>
-
-            <form id="overlay-login-form" onsubmit="handleOverlayGovLogin(event)" class="space-y-3.5 mb-4">
-              <div>
-                <label class="block text-xs font-black text-black mb-1">Select Department:</label>
-                <select id="overlay-dept" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-black focus:outline-none focus:border-orange-500 focus:bg-amber-50/50">
-                  <option value="nhai">NHAI — National Highways Authority of India</option>
-                  <option value="morth">MoRTH — Ministry of Road Transport & Highways</option>
-                  <option value="pwd_ka">Karnataka State PWD (Bengaluru)</option>
-                  <option value="pwd_mh">Maharashtra PWD / BMC Smart City</option>
-                  <option value="pwd_dl">Delhi NCR PWD / ITMS Command</option>
-                  <option value="pwd_tn">Tamil Nadu Highways Department</option>
-                  <option value="pwd_ts">Telangana Roads & Buildings</option>
-                  <option value="smart_city">Smart City ICCC Command</option>
-                </select>
-              </div>
-
-              <div class="grid grid-cols-2 gap-3">
-                <div>
-                  <label class="block text-xs font-black text-black mb-1">Officer Badge ID:</label>
-                  <input type="text" id="overlay-officer-id" placeholder="e.g. NHAI-ENG-8429" value="NHAI-ENG-8429" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:border-orange-500 focus:bg-amber-50/50" required>
-                </div>
-                <div>
-                  <label class="block text-xs font-black text-black mb-1">Security PIN:</label>
-                  <input type="password" id="overlay-officer-pin" placeholder="Security PIN" value="NHAI2026" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:border-orange-500 focus:bg-amber-50/50" required>
-                </div>
-              </div>
-
-              <div id="overlay-login-error" class="hidden text-xs text-red-950 bg-red-100 border border-red-300 p-2.5 rounded-xl font-mono font-bold"></div>
-
-              <div class="flex items-center gap-2 pt-0.5">
-                <button type="button" onclick="fillOverlayDemo('nhai')" class="text-[11px] bg-slate-100 hover:bg-slate-200 border border-slate-300 text-black font-bold px-3 py-1 rounded-lg transition-colors">
-                  ⚡ NHAI Demo
-                </button>
-                <button type="button" onclick="fillOverlayDemo('pwd')" class="text-[11px] bg-slate-100 hover:bg-slate-200 border border-slate-300 text-black font-bold px-3 py-1 rounded-lg transition-colors">
-                  ⚡ State PWD Demo
-                </button>
-              </div>
-
-              <button type="submit" class="w-full py-4 px-6 rounded-xl bg-[#FF9933] hover:bg-[#F28500] border border-amber-600 text-black font-black text-sm flex items-center justify-center gap-2 shadow-xs transition-colors mt-2 cursor-pointer">
-                <i data-lucide="shield-check" class="w-4 h-4"></i>
-                <span>Verify Credentials & Enter Command Center</span>
-                <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
-              </button>
-            </form>
-          </div>
-
-          <div class="border-t border-slate-200 pt-3 text-center">
-            <p class="text-[11px] text-slate-700 font-bold">Access to GIS Triage, PWD Work Orders & Multimodal Inspection</p>
-          </div>
-        </div>
-
-      </div>
-    </main>
-
-    <!-- Gateway Footer -->
-    <footer class="px-8 py-6 border-t border-slate-200 bg-white text-center text-xs text-black font-bold">
-      <p>© 2026 SadakSuraksha AI 🇮🇳 — MoRTH • NHAI • State PWD • Smart Cities Mission</p>
-    </footer>
-
-  </div>
-
-  <!-- Top Indian Tricolour Strip -->
-  <div class="tricolor-strip"></div>
-
-  <!-- Top Navigation Header (Longer, Expansive & Clean NHAI Style) -->
-  <header class="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-[1000] px-8 py-4.5 flex flex-wrap items-center justify-between gap-4 shadow-xs">
-    
-    <!-- Branding / Home Button -->
-    <div onclick="navigateToHome()" class="flex items-center gap-3.5 cursor-pointer group select-none" title="Click shield to return to Main GIS Command Center">
-      <div class="w-11 h-11 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center shadow-xs">
-        <i data-lucide="shield-alert" class="w-5 h-5 text-black"></i>
-      </div>
+        <!-- 7. Tri-Color Traffic Signals (Red, Amber, Green) -->
+        <circle cx="26.5" cy="7.7" r="1.6" fill="#ef4444"/>
+        <circle cx="26.5" cy="13" r="1.6" fill="#f59e0b"/>
+        <circle cx="26.5" cy="18.3" r="1.6" fill="#10b981"/>
+      </svg>
       <div>
         <div class="flex items-center gap-2">
-          <h1 class="text-base font-black tracking-wider text-black font-mono uppercase flex items-center gap-1.5">
-            <span>SADAK-SURAKSHA</span> <span class="text-base">🇮🇳</span>
+          <h1 class="text-base font-extrabold tracking-wider text-white font-mono uppercase flex items-center gap-1.5">
+            SADAK-SURAKSHA <span class="text-orange-400 font-extrabold text-xs px-2 py-0.5 rounded bg-orange-950/80 border border-orange-500/30">AI 🇮🇳</span>
           </h1>
-          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 border border-emerald-300 text-emerald-950">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span> <span id="header-dept-text">NHAI / PWD LIVE</span>
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-950/60 border border-emerald-500/40 text-emerald-400">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> System Live
           </span>
         </div>
-        <p class="text-[11px] text-slate-700 font-medium">
-          National Multimodal Road Safety & Maintenance Intelligence Platform
-        </p>
+        <p class="text-[11px] text-slate-400 hidden sm:block">AI-Powered Road Safety & Maintenance Platform</p>
       </div>
     </div>
 
-    <!-- Center Navigation & Action Controls (Decluttered Dropdown Manner) -->
-    <div class="flex flex-wrap items-center gap-3">
-
-      <!-- 1. MODULES & VIEWS DROPDOWN -->
-      <div class="relative" id="dropdown-nav-wrapper">
-        <button type="button" onclick="toggleNavDropdown(event)" id="nav-dropdown-btn" class="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-xs font-bold text-black shadow-xs transition-all cursor-pointer">
-          <i data-lucide="layout-grid" class="w-4 h-4 text-orange-600"></i>
-          <span id="nav-dropdown-label" class="text-black font-extrabold">GIS Hazard Map</span>
-          <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-600 transition-transform duration-200" id="nav-dropdown-arrow"></i>
-        </button>
-
-        <!-- Dropdown Menu (Clean Minimal NHAI Style) -->
-        <div id="nav-dropdown-menu" class="hidden absolute top-full left-0 mt-1.5 w-76 bg-white border border-slate-200 rounded-2xl p-2.5 z-[1100] space-y-1.5 shadow-xl overflow-hidden">
-          <div class="tricolor-strip -mx-2.5 -mt-2.5 mb-2"></div>
-          
-          <div class="flex items-center justify-between px-3 py-1.5 bg-slate-50 rounded-lg border border-slate-200">
-            <span class="text-[10px] font-black uppercase tracking-wider text-slate-700 font-mono flex items-center gap-1.5">
-              <i data-lucide="layers" class="w-3.5 h-3.5 text-black"></i> Platform Modules
-            </span>
-            <span class="text-[9px] bg-slate-900 text-white font-mono px-2 py-0.5 rounded-full font-bold">7 Views</span>
-          </div>
-
-          <!-- 1. Saffron Module -->
-          <button type="button" onclick="selectNavTab('map', 'GIS Hazard Map')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-orange-50/70 border border-transparent hover:border-orange-200 transition-all text-left group cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-orange-100 border border-orange-200 flex items-center justify-center shrink-0">
-              <i data-lucide="map" class="w-4 h-4 text-orange-700"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-black group-hover:text-orange-700 transition-colors leading-none">GIS Hazard Map</p>
-              <p class="text-[11px] text-slate-600 font-medium mt-1">Spatial priority backlog & live pins</p>
-            </div>
-          </button>
-
-          <!-- 2. Navy Module -->
-          <button type="button" onclick="selectNavTab('studio', 'Inspection Studio')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-blue-50/70 border border-transparent hover:border-blue-200 transition-all text-left group cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-blue-100 border border-blue-200 flex items-center justify-center shrink-0">
-              <i data-lucide="scan" class="w-4 h-4 text-blue-800"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-black group-hover:text-blue-800 transition-colors leading-none">Inspection Studio</p>
-              <p class="text-[11px] text-slate-600 font-medium mt-1">Visual AI & 4-modal sensor fusion</p>
-            </div>
-          </button>
-
-          <!-- 3. Green Module -->
-          <button type="button" onclick="selectNavTab('patrol', 'Patrol Simulator')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-emerald-50/70 border border-transparent hover:border-emerald-200 transition-all text-left group cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-emerald-100 border border-emerald-200 flex items-center justify-center shrink-0">
-              <i data-lucide="car" class="w-4 h-4 text-emerald-700"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-black group-hover:text-emerald-700 transition-colors leading-none">Patrol Simulator</p>
-              <p class="text-[11px] text-slate-600 font-medium mt-1">Live vehicle telemetry & roughness</p>
-            </div>
-          </button>
-
-          <!-- 4. Saffron Module -->
-          <button type="button" onclick="selectNavTab('backlog', 'Work Orders')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-orange-50/70 border border-transparent hover:border-orange-200 transition-all text-left group cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-orange-100 border border-orange-200 flex items-center justify-center shrink-0">
-              <i data-lucide="clipboard-list" class="w-4 h-4 text-orange-700"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-black group-hover:text-orange-700 transition-colors leading-none">Work Orders</p>
-              <p class="text-[11px] text-slate-600 font-medium mt-1">Clustered PWD repair schedule</p>
-            </div>
-          </button>
-
-          <!-- 5. Navy Module -->
-          <button type="button" onclick="selectNavTab('copilot', 'AI Co-Pilot')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-blue-50/70 border border-transparent hover:border-blue-200 transition-all text-left group cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-blue-100 border border-blue-200 flex items-center justify-center shrink-0">
-              <i data-lucide="bot" class="w-4 h-4 text-blue-800"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-black group-hover:text-blue-800 transition-colors leading-none">AI Co-Pilot</p>
-              <p class="text-[11px] text-slate-600 font-medium mt-1">MoRTH & IRC engineering chat</p>
-            </div>
-          </button>
-
-          <!-- 6. Green Module -->
-          <button type="button" onclick="selectNavTab('analytics', 'Analytics & Reports')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-emerald-50/70 border border-transparent hover:border-emerald-200 transition-all text-left group cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-emerald-100 border border-emerald-200 flex items-center justify-center shrink-0">
-              <i data-lucide="bar-chart-3" class="w-4 h-4 text-emerald-700"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-black group-hover:text-emerald-700 transition-colors leading-none">Analytics & Reports</p>
-              <p class="text-[11px] text-slate-600 font-medium mt-1">Defect distribution & cost charts</p>
-            </div>
-          </button>
-
-          <!-- 7. Saffron Module -->
-          <button type="button" onclick="selectNavTab('ingestion', 'Multi-Source Ingestion')" class="dropdown-nav-item w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-orange-50/70 border border-transparent hover:border-orange-200 transition-all text-left group cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-orange-100 border border-orange-200 flex items-center justify-center shrink-0">
-              <i data-lucide="radio-tower" class="w-4 h-4 text-orange-700"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-black group-hover:text-orange-700 transition-colors leading-none">Multi-Source Ingestion</p>
-              <p class="text-[11px] text-slate-600 font-medium mt-1">CCTV, Google Maps & Citizen 311</p>
-            </div>
-          </button>
+    <!-- RIGHT ZONE: State Selector & Action Commands -->
+    <div class="flex items-center gap-2.5 flex-wrap justify-end">
+      <!-- Connected State & City Location Selector -->
+      <div class="flex items-center gap-1.5 bg-[#101726] p-1 rounded-xl border border-slate-700/80 shadow-inner">
+        <div class="flex items-center gap-1.5 px-2">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-cyan-400 shrink-0"></i>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 hidden xl:inline">Location:</span>
         </div>
-      </div>
+        
+        <!-- State Selector (Alphabetically Sorted, Default: All India) -->
+        <select id="state-selector" onchange="handleStateChange(this.value)" class="bg-slate-900 border border-slate-700 text-cyan-300 font-semibold text-xs rounded-lg px-2 py-1 focus:outline-none focus:border-cyan-400 cursor-pointer">
+          <option value="all" selected>🇮🇳 All India</option>
+          <option value="Andhra Pradesh">Andhra Pradesh</option>
+          <option value="Assam">Assam</option>
+          <option value="Delhi NCR">Delhi NCR</option>
+          <option value="Goa">Goa</option>
+          <option value="Gujarat">Gujarat</option>
+          <option value="Jammu & Kashmir">Jammu & Kashmir</option>
+          <option value="Karnataka">Karnataka</option>
+          <option value="Kerala">Kerala</option>
+          <option value="Madhya Pradesh">Madhya Pradesh</option>
+          <option value="Maharashtra">Maharashtra</option>
+          <option value="Odisha">Odisha</option>
+          <option value="Punjab & Haryana">Punjab & Haryana</option>
+          <option value="Rajasthan">Rajasthan</option>
+          <option value="Tamil Nadu">Tamil Nadu</option>
+          <option value="Telangana">Telangana</option>
+          <option value="Uttar Pradesh">Uttar Pradesh</option>
+          <option value="West Bengal">West Bengal</option>
+        </select>
 
-      <!-- 2. STATE / REGION SELECTOR (INDIA) -->
-      <div class="flex items-center gap-2 bg-white px-3.5 py-2 rounded-xl border border-slate-300 shadow-xs hover:border-slate-400 transition-colors">
-        <span class="text-xs">🇮🇳</span>
-        <label for="state-selector" class="text-xs font-bold text-slate-800">State:</label>
-        <select id="state-selector" onchange="handleStateChange(this.value)" class="bg-white border-none text-black font-extrabold text-xs rounded-lg px-2 py-0.5 focus:outline-none cursor-pointer">
-          <option value="all">🇮🇳 All India (16 States)</option>
-          <option value="Karnataka" selected>📍 Karnataka (Bengaluru)</option>
-          <option value="Maharashtra">📍 Maharashtra (Mumbai / Pune)</option>
-          <option value="Delhi NCR">📍 Delhi NCR (New Delhi / Gurugram)</option>
-          <option value="Tamil Nadu">📍 Tamil Nadu (Chennai)</option>
-          <option value="Telangana">📍 Telangana (Hyderabad)</option>
-          <option value="Uttar Pradesh">📍 Uttar Pradesh (Agra / Lucknow)</option>
-          <option value="West Bengal">📍 West Bengal (Kolkata)</option>
-          <option value="Gujarat">📍 Gujarat (Ahmedabad)</option>
-          <option value="Rajasthan">📍 Rajasthan (Jaipur)</option>
-          <option value="Kerala">📍 Kerala (Kochi)</option>
-          <option value="Punjab & Haryana">📍 Punjab & Haryana (Chandigarh)</option>
-          <option value="Madhya Pradesh">📍 Madhya Pradesh (Indore / Bhopal)</option>
-          <option value="Odisha">📍 Odisha (Bhubaneswar)</option>
-          <option value="Assam">📍 Assam (Guwahati)</option>
-          <option value="Jammu & Kashmir">📍 Jammu & Kashmir (Srinagar)</option>
-          <option value="Andhra Pradesh">📍 Andhra Pradesh (Visakhapatnam)</option>
-          <option value="Goa">📍 Goa (Panaji)</option>
+        <!-- City Selector (Populated Dynamically Based on Selected State) -->
+        <select id="city-selector" onchange="handleCityChange(this.value)" class="bg-slate-900 border border-slate-700 text-cyan-300 font-semibold text-xs rounded-lg px-2 py-1 focus:outline-none focus:border-cyan-400 cursor-pointer">
+          <option value="all">Select City</option>
         </select>
       </div>
 
-      <!-- 3. ACTIONS & TOOLS DROPDOWN -->
-      <div class="relative" id="dropdown-actions-wrapper">
-        <button type="button" onclick="toggleActionsDropdown(event)" id="actions-dropdown-btn" class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#FF9933] hover:bg-[#F28500] border border-amber-600 text-black font-black text-xs shadow-xs transition-colors cursor-pointer">
-          <i data-lucide="zap" class="w-4 h-4 text-black"></i>
-          <span>Actions & Tools</span>
-          <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-black" id="actions-dropdown-arrow"></i>
-        </button>
-
-        <!-- Dropdown Menu (Clean Minimal NHAI Style) -->
-        <div id="actions-dropdown-menu" class="hidden absolute top-full right-0 mt-1.5 w-68 bg-white border border-slate-200 rounded-2xl p-2.5 z-[1100] space-y-1.5 shadow-xl overflow-hidden">
-          <div class="tricolor-strip -mx-2.5 -mt-2.5 mb-2"></div>
-
-          <div class="flex items-center justify-between px-3 py-1.5 bg-orange-50 rounded-lg border border-orange-200">
-            <span class="text-[10px] font-black uppercase tracking-wider text-orange-950 font-mono flex items-center gap-1.5">
-              <i data-lucide="wrench" class="w-3.5 h-3.5 text-orange-700"></i> Engineering Tools
-            </span>
-            <span class="text-[9px] bg-[#FF9933] text-black font-mono px-2 py-0.5 rounded-full font-bold border border-amber-600">Active</span>
-          </div>
-          
-          <button type="button" onclick="triggerQuickScanModal(); closeAllDropdowns();" class="w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-orange-50/70 border border-transparent hover:border-orange-200 transition-all text-left group cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-orange-100 border border-orange-200 flex items-center justify-center shrink-0">
-              <i data-lucide="plus-circle" class="w-4 h-4 text-orange-700"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-black group-hover:text-orange-800 transition-colors leading-none">Ingest Road Incident</p>
-              <p class="text-[11px] text-slate-600 font-medium mt-1">Submit manual shock / defect data</p>
-            </div>
-          </button>
-
-          <button type="button" onclick="openApiKeyModal(); closeAllDropdowns();" class="w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-blue-50/70 border border-transparent hover:border-blue-200 transition-all text-left group cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-blue-100 border border-blue-200 flex items-center justify-center shrink-0">
-              <i data-lucide="key" class="w-4 h-4 text-blue-800"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-black group-hover:text-blue-800 transition-colors leading-none" id="apiKeyBtnText">Gemini API Key</p>
-              <p class="text-[11px] text-slate-600 font-medium mt-1">Configure cloud multimodal AI</p>
-            </div>
-          </button>
-
-          <div class="border-t border-slate-200 my-1"></div>
-
-          <button type="button" onclick="handleLogout(); closeAllDropdowns();" class="w-full flex items-center gap-3 p-2.5 rounded-xl bg-white hover:bg-red-50/70 border border-transparent hover:border-red-200 transition-all text-left group cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-red-100 border border-red-200 flex items-center justify-center shrink-0">
-              <i data-lucide="log-out" class="w-4 h-4 text-red-600"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-red-600 group-hover:text-red-700 transition-colors leading-none">Switch Role / Exit</p>
-              <p class="text-[11px] text-slate-600 font-medium mt-1">Return to role gateway</p>
-            </div>
-          </button>
-        </div>
-      </div>
-
+      <!-- Action Buttons -->
+      <button onclick="openApiKeyModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-800/90 hover:bg-slate-700 border border-slate-700 text-slate-300 transition-all shadow-sm">
+        <i data-lucide="key" class="w-3.5 h-3.5 text-cyan-400"></i>
+        <span id="apiKeyBtnText">Gemini Key</span>
+      </button>
+      <button onclick="triggerQuickScanModal()" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-black shadow-md shadow-orange-500/20 transition-all">
+        <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Report Road Issue
+      </button>
+      <button onclick="openCitizenPortalModal()" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-black shadow-md shadow-emerald-500/20 transition-all">
+        <i data-lucide="smartphone" class="w-3.5 h-3.5"></i> 📱 Citizen Portal
+      </button>
     </div>
   </header>
 
-  <!-- Asymmetrical Key Metrics Data Ledger (Clean NHAI Style with Subtle Curves) -->
-  <section class="bg-slate-100/90 border-b border-slate-200 px-8 py-4">
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-3.5 max-w-7xl mx-auto">
+  <!-- 2. Dedicated Dashboard Navigation Dock Bar -->
+  <nav class="bg-[#0b111e] border-b border-slate-800/80 px-6 py-2 overflow-x-auto custom-scrollbar flex items-center shadow-inner z-40">
+    <div class="flex items-center gap-1.5 min-w-max">
+      <button onclick="switchTab('map')" id="tab-map" class="nav-tab active-tab flex items-center gap-2">
+        <i data-lucide="map" class="w-4 h-4"></i>
+        <span>Road Safety Map</span>
+      </button>
+      <button onclick="switchTab('studio')" id="tab-studio" class="nav-tab flex items-center gap-2">
+        <i data-lucide="scan" class="w-4 h-4"></i>
+        <span>AI Inspection</span>
+      </button>
+      <button onclick="switchTab('patrol')" id="tab-patrol" class="nav-tab flex items-center gap-2">
+        <i data-lucide="car" class="w-4 h-4"></i>
+        <span>Patrol View</span>
+      </button>
+      <button onclick="switchTab('backlog')" id="tab-backlog" class="nav-tab flex items-center gap-2">
+        <i data-lucide="clipboard-list" class="w-4 h-4"></i>
+        <span>Repair Tasks</span>
+      </button>
+      <button onclick="switchTab('copilot')" id="tab-copilot" class="nav-tab flex items-center gap-2">
+        <i data-lucide="bot" class="w-4 h-4"></i>
+        <span>AI Assistant</span>
+      </button>
+      <button onclick="switchTab('analytics')" id="tab-analytics" class="nav-tab flex items-center gap-2">
+        <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+        <span>Reports & Insights</span>
+      </button>
+      <button onclick="switchTab('ingestion')" id="tab-ingestion" class="nav-tab flex items-center gap-2">
+        <i data-lucide="radio-tower" class="w-4 h-4"></i>
+        <span>Live Data</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Key Metrics Ticker Bar (in ₹ INR) -->
+  <section class="bg-[#0b101c] border-b border-slate-800/60 px-6 py-2.5">
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
       
-      <!-- 1. LEFT HERO RECTANGLE (Span 4 cols): CRITICAL EMERGENCY DEFECTS -->
-      <div class="md:col-span-4 bg-white border border-slate-200 border-l-6 border-l-red-600 rounded-xl p-4 flex flex-col justify-between text-black shadow-xs">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-2">
-          <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse"></span>
-            <span class="text-[10px] font-black font-mono uppercase tracking-wider text-red-700">Immediate Action Required</span>
-          </div>
-          <span class="text-[9px] font-mono font-bold bg-red-50 text-red-950 border border-red-200 px-2 py-0.5 rounded-full">IRC:82 SLA</span>
+      <div class="bg-[#121929]/80 border border-slate-800 rounded-xl p-3 flex items-center gap-3">
+        <div class="p-2 rounded-lg bg-red-950/60 border border-red-500/40 text-red-400">
+          <i data-lucide="alert-triangle" class="w-5 h-5"></i>
         </div>
-        <div class="flex items-baseline justify-between">
-          <div>
-            <p class="text-[11px] text-slate-700 font-bold">Critical High-Risk Hazards</p>
-            <p class="text-[10px] text-slate-500 font-medium">Hospital & National Transit Corridors</p>
-          </div>
-          <p id="kpi-critical" class="text-3xl font-black text-red-600 font-mono tracking-tight">--</p>
+        <div>
+          <p class="text-[11px] text-slate-400 font-medium">Critical Issues</p>
+          <p id="kpi-critical" class="text-lg font-bold text-red-400 font-mono">--</p>
         </div>
       </div>
 
-      <!-- 2. MIDDLE RECTANGULAR OPERATIONAL LEDGER (Span 4 cols): ACTIVE vs FILTERED -->
-      <div class="md:col-span-4 bg-white border border-slate-200 rounded-xl p-3.5 flex flex-col justify-between gap-2 text-black shadow-xs">
-        <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-200">
-          <div class="flex items-center gap-2">
-            <div class="w-5 h-5 rounded-md bg-orange-100 border border-orange-200 flex items-center justify-center text-orange-700">
-              <i data-lucide="layers" class="w-3 h-3"></i>
-            </div>
-            <span class="text-[11px] font-bold text-black">Active Incidents Under Monitoring</span>
-          </div>
-          <span id="kpi-total" class="font-mono font-black text-sm text-black">--</span>
+      <div class="bg-[#121929]/80 border border-slate-800 rounded-xl p-3 flex items-center gap-3">
+        <div class="p-2 rounded-lg bg-amber-950/60 border border-amber-500/40 text-amber-400">
+          <i data-lucide="layers" class="w-5 h-5"></i>
         </div>
-
-        <div class="flex items-center justify-between p-2 bg-emerald-50/70 rounded-lg border border-emerald-200">
-          <div class="flex items-center gap-2">
-            <div class="w-5 h-5 rounded-md bg-emerald-100 border border-emerald-200 flex items-center justify-center text-emerald-800">
-              <i data-lucide="filter-x" class="w-3 h-3"></i>
-            </div>
-            <span class="text-[11px] font-bold text-emerald-950">Sensor Noise / False Positives Filtered</span>
-          </div>
-          <span id="kpi-fp" class="font-mono font-black text-sm text-emerald-800">--</span>
+        <div>
+          <p class="text-[11px] text-slate-400 font-medium">Active Issues</p>
+          <p id="kpi-total" class="text-lg font-bold text-slate-100 font-mono">--</p>
         </div>
       </div>
 
-      <!-- 3. RIGHT FISCAL & PCI RECTANGLE (Span 4 cols): PCI HEALTH & BUDGET -->
-      <div class="md:col-span-4 bg-white border border-slate-200 border-l-6 border-l-[#FF9933] rounded-xl p-4 flex flex-col justify-between text-black shadow-xs">
-        <div class="grid grid-cols-2 gap-2 text-xs">
-          <div>
-            <p class="text-[10px] text-slate-600 font-bold uppercase font-mono">Pavement Index</p>
-            <p id="kpi-pci" class="text-lg font-black text-blue-900 font-mono leading-none mt-0.5">-- <span class="text-[10px] text-slate-500 font-normal">/100</span></p>
-            <span class="text-[9px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full inline-block mt-1">IRC:82 Health</span>
-          </div>
+      <div class="bg-[#121929]/80 border border-slate-800 rounded-xl p-3 flex items-center gap-3">
+        <div class="p-2 rounded-lg bg-emerald-950/60 border border-emerald-500/40 text-emerald-400">
+          <i data-lucide="filter-x" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <p class="text-[11px] text-slate-400 font-medium">False Alerts Removed</p>
+          <p id="kpi-fp" class="text-lg font-bold text-emerald-400 font-mono">--</p>
+        </div>
+      </div>
 
-          <div class="border-l border-slate-200 pl-3">
-            <p class="text-[10px] text-slate-600 font-bold uppercase font-mono">PWD Repair Budget</p>
-            <p id="kpi-cost" class="text-base font-black text-orange-950 font-mono leading-none mt-0.5">₹ --</p>
-            <p class="text-[10px] text-slate-600 font-bold mt-1">Dispatches: <strong id="kpi-work-orders" class="text-emerald-800 font-mono">--</strong></p>
-          </div>
+      <div class="bg-[#121929]/80 border border-slate-800 rounded-xl p-3 flex items-center gap-3">
+        <div class="p-2 rounded-lg bg-cyan-950/60 border border-cyan-500/40 text-cyan-400">
+          <i data-lucide="gauge" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <p class="text-[11px] text-slate-400 font-medium">Road Health Score</p>
+          <p id="kpi-pci" class="text-lg font-bold text-cyan-300 font-mono">-- <span class="text-xs text-slate-400">/100</span></p>
+        </div>
+      </div>
+
+      <div class="bg-[#121929]/80 border border-slate-800 rounded-xl p-3 flex items-center gap-3">
+        <div class="p-2 rounded-lg bg-blue-950/60 border border-blue-500/40 text-blue-400">
+          <i data-lucide="truck" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <p class="text-[11px] text-slate-400 font-medium">Repair Tasks</p>
+          <p id="kpi-work-orders" class="text-lg font-bold text-blue-400 font-mono">--</p>
+        </div>
+      </div>
+
+      <div class="bg-[#121929]/80 border border-slate-800 rounded-xl p-3 flex items-center gap-3">
+        <div class="p-2 rounded-lg bg-purple-950/60 border border-purple-500/40 text-purple-400 font-bold text-base flex items-center justify-center">
+          ₹
+        </div>
+        <div>
+          <p class="text-[11px] text-slate-400 font-medium">Estimated Repair Cost</p>
+          <p id="kpi-cost" class="text-lg font-bold text-purple-300 font-mono">₹ --</p>
         </div>
       </div>
 
@@ -490,127 +263,222 @@
   <!-- Main View Container -->
   <main class="flex-1 p-6 overflow-y-auto">
 
-    <!-- 1. GIS HAZARD MAP TAB (FULL-WIDTH HERO MAP WITH CLICK-TO-OPEN PRIORITY FEED DRAWER) -->
+    <!-- 1. ROAD SAFETY MAP TAB -->
     <div id="view-map" class="tab-view active">
-      <div class="relative w-full h-[530px] bg-white border border-slate-300 rounded-2xl overflow-hidden z-0 shadow-xs">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-230px)]">
         
-        <!-- FULL-SCREEN GIS HERO MAP -->
-        <div id="gis-map" class="w-full h-full"></div>
+        <!-- Left Road Issue Intelligence Filter & Feed -->
+        <div class="lg:col-span-1 bg-[#101726] border border-slate-800 rounded-2xl p-4 flex flex-col gap-3 overflow-hidden shadow-2xl relative">
+          
+          <!-- 1. State & Keyword Search Bar -->
+          <div class="relative">
+            <input type="text" id="hazard-search-input" placeholder="Search road, city, or issue..." oninput="handleSearchFilter(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+          </div>
 
-        <!-- FLOATING TOP-LEFT TOGGLE BUTTON FOR PRIORITY FEED (CLICK TO OPEN) -->
-        <button id="btn-toggle-feed-drawer" onclick="toggleFeedDrawer(true)" type="button" class="absolute top-4 left-4 z-20 flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-[#FF9933] hover:bg-[#F28500] border border-amber-600 text-black font-black text-xs shadow-md transition-colors cursor-pointer group">
-          <div class="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse"></div>
-          <i data-lucide="flame" class="w-4 h-4 text-black"></i>
-          <span>Priority Backlog Feed</span>
-          <span id="feed-drawer-badge" class="px-2 py-0.5 rounded-full bg-black text-white text-[11px] font-mono font-bold">0</span>
-          <i data-lucide="chevron-right" id="feed-drawer-arrow" class="w-3.5 h-3.5 text-black transition-transform duration-200"></i>
-        </button>
+          <!-- 2. Quick Workflow Filters -->
+          <div class="flex flex-wrap gap-1.5 text-xs">
+            <button onclick="setWorkflowFilter('all')" data-workflow="all" class="workflow-pill active px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-semibold border border-slate-700 transition-all flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> All
+            </button>
+            <button onclick="setWorkflowFilter('unresolved')" data-workflow="unresolved" class="workflow-pill px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-semibold border border-slate-700 transition-all flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Unresolved
+            </button>
+            <button onclick="setWorkflowFilter('in_progress')" data-workflow="in_progress" class="workflow-pill px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-semibold border border-slate-700 transition-all flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> In Progress
+            </button>
+            <button onclick="setWorkflowFilter('resolved')" data-workflow="resolved" class="workflow-pill px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-semibold border border-slate-700 transition-all flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Resolved
+            </button>
+          </div>
 
-        <!-- FLOATING SLIDE-OVER PRIORITY FEED DRAWER PANEL (SHOWS ON CLICK) -->
-        <div id="priority-feed-drawer" class="hidden absolute top-4 left-4 z-30 w-96 max-w-[calc(100%-2rem)] max-h-[calc(100%-2rem)] bg-white border border-slate-200 rounded-2xl p-4 flex flex-col gap-3 transition-all duration-300 text-black shadow-2xl overflow-hidden">
-          <div class="tricolor-strip -mx-4 -mt-4 mb-1"></div>
-
-          <!-- Drawer Header -->
-          <div class="flex items-center justify-between border-b border-slate-200 pb-2.5">
-            <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-lg bg-orange-100 border border-orange-200 flex items-center justify-center shadow-xs">
-                <i data-lucide="flame" class="w-4 h-4 text-orange-700"></i>
-              </div>
-              <div>
-                <h2 class="text-xs font-black text-black uppercase tracking-wider flex items-center gap-1.5">
-                  <span>Priority Backlog Feed</span> <span class="text-xs">🇮🇳</span>
-                </h2>
-                <p class="text-[10px] text-slate-600 font-medium">Click any card to fly to map defect</p>
-              </div>
+          <!-- 3. Road Issue Intelligence Panel Header & Sort/Filter -->
+          <div class="flex items-center justify-between border-t border-b border-slate-800/80 py-2.5">
+            <div>
+              <h2 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5 font-mono">
+                <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-cyan-400"></i> ROAD ISSUE INTELLIGENCE
+              </h2>
+              <p id="feed-status-subtitle" class="text-[10px] text-slate-400 font-mono mt-0.5"><span id="feed-count">0</span> issues</p>
             </div>
-            <div class="flex items-center gap-2">
-              <span id="feed-count" class="text-xs bg-black text-white px-2 py-0.5 rounded-full font-mono font-bold">0</span>
-              <button onclick="toggleFeedDrawer(false)" type="button" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-red-100 border border-slate-300 text-black flex items-center justify-center transition-colors cursor-pointer" title="Close drawer and view full map">
-                <i data-lucide="x" class="w-4 h-4"></i>
+            
+            <!-- Sort & Filter Popover Button -->
+            <button onclick="toggleAdvancedFilterPopover()" id="btn-toggle-adv-filter" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 transition-all shadow-sm shrink-0">
+              <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-cyan-400"></i>
+              <span>Sort & Filter</span>
+            </button>
+          </div>
+
+          <!-- SORT & FILTER POPOVER / DROPDOWN -->
+          <div id="adv-filter-popover" class="hidden absolute top-28 left-3 right-3 z-[600] bg-[#0c1424]/98 backdrop-blur-md border border-slate-700 rounded-2xl p-4 shadow-2xl flex flex-col gap-3 max-h-[calc(100%-120px)] overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <span class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-cyan-400"></i> SORT & FILTER
+              </span>
+              <button onclick="closeAdvancedFilterPopover()" class="text-slate-400 hover:text-white p-1">
+                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+
+            <!-- 1. Issue Type -->
+            <div class="space-y-1">
+              <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Issue Type</label>
+              <select id="adv-filter-type" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg p-1.5 focus:outline-none focus:border-cyan-400">
+                <option value="all">All Issues</option>
+                <option value="pothole">Pothole</option>
+                <option value="waterlogging">Waterlogging</option>
+                <option value="guardrail">Guardrail</option>
+                <option value="debris">Debris</option>
+                <option value="signage">Signage</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <!-- 2. Authenticity & AI Verification -->
+            <div class="space-y-1">
+              <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Authenticity & Verification</label>
+              <select id="adv-filter-auth" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg p-1.5 focus:outline-none focus:border-cyan-400">
+                <option value="all">All Incidents</option>
+                <option value="verified_only">AI Verified Only</option>
+                <option value="exclude_fp">Exclude False Alerts (Tree Shadows / Reflections)</option>
+              </select>
+            </div>
+
+            <!-- 3. Repair Timeline -->
+            <div class="space-y-1">
+              <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Repair Timeline</label>
+              <select id="adv-filter-timeline" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg p-1.5 focus:outline-none focus:border-cyan-400">
+                <option value="all">Any Timeline</option>
+                <option value="24h">Within 24 hours</option>
+                <option value="1_3d">1–3 days</option>
+                <option value="3_7d">3–7 days</option>
+                <option value="7d_plus">7+ days</option>
+              </select>
+            </div>
+
+            <!-- 4. Estimated Repair Cost -->
+            <div class="space-y-1">
+              <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Estimated Repair Cost</label>
+              <select id="adv-filter-cost" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg p-1.5 focus:outline-none focus:border-cyan-400">
+                <option value="all">Any Cost</option>
+                <option value="under_10k">Under ₹10,000</option>
+                <option value="10k_25k">₹10,000 – ₹25,000</option>
+                <option value="25k_50k">₹25,000 – ₹50,000</option>
+                <option value="above_50k">Above ₹50,000</option>
+              </select>
+            </div>
+
+            <!-- 5. Sort By -->
+            <div class="space-y-1">
+              <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Sort By</label>
+              <select id="adv-filter-sort" class="w-full bg-slate-900 border border-slate-700 text-cyan-300 font-semibold text-xs rounded-lg p-1.5 focus:outline-none focus:border-cyan-400">
+                <option value="risk_desc">Highest Risk First</option>
+                <option value="risk_asc">Lowest Risk First</option>
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="cost_desc">Highest Repair Cost</option>
+                <option value="cost_asc">Lowest Repair Cost</option>
+                <option value="fastest">Fastest Resolution</option>
+                <option value="longest">Longest Resolution</option>
+              </select>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center justify-between pt-2 border-t border-slate-800 mt-1">
+              <button type="button" onclick="resetAdvancedFilters()" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition-all">
+                Reset
+              </button>
+              <button type="button" onclick="applyAdvancedFilters()" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-black transition-all shadow-md shadow-cyan-500/20">
+                Apply
               </button>
             </div>
           </div>
 
-          <!-- State & Keyword Search Bar -->
-          <div class="relative">
-            <input type="text" id="hazard-search-input" placeholder="Search road, city, or hazard..." oninput="handleSearchFilter(this.value)" class="w-full bg-white border border-slate-300 rounded-xl pl-8 pr-3 py-2 text-xs text-black font-bold placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:bg-amber-50/30">
-            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-3"></i>
-          </div>
-
-          <!-- Quick Filters -->
-          <div class="flex flex-wrap gap-1.5 text-xs">
-            <button onclick="filterMap('all')" class="filter-pill active px-3 py-1 rounded-lg text-[11px]">All</button>
-            <button onclick="filterMap('critical')" class="filter-pill px-3 py-1 rounded-lg text-red-600 text-[11px]">Critical</button>
-            <button onclick="filterMap('pothole')" class="filter-pill px-3 py-1 rounded-lg text-amber-700 text-[11px]">Potholes</button>
-            <button onclick="filterMap('hospital')" class="filter-pill px-3 py-1 rounded-lg text-blue-700 text-[11px]">Hospital Routes</button>
-          </div>
-
-          <!-- List of Incident Cards -->
-          <div id="incident-feed-list" class="flex-1 overflow-y-auto space-y-2.5 pr-1 custom-scrollbar max-h-[380px]">
+          <!-- 4. List of Road Issue Cards -->
+          <div id="incident-feed-list" class="flex-1 overflow-y-auto space-y-2.5 pr-1 custom-scrollbar">
             <!-- Dynamic Incident Cards Injected Here -->
           </div>
         </div>
 
-        <!-- FLOATING TOP-RIGHT MAP CONTROLS -->
-        <div class="absolute top-4 right-4 z-20 flex items-center gap-2.5 bg-white/95 backdrop-blur-md border border-slate-200 p-2.5 rounded-xl text-black shadow-md">
-          <label class="text-xs text-slate-800 font-bold flex items-center gap-1.5 cursor-pointer">
-            <input type="checkbox" id="toggle-heatmap" checked class="accent-orange-600 rounded">
-            <span>Risk Heatmap</span>
-          </label>
-          <span class="text-slate-300">|</span>
-          <label class="text-xs text-slate-800 font-bold flex items-center gap-1.5 cursor-pointer">
-            <input type="checkbox" id="toggle-clusters" checked class="accent-blue-700 rounded">
-            <span>Work Orders</span>
-          </label>
-          <span class="text-slate-300">|</span>
-          <button onclick="refreshMapData()" type="button" class="text-xs text-slate-800 hover:text-blue-700 flex items-center gap-1 font-bold cursor-pointer">
-            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh
-          </button>
+        <!-- Right Interactive Road Safety Map -->
+        <div class="lg:col-span-3 bg-[#101726] border border-slate-800 rounded-2xl overflow-hidden relative shadow-2xl flex flex-col">
+          <!-- Top Right Controls (Heatmap, Clusters, Refresh) -->
+          <div class="absolute top-4 right-4 z-[400] flex items-center gap-2 bg-[#0e1626]/90 backdrop-blur-md border border-slate-700/80 p-2 rounded-xl shadow-xl">
+            <label class="text-xs text-slate-300 font-medium flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="toggle-heatmap" checked class="accent-cyan-400 rounded">
+              <span>Risk Heatmap</span>
+            </label>
+            <span class="text-slate-700">|</span>
+            <label class="text-xs text-slate-300 font-medium flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="toggle-clusters" checked class="accent-cyan-400 rounded">
+              <span>Grouped Repair Tasks</span>
+            </label>
+            <span class="text-slate-700">|</span>
+            <button onclick="refreshMapData()" class="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1 font-semibold">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh
+            </button>
+          </div>
+
+          <!-- Bottom Left Interactive Map Severity Control (Always Visible) -->
+          <div id="map-severity-filter" class="absolute bottom-6 left-6 z-[400] bg-[#0c1424]/92 backdrop-blur-md border border-slate-700/80 rounded-xl p-1.5 shadow-2xl flex items-center gap-1 pointer-events-auto select-none">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2 font-mono flex items-center gap-1">
+              <i data-lucide="shield-alert" class="w-3 h-3 text-cyan-400"></i> Severity:
+            </span>
+            <button type="button" onclick="filterMapSeverity('all')" data-severity="all" class="map-severity-btn active px-2.5 py-1 rounded-lg text-xs font-bold transition-all text-slate-200 hover:text-white">
+              ALL
+            </button>
+            <button type="button" onclick="filterMapSeverity('critical')" data-severity="critical" class="map-severity-btn px-2.5 py-1 rounded-lg text-xs font-bold transition-all text-red-400 hover:text-red-300 flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-red-500 shadow-sm shadow-red-500"></span> CRITICAL
+            </button>
+            <button type="button" onclick="filterMapSeverity('high')" data-severity="high" class="map-severity-btn px-2.5 py-1 rounded-lg text-xs font-bold transition-all text-amber-400 hover:text-amber-300 flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-amber-500 shadow-sm shadow-amber-500"></span> HIGH
+            </button>
+            <button type="button" onclick="filterMapSeverity('low')" data-severity="low" class="map-severity-btn px-2.5 py-1 rounded-lg text-xs font-bold transition-all text-emerald-400 hover:text-emerald-300 flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500"></span> LOW
+            </button>
+          </div>
+
+          <div id="gis-map" class="w-full h-full"></div>
         </div>
 
       </div>
     </div>
-    <!-- 2. LIVE MULTIMODAL INSPECTION STUDIO TAB -->
+
+    <!-- 2. LIVE AI INSPECTION TAB -->
     <div id="view-studio" class="tab-view hidden">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <!-- Left: Image / Video Canvas Overlay (Clean Minimal NHAI Viewport) -->
-        <div class="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-5 flex flex-col gap-4 text-black shadow-xs">
-          <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-            <div class="flex items-center gap-3">
-              <button onclick="navigateToHome()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-bold text-black transition-colors cursor-pointer" title="Return to GIS Map">
-                <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back to Map
-              </button>
-              <h2 class="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-                <i data-lucide="eye" class="w-4 h-4 text-black"></i> Visual AI Anomaly Localization & Segmentation
-              </h2>
-            </div>
-            <span class="text-xs font-mono text-cyan-950 bg-cyan-50 border border-cyan-200 font-bold px-2.5 py-0.5 rounded-full">
-              Gemini Vision & SAM Overlay
+        <!-- Left: Image / Video Canvas Overlay -->
+        <div class="lg:col-span-7 bg-[#101726] border border-slate-800 rounded-2xl p-5 flex flex-col gap-4 shadow-2xl">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <i data-lucide="eye" class="w-4 h-4 text-cyan-400"></i> AI Camera Detection & Visual Evidence
+            </h2>
+            <span class="text-xs font-mono text-cyan-400 bg-cyan-950/60 border border-cyan-500/30 px-2 py-0.5 rounded">
+              Camera View & Outline
             </span>
           </div>
 
-          <div class="relative w-full aspect-video bg-slate-900 rounded-xl overflow-hidden border border-slate-300 flex items-center justify-center shadow-inner">
+          <div class="relative w-full aspect-video bg-black/80 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center">
             <img id="studio-image-display" src="" alt="Road Inspection Frame" class="w-full h-full object-cover">
             <canvas id="studio-canvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
             
-            <div id="studio-overlay-badge" class="absolute bottom-3 left-3 bg-white/95 backdrop-blur-md border border-slate-200 px-3.5 py-1.5 rounded-xl text-xs font-mono text-black font-bold flex items-center gap-2 shadow-md">
-              <i data-lucide="crosshair" class="w-3.5 h-3.5 text-black animate-spin"></i>
-              <span id="studio-overlay-text">AI Surface Distress Detected</span>
+            <div id="studio-overlay-badge" class="absolute bottom-3 left-3 bg-black/80 backdrop-blur-md border border-cyan-500/40 px-3 py-1.5 rounded-lg text-xs font-mono text-cyan-300 flex items-center gap-2">
+              <i data-lucide="crosshair" class="w-3.5 h-3.5 text-cyan-400 animate-spin"></i>
+              <span id="studio-overlay-text">Road Issue Detected</span>
             </div>
           </div>
 
           <!-- Preset Demo Feeds & Upload -->
-          <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="text-xs text-slate-700 font-bold">Scenarios:</span>
-              <button onclick="loadStudioScenario('pothole')" class="px-3 py-1 rounded-lg bg-white hover:bg-slate-50 text-xs font-bold text-black border border-slate-300 shadow-xs cursor-pointer transition-colors">Crater Pothole</button>
-              <button onclick="loadStudioScenario('alligator')" class="px-3 py-1 rounded-lg bg-white hover:bg-slate-50 text-xs font-bold text-black border border-slate-300 shadow-xs cursor-pointer transition-colors">Alligator Cracks</button>
-              <button onclick="loadStudioScenario('shadow_fp')" class="px-3 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-xs font-bold text-emerald-950 border border-emerald-300 shadow-xs cursor-pointer transition-colors">Tree Shadow (FP)</button>
-              <button onclick="loadStudioScenario('submerged')" class="px-3 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-xs font-bold text-blue-950 border border-blue-300 shadow-xs cursor-pointer transition-colors">Monsoon Submerged Hole</button>
+          <div class="flex items-center justify-between gap-4 pt-2">
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-400">Scenarios:</span>
+              <button onclick="loadStudioScenario('pothole')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700">Deep Pothole</button>
+              <button onclick="loadStudioScenario('alligator')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700">Road Cracks</button>
+              <button onclick="loadStudioScenario('shadow_fp')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs text-emerald-400 border border-slate-700">Tree Shadow (False Alert)</button>
+              <button onclick="loadStudioScenario('submerged')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs text-blue-400 border border-slate-700">Waterlogged Pothole</button>
             </div>
             <div>
-              <label class="cursor-pointer px-3.5 py-1.5 rounded-xl bg-[#FF9933] hover:bg-[#F28500] text-black text-xs font-black flex items-center gap-1.5 border border-amber-600 shadow-xs transition-colors">
+              <label class="cursor-pointer px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-black text-xs font-bold flex items-center gap-1.5 transition-all">
                 <i data-lucide="upload" class="w-3.5 h-3.5"></i> Custom Image
                 <input type="file" id="studio-file-input" accept="image/*" class="hidden" onchange="handleStudioFileUpload(event)">
               </label>
@@ -618,94 +486,88 @@
           </div>
         </div>
 
-        <!-- Right: Synchronized Multimodal Telemetry & Fusion Analysis (Clean Gauges) -->
+        <!-- Right: Synchronized Multi-Sensor Supporting Evidence -->
         <div class="lg:col-span-5 flex flex-col gap-4">
           
-          <div class="bg-white border border-slate-200 rounded-2xl p-4 text-black shadow-xs">
+          <div class="bg-[#101726] border border-slate-800 rounded-2xl p-4 shadow-xl">
             <div class="flex items-center justify-between mb-2">
-              <h3 class="text-xs font-black text-black uppercase tracking-wider flex items-center gap-1.5">
-                <i data-lucide="activity" class="w-4 h-4 text-black"></i> 3-Axis IMU Accelerometer Waveform (Gz Jerk)
+              <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                <i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i> Vibration Sensor Waveform (Impact Shock)
               </h3>
-              <span id="imu-peak-badge" class="text-xs font-mono text-amber-950 font-bold bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300">Peak: 2.85g</span>
+              <span id="imu-peak-badge" class="text-xs font-mono text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-500/30">Peak: 2.85g</span>
             </div>
             <div class="h-40">
               <canvas id="studio-imu-chart"></canvas>
             </div>
           </div>
 
-          <!-- Structured 4-Row Telemetry Ledger -->
-          <div class="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col gap-3 text-black shadow-xs">
-            <div class="flex items-center justify-between border-b border-slate-200 pb-2">
-              <h3 class="text-xs font-black text-black uppercase tracking-wider flex items-center gap-1.5">
-                <i data-lucide="git-merge" class="w-4 h-4 text-black"></i> Cross-Modal Attention Fusion Breakdown
+          <div class="bg-[#101726] border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col gap-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                <i data-lucide="git-merge" class="w-4 h-4 text-purple-400"></i> Multi-Sensor Supporting Evidence
               </h3>
-              <span id="fusion-status-pill" class="text-xs font-bold px-2.5 py-0.5 rounded-full font-mono bg-emerald-50 text-emerald-950 border border-emerald-300">VERIFIED INCIDENT</span>
+              <span id="fusion-status-pill" class="text-xs font-bold px-2.5 py-0.5 rounded font-mono">VERIFIED ROAD ISSUE</span>
             </div>
 
-            <div class="space-y-2 text-xs">
-              <!-- Row 1: Vision -->
-              <div class="bg-slate-50 border border-slate-200 border-l-4 border-l-blue-600 p-2.5 rounded-xl flex items-center justify-between">
-                <span class="font-bold text-slate-800">Visual Edge/Cavity Contrast</span>
-                <div class="flex items-center gap-2">
-                  <div class="w-28 bg-slate-200 h-2 rounded-full overflow-hidden">
-                    <div id="fuse-vis-bar" class="bg-blue-600 h-full" style="width: 94%"></div>
-                  </div>
-                  <span id="fuse-vis-score" class="font-mono text-blue-700 font-extrabold w-10 text-right">94%</span>
+            <div class="grid grid-cols-2 gap-3 text-xs">
+              <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                <div class="flex justify-between text-slate-400 mb-1">
+                  <span>Camera Detection</span>
+                  <span id="fuse-vis-score" class="font-mono text-cyan-400 font-bold">94%</span>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div id="fuse-vis-bar" class="bg-cyan-400 h-full rounded-full" style="width: 94%"></div>
                 </div>
               </div>
 
-              <!-- Row 2: Inertial -->
-              <div class="bg-slate-50 border border-slate-200 border-l-4 border-l-amber-600 p-2.5 rounded-xl flex items-center justify-between">
-                <span class="font-bold text-slate-800">Inertial Z-Shock & Jerk</span>
-                <div class="flex items-center gap-2">
-                  <div class="w-28 bg-slate-200 h-2 rounded-full overflow-hidden">
-                    <div id="fuse-imu-bar" class="bg-amber-600 h-full" style="width: 91%"></div>
-                  </div>
-                  <span id="fuse-imu-score" class="font-mono text-amber-700 font-extrabold w-10 text-right">91%</span>
+              <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                <div class="flex justify-between text-slate-400 mb-1">
+                  <span>Vibration Sensor</span>
+                  <span id="fuse-imu-score" class="font-mono text-amber-400 font-bold">91%</span>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div id="fuse-imu-bar" class="bg-amber-400 h-full rounded-full" style="width: 91%"></div>
                 </div>
               </div>
 
-              <!-- Row 3: Acoustics -->
-              <div class="bg-slate-50 border border-slate-200 border-l-4 border-l-purple-600 p-2.5 rounded-xl flex items-center justify-between">
-                <span class="font-bold text-slate-800">Acoustic Tire Thump Level</span>
-                <div class="flex items-center gap-2">
-                  <div class="w-28 bg-slate-200 h-2 rounded-full overflow-hidden">
-                    <div id="fuse-aud-bar" class="bg-purple-600 h-full" style="width: 88%"></div>
-                  </div>
-                  <span id="fuse-aud-score" class="font-mono text-purple-700 font-extrabold w-10 text-right">88%</span>
+              <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                <div class="flex justify-between text-slate-400 mb-1">
+                  <span>Sound Detection</span>
+                  <span id="fuse-aud-score" class="font-mono text-purple-400 font-bold">88%</span>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div id="fuse-aud-bar" class="bg-purple-400 h-full rounded-full" style="width: 88%"></div>
                 </div>
               </div>
 
-              <!-- Row 4: Citizen -->
-              <div class="bg-slate-50 border border-slate-200 border-l-4 border-l-emerald-600 p-2.5 rounded-xl flex items-center justify-between">
-                <span class="font-bold text-slate-800">Citizen 311 Report Urgency</span>
-                <div class="flex items-center gap-2">
-                  <div class="w-28 bg-slate-200 h-2 rounded-full overflow-hidden">
-                    <div id="fuse-txt-bar" class="bg-emerald-600 h-full" style="width: 100%"></div>
-                  </div>
-                  <span id="fuse-txt-score" class="font-mono text-emerald-700 font-extrabold w-10 text-right">100%</span>
+              <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                <div class="flex justify-between text-slate-400 mb-1">
+                  <span>Citizen Report</span>
+                  <span id="fuse-txt-score" class="font-mono text-emerald-400 font-bold">100%</span>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div id="fuse-txt-bar" class="bg-emerald-400 h-full rounded-full" style="width: 100%"></div>
                 </div>
               </div>
             </div>
 
-            <!-- 3-Cell Clean Data Table -->
-            <div class="grid grid-cols-3 bg-blue-50/60 border border-blue-200 rounded-xl text-center divide-x divide-blue-200 text-xs font-mono font-bold text-black py-2.5 shadow-xs">
+            <div class="bg-cyan-950/20 border border-cyan-500/20 rounded-xl p-3 flex items-center justify-between text-xs font-mono">
               <div>
-                <p class="text-slate-600 text-[10px] uppercase font-sans">Depth</p>
-                <p id="fuse-depth" class="text-sm font-extrabold text-blue-900 mt-0.5">9.5 cm</p>
+                <p class="text-slate-400">Pothole Depth</p>
+                <p id="fuse-depth" class="text-sm font-bold text-cyan-300">9.5 cm</p>
               </div>
-              <div>
-                <p class="text-slate-600 text-[10px] uppercase font-sans">Area</p>
-                <p id="fuse-area" class="text-sm font-extrabold text-black mt-0.5">0.95 m²</p>
+              <div class="border-l border-cyan-500/20 pl-3">
+                <p class="text-slate-400">Damaged Area</p>
+                <p id="fuse-area" class="text-sm font-bold text-slate-200">0.95 m²</p>
               </div>
-              <div>
-                <p class="text-slate-600 text-[10px] uppercase font-sans">Risk Score</p>
-                <p id="fuse-risk" class="text-sm font-extrabold text-red-600 mt-0.5">96.5 / 100</p>
+              <div class="border-l border-cyan-500/20 pl-3">
+                <p class="text-slate-400">Risk Level</p>
+                <p id="fuse-risk" class="text-sm font-bold text-red-400">96.5 / 100</p>
               </div>
             </div>
 
-            <div id="fuse-reason-box" class="text-xs text-slate-800 font-bold italic bg-slate-50 p-3 rounded-xl border border-slate-200">
-              Cross-modal corroboration complete: Visual cavity matches 2.85g vertical impact shock and tire acoustic thump. Verified high priority.
+            <div id="fuse-reason-box" class="text-xs text-slate-400 italic bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">
+              All sensors confirmed: Camera detected pothole matching 2.85g vibration impact and tyre sound. Verified as high priority.
             </div>
 
           </div>
@@ -715,92 +577,80 @@
       </div>
     </div>
 
-    <!-- 3. PATROL VEHICLE SIMULATOR TAB (AUTHENTIC VEHICLE INSTRUMENT CLUSTER HUD) -->
+    <!-- 3. PATROL VEHICLE SIMULATOR TAB -->
     <div id="view-patrol" class="tab-view hidden">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-5 flex flex-col gap-4 text-black shadow-xs">
-          <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-            <div class="flex items-center gap-2.5">
-              <button onclick="navigateToHome()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-bold text-black transition-colors cursor-pointer" title="Return to GIS Map">
-                <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back
-              </button>
-              <h2 class="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-                <i data-lucide="radio" class="w-4 h-4 text-black animate-pulse"></i> Patrol Vehicle HUD
-              </h2>
-            </div>
-            <button id="btn-toggle-patrol" onclick="togglePatrolSimulation()" class="px-3.5 py-1.5 rounded-xl text-xs font-black bg-[#FF9933] hover:bg-[#F28500] border border-amber-600 text-black shadow-xs transition-colors cursor-pointer">
+        <div class="lg:col-span-4 bg-[#101726] border border-slate-800 rounded-2xl p-5 flex flex-col gap-4 shadow-2xl">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <i data-lucide="radio" class="w-4 h-4 text-cyan-400 animate-pulse"></i> Patrol Vehicle Dashboard
+            </h2>
+            <button id="btn-toggle-patrol" onclick="togglePatrolSimulation()" class="px-3 py-1 rounded-lg text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-black transition-all">
               Start Simulation
             </button>
           </div>
 
-          <!-- Clean Instrument Cluster -->
-          <div class="grid grid-cols-12 gap-2.5 text-xs font-mono">
-            <div class="col-span-6 bg-slate-50 border border-slate-200 p-3 rounded-xl border-l-4 border-l-blue-600 shadow-xs">
-              <p class="text-[10px] text-slate-600 font-bold uppercase font-sans">Speed</p>
-              <p id="patrol-speed" class="text-xl font-black text-blue-700 mt-0.5">42.0 <span class="text-xs font-bold text-slate-500">km/h</span></p>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-xl">
+              <p class="text-[11px] text-slate-400">Vehicle Speed</p>
+              <p id="patrol-speed" class="text-xl font-bold font-mono text-cyan-400">42.0 <span class="text-xs font-normal text-slate-400">km/h</span></p>
             </div>
-            <div class="col-span-6 bg-slate-50 border border-slate-200 p-3 rounded-xl border-l-4 border-l-red-600 shadow-xs">
-              <p class="text-[10px] text-slate-600 font-bold uppercase font-sans">Vertical Shock</p>
-              <p id="patrol-gz" class="text-xl font-black text-black mt-0.5">1.02 <span class="text-xs font-bold text-slate-500">g</span></p>
+            <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-xl">
+              <p class="text-[11px] text-slate-400">Vibration Impact (Gz)</p>
+              <p id="patrol-gz" class="text-xl font-bold font-mono text-slate-100">1.02 <span class="text-xs font-normal text-slate-400">g</span></p>
             </div>
-            <div class="col-span-6 bg-slate-50 border border-slate-200 p-3 rounded-xl border-l-4 border-l-purple-600 shadow-xs">
-              <p class="text-[10px] text-slate-600 font-bold uppercase font-sans">Roughness (IRI)</p>
-              <p id="patrol-iri" class="text-xl font-black text-black mt-0.5">2.1 <span class="text-xs font-bold text-slate-500">m/km</span></p>
+            <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-xl">
+              <p class="text-[11px] text-slate-400">Road Bumpiness (IRI)</p>
+              <p id="patrol-iri" class="text-xl font-bold font-mono text-slate-100">2.1 <span class="text-xs font-normal text-slate-400">m/km</span></p>
             </div>
-            <div class="col-span-6 bg-slate-50 border border-slate-200 p-3 rounded-xl border-l-4 border-l-emerald-600 shadow-xs">
-              <p class="text-[10px] text-slate-600 font-bold uppercase font-sans">Acoustic Sound</p>
-              <p id="patrol-db" class="text-xl font-black text-black mt-0.5">41.2 <span class="text-xs font-bold text-slate-500">dB</span></p>
+            <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-xl">
+              <p class="text-[11px] text-slate-400">Sound Level (dB)</p>
+              <p id="patrol-db" class="text-xl font-bold font-mono text-slate-100">41.2 <span class="text-xs font-normal text-slate-400">dB</span></p>
             </div>
           </div>
 
-          <div class="bg-slate-50 border border-slate-200 p-3.5 rounded-xl shadow-xs">
-            <p class="text-[10px] text-slate-600 font-bold uppercase">Active Corridor Tracking</p>
-            <p id="patrol-road-name" class="text-xs font-extrabold text-black mt-0.5">Hosur Road Medical Corridor (Bengaluru)</p>
-            <p id="patrol-gps" class="text-[10px] font-mono text-blue-800 font-bold mt-1">12.9340° N, 77.6080° E</p>
+          <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-xl">
+            <p class="text-[11px] text-slate-400">Current Road</p>
+            <p id="patrol-road-name" class="text-xs font-bold text-slate-200 mt-0.5">Hosur Road Medical Corridor (Bengaluru)</p>
+            <p id="patrol-gps" class="text-[10px] font-mono text-cyan-400/80 mt-1">12.9340° N, 77.6080° E</p>
           </div>
 
-          <!-- Clean Terminal Console -->
-          <div class="flex-1 border border-slate-800 rounded-xl p-3.5 bg-slate-950 text-emerald-400 font-mono text-xs flex flex-col gap-2 overflow-hidden shadow-inner">
-            <p class="text-[11px] font-black uppercase tracking-wider text-white flex items-center gap-1 border-b border-slate-800 pb-1">
-              <i data-lucide="terminal" class="w-3.5 h-3.5 text-emerald-400"></i> Live Telemetry Event Stream
+          <div class="flex-1 border border-slate-800 rounded-xl p-3 bg-black/40 flex flex-col gap-2 overflow-hidden">
+            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+              <i data-lucide="bell-ring" class="w-3.5 h-3.5 text-amber-400"></i> Live Detection Stream
             </p>
-            <div id="patrol-events-log" class="space-y-1.5 overflow-y-auto max-h-48 text-[11px] font-bold pr-1 custom-scrollbar">
-              <div class="text-slate-400 italic">Telemetry online. No road surface anomaly detected on current segment.</div>
+            <div id="patrol-events-log" class="space-y-2 overflow-y-auto max-h-48 text-xs font-mono pr-1 custom-scrollbar">
+              <div class="text-slate-500 italic text-[11px]">No road issue detected on current segment.</div>
             </div>
           </div>
 
         </div>
 
-        <div class="lg:col-span-7 bg-white border border-slate-200 rounded-2xl overflow-hidden h-[520px] shadow-xs">
+        <div class="lg:col-span-8 bg-[#101726] border border-slate-800 rounded-2xl overflow-hidden shadow-2xl h-[520px]">
           <div id="patrol-map" class="w-full h-full"></div>
         </div>
 
       </div>
     </div>
 
-    <!-- 4. PRIORITIZED MAINTENANCE BACKLOG & WORK ORDERS TAB -->
+    <!-- 4. REPAIR TASKS & PWD SCHEDULE TAB -->
     <div id="view-backlog" class="tab-view hidden">
       <div class="flex flex-col gap-6">
         
-        <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4 text-black shadow-xs">
-          <div class="flex items-center gap-4">
-            <button onclick="navigateToHome()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-bold text-black transition-colors shrink-0 cursor-pointer" title="Return to GIS Map">
-              <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back to Map
-            </button>
-            <div>
-              <h2 class="text-base font-black text-black flex items-center gap-2">
-                <i data-lucide="clipboard-check" class="w-5 h-5 text-black"></i> Clustered Work Orders & PWD Dispatch Schedule
-              </h2>
-              <p class="text-xs text-slate-700 font-medium mt-0.5">Spatial clustering algorithm groups adjacent defects to minimize road closure permits and contractor mobilization costs in ₹ INR.</p>
-            </div>
+        <div class="bg-[#101726] border border-slate-800 rounded-2xl p-5 flex items-center justify-between shadow-xl">
+          <div>
+            <h2 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="clipboard-check" class="w-5 h-5 text-cyan-400"></i> Repair Tasks & PWD Schedule
+            </h2>
+            <p class="text-xs text-slate-400 mt-0.5">AI groups nearby road issues together so repair teams can fix them in a single trip, saving time and municipal budget.</p>
           </div>
           <div class="flex items-center gap-3">
-            <button onclick="regenerateWorkOrders()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-white hover:bg-slate-50 text-black border border-slate-300 shadow-xs transition-colors cursor-pointer">
-              <i data-lucide="sparkles" class="w-4 h-4 text-black"></i> Re-Optimize Clusters
+            <button onclick="regenerateWorkOrders()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all">
+              <i data-lucide="sparkles" class="w-4 h-4 text-cyan-400"></i> Re-Group Tasks
             </button>
-            <button onclick="window.print()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black bg-[#FF9933] hover:bg-[#F28500] text-black border border-amber-600 shadow-xs transition-colors cursor-pointer">
-              <i data-lucide="printer" class="w-4 h-4"></i> Export Schedule (PDF)
+            <button onclick="window.print()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-black transition-all">
+              <i data-lucide="printer" class="w-4 h-4"></i> Export Task List (PDF)
             </button>
           </div>
         </div>
@@ -812,71 +662,64 @@
       </div>
     </div>
 
-    <!-- 5. GEMINI INFRASTRUCTURE AI CO-PILOT TAB -->
+    <!-- 5. ROAD SAFETY AI ASSISTANT TAB -->
     <div id="view-copilot" class="tab-view hidden">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-230px)]">
         
-        <div class="lg:col-span-4 bg-white border border-slate-200 rounded-2xl p-5 flex flex-col gap-4 text-black shadow-xs">
-          <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-            <div class="flex items-center gap-2.5">
-              <button onclick="navigateToHome()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-bold text-black transition-colors cursor-pointer" title="Return to GIS Map">
-                <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back
-              </button>
-              <h2 class="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-                <i data-lucide="bot" class="w-4 h-4 text-black"></i> AI Co-Pilot
-              </h2>
-            </div>
-            <span class="text-[10px] font-mono text-amber-950 font-bold bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full">
-              IRC:82 / MoRTH Grounded
-            </span>
+        <div class="lg:col-span-4 bg-[#101726] border border-slate-800 rounded-2xl p-5 flex flex-col gap-4 shadow-2xl">
+          <div>
+            <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <i data-lucide="bot" class="w-4 h-4 text-cyan-400"></i> State-Wise Road Safety AI Assistant
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">Trained on Indian road standards (IRC / MoRTH), PWD repair rates, and state road data in ₹ Rupees.</p>
           </div>
 
           <div class="space-y-2">
-            <p class="text-[11px] font-black text-black uppercase tracking-wider">Suggested Inquiries:</p>
-            <button onclick="askCopilot('Which hazards pose the greatest risk to emergency hospital transit corridors in this state?')" class="w-full text-left p-3 rounded-xl bg-slate-50 hover:bg-amber-50/50 border border-slate-200 border-l-4 border-l-red-600 text-xs text-black font-bold shadow-xs transition-colors flex items-center justify-between cursor-pointer">
-              <span>🏥 Hospital Emergency Routes Risk</span>
-              <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-black"></i>
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Suggested Questions:</p>
+            <button onclick="askCopilot('Which hazards pose the greatest risk to emergency hospital transit corridors in this state?')" class="w-full text-left p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-xs text-slate-300 transition-all flex items-center justify-between">
+              <span>🏥 Hospital Emergency Routes at Risk</span>
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-500"></i>
             </button>
-            <button onclick="askCopilot('List the top 4 highest priority road hazards and recommend MoRTH repair techniques with cost estimates in Rupees.')" class="w-full text-left p-3 rounded-xl bg-slate-50 hover:bg-amber-50/50 border border-slate-200 border-l-4 border-l-[#FF9933] text-xs text-black font-bold shadow-xs transition-colors flex items-center justify-between cursor-pointer">
-              <span>🚨 Top Priority Defects & MoRTH Repair Rates</span>
-              <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-black"></i>
+            <button onclick="askCopilot('List the top 4 highest priority road hazards and recommend MoRTH repair techniques with cost estimates in Rupees.')" class="w-full text-left p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-xs text-slate-300 transition-all flex items-center justify-between">
+              <span>🚨 Top Priority Issues & Repair Costs</span>
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-500"></i>
             </button>
-            <button onclick="askCopilot('Analyze how monsoon rainfall and waterlogging will accelerate alligator crack deterioration.')" class="w-full text-left p-3 rounded-xl bg-slate-50 hover:bg-amber-50/50 border border-slate-200 border-l-4 border-l-blue-600 text-xs text-black font-bold shadow-xs transition-colors flex items-center justify-between cursor-pointer">
-              <span>🌧️ Monsoon Inundation & Hydraulic Pumping</span>
-              <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-black"></i>
+            <button onclick="askCopilot('Analyze how monsoon rainfall and waterlogging will accelerate alligator crack deterioration.')" class="w-full text-left p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-xs text-slate-300 transition-all flex items-center justify-between">
+              <span>🌧️ Monsoon Rain Damage on Roads</span>
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-500"></i>
             </button>
-            <button onclick="askCopilot('What is the total estimated PWD maintenance budget in Rupees for the selected state and how much is saved via spatial clustering?')" class="w-full text-left p-3 rounded-xl bg-slate-50 hover:bg-amber-50/50 border border-slate-200 border-l-4 border-l-[#138808] text-xs text-black font-bold shadow-xs transition-colors flex items-center justify-between cursor-pointer">
-              <span>💰 PWD Repair Budget & Cluster Savings in ₹</span>
-              <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-black"></i>
+            <button onclick="askCopilot('What is the total estimated PWD maintenance budget in Rupees for the selected state and how much is saved via spatial clustering?')" class="w-full text-left p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-xs text-slate-300 transition-all flex items-center justify-between">
+              <span>💰 Estimated Repair Budget & Group Savings</span>
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-500"></i>
             </button>
           </div>
 
-          <div class="mt-auto bg-slate-50 border border-slate-200 p-3.5 rounded-xl text-xs text-slate-800 font-medium shadow-xs">
-            <div class="flex items-center gap-2 text-black font-extrabold mb-1">
-              <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i> Multimodal Grounding Active (India)
+          <div class="mt-auto bg-slate-900/60 border border-slate-800 p-3 rounded-xl text-xs text-slate-400">
+            <div class="flex items-center gap-2 text-cyan-400 font-semibold mb-1">
+              <i data-lucide="sparkles" class="w-4 h-4"></i> All Sensors & Road Data Active
             </div>
-            Visual detections, 3-axis accelerometer peaks, and IRC deduct values in ₹ INR are automatically injected into the reasoning prompt.
+            Camera images, vibration sensor impacts, and road condition scores are analyzed in real time.
           </div>
         </div>
 
-        <div class="lg:col-span-8 bg-white border border-slate-200 rounded-2xl flex flex-col overflow-hidden text-black shadow-xs">
-          <div id="copilot-chat-messages" class="flex-1 p-5 overflow-y-auto space-y-4 custom-scrollbar bg-[#fcfcf9]">
+        <div class="lg:col-span-8 bg-[#101726] border border-slate-800 rounded-2xl flex flex-col overflow-hidden shadow-2xl">
+          <div id="copilot-chat-messages" class="flex-1 p-5 overflow-y-auto space-y-4 custom-scrollbar">
             <div class="flex gap-3">
-              <div class="w-9 h-9 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center shrink-0 shadow-xs">
-                <i data-lucide="bot" class="w-5 h-5 text-black"></i>
+              <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shrink-0">
+                <i data-lucide="bot" class="w-4 h-4 text-black"></i>
               </div>
-              <div class="bg-white border border-slate-200 p-4 rounded-2xl max-w-2xl text-xs text-black leading-relaxed shadow-xs">
-                <p class="font-extrabold text-blue-800 mb-1">SadakSuraksha Infrastructure AI Co-Pilot (MoRTH / IRC)</p>
-                <p class="font-medium">Namaste! I am grounded in your multi-state road network database. Select any state from the dropdown above or ask me about risk prioritization, MoRTH repair specifications, budget planning in ₹ INR, or emergency hospital transit corridors.</p>
+              <div class="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl max-w-2xl text-xs text-slate-200 leading-relaxed shadow-lg">
+                <p class="font-bold text-cyan-300 mb-1">SadakSuraksha Road Safety AI Assistant</p>
+                <p>Namaste! I am your Road Safety AI Assistant. Ask me about road issues, repair recommendations, estimated costs in ₹ Rupees, or high-priority emergency hospital routes.</p>
               </div>
             </div>
           </div>
 
-          <div class="p-4 border-t border-slate-200 bg-white flex items-center gap-3">
-            <input type="text" id="copilot-input" placeholder="Ask about road defects, PWD maintenance priority, or MoRTH repair costs in ₹..." class="flex-1 bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-black font-bold placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:bg-amber-50/30" onkeydown="if(event.key==='Enter') sendCopilotMessage()">
-            <button onclick="sendCopilotMessage()" id="copilot-send-btn" class="px-4 py-2.5 rounded-xl bg-[#FF9933] hover:bg-[#F28500] border border-amber-600 text-black font-black text-xs flex items-center gap-2 shadow-xs transition-colors cursor-pointer">
-              <span>Ask Co-Pilot</span>
-              <i data-lucide="send" class="w-3.5 h-3.5 text-black"></i>
+          <div class="p-4 border-t border-slate-800 bg-[#0e1626]/80 flex items-center gap-3">
+            <input type="text" id="copilot-input" placeholder="Ask about road issues, repair priorities, or estimated costs in ₹..." class="flex-1 bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500" onkeydown="if(event.key==='Enter') sendCopilotMessage()">
+            <button onclick="sendCopilotMessage()" id="copilot-send-btn" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-bold text-xs flex items-center gap-2 transition-all">
+              <span>Ask Assistant</span>
+              <i data-lucide="send" class="w-3.5 h-3.5"></i>
             </button>
           </div>
         </div>
@@ -884,107 +727,90 @@
       </div>
     </div>
 
-    <!-- 6. NETWORK ANALYTICS & BUDGET SIMULATOR TAB (₹ INR) -->
+    <!-- 6. REPORTS & INSIGHTS TAB (₹ INR) -->
     <div id="view-analytics" class="tab-view hidden">
-      <div class="flex flex-col gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <div class="bg-white border border-slate-200 rounded-2xl p-5 flex items-center justify-between text-black shadow-xs">
-          <div class="flex items-center gap-4">
-            <button onclick="navigateToHome()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-bold text-black transition-colors shrink-0 cursor-pointer" title="Return to GIS Map">
-              <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back to Map
-            </button>
+        <div class="lg:col-span-6 bg-[#101726] border border-slate-800 rounded-2xl p-5 flex flex-col gap-4 shadow-xl">
+          <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="pie-chart" class="w-4 h-4 text-cyan-400"></i> Road Issue Types Breakdown
+          </h2>
+          <div class="h-64 flex items-center justify-center">
+            <canvas id="hazard-dist-chart"></canvas>
+          </div>
+        </div>
+
+        <div class="lg:col-span-6 bg-[#101726] border border-slate-800 rounded-2xl p-5 flex flex-col gap-4 shadow-xl">
+          <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="activity" class="w-4 h-4 text-blue-400"></i> Road Health Scores by Segment
+          </h2>
+          <div class="h-64 flex items-center justify-center">
+            <canvas id="road-pci-chart"></canvas>
+          </div>
+        </div>
+
+        <div class="lg:col-span-12 bg-[#101726] border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col gap-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
             <div>
-              <h2 class="text-base font-black text-black flex items-center gap-2">
-                <i data-lucide="bar-chart-3" class="w-5 h-5 text-black"></i> Road Network Analytics & Deterioration Forecasts
+              <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <i data-lucide="sliders" class="w-4 h-4 text-purple-400"></i> Repair Budget & Road Lifespan Simulator (in ₹ Rupees)
               </h2>
-              <p class="text-xs text-slate-700 font-medium mt-0.5">Statistical distress breakdown, pavement condition index (PCI) distributions, and IRC lifecycle budget simulations in ₹ INR.</p>
+              <p class="text-xs text-slate-400 mt-0.5">See how funding urgent repairs vs preventative road resurfacing increases road lifespan.</p>
+            </div>
+            <div class="text-right">
+              <p class="text-xs text-slate-400">Estimated Road Lifespan Extension</p>
+              <p id="sim-life-extension" class="text-lg font-bold font-mono text-emerald-400">+4.8 Years</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+            <div>
+              <label class="text-xs text-slate-300 font-semibold flex justify-between">
+                <span>Total Maintenance Budget</span>
+                <span id="slider-val-budget" class="font-mono text-cyan-400">₹ 25,00,000</span>
+              </label>
+              <input type="range" id="slider-budget" min="500000" max="10000000" step="250000" value="2500000" class="w-full accent-cyan-400 mt-2" oninput="updateBudgetSim()">
+            </div>
+
+            <div>
+              <label class="text-xs text-slate-300 font-semibold flex justify-between">
+                <span>Preventative Maintenance Share</span>
+                <span id="slider-val-ratio" class="font-mono text-purple-400">65%</span>
+              </label>
+              <input type="range" id="slider-ratio" min="10" max="90" step="5" value="65" class="w-full accent-purple-400 mt-2" oninput="updateBudgetSim()">
+            </div>
+
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 text-xs">
+              <p class="text-slate-400">Predicted Road Health Gain</p>
+              <p id="sim-pci-gain" class="text-base font-bold text-cyan-300 font-mono">+12.4 PCI Points</p>
+              <p class="text-[11px] text-slate-500 mt-1">Saves ₹ 6,80,000 by preventing major road breakdown.</p>
             </div>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-          <div class="lg:col-span-6 bg-white border border-slate-200 rounded-2xl p-5 flex flex-col gap-4 text-black shadow-xs">
-            <h2 class="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-              <i data-lucide="pie-chart" class="w-4 h-4 text-black"></i> Road Hazard Type Distribution
-            </h2>
-            <div class="h-64 flex items-center justify-center">
-              <canvas id="hazard-dist-chart"></canvas>
-            </div>
-          </div>
-
-          <div class="lg:col-span-6 bg-white border border-slate-200 rounded-2xl p-5 flex flex-col gap-4 text-black shadow-xs">
-            <h2 class="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-              <i data-lucide="activity" class="w-4 h-4 text-black"></i> Road Segment IRC / PCI Health
-            </h2>
-            <div class="h-64 flex items-center justify-center">
-              <canvas id="road-pci-chart"></canvas>
-            </div>
-          </div>
-
-          <div class="lg:col-span-12 bg-white border border-slate-200 rounded-2xl p-6 flex flex-col gap-4 text-black shadow-xs">
-            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-              <div>
-                <h2 class="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-                  <i data-lucide="sliders" class="w-4 h-4 text-black"></i> Municipal Budget Allocation & Life-Cycle Simulator (in ₹ INR)
-                </h2>
-                <p class="text-xs text-slate-700 font-medium mt-0.5">Simulate funding distribution between Reactive Emergency Pothole Patching vs Preventative Bituminous Overlays.</p>
-              </div>
-              <div class="text-right">
-                <p class="text-xs text-slate-700 font-bold">Estimated 3-Year Life Extension</p>
-                <p id="sim-life-extension" class="text-lg font-black font-mono text-emerald-700">+4.8 Years</p>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-              <div>
-                <label class="text-xs text-black font-bold flex justify-between">
-                  <span>Total Municipal Maintenance Cap</span>
-                  <span id="slider-val-budget" class="font-mono font-black text-blue-800">₹ 25,00,000</span>
-                </label>
-                <input type="range" id="slider-budget" min="500000" max="10000000" step="250000" value="2500000" class="w-full accent-black mt-2" oninput="updateBudgetSim()">
-              </div>
-
-              <div>
-                <label class="text-xs text-black font-bold flex justify-between">
-                  <span>Preventative Preservation Ratio</span>
-                  <span id="slider-val-ratio" class="font-mono font-black text-purple-800">65%</span>
-                </label>
-                <input type="range" id="slider-ratio" min="10" max="90" step="5" value="65" class="w-full accent-black mt-2" oninput="updateBudgetSim()">
-              </div>
-
-              <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs font-bold shadow-xs">
-                <p class="text-slate-600">Predicted PCI Improvement</p>
-                <p id="sim-pci-gain" class="text-base font-black text-blue-800 font-mono">+12.4 PCI Points</p>
-                <p class="text-[11px] text-slate-700 font-medium mt-1">Saves ₹ 6,80,000 in deferred emergency reconstruction.</p>
-              </div>
-            </div>
-          </div>
-
-        </div>
       </div>
     </div>
 
-    <!-- 7. INGESTION STREAMS & CCTV FEEDS TAB -->
+    </div>
+
+    <!-- 7. LIVE DATA TAB -->
     <div id="view-ingestion" class="tab-view hidden">
       <div class="flex flex-col gap-6">
 
         <!-- Header with stats -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4 text-black shadow-xs">
-          <div class="flex items-center gap-4">
-            <button onclick="navigateToHome()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-bold text-black transition-colors shrink-0 cursor-pointer" title="Return to GIS Map">
-              <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back to Map
-            </button>
-            <div>
-              <h2 class="text-base font-black text-black flex items-center gap-2">
-                <i data-lucide="radio-tower" class="w-5 h-5 text-black"></i> Multi-Source Ingestion Streams & CCTV Command
-              </h2>
-              <p class="text-xs text-slate-700 font-medium mt-0.5">Real-time feeds from NHAI CCTV cameras, Google Maps traffic probes, patrol vehicles, and SadakSuraksha citizen mobile reports.</p>
-            </div>
+        <div class="bg-[#101726] border border-slate-800 rounded-2xl p-5 flex items-center justify-between shadow-xl">
+          <div>
+            <h2 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="radio-tower" class="w-5 h-5 text-cyan-400"></i> Live Camera & Sensor Feeds
+            </h2>
+            <p class="text-xs text-slate-400 mt-0.5">Live data from highway cameras, patrol vehicles, traffic sensors, and citizen mobile reports.</p>
           </div>
           <div class="flex items-center gap-3">
-            <button onclick="refreshIngestionStreams()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black bg-[#FF9933] hover:bg-[#F28500] text-black border border-amber-600 shadow-xs transition-colors cursor-pointer">
-              <i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh Streams
+            <button onclick="openCitizenPortalModal()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-black transition-all">
+              <i data-lucide="smartphone" class="w-4 h-4"></i> Open Citizen Portal
+            </button>
+            <button onclick="refreshIngestionStreams()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all">
+              <i data-lucide="refresh-cw" class="w-4 h-4 text-cyan-400"></i> Refresh Live Feeds
             </button>
           </div>
         </div>
@@ -992,29 +818,29 @@
         <!-- Ingestion Stream Cards Grid -->
         <div id="ingestion-streams-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           <!-- Dynamic Ingestion Stream Cards -->
-          <div class="bg-white border border-slate-200 rounded-xl p-4 animate-pulse shadow-xs">
-            <div class="h-4 bg-slate-200 rounded w-3/4 mb-3"></div>
-            <div class="h-3 bg-slate-100 rounded w-1/2"></div>
+          <div class="bg-[#121929] border border-slate-800 rounded-xl p-4 animate-pulse">
+            <div class="h-4 bg-slate-700 rounded w-3/4 mb-3"></div>
+            <div class="h-3 bg-slate-800 rounded w-1/2"></div>
           </div>
         </div>
 
         <!-- Recent Citizen Submissions Feed -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="bg-white border border-slate-200 rounded-2xl p-5 text-black shadow-xs">
-            <h3 class="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2 mb-4 border-b border-slate-200 pb-2.5">
-              <i data-lucide="users" class="w-4 h-4 text-emerald-700"></i> Recent Citizen Submissions
+          <div class="bg-[#101726] border border-slate-800 rounded-2xl p-5 shadow-xl">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2 mb-4">
+              <i data-lucide="users" class="w-4 h-4 text-emerald-400"></i> Recent Citizen Reports
             </h3>
             <div id="citizen-submissions-feed" class="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar">
-              <div class="text-xs text-slate-500 italic font-bold">No citizen submissions yet. Share the portal link to start receiving reports!</div>
+              <div class="text-xs text-slate-500 italic">No citizen submissions yet. Share the portal link to start receiving reports!</div>
             </div>
           </div>
 
-          <div class="bg-white border border-slate-200 rounded-2xl p-5 text-black shadow-xs">
-            <h3 class="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2 mb-4 border-b border-slate-200 pb-2.5">
-              <i data-lucide="camera" class="w-4 h-4 text-blue-700"></i> Ingestion Activity Log
+          <div class="bg-[#101726] border border-slate-800 rounded-2xl p-5 shadow-xl">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2 mb-4">
+              <i data-lucide="camera" class="w-4 h-4 text-blue-400"></i> Live Activity Log
             </h3>
-            <div id="ingestion-activity-log" class="space-y-2 max-h-[400px] overflow-y-auto custom-scrollbar font-mono text-[11px] font-bold">
-              <div class="text-slate-500 italic">Waiting for ingestion events...</div>
+            <div id="ingestion-activity-log" class="space-y-2 max-h-[400px] overflow-y-auto custom-scrollbar font-mono text-[11px]">
+              <div class="text-slate-500 italic">Waiting for events...</div>
             </div>
           </div>
         </div>
@@ -1024,311 +850,153 @@
 
   </main>
 
-  <!-- ==========================================
-       GOVERNMENT OF INDIA HELPLINES & NOTIFICATION HUB
-       ========================================== -->
-  <footer class="mt-8 border-t border-slate-300 bg-white text-black">
-
-    <!-- 1. NATIONAL EMERGENCY HELPLINE STRIP (Expansive Height & Clean NHAI Badges) -->
-    <div class="bg-[#f8f9fa] border-b border-slate-200 px-8 py-7">
-      <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-5">
-        
-        <div class="flex items-center gap-3.5">
-          <div class="w-12 h-12 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center text-black shrink-0 shadow-xs">
-            <i data-lucide="phone-call" class="w-6 h-6 text-black"></i>
-          </div>
-          <div>
-            <h4 class="text-xs font-black text-black uppercase tracking-wider flex items-center gap-2">
-              <span>National Road Safety & Emergency Helplines (24x7 Toll-Free)</span>
-              <span class="px-2.5 py-0.5 rounded-full bg-red-100 text-red-950 border border-red-200 text-[10px] font-mono font-bold">EMERGENCY</span>
-            </h4>
-            <p class="text-[11px] text-slate-600 font-medium mt-0.5">Government of India official emergency response & highway rescue support services</p>
-          </div>
-        </div>
-
-        <!-- Helpline Clean Tiles Grid -->
-        <div class="flex flex-wrap items-center gap-3">
-          <!-- NHAI 1033 -->
-          <a href="tel:1033" class="group flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white hover:bg-orange-50/80 border border-slate-200 hover:border-orange-300 shadow-xs transition-all">
-            <div class="w-7 h-7 rounded-lg bg-orange-100 border border-orange-200 flex items-center justify-center text-black font-bold text-xs shadow-xs">📞</div>
-            <div>
-              <p class="text-[10px] text-slate-500 font-bold leading-none">NHAI Highway Rescue</p>
-              <p class="text-sm font-black font-mono text-orange-700 mt-0.5">1033</p>
-            </div>
-          </a>
-
-          <!-- National Emergency 112 -->
-          <a href="tel:112" class="group flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white hover:bg-red-50/80 border border-slate-200 hover:border-red-300 shadow-xs transition-all">
-            <div class="w-7 h-7 rounded-lg bg-red-100 border border-red-200 flex items-center justify-center text-black font-bold text-xs shadow-xs">🚨</div>
-            <div>
-              <p class="text-[10px] text-slate-500 font-bold leading-none">National Emergency</p>
-              <p class="text-sm font-black font-mono text-red-600 mt-0.5">112</p>
-            </div>
-          </a>
-
-          <!-- Ambulance 108 -->
-          <a href="tel:108" class="group flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white hover:bg-emerald-50/80 border border-slate-200 hover:border-emerald-300 shadow-xs transition-all">
-            <div class="w-7 h-7 rounded-lg bg-emerald-100 border border-emerald-200 flex items-center justify-center text-black font-bold text-xs shadow-xs">🚑</div>
-            <div>
-              <p class="text-[10px] text-slate-500 font-bold leading-none">Trauma Ambulance</p>
-              <p class="text-sm font-black font-mono text-emerald-700 mt-0.5">108</p>
-            </div>
-          </a>
-
-          <!-- Road Safety 1073 -->
-          <a href="tel:1073" class="group flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white hover:bg-blue-50/80 border border-slate-200 hover:border-blue-300 shadow-xs transition-all">
-            <div class="w-7 h-7 rounded-lg bg-blue-100 border border-blue-200 flex items-center justify-center text-black font-bold text-xs shadow-xs">🛡️</div>
-            <div>
-              <p class="text-[10px] text-slate-500 font-bold leading-none">Road Safety Hotline</p>
-              <p class="text-sm font-black font-mono text-blue-700 mt-0.5">1073</p>
-            </div>
-          </a>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- 2. EXPANDED NATIONAL ROAD SAFETY & PUBLIC AWARENESS BULLETINS SECTION (WITH HIGHWAY PHOTO BACKGROUND & STAGGERED BOX ALIGNMENT) -->
-    <div class="bulletin-hero-bg px-8 py-16 sm:py-20 border-b border-slate-300 min-h-[500px] flex flex-col justify-between">
-      <div class="max-w-7xl mx-auto w-full">
-        
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-10 pb-4 border-b border-slate-300/80">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-white/90 border border-slate-300 flex items-center justify-center text-black shrink-0 shadow-sm">
-              <i data-lucide="bell" class="w-5 h-5 text-orange-600"></i>
-            </div>
-            <div>
-              <h3 class="text-base sm:text-lg font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                <span>National Road Safety & Public Awareness Bulletins</span>
-                <span class="text-sm">🇮🇳</span>
-              </h3>
-              <p class="text-xs text-slate-700 font-semibold">Official MoRTH, NHAI & Smart City Notification Center</p>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-2">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-mono font-bold bg-white/90 border border-emerald-400 text-emerald-950 shadow-sm">
-              <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
-              LIVE NOTIFICATIONS
-            </span>
-          </div>
-        </div>
-
-        <!-- Dynamic Staggered 4-Card Alignment (Card 1: Up, Card 2: Down, Card 3: Up, Card 4: Down) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-2 pb-8">
-
-          <!-- Bulletin 1: MoRTH Safety Campaign (Stagger 1: Slightly Higher / Up) -->
-          <div class="nhai-card bg-white/95 backdrop-blur-md border border-slate-200/90 border-l-4 border-l-[#FF9933] p-5 flex flex-col justify-between text-black relative group shadow-sm hover:shadow-xl transition-all duration-300 md:-translate-y-4">
-            <div>
-              <div class="flex items-center justify-between mb-2.5">
-                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-orange-100 text-orange-950 border border-orange-200 uppercase">
-                  Campaign
-                </span>
-                <span class="text-[10px] font-mono font-bold text-slate-500">MoRTH • 2026</span>
-              </div>
-              <h4 class="text-sm font-black text-black leading-snug mb-1.5 group-hover:text-orange-700 transition-colors">
-                सड़क सुरक्षा, जीवन रक्षा
-              </h4>
-              <p class="text-xs text-slate-600 font-medium leading-relaxed mb-4">
-                Certified helmets and seatbelts reduce fatal risk by 60%. Obey corridor speed limits and avoid distracted mobile driving.
-              </p>
-            </div>
-            <div class="border-t border-slate-100 pt-3 flex items-center justify-between text-xs">
-              <span class="text-slate-600 text-[11px] font-bold">Helpline: <strong class="text-orange-700 font-mono">1073</strong></span>
-              <a href="tel:1073" class="px-3 py-1 rounded-lg bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-950 text-xs font-bold flex items-center gap-1 transition-colors">
-                <i data-lucide="phone" class="w-3.5 h-3.5"></i> Dial 1073
-              </a>
-            </div>
-          </div>
-
-          <!-- Bulletin 2: NHAI 24x7 Highway Rescue (Stagger 2: Lower / Down) -->
-          <div class="nhai-card bg-white/95 backdrop-blur-md border border-slate-200/90 border-l-4 border-l-[#000080] p-5 flex flex-col justify-between text-black relative group shadow-sm hover:shadow-xl transition-all duration-300 md:translate-y-6">
-            <div>
-              <div class="flex items-center justify-between mb-2.5">
-                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-blue-100 text-blue-950 border border-blue-200 uppercase">
-                  NHAI 24x7
-                </span>
-                <span class="text-[10px] font-mono font-bold text-slate-500">Toll-Free</span>
-              </div>
-              <h4 class="text-sm font-black text-black leading-snug mb-1.5 group-hover:text-blue-800 transition-colors">
-                Highway Emergency 1033
-              </h4>
-              <p class="text-xs text-slate-600 font-medium leading-relaxed mb-4">
-                Stranded on National Highways? 1033 dispatches rapid patrol response, trauma ambulance, and towing cranes free of charge.
-              </p>
-            </div>
-            <div class="border-t border-slate-100 pt-3 flex items-center justify-between text-xs">
-              <span class="text-slate-600 text-[11px] font-bold">Emergency: <strong class="text-blue-800 font-mono">1033</strong></span>
-              <a href="tel:1033" class="px-3 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-950 text-xs font-bold flex items-center gap-1 transition-colors">
-                <i data-lucide="phone" class="w-3.5 h-3.5"></i> Call 1033
-              </a>
-            </div>
-          </div>
-
-          <!-- Bulletin 3: Good Samaritan Protection (Stagger 3: Slightly Higher / Up) -->
-          <div class="nhai-card bg-white/95 backdrop-blur-md border border-slate-200/90 border-l-4 border-l-[#138808] p-5 flex flex-col justify-between text-black relative group shadow-sm hover:shadow-xl transition-all duration-300 md:-translate-y-2">
-            <div>
-              <div class="flex items-center justify-between mb-2.5">
-                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-emerald-100 text-emerald-950 border border-emerald-200 uppercase">
-                  Legal Rights
-                </span>
-                <span class="text-[10px] font-mono font-bold text-slate-500">MV Act §134A</span>
-              </div>
-              <h4 class="text-sm font-black text-black leading-snug mb-1.5 group-hover:text-emerald-700 transition-colors">
-                Good Samaritan Protection & ₹5,000 Reward
-              </h4>
-              <p class="text-xs text-slate-600 font-medium leading-relaxed mb-4">
-                Helpers are protected from legal liability or hospital detention and receive a ₹5,000 cash reward for golden-hour rescue.
-              </p>
-            </div>
-            <div class="border-t border-slate-100 pt-3 flex items-center justify-between text-xs">
-              <span class="text-slate-600 text-[11px] font-bold">Ambulance: <strong class="text-emerald-700 font-mono">112 / 108</strong></span>
-              <a href="tel:112" class="px-3 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-950 text-xs font-bold flex items-center gap-1 transition-colors">
-                <i data-lucide="phone" class="w-3.5 h-3.5"></i> Call 112
-              </a>
-            </div>
-          </div>
-
-          <!-- Bulletin 4: Monsoon & Pothole SLA (Stagger 4: Lower / Down) -->
-          <div class="nhai-card bg-white/95 backdrop-blur-md border border-slate-200/90 border-l-4 border-l-purple-600 p-5 flex flex-col justify-between text-black relative group shadow-sm hover:shadow-xl transition-all duration-300 md:translate-y-8">
-            <div>
-              <div class="flex items-center justify-between mb-2.5">
-                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-purple-100 text-purple-950 border border-purple-200 uppercase">
-                  IRC:82 SLA
-                </span>
-                <span class="text-[10px] font-mono font-bold text-slate-500">48-Hr Target</span>
-              </div>
-              <h4 class="text-sm font-black text-black leading-snug mb-1.5 group-hover:text-purple-700 transition-colors">
-                Pothole-Zero & Flood Advisory
-              </h4>
-              <p class="text-xs text-slate-600 font-medium leading-relaxed mb-4">
-                Defects with depth >4cm trigger automated dispatch to PWD milling contractors. Underpass radar alerts municipal drainage teams.
-              </p>
-            </div>
-            <div class="border-t border-slate-100 pt-3 flex items-center justify-between text-xs">
-              <span class="text-slate-600 text-[11px] font-bold">Drainage: <strong class="text-purple-800 font-mono">1916</strong></span>
-              <a href="tel:1916" class="px-3 py-1 rounded-lg bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-950 text-xs font-bold flex items-center gap-1 transition-colors">
-                <i data-lucide="phone" class="w-3.5 h-3.5"></i> Dial 1916
-              </a>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-    <!-- 3. OFFICIAL GOVERNMENT OF INDIA MANDATE & PARTNERS FOOTER (Expansive & Modern) -->
-    <div class="border-t border-slate-300 bg-[#e5e5dc] px-8 py-8 text-black">
-      <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5 text-xs font-bold">
-        
-        <div class="flex items-center gap-3.5">
-          <div class="w-10 h-10 rounded-xl bg-white border border-slate-300 flex items-center justify-center text-xl shadow-xs">
-            🏛️
-          </div>
-          <div>
-            <p class="text-black font-black font-mono">GOVERNMENT OF INDIA • भारत सरकार</p>
-            <p class="text-[11px] text-slate-700 font-medium">Ministry of Road Transport and Highways (MoRTH) • National Highways Authority of India (NHAI)</p>
-          </div>
-        </div>
-
-        <div class="flex flex-wrap items-center justify-center gap-4 text-[11px] font-mono font-bold">
-          <span class="text-black bg-cyan-50 border border-cyan-200 px-2.5 py-1 rounded-lg">IRC:82-2015 Compliant</span>
-          <span>•</span>
-          <span class="text-black bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg">Digital India & Smart Cities Mission</span>
-          <span>•</span>
-          <span class="text-black bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-lg">Central Road Research Institute (CRRI)</span>
-        </div>
-
-        <div class="text-right">
-          <p class="text-[11px] text-slate-700 font-bold">© 2026 SadakSuraksha AI 🇮🇳 — All Rights Reserved</p>
-        </div>
-
-      </div>
-    </div>
-
-  </footer>
-
   <!-- INCIDENT DETAIL MODAL (in ₹ INR) -->
-  <div id="incident-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] hidden flex items-center justify-center p-4" style="z-index: 99999 !important;">
-    <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col custom-scrollbar text-black overflow-hidden shadow-2xl">
-      <div class="tricolor-strip"></div>
+  <div id="incident-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[99999] hidden flex items-center justify-center p-4">
+    <div class="bg-[#101726] border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col custom-scrollbar">
       
-      <div class="p-5 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white z-10">
+      <div class="p-5 border-b border-slate-800 flex items-center justify-between sticky top-0 bg-[#101726] z-10">
         <div class="flex items-center gap-3">
-          <div id="modal-badge-severity" class="px-3 py-1 rounded-full text-xs font-bold font-mono border border-slate-300">CRITICAL</div>
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <div id="modal-badge-severity" class="px-2.5 py-1 rounded text-xs font-bold font-mono">CRITICAL</div>
+            <div id="modal-badge-status" class="px-2.5 py-1 rounded text-xs font-bold font-mono">UNRESOLVED</div>
+            <div id="modal-badge-type" class="px-2.5 py-1 rounded text-xs font-bold font-mono bg-slate-800 text-slate-300 border border-slate-700">POTHOLE</div>
+          </div>
           <div>
-            <div class="flex items-center gap-2">
-              <h3 id="modal-title" class="text-base font-black text-black">Hazard Title</h3>
-              <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-orange-50 text-orange-950 border border-orange-200 font-bold">🇮🇳 MoRTH Verified</span>
-            </div>
+            <h3 id="modal-title" class="text-base font-bold text-white">Road Issue Title</h3>
             <div class="flex items-center gap-2 mt-0.5">
-              <p id="modal-address" class="text-xs text-slate-700 font-bold">Address / Corridor</p>
+              <p id="modal-address" class="text-xs text-slate-400">Address / Location</p>
             </div>
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <a id="modal-gmaps-link" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-950 transition-colors shadow-xs">
-            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-800"></i>
+          <a id="modal-gmaps-link" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-md transition-all">
+            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-cyan-300"></i>
             <span>Google Maps ↗</span>
           </a>
-          <a id="modal-gmaps-dir" href="#" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 border border-slate-300 text-black transition-colors shadow-xs">
-            <i data-lucide="navigation" class="w-3.5 h-3.5 text-black"></i>
+          <a id="modal-gmaps-dir" href="#" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all">
+            <i data-lucide="navigation" class="w-3.5 h-3.5 text-cyan-400"></i>
             <span>Directions</span>
           </a>
-          <button onclick="closeIncidentModal()" class="p-2 rounded-xl bg-slate-100 hover:bg-red-100 border border-slate-300 text-black transition-colors cursor-pointer">
+          <button onclick="closeIncidentModal()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-all">
             <i data-lucide="x" class="w-4 h-4"></i>
           </button>
         </div>
       </div>
 
-      <div class="p-6 space-y-6">
+      <div class="p-6 space-y-5">
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="relative rounded-xl overflow-hidden border border-slate-300 bg-slate-900 aspect-video flex items-center justify-center shadow-inner">
-            <img id="modal-image" src="" alt="Incident Visual" class="w-full h-full object-cover">
-            <div id="modal-fp-warning" class="hidden absolute inset-0 bg-emerald-50/95 border border-emerald-300 flex flex-col items-center justify-center p-4 text-center">
-              <i data-lucide="check-circle-2" class="w-8 h-8 text-emerald-800 mb-2"></i>
-              <p class="text-xs font-black text-emerald-950">False Positive Optical Artifact</p>
-              <p class="text-[11px] text-slate-800 font-bold mt-1">Cross-modal fusion confirmed 0.01g vertical shock. Filtered out from maintenance dispatch.</p>
+        <!-- Top Visual & Telemetry Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <!-- Left: Image Evidence -->
+          <div class="lg:col-span-6 relative rounded-xl overflow-hidden border border-slate-800 bg-black aspect-video flex items-center justify-center shadow-lg">
+            <img id="modal-image" src="" alt="Road Issue Visual" class="w-full h-full object-cover">
+            <div id="modal-fp-warning" class="hidden absolute inset-0 bg-slate-900/90 backdrop-blur-xs flex flex-col items-center justify-center p-4 text-center border-2 border-emerald-500/50 rounded-xl">
+              <div class="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-400 flex items-center justify-center text-emerald-400 mb-2">
+                <i data-lucide="shield-check" class="w-6 h-6"></i>
+              </div>
+              <p class="text-xs font-extrabold text-emerald-300 uppercase tracking-wider">AI Result: False Alert — No repair required</p>
+              <p class="text-[11px] text-slate-300 mt-1 max-w-xs">Camera detected a possible road issue. Vibration sensor found no matching impact (0.01g). Marked as false alert to avoid wasting repair crew time.</p>
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-3 text-xs font-mono font-bold">
-            <div class="bg-orange-50/60 p-3.5 rounded-xl border border-orange-200 border-l-4 border-l-red-600 shadow-xs">
-              <p class="text-slate-700 text-[10px] uppercase font-bold">Priority Risk Score</p>
-              <p id="modal-risk-score" class="text-lg font-black text-red-600">96.5 <span class="text-xs text-slate-600">/100</span></p>
+          <!-- Right: Synchronized Vibration Waveform -->
+          <div class="lg:col-span-6 bg-slate-900/80 p-4 rounded-xl border border-slate-800 shadow-lg flex flex-col justify-between">
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-2 mb-2">
+              <p class="text-xs font-bold text-slate-200 flex items-center gap-2">
+                <i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i> Vibration Sensor Waveform (Impact Shock)
+              </p>
+              <span id="modal-imu-peak" class="text-[11px] font-mono text-amber-400 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">Peak: 2.85g</span>
             </div>
-            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 border-l-4 border-l-amber-600 shadow-xs">
-              <p class="text-slate-700 text-[10px] uppercase font-bold">IRC/PCI Deduct</p>
-              <p id="modal-pci-deduct" class="text-lg font-black text-amber-800">-58.4 pts</p>
-            </div>
-            <div class="bg-blue-50/60 p-3.5 rounded-xl border border-blue-200 border-l-4 border-l-blue-600 shadow-xs">
-              <p class="text-slate-700 text-[10px] uppercase font-bold">Cavity Depth (Verified)</p>
-              <p id="modal-depth" class="text-lg font-black text-blue-900">9.5 cm</p>
-            </div>
-            <div class="bg-emerald-50/60 p-3.5 rounded-xl border border-emerald-200 border-l-4 border-l-emerald-600 shadow-xs">
-              <p class="text-slate-700 text-[10px] uppercase font-bold">Est. PWD Repair Cost</p>
-              <p id="modal-repair-cost" class="text-lg font-black text-emerald-900">₹ 24,500</p>
+            <div class="h-36 w-full">
+              <canvas id="modal-imu-chart"></canvas>
             </div>
           </div>
         </div>
 
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
-          <p class="text-xs font-black text-black mb-2 flex items-center gap-2">
-            <i data-lucide="activity" class="w-4 h-4 text-orange-600"></i> Synchronized 3-Axis Accelerometer Transient
-          </p>
-          <div class="h-36">
-            <canvas id="modal-imu-chart"></canvas>
+        <!-- 🧠 WHY AI FLAGGED THIS PANEL -->
+        <div class="bg-[#0c1322] border border-slate-700/70 rounded-2xl p-5 shadow-xl flex flex-col gap-4">
+          
+          <!-- AI Assessment Header Metrics Bar -->
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                <i data-lucide="brain-circuit" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h4 class="text-xs font-extrabold text-white uppercase tracking-wider flex items-center gap-2">
+                  Why AI Flagged This
+                </h4>
+                <p class="text-[11px] text-slate-400">Breakdown of sensor evidence and road factors explaining this risk level</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 font-mono text-xs flex-wrap">
+              <div class="bg-slate-900 px-3 py-1 rounded-lg border border-slate-800 flex items-center gap-1.5">
+                <span class="text-slate-400 text-[10px]">Status:</span>
+                <span id="modal-status-text" class="font-bold text-rose-400">UNRESOLVED</span>
+              </div>
+              <div class="bg-slate-900 px-3 py-1 rounded-lg border border-slate-800 flex items-center gap-1.5">
+                <span class="text-slate-400 text-[10px]">Risk Level:</span>
+                <span id="modal-risk-score" class="font-bold text-red-400">96.5 / 100</span>
+              </div>
+              <div class="bg-slate-900 px-3 py-1 rounded-lg border border-slate-800 flex items-center gap-1.5">
+                <span class="text-slate-400 text-[10px]">Severity:</span>
+                <span id="modal-severity-text" class="font-bold text-amber-400">HIGH</span>
+              </div>
+              <div class="bg-slate-900 px-3 py-1 rounded-lg border border-slate-800 flex items-center gap-1.5">
+                <span class="text-slate-400 text-[10px]">AI Confidence:</span>
+                <span id="modal-confidence" class="font-bold text-cyan-300">94%</span>
+              </div>
+              <div class="bg-slate-900 px-3 py-1 rounded-lg border border-slate-800 flex items-center gap-1.5">
+                <span class="text-slate-400 text-[10px]">Road Health Impact:</span>
+                <span id="modal-pci-deduct" class="font-bold text-amber-400">-58.4 pts</span>
+              </div>
+            </div>
           </div>
+
+          <!-- WHY WE FLAGGED THIS (Supporting Evidence) -->
+          <div class="space-y-2">
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="list-checks" class="w-3.5 h-3.5 text-cyan-400"></i> Why We Flagged This (Supporting Evidence)
+            </p>
+            <div id="modal-why-evidence-list" class="space-y-2 text-xs font-sans">
+              <!-- Dynamically populated evidence items -->
+            </div>
+          </div>
+
+          <!-- How We Detected It Tags -->
+          <div class="flex items-center gap-2 flex-wrap pt-1 border-t border-slate-800/80">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">How We Detected It:</span>
+            <div id="modal-detection-sources" class="flex items-center gap-1.5 flex-wrap text-[11px] font-mono">
+              <!-- Dynamically generated badge tags -->
+            </div>
+          </div>
+
         </div>
 
-        <div class="bg-orange-50/40 border border-orange-200 rounded-xl p-4 text-xs shadow-xs">
-          <div class="flex items-center gap-2 mb-1">
-            <span class="text-xs">🇮🇳</span>
-            <p class="font-black text-orange-950 uppercase tracking-wider">Recommended Engineering Repair Technique (MoRTH / IRC:82-2015):</p>
+        <!-- RECOMMENDED REPAIR -->
+        <div id="modal-action-card" class="bg-slate-900/90 border border-slate-700/80 rounded-2xl p-5 shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div class="space-y-1 flex-1">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 uppercase">
+                Recommended Repair
+              </span>
+              <span id="modal-dispatch-timeline" class="text-[11px] font-bold text-amber-400 font-mono">
+                Repair Timeline: 24–48 hours
+              </span>
+            </div>
+            <p id="modal-repair-technique" class="text-sm font-bold text-white">
+              Full-Depth Bituminous Concrete (BC) Milling & Hot Mix Compaction
+            </p>
+            <p id="modal-action-note" class="text-xs text-slate-400">
+              Pothole Depth: <strong id="modal-depth" class="text-cyan-300 font-mono">9.5 cm</strong> · Estimated Work Time: <span id="modal-repair-hours" class="font-mono text-slate-300">3.2 hrs</span>
+            </p>
           </div>
-          <p id="modal-repair-technique" class="text-black font-extrabold">Full-Depth Bituminous Concrete (BC) Milling & Hot Mix Compaction</p>
-          <p id="modal-repair-hours" class="text-slate-700 mt-1 font-mono font-bold">Estimated Crew Hours: 3.2 hrs</p>
+
+          <div class="bg-[#0a101d] border border-slate-800 px-4 py-3 rounded-xl shrink-0 text-right min-w-[140px]">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Estimated Repair Cost</p>
+            <p id="modal-repair-cost" class="text-lg font-bold text-purple-300 font-mono">₹ 24,500</p>
+          </div>
         </div>
 
       </div>
@@ -1337,99 +1005,211 @@
   </div>
 
   <!-- API KEY CONFIG MODAL -->
-  <div id="apikey-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] hidden flex items-center justify-center p-4" style="z-index: 99999 !important;">
-    <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-md p-6 flex flex-col gap-4 text-black overflow-hidden relative shadow-2xl">
-      <div class="tricolor-strip -mx-6 -mt-6 mb-2"></div>
-
-      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-        <h3 class="text-sm font-black text-black flex items-center gap-2">
-          <i data-lucide="key" class="w-4 h-4 text-orange-600"></i> Configure Google Gemini API Key
+  <div id="apikey-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[99999] hidden flex items-center justify-center p-4">
+    <div class="bg-[#101726] border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl flex flex-col gap-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i data-lucide="key" class="w-4 h-4 text-cyan-400"></i> Configure Google Gemini API Key
         </h3>
-        <button onclick="closeApiKeyModal()" class="text-slate-600 hover:text-red-600 cursor-pointer">
+        <button onclick="closeApiKeyModal()" class="text-slate-400 hover:text-white">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
-      <p class="text-xs text-slate-700 font-medium">Enter your Gemini API Key to enable live cloud multimodal vision defect analysis and real-time generative infrastructure reasoning.</p>
-      <input type="password" id="input-api-key" placeholder="AIzaSy..." class="bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:border-orange-500 focus:bg-orange-50/30">
+      <p class="text-xs text-slate-400">Enter your Gemini API Key to enable live cloud AI camera defect analysis and real-time road insights.</p>
+      <input type="password" id="input-api-key" placeholder="AIzaSy..." class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-cyan-500 font-mono">
       <div class="flex items-center justify-end gap-2 pt-2">
-        <button onclick="closeApiKeyModal()" class="px-3.5 py-1.5 rounded-xl text-xs font-bold text-black hover:bg-slate-100 border border-slate-300 cursor-pointer">Cancel</button>
-        <button onclick="saveApiKey()" class="px-4 py-1.5 rounded-xl text-xs font-black bg-[#FF9933] hover:bg-[#F28500] border border-amber-600 text-black shadow-xs cursor-pointer">Save Key</button>
+        <button onclick="closeApiKeyModal()" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white">Cancel</button>
+        <button onclick="saveApiKey()" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-black">Save Key</button>
       </div>
     </div>
   </div>
 
-  <!-- QUICK INGEST MODAL -->
-  <div id="ingest-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] hidden flex items-center justify-center p-4" style="z-index: 99999 !important;">
-    <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-lg p-6 flex flex-col gap-4 text-black overflow-hidden relative shadow-2xl">
-      <div class="tricolor-strip -mx-6 -mt-6 mb-2"></div>
-
-      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-        <h3 class="text-sm font-black text-black flex items-center gap-2">
-          <i data-lucide="plus-circle" class="w-4 h-4 text-orange-600"></i> Ingest Multimodal Road Incident
+  <!-- REPORT ROAD ISSUE MODAL -->
+  <div id="ingest-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[99999] hidden flex items-center justify-center p-4">
+    <div class="bg-[#101726] border border-slate-800 rounded-2xl w-full max-w-lg p-6 shadow-2xl flex flex-col gap-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i data-lucide="plus-circle" class="w-4 h-4 text-orange-400"></i> Report Road Issue
         </h3>
-        <button onclick="closeIngestModal()" class="text-slate-600 hover:text-red-600 cursor-pointer">
+        <button onclick="closeIngestModal()" class="text-slate-400 hover:text-white">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
       
-      <div class="space-y-3 text-xs">
-        <div class="grid grid-cols-2 gap-3">
+      <div class="space-y-3.5 text-xs">
+        <!-- 1. Location Details -->
+        <div>
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5 font-mono">1. Location Details</span>
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="text-slate-300 font-medium block mb-1">State</label>
+              <select id="ingest-state" onchange="handleIngestStateChange(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-cyan-500">
+                <option value="Karnataka" selected>Karnataka</option>
+                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                <option value="Assam">Assam</option>
+                <option value="Delhi NCR">Delhi NCR</option>
+                <option value="Goa">Goa</option>
+                <option value="Gujarat">Gujarat</option>
+                <option value="Jammu & Kashmir">Jammu & Kashmir</option>
+                <option value="Kerala">Kerala</option>
+                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Odisha">Odisha</option>
+                <option value="Punjab & Haryana">Punjab & Haryana</option>
+                <option value="Rajasthan">Rajasthan</option>
+                <option value="Tamil Nadu">Tamil Nadu</option>
+                <option value="Telangana">Telangana</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="West Bengal">West Bengal</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-slate-300 font-medium block mb-1">City</label>
+              <select id="ingest-city" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-cyan-500">
+                <option value="Bengaluru">Bengaluru</option>
+                <option value="Mysuru">Mysuru</option>
+                <option value="Mangaluru">Mangaluru</option>
+                <option value="Hubballi-Dharwad">Hubballi-Dharwad</option>
+                <option value="Belagavi">Belagavi</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="text-black font-black block mb-1">State / Territory</label>
-            <select id="ingest-state" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-black font-bold focus:outline-none focus:border-orange-500">
-              <option value="Karnataka">Karnataka (Bengaluru)</option>
-              <option value="Maharashtra">Maharashtra (Mumbai / Pune)</option>
-              <option value="Delhi NCR">Delhi NCR (New Delhi)</option>
-              <option value="Tamil Nadu">Tamil Nadu (Chennai)</option>
-              <option value="Telangana">Telangana (Hyderabad)</option>
-              <option value="Uttar Pradesh">Uttar Pradesh (Agra / Lucknow)</option>
-              <option value="West Bengal">West Bengal (Kolkata)</option>
-              <option value="Gujarat">Gujarat (Ahmedabad)</option>
-              <option value="Rajasthan">Rajasthan (Jaipur)</option>
-              <option value="Kerala">Kerala (Kochi)</option>
-              <option value="Punjab & Haryana">Punjab & Haryana (Chandigarh)</option>
-              <option value="Madhya Pradesh">Madhya Pradesh (Indore)</option>
-              <option value="Odisha">Odisha (Bhubaneswar)</option>
-              <option value="Assam">Assam (Guwahati)</option>
-              <option value="Jammu & Kashmir">Jammu & Kashmir (Srinagar)</option>
-              <option value="Andhra Pradesh">Andhra Pradesh (Visakhapatnam)</option>
-              <option value="Goa">Goa (Panaji)</option>
-            </select>
+            <label class="text-slate-300 font-medium block mb-1">Road / Landmark</label>
+            <input type="text" id="ingest-road-name" placeholder="e.g. MG Road, Near Bus Terminal" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-cyan-500">
           </div>
           <div>
-            <label class="text-black font-black block mb-1">Road Classification</label>
-            <select id="ingest-road-class" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-black font-bold focus:outline-none focus:border-orange-500">
-              <option value="hospital_corridor">Hospital Emergency Corridor</option>
+            <label class="text-slate-300 font-medium block mb-1">Road Type</label>
+            <select id="ingest-road-class" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-cyan-500">
+              <option value="arterial">Major Main Road (Arterial)</option>
+              <option value="hospital_corridor">Hospital Emergency Route</option>
               <option value="interstate">National Highway / Expressway</option>
-              <option value="school_zone">School Zone Parkway</option>
-              <option value="arterial">Major Ring Road Arterial</option>
-              <option value="residential">Residential Colony Road</option>
+              <option value="school_zone">School Zone Road</option>
+              <option value="residential">Residential Road</option>
             </select>
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <!-- 2. Road Issue & Severity -->
+        <div>
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5 font-mono">2. Road Issue Information</span>
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="text-slate-300 font-medium block mb-1">Issue Type</label>
+              <select id="ingest-hazard-type" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-cyan-500">
+                <option value="pothole">🕳️ Pothole</option>
+                <option value="waterlogging">🌊 Waterlogging</option>
+                <option value="guardrail">🚧 Guardrail Damage</option>
+                <option value="debris">🪨 Road Debris</option>
+                <option value="signage">🚦 Signage Problem</option>
+                <option value="other">❓ Other Road Distress</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-slate-300 font-medium block mb-1">Severity Level</label>
+              <select id="ingest-severity" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-cyan-500">
+                <option value="high" selected>High (Major Hazard)</option>
+                <option value="critical">Critical (Immediate Danger)</option>
+                <option value="medium">Medium (Moderate Hazard)</option>
+                <option value="low">Low (Minor Surface Distress)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Source & Visual Evidence -->
+        <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="text-black font-black block mb-1">Vertical Shock Peak (Gz)</label>
-            <input type="number" id="ingest-acc-z" value="2.6" step="0.1" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-black font-mono font-bold focus:outline-none focus:border-orange-500">
+            <label class="text-slate-300 font-medium block mb-1">Reporting Source</label>
+            <select id="ingest-source" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-cyan-500">
+              <option value="Citizen Report">👤 Citizen Report</option>
+              <option value="Patrol Team">🚗 Municipal Patrol Team</option>
+              <option value="CCTV Traffic Camera">📹 CCTV Camera</option>
+              <option value="Field Engineer">🔧 Field Engineer</option>
+              <option value="Other">Other</option>
+            </select>
           </div>
           <div>
-            <label class="text-black font-black block mb-1">Acoustic Impact (dB)</label>
-            <input type="number" id="ingest-acoustic-db" value="76" step="1" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-black font-mono font-bold focus:outline-none focus:border-orange-500">
+            <label class="text-slate-300 font-medium block mb-1">Photo / Visual Evidence</label>
+            <input type="file" id="ingest-photo-input" accept="image/*" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2 py-1.5 text-[11px] text-slate-300 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-semibold file:bg-slate-800 file:text-cyan-300 hover:file:bg-slate-700">
           </div>
         </div>
 
         <div>
-          <label class="text-black font-black block mb-1">Citizen / 311 Complaint Text</label>
-          <textarea id="ingest-citizen-text" rows="2" placeholder="e.g. Dangerous 10cm pothole on Hosur Road causing vehicle damage..." class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-black font-bold placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:bg-amber-50/30"></textarea>
+          <label class="text-slate-300 font-medium block mb-1">Description / Citizen Notes</label>
+          <textarea id="ingest-citizen-text" rows="2" placeholder="e.g. Deep pothole on outer lane causing vehicle damage and traffic bottleneck..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500"></textarea>
+        </div>
+
+        <!-- AI Processing Info Note -->
+        <div class="bg-cyan-950/30 border border-cyan-500/20 rounded-xl p-2.5 flex items-center gap-2 text-[11px] text-cyan-300">
+          <i data-lucide="sparkles" class="w-4 h-4 text-cyan-400 shrink-0"></i>
+          <span>AI will automatically analyze the report, estimate physical defect depth, calculate risk score, and compute repair costs in ₹ INR.</span>
         </div>
       </div>
 
-      <div class="flex items-center justify-end gap-2 pt-2">
-        <button onclick="closeIngestModal()" class="px-3.5 py-1.5 rounded-xl text-xs font-bold text-black hover:bg-slate-100 border border-slate-300 cursor-pointer">Cancel</button>
-        <button onclick="submitIngestModal()" class="px-4 py-2 rounded-xl text-xs font-black bg-[#FF9933] hover:bg-[#F28500] border border-amber-600 text-black flex items-center gap-1.5 shadow-xs cursor-pointer">
-          <i data-lucide="zap" class="w-3.5 h-3.5"></i> Run Multimodal AI Pipeline
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+        <button onclick="closeIngestModal()" class="px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white">Cancel</button>
+        <button onclick="submitIngestModal()" id="btn-submit-road-issue" class="px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-black flex items-center gap-1.5 transition-all shadow-md shadow-orange-500/20">
+          <i data-lucide="send" class="w-3.5 h-3.5"></i> Submit Road Issue
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CITIZEN PORTAL MODAL -->
+  <div id="citizen-portal-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[99999] hidden flex items-center justify-center p-4">
+    <div class="bg-[#101726] border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl flex flex-col gap-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i data-lucide="smartphone" class="w-4 h-4 text-emerald-400"></i> 📱 SadakSuraksha Citizen Road Reporting Portal
+        </h3>
+        <button onclick="closeCitizenPortalModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <p class="text-xs text-slate-400">Share this link with citizens to report potholes and road issues directly from mobile phones.</p>
+      
+      <div class="bg-slate-900/80 border border-emerald-500/30 rounded-xl p-4 text-center">
+        <p class="text-xs text-slate-400 mb-2">Citizen Portal URL:</p>
+        <a id="citizen-portal-link" href="/report" target="_blank" class="text-emerald-400 font-mono text-sm font-bold hover:text-emerald-300 break-all underline underline-offset-4 decoration-emerald-500/40">
+          Loading...
+        </a>
+        <button onclick="copyCitizenPortalLink()" class="mt-3 px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-black text-xs font-bold flex items-center gap-1.5 mx-auto transition-all">
+          <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Link
+        </button>
+      </div>
+
+      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 text-center">
+        <p class="text-xs text-slate-400 mb-2">Scan QR Code:</p>
+        <div class="w-40 h-40 mx-auto bg-white rounded-xl p-2 flex items-center justify-center">
+          <div class="text-4xl">📱</div>
+        </div>
+        <p class="text-[10px] text-slate-500 mt-2">Open camera app → Scan → Report issue instantly</p>
+      </div>
+
+      <div class="grid grid-cols-3 gap-2 text-center text-xs">
+        <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
+          <p class="text-emerald-400 font-bold text-sm" id="portal-total-reports">0</p>
+          <p class="text-slate-500">Total Reports</p>
+        </div>
+        <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
+          <p class="text-cyan-400 font-bold text-sm" id="portal-verified">0</p>
+          <p class="text-slate-500">AI Verified</p>
+        </div>
+        <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
+          <p class="text-amber-400 font-bold text-sm" id="portal-pending">0</p>
+          <p class="text-slate-500">Pending</p>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-1">
+        <button onclick="closeCitizenPortalModal()" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white">Close</button>
+        <a href="/report" target="_blank" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-emerald-500 to-green-600 text-black flex items-center gap-1.5">
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i> Open Portal
+        </a>
       </div>
     </div>
   </div>
