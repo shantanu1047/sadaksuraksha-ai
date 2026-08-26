@@ -589,3 +589,42 @@ select option:checked {
   background-size: cover;
   position: relative;
 }
+
+/* ==========================================
+   INTERACTIVE BULLETIN CARDS & SMOOTH HOVER DETAILS POPUP
+   ========================================== */
+.bulletin-card {
+  position: relative;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+  cursor: pointer;
+}
+
+.bulletin-card:hover {
+  z-index: 45 !important;
+}
+
+.bulletin-popup {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px) scale(0.97);
+  transform-origin: top center;
+  transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), 
+              transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), 
+              visibility 0.28s;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.bulletin-card:hover .bulletin-popup,
+.bulletin-card:focus-within .bulletin-popup,
+.bulletin-card.active .bulletin-popup {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
