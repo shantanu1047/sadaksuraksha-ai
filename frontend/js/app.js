@@ -400,7 +400,12 @@ function initGisMap() {
       gisMap.removeLayer(gisClusterLayer);
     }
   });
+
+  setTimeout(() => {
+    if (gisMap) gisMap.invalidateSize();
+  }, 200);
 }
+
 
 function renderMapMarkers(hazards) {
   if (!gisMarkerLayer) return;
@@ -1627,9 +1632,16 @@ function toggleFeedDrawer(explicitState) {
     drawer.classList.add('hidden');
     if (btn) btn.classList.remove('hidden');
   }
-  lucide.createIcons();
+  if (gisMap) {
+    setTimeout(() => gisMap.invalidateSize(), 50);
+    setTimeout(() => gisMap.invalidateSize(), 250);
+  }
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    window.lucide.createIcons();
+  }
 }
 window.toggleFeedDrawer = toggleFeedDrawer;
+
 
 // ==========================================
 // FEATURE 1: AI ROAD FORECAST ENGINE

@@ -588,28 +588,16 @@
   <!-- Main View Container -->
   <main class="flex-1 p-6 overflow-y-auto">
 
-    <!-- 1. GIS HAZARD MAP TAB (FULL-WIDTH HERO MAP WITH CLICK-TO-OPEN PRIORITY FEED DRAWER) -->
+    <!-- 1. GIS HAZARD MAP TAB (SIDE-BY-SIDE FEED PANEL + CONTAINED MAP BOX) -->
     <div id="view-map" class="tab-view active">
-      <div id="map-container-box" class="relative w-full h-[530px] bg-white border border-slate-300 rounded-2xl overflow-hidden z-0 shadow-xs">
+      <div class="flex flex-col lg:flex-row gap-4 h-[530px] relative items-stretch">
         
-        <!-- FULL-SCREEN GIS HERO MAP -->
-        <div id="gis-map" class="w-full h-full"></div>
-
-        <!-- FLOATING TOP-LEFT TOGGLE BUTTON FOR PRIORITY FEED (CLICK TO OPEN) -->
-        <button id="btn-toggle-feed-drawer" onclick="toggleFeedDrawer(true)" type="button" class="absolute top-4 left-4 z-20 flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-[#FF9933] hover:bg-[#F28500] border border-amber-600 text-black font-black text-xs shadow-md transition-colors cursor-pointer group">
-          <div class="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse"></div>
-          <i data-lucide="flame" class="w-4 h-4 text-black"></i>
-          <span>Priority Backlog Feed</span>
-          <span id="feed-drawer-badge" class="px-2 py-0.5 rounded-full bg-black text-white text-[11px] font-mono font-bold">0</span>
-          <i data-lucide="chevron-right" id="feed-drawer-arrow" class="w-3.5 h-3.5 text-black transition-transform duration-200"></i>
-        </button>
-
-        <!-- FLOATING SLIDE-OVER PRIORITY FEED DRAWER PANEL (SHOWS ON CLICK) -->
-        <div id="priority-feed-drawer" class="hidden absolute top-4 left-4 z-30 w-96 max-w-[calc(100%-2rem)] max-h-[calc(100%-2rem)] bg-white border border-slate-200 rounded-2xl p-4 flex flex-col gap-3 transition-all duration-300 text-black shadow-2xl overflow-hidden">
+        <!-- Left Side: Priority Backlog Feed Panel (Side-by-side with Map) -->
+        <div id="priority-feed-drawer" class="w-full lg:w-[380px] shrink-0 bg-white border border-slate-300 rounded-2xl p-4 flex flex-col gap-2.5 text-black shadow-xs overflow-hidden h-full">
           <div class="tricolor-strip -mx-4 -mt-4 mb-1"></div>
 
           <!-- Drawer Header -->
-          <div class="flex items-center justify-between border-b border-slate-200 pb-2.5">
+          <div class="flex items-center justify-between border-b border-slate-200 pb-2">
             <div class="flex items-center gap-2">
               <div class="w-8 h-8 rounded-lg bg-orange-100 border border-orange-200 flex items-center justify-center shadow-xs">
                 <i data-lucide="flame" class="w-4 h-4 text-orange-700"></i>
@@ -623,7 +611,7 @@
             </div>
             <div class="flex items-center gap-2">
               <span id="feed-count" class="text-xs bg-black text-white px-2 py-0.5 rounded-full font-mono font-bold">0</span>
-              <button onclick="toggleFeedDrawer(false)" type="button" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-red-100 border border-slate-300 text-black flex items-center justify-center transition-colors cursor-pointer" title="Close drawer and view full map">
+              <button onclick="toggleFeedDrawer(false)" type="button" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-red-100 border border-slate-300 text-black flex items-center justify-center transition-colors cursor-pointer" title="Close drawer to expand map">
                 <i data-lucide="x" class="w-4 h-4"></i>
               </button>
             </div>
@@ -644,35 +632,53 @@
           </div>
 
           <!-- List of Incident Cards -->
-          <div id="incident-feed-list" class="flex-1 overflow-y-auto space-y-2.5 pr-1 custom-scrollbar max-h-[380px]">
+          <div id="incident-feed-list" class="flex-1 overflow-y-auto space-y-2.5 pr-1 custom-scrollbar">
             <!-- Dynamic Incident Cards Injected Here -->
           </div>
         </div>
 
-        <!-- FLOATING TOP-RIGHT MAP CONTROLS -->
-        <div class="absolute top-4 right-4 z-20 flex items-center gap-2.5 bg-white/95 backdrop-blur-md border border-slate-200 p-2.5 rounded-xl text-black shadow-md">
-          <label class="text-xs text-slate-800 font-bold flex items-center gap-1.5 cursor-pointer">
-            <input type="checkbox" id="toggle-heatmap" checked class="accent-orange-600 rounded">
-            <span>Risk Heatmap</span>
-          </label>
-          <span class="text-slate-300">|</span>
-          <label class="text-xs text-slate-800 font-bold flex items-center gap-1.5 cursor-pointer">
-            <input type="checkbox" id="toggle-clusters" checked class="accent-blue-700 rounded">
-            <span>Work Orders</span>
-          </label>
-          <span class="text-slate-300">|</span>
-          <button onclick="refreshMapData()" type="button" class="text-xs text-slate-800 hover:text-blue-700 flex items-center gap-1 font-bold cursor-pointer">
-            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh
+        <!-- Right Side: The Map Box (The exact size of the red markation) -->
+        <div id="map-container-box" class="flex-1 min-w-0 relative bg-white border border-slate-300 rounded-2xl overflow-hidden shadow-xs h-full">
+          
+          <!-- FULL-SCREEN GIS HERO MAP -->
+          <div id="gis-map" class="w-full h-full"></div>
+
+          <!-- FLOATING TOP-LEFT TOGGLE BUTTON FOR PRIORITY FEED (SHOWS WHEN DRAWER IS COLLAPSED) -->
+          <button id="btn-toggle-feed-drawer" onclick="toggleFeedDrawer(true)" type="button" class="hidden absolute top-4 left-4 z-20 flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-[#FF9933] hover:bg-[#F28500] border border-amber-600 text-black font-black text-xs shadow-md transition-colors cursor-pointer group">
+            <div class="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse"></div>
+            <i data-lucide="flame" class="w-4 h-4 text-black"></i>
+            <span>Priority Backlog Feed</span>
+            <span id="feed-drawer-badge" class="px-2 py-0.5 rounded-full bg-black text-white text-[11px] font-mono font-bold">0</span>
+            <i data-lucide="chevron-right" id="feed-drawer-arrow" class="w-3.5 h-3.5 text-black transition-transform duration-200"></i>
           </button>
-          <span class="text-slate-300">|</span>
-          <button id="btn-map-fullscreen" onclick="toggleMapFullscreen()" type="button" class="text-xs text-slate-800 hover:text-[#0A3161] flex items-center gap-1 font-bold cursor-pointer" title="Toggle Fullscreen Map">
-            <i data-lucide="maximize-2" id="icon-map-fullscreen" class="w-3.5 h-3.5"></i>
-            <span id="text-map-fullscreen">Fullscreen</span>
-          </button>
+
+          <!-- FLOATING TOP-RIGHT MAP CONTROLS -->
+          <div class="absolute top-4 right-4 z-20 flex items-center gap-2.5 bg-white/95 backdrop-blur-md border border-slate-200 p-2.5 rounded-xl text-black shadow-md">
+            <label class="text-xs text-slate-800 font-bold flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" id="toggle-heatmap" checked class="accent-orange-600 rounded">
+              <span>Risk Heatmap</span>
+            </label>
+            <span class="text-slate-300">|</span>
+            <label class="text-xs text-slate-800 font-bold flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" id="toggle-clusters" checked class="accent-blue-700 rounded">
+              <span>Work Orders</span>
+            </label>
+            <span class="text-slate-300">|</span>
+            <button onclick="refreshMapData()" type="button" class="text-xs text-slate-800 hover:text-blue-700 flex items-center gap-1 font-bold cursor-pointer">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh
+            </button>
+            <span class="text-slate-300">|</span>
+            <button id="btn-map-fullscreen" onclick="toggleMapFullscreen()" type="button" class="text-xs text-slate-800 hover:text-[#0A3161] flex items-center gap-1 font-bold cursor-pointer" title="Toggle Fullscreen Map">
+              <i data-lucide="maximize-2" id="icon-map-fullscreen" class="w-3.5 h-3.5"></i>
+              <span id="text-map-fullscreen">Fullscreen</span>
+            </button>
+          </div>
+
         </div>
 
       </div>
     </div>
+
 
     <!-- 2. LIVE MULTIMODAL INSPECTION STUDIO TAB -->
     <div id="view-studio" class="tab-view hidden">
