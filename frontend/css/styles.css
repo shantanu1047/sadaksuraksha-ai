@@ -500,15 +500,21 @@ select option:checked {
 }
 
 /* ==========================================
-   INFINITE CIRCULATING LOOP PHOTO GALLERY (LARGE CINEMATIC VIEW)
+   ROAD INFRASTRUCTURE & SAFETY FIELD OPERATIONS STREAM SECTION (GHAT ROAD BACKDROP)
    ========================================== */
 .gallery-section-container {
-  background-color: #f8fafc;
-  background-image: none !important;
+  background-color: #f1f5f9;
+  background-image: 
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78) 0%, rgba(248, 250, 252, 0.86) 50%, rgba(241, 245, 249, 0.90) 100%),
+    url('../assets/gallery/ghat_road_bg.jpg');
+  background-size: cover;
+  background-position: center 45%;
+  background-repeat: no-repeat;
   position: relative;
 }
 
 .gallery-marquee-wrapper {
+
   overflow: hidden;
   position: relative;
   width: 100%;
