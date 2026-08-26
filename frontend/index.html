@@ -245,67 +245,71 @@
   </div>
 
   <!-- =========================================================
-       2. EXECUTIVE NHAI NAVY BLUE COMMAND HEADER
+       2. EXECUTIVE NHAI NAVY BLUE COMMAND HEADER WITH UNIFIED PANORAMA
        ========================================================= -->
-  <header class="nhai-portal-header text-white px-6 md:px-10 pt-7 pb-10">
-    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-6 relative z-10">
-      
-      <!-- Brand & Mandate Title -->
-      <div onclick="navigateToHome()" class="flex items-center gap-4 cursor-pointer group select-none">
-        <!-- NHAI Emblem / Insignia -->
-        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-[#0c3b75] to-[#04162e] border-2 border-amber-500/40 p-2 flex items-center justify-center shrink-0 shadow-lg group-hover:border-amber-400 transition-all">
-          <svg viewBox="0 0 36 36" fill="none" class="w-full h-full">
-            <!-- Road Vector Highway -->
-            <path d="M4 32 C8 24, 12 14, 20 4 L26 4 C18 14, 15 24, 17 32 Z" fill="#FF9933" />
-            <path d="M19 32 C17 24, 19 14, 27 4 L32 4 C24 14, 21 24, 23 32 Z" fill="#138808" />
-            <circle cx="18" cy="18" r="4" fill="#0A3161" stroke="#ffffff" stroke-width="1.5" />
-          </svg>
-        </div>
-
-        <div>
-          <div class="flex items-center gap-2.5 flex-wrap">
-            <h1 class="text-2xl md:text-3xl font-black tracking-tight text-white font-sans flex items-center gap-2">
-              <span>SADAK-SURAKSHA</span>
-              <span class="text-[#FF9933]">AI</span>
-              <span class="text-xl">🇮🇳</span>
-            </h1>
-            <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-md text-[10px] font-black bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-mono tracking-wider">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span id="header-dept-text">NHAI • NATIONAL COMMAND</span>
-            </span>
+  <header class="nhai-portal-header text-white">
+    
+    <!-- Top Executive Header Content -->
+    <div class="px-6 md:px-10 pt-7 pb-3">
+      <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-6 relative z-10">
+        
+        <!-- Brand & Mandate Title -->
+        <div onclick="navigateToHome()" class="flex items-center gap-4 cursor-pointer group select-none">
+          <!-- NHAI Emblem / Insignia -->
+          <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-[#0c3b75] to-[#04162e] border-2 border-amber-500/40 p-2 flex items-center justify-center shrink-0 shadow-lg group-hover:border-amber-400 transition-all">
+            <svg viewBox="0 0 36 36" fill="none" class="w-full h-full">
+              <!-- Road Vector Highway -->
+              <path d="M4 32 C8 24, 12 14, 20 4 L26 4 C18 14, 15 24, 17 32 Z" fill="#FF9933" />
+              <path d="M19 32 C17 24, 19 14, 27 4 L32 4 C24 14, 21 24, 23 32 Z" fill="#138808" />
+              <circle cx="18" cy="18" r="4" fill="#0A3161" stroke="#ffffff" stroke-width="1.5" />
+            </svg>
           </div>
-          <p class="text-xs md:text-sm text-slate-200 font-medium tracking-wide mt-1 leading-relaxed">
-            National Multimodal AI Road Hazard & Infrastructure Maintenance Intelligence Platform
-          </p>
-          <p class="text-[11px] text-amber-300/90 font-mono font-semibold mt-0.5 flex items-center gap-2">
-            <span>MoRTH IRC:82 Standard Pavement Monitoring</span>
-            <span class="text-slate-400">•</span>
-            <span>16 State Transport Corridors</span>
-          </p>
+
+          <div>
+            <div class="flex items-center gap-2.5 flex-wrap">
+              <h1 class="text-2xl md:text-3xl font-black tracking-tight text-white font-sans flex items-center gap-2">
+                <span>SADAK-SURAKSHA</span>
+                <span class="text-[#FF9933]">AI</span>
+                <span class="text-xl">🇮🇳</span>
+              </h1>
+              <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-md text-[10px] font-black bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-mono tracking-wider">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span id="header-dept-text">NHAI • NATIONAL COMMAND</span>
+              </span>
+            </div>
+            <p class="text-xs md:text-sm text-slate-200 font-medium tracking-wide mt-1 leading-relaxed">
+              National Multimodal AI Road Hazard & Infrastructure Maintenance Intelligence Platform
+            </p>
+            <p class="text-[11px] text-amber-300/90 font-mono font-semibold mt-0.5 flex items-center gap-2">
+              <span>MoRTH IRC:82 Standard Pavement Monitoring</span>
+              <span class="text-slate-400">•</span>
+              <span>16 State Transport Corridors</span>
+            </p>
+          </div>
         </div>
+
+        <!-- Quick Executive Actions & Stats -->
+        <div class="flex items-center gap-3 ml-auto">
+          <a href="/report" target="_blank" class="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-white/20 text-white text-xs font-bold transition-all shadow-sm">
+            <i data-lucide="smartphone" class="w-4 h-4 text-amber-400"></i>
+            <span>Citizen Portal ↗</span>
+          </a>
+
+          <button type="button" onclick="handleLogout()" class="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-red-950/60 hover:bg-red-900/70 border border-red-500/40 text-red-200 text-xs font-bold transition-all shadow-sm cursor-pointer" title="Exit to Role Gateway">
+            <i data-lucide="log-out" class="w-4 h-4 text-red-400"></i>
+            <span class="hidden md:inline">Exit Session</span>
+          </button>
+        </div>
+
       </div>
-
-      <!-- Quick Executive Actions & Stats -->
-      <div class="flex items-center gap-3 ml-auto">
-        <a href="/report" target="_blank" class="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-white/20 text-white text-xs font-bold transition-all shadow-sm">
-          <i data-lucide="smartphone" class="w-4 h-4 text-amber-400"></i>
-          <span>Citizen Portal ↗</span>
-        </a>
-
-        <button type="button" onclick="handleLogout()" class="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-red-950/60 hover:bg-red-900/70 border border-red-500/40 text-red-200 text-xs font-bold transition-all shadow-sm cursor-pointer" title="Exit to Role Gateway">
-          <i data-lucide="log-out" class="w-4 h-4 text-red-400"></i>
-          <span class="hidden md:inline">Exit Session</span>
-        </button>
-      </div>
-
     </div>
-  </header>
 
-  <!-- =========================================================
-       3. SLEEK ELEVATED NHAI FILTER & CONTROLS DOCK (The Red Box Area)
-       ========================================================= -->
-  <section class="px-6 md:px-10 -mt-6 relative z-30">
-    <div class="max-w-7xl mx-auto nhai-filter-container p-3 flex flex-wrap items-center justify-between gap-3">
+    <!-- =========================================================
+         3. SLEEK ELEVATED NHAI FILTER & CONTROLS DOCK (The Middle Bar - Sides Seamlessly Filled with Panorama)
+         ========================================================= -->
+    <div class="px-6 md:px-10 py-2.5 relative z-30">
+      <div class="max-w-7xl mx-auto nhai-filter-container p-3 flex flex-wrap items-center justify-between gap-3 text-black">
+
       
       <!-- Left Controls: Platform Modules, State, City -->
       <div class="flex flex-wrap items-center gap-2.5 flex-1 min-w-[300px]">
@@ -530,80 +534,80 @@
       </div>
 
     </div>
-  </section>
 
-
-  <!-- Sunset Coastal Highway Infrastructure Panoramic Stats Strip -->
-  <section class="relative w-full overflow-hidden border-y border-amber-900/30 shadow-lg" style="background-image: linear-gradient(180deg, rgba(8, 20, 38, 0.40) 0%, rgba(10, 25, 48, 0.60) 50%, rgba(5, 15, 30, 0.70) 100%), url('/static/assets/sunset_highway_stats_bg.png'); background-size: cover; background-position: center 55%; background-repeat: no-repeat;">
-    
-    <div class="max-w-7xl mx-auto px-6 md:px-10 py-5 flex items-center justify-between gap-4">
-      
-      <!-- 4 High-Impact Metric Items with Circular White Ring Icons -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-12 flex-1">
+    <!-- =========================================================
+         4. SUNSET HIGHWAY INFRASTRUCTURE PANORAMIC STATS STRIP
+         ========================================================= -->
+    <div class="w-full overflow-hidden border-t border-amber-900/30">
+      <div class="max-w-7xl mx-auto px-6 md:px-10 py-5 flex items-center justify-between gap-4">
         
-        <!-- Metric 1: Billboards / Critical Hazards -->
-        <div class="flex items-center gap-3.5 group">
-          <div class="w-13 h-13 md:w-15 md:h-15 rounded-full border-2 border-white flex items-center justify-center bg-white/15 backdrop-blur-xs shrink-0 shadow-md transition-transform group-hover:scale-105">
-            <i data-lucide="tv" class="w-6 h-6 md:w-7 md:h-7 text-white"></i>
+        <!-- 4 High-Impact Metric Items with Circular White Ring Icons -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-12 flex-1">
+          
+          <!-- Metric 1: Billboards / Critical Hazards -->
+          <div class="flex items-center gap-3.5 group">
+            <div class="w-13 h-13 md:w-15 md:h-15 rounded-full border-2 border-white flex items-center justify-center bg-white/15 backdrop-blur-xs shrink-0 shadow-md transition-transform group-hover:scale-105">
+              <i data-lucide="tv" class="w-6 h-6 md:w-7 md:h-7 text-white"></i>
+            </div>
+            <div>
+              <div id="kpi-critical" class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white font-sans leading-none tracking-tight drop-shadow-md">4</div>
+              <div class="text-xs md:text-sm font-medium text-white/95 mt-1 tracking-wide drop-shadow-xs">Critical Hazards</div>
+            </div>
           </div>
-          <div>
-            <div id="kpi-critical" class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white font-sans leading-none tracking-tight drop-shadow-md">4</div>
-            <div class="text-xs md:text-sm font-medium text-white/95 mt-1 tracking-wide drop-shadow-xs">Critical Hazards</div>
+
+          <!-- Metric 2: Traffic Lights / Active Incidents -->
+          <div class="flex items-center gap-3.5 group">
+            <div class="w-13 h-13 md:w-15 md:h-15 rounded-full border-2 border-white flex items-center justify-center bg-white/15 backdrop-blur-xs shrink-0 shadow-md transition-transform group-hover:scale-105">
+              <i data-lucide="traffic-cone" class="w-6 h-6 md:w-7 md:h-7 text-white"></i>
+            </div>
+            <div>
+              <div id="kpi-total" class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white font-sans leading-none tracking-tight drop-shadow-md">20</div>
+              <div class="text-xs md:text-sm font-medium text-white/95 mt-1 tracking-wide drop-shadow-xs">Active Incidents</div>
+            </div>
           </div>
+
+          <!-- Metric 3: Rumble Strips / Work Dispatches -->
+          <div class="flex items-center gap-3.5 group">
+            <div class="w-13 h-13 md:w-15 md:h-15 rounded-full border-2 border-white flex items-center justify-center bg-white/15 backdrop-blur-xs shrink-0 shadow-md transition-transform group-hover:scale-105">
+              <i data-lucide="layers" class="w-6 h-6 md:w-7 md:h-7 text-white"></i>
+            </div>
+            <div>
+              <div id="kpi-work-orders" class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white font-sans leading-none tracking-tight drop-shadow-md">212</div>
+              <div class="text-xs md:text-sm font-medium text-white/95 mt-1 tracking-wide drop-shadow-xs">Work Dispatches</div>
+            </div>
+          </div>
+
+          <!-- Metric 4: Manholes / Sensor Noise Filtered -->
+          <div class="flex items-center gap-3.5 group">
+            <div class="w-13 h-13 md:w-15 md:h-15 rounded-full border-2 border-white flex items-center justify-center bg-white/15 backdrop-blur-xs shrink-0 shadow-md transition-transform group-hover:scale-105">
+              <i data-lucide="disc" class="w-6 h-6 md:w-7 md:h-7 text-white"></i>
+            </div>
+            <div>
+              <div id="kpi-fp" class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white font-sans leading-none tracking-tight drop-shadow-md">3890</div>
+              <div class="text-xs md:text-sm font-medium text-white/95 mt-1 tracking-wide drop-shadow-xs">Noise Filtered</div>
+            </div>
+          </div>
+
         </div>
 
-        <!-- Metric 2: Traffic Lights / Active Incidents -->
-        <div class="flex items-center gap-3.5 group">
-          <div class="w-13 h-13 md:w-15 md:h-15 rounded-full border-2 border-white flex items-center justify-center bg-white/15 backdrop-blur-xs shrink-0 shadow-md transition-transform group-hover:scale-105">
-            <i data-lucide="traffic-cone" class="w-6 h-6 md:w-7 md:h-7 text-white"></i>
-          </div>
-          <div>
-            <div id="kpi-total" class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white font-sans leading-none tracking-tight drop-shadow-md">20</div>
-            <div class="text-xs md:text-sm font-medium text-white/95 mt-1 tracking-wide drop-shadow-xs">Active Incidents</div>
-          </div>
-        </div>
+        <!-- Hidden Support Elements for PCI & Cost -->
+        <span id="kpi-pci" class="hidden">-- /100</span>
+        <span id="kpi-cost" class="hidden">₹ --</span>
 
-        <!-- Metric 3: Rumble Strips / Work Dispatches -->
-        <div class="flex items-center gap-3.5 group">
-          <div class="w-13 h-13 md:w-15 md:h-15 rounded-full border-2 border-white flex items-center justify-center bg-white/15 backdrop-blur-xs shrink-0 shadow-md transition-transform group-hover:scale-105">
-            <i data-lucide="layers" class="w-6 h-6 md:w-7 md:h-7 text-white"></i>
-          </div>
-          <div>
-            <div id="kpi-work-orders" class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white font-sans leading-none tracking-tight drop-shadow-md">212</div>
-            <div class="text-xs md:text-sm font-medium text-white/95 mt-1 tracking-wide drop-shadow-xs">Work Dispatches</div>
-          </div>
-        </div>
-
-        <!-- Metric 4: Manholes / Sensor Noise Filtered -->
-        <div class="flex items-center gap-3.5 group">
-          <div class="w-13 h-13 md:w-15 md:h-15 rounded-full border-2 border-white flex items-center justify-center bg-white/15 backdrop-blur-xs shrink-0 shadow-md transition-transform group-hover:scale-105">
-            <i data-lucide="disc" class="w-6 h-6 md:w-7 md:h-7 text-white"></i>
-          </div>
-          <div>
-            <div id="kpi-fp" class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white font-sans leading-none tracking-tight drop-shadow-md">3890</div>
-            <div class="text-xs md:text-sm font-medium text-white/95 mt-1 tracking-wide drop-shadow-xs">Noise Filtered</div>
-          </div>
+        <!-- Right Side: Up / Down Carousel Navigation Buttons (Matching Reference) -->
+        <div class="hidden sm:flex flex-col gap-1.5 shrink-0 pl-2">
+          <button type="button" class="w-7 h-7 rounded-full bg-white/20 hover:bg-white/35 border border-white/40 flex items-center justify-center text-white transition-all cursor-pointer shadow-xs" title="Previous Stats">
+            <i data-lucide="chevron-up" class="w-4 h-4 text-white"></i>
+          </button>
+          <button type="button" class="w-7 h-7 rounded-full bg-white/20 hover:bg-white/35 border border-white/40 flex items-center justify-center text-white transition-all cursor-pointer shadow-xs" title="Next Stats">
+            <i data-lucide="chevron-down" class="w-4 h-4 text-white"></i>
+          </button>
         </div>
 
       </div>
-
-
-      <!-- Hidden Support Elements for PCI & Cost -->
-      <span id="kpi-pci" class="hidden">-- /100</span>
-      <span id="kpi-cost" class="hidden">₹ --</span>
-
-      <!-- Right Side: Up / Down Carousel Navigation Buttons (Matching Reference) -->
-      <div class="hidden sm:flex flex-col gap-1.5 shrink-0 pl-2">
-        <button type="button" class="w-7 h-7 rounded-full bg-white/20 hover:bg-white/35 border border-white/40 flex items-center justify-center text-white transition-all cursor-pointer shadow-xs" title="Previous Stats">
-          <i data-lucide="chevron-up" class="w-4 h-4 text-white"></i>
-        </button>
-        <button type="button" class="w-7 h-7 rounded-full bg-white/20 hover:bg-white/35 border border-white/40 flex items-center justify-center text-white transition-all cursor-pointer shadow-xs" title="Next Stats">
-          <i data-lucide="chevron-down" class="w-4 h-4 text-white"></i>
-        </button>
-      </div>
-
     </div>
-  </section>
+  </header>
+
 
 
   <!-- Main View Container with Uploaded Highway Photo Overlay Background -->
