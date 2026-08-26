@@ -42,11 +42,11 @@ code, pre, .font-mono {
   height: 100vh !important;
 }
 
-/* Dashboard Main GIS Section Highway Backdrop */
+/* Dashboard Main GIS Section Highway Backdrop with Richer Color Visibility */
 .gis-section-bg {
-  background-color: #f1f5f9;
+  background-color: #e2e8f0;
   background-image: 
-    linear-gradient(180deg, rgba(241, 245, 249, 0.88) 0%, rgba(226, 232, 240, 0.84) 50%, rgba(241, 245, 249, 0.90) 100%),
+    linear-gradient(180deg, rgba(241, 245, 249, 0.50) 0%, rgba(226, 232, 240, 0.45) 50%, rgba(241, 245, 249, 0.58) 100%),
     url('../assets/highway_view_bg.jpg');
   background-size: cover;
   background-position: center center;
@@ -54,6 +54,7 @@ code, pre, .font-mono {
   background-attachment: local;
   position: relative;
 }
+
 
 
 
