@@ -533,57 +533,77 @@
   </section>
 
 
-  <!-- Classic Official Government Flat Data Ledger -->
-  <section class="bg-[#F0F2F5] border-b border-[#D0D4DC] px-6 md:px-10 py-3">
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-3 max-w-7xl mx-auto">
+  <!-- Smart City & Highway Infrastructure Panoramic Stats Strip (Inspired by Reference) -->
+  <section class="relative w-full overflow-hidden border-y border-slate-700/60 shadow-lg" style="background-image: linear-gradient(180deg, rgba(8, 35, 75, 0.70) 0%, rgba(10, 49, 97, 0.75) 100%), url('/static/assets/city_stats_bg.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+    
+    <div class="max-w-7xl mx-auto px-6 md:px-10 py-5 flex items-center justify-between gap-4">
       
-      <!-- Card 1: Critical Hazards (Flat, Sharp, Red Label) -->
-      <div class="md:col-span-4 bg-white border border-[#CCCCCC] rounded-[2px] p-3 flex flex-col justify-between h-[104px] shadow-none">
-        <div class="text-[11px] font-bold text-[#D32F2F] uppercase tracking-wide">
-          IMMEDIATE ACTION REQUIRED
-        </div>
-        <div class="flex items-end justify-between gap-2 mt-1">
+      <!-- 4 High-Impact Metric Items with Circular White Ring Icons -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-12 flex-1">
+        
+        <!-- Metric 1: Billboards / Critical Hazards -->
+        <div class="flex items-center gap-3.5 group">
+          <div class="w-13 h-13 md:w-15 md:h-15 rounded-full border-2 border-white flex items-center justify-center bg-white/10 backdrop-blur-xs shrink-0 shadow-sm transition-transform group-hover:scale-105">
+            <i data-lucide="tv" class="w-6 h-6 md:w-7 md:h-7 text-white"></i>
+          </div>
           <div>
-            <div class="text-xs font-bold text-[#222222]">Critical High-Risk Hazards</div>
-            <div class="text-[11px] text-[#666666]">Hospital & National Transit Corridors</div>
+            <div id="kpi-critical" class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white font-sans leading-none tracking-tight">4</div>
+            <div class="text-xs md:text-sm font-medium text-white/90 mt-1 tracking-wide">Critical Hazards</div>
           </div>
-          <div id="kpi-critical" class="text-3xl font-bold text-[#D32F2F] font-sans leading-none">--</div>
         </div>
+
+        <!-- Metric 2: Traffic Lights / Active Incidents -->
+        <div class="flex items-center gap-3.5 group">
+          <div class="w-13 h-13 md:w-15 md:h-15 rounded-full border-2 border-white flex items-center justify-center bg-white/10 backdrop-blur-xs shrink-0 shadow-sm transition-transform group-hover:scale-105">
+            <i data-lucide="traffic-cone" class="w-6 h-6 md:w-7 md:h-7 text-white"></i>
+          </div>
+          <div>
+            <div id="kpi-total" class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white font-sans leading-none tracking-tight">20</div>
+            <div class="text-xs md:text-sm font-medium text-white/90 mt-1 tracking-wide">Active Incidents</div>
+          </div>
+        </div>
+
+        <!-- Metric 3: Rumble Strips / Work Dispatches -->
+        <div class="flex items-center gap-3.5 group">
+          <div class="w-13 h-13 md:w-15 md:h-15 rounded-full border-2 border-white flex items-center justify-center bg-white/10 backdrop-blur-xs shrink-0 shadow-sm transition-transform group-hover:scale-105">
+            <i data-lucide="layers" class="w-6 h-6 md:w-7 md:h-7 text-white"></i>
+          </div>
+          <div>
+            <div id="kpi-work-orders" class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white font-sans leading-none tracking-tight">212</div>
+            <div class="text-xs md:text-sm font-medium text-white/90 mt-1 tracking-wide">Work Dispatches</div>
+          </div>
+        </div>
+
+        <!-- Metric 4: Manholes / Sensor Noise Filtered -->
+        <div class="flex items-center gap-3.5 group">
+          <div class="w-13 h-13 md:w-15 md:h-15 rounded-full border-2 border-white flex items-center justify-center bg-white/10 backdrop-blur-xs shrink-0 shadow-sm transition-transform group-hover:scale-105">
+            <i data-lucide="disc" class="w-6 h-6 md:w-7 md:h-7 text-white"></i>
+          </div>
+          <div>
+            <div id="kpi-fp" class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white font-sans leading-none tracking-tight">3890</div>
+            <div class="text-xs md:text-sm font-medium text-white/90 mt-1 tracking-wide">Noise Filtered</div>
+          </div>
+        </div>
+
       </div>
 
-      <!-- Card 2: Incidents & Noise (Flat 2-Row Tabular Layout) -->
-      <div class="md:col-span-4 bg-white border border-[#CCCCCC] rounded-[2px] p-3 flex flex-col justify-between h-[104px] shadow-none">
-        <div class="flex items-center justify-between border-b border-[#E0E0E0] pb-2">
-          <span class="text-xs text-[#222222] font-medium">Active Incidents Under Monitoring</span>
-          <span id="kpi-total" class="text-base font-bold text-black font-sans leading-none">--</span>
-        </div>
-        <div class="flex items-center justify-between pt-1">
-          <span class="text-xs text-[#222222] font-medium">Sensor Noise / False Positives Filtered</span>
-          <span id="kpi-fp" class="text-base font-bold text-black font-sans leading-none">--</span>
-        </div>
-      </div>
+      <!-- Hidden Support Elements for PCI & Cost -->
+      <span id="kpi-pci" class="hidden">-- /100</span>
+      <span id="kpi-cost" class="hidden">₹ --</span>
 
-      <!-- Card 3: Pavement & Budget (Flat 2-Column Tabular Grid) -->
-      <div class="md:col-span-4 bg-white border border-[#CCCCCC] rounded-[2px] p-3 flex flex-col justify-center h-[104px] shadow-none">
-        <div class="grid grid-cols-2 gap-3">
-          <!-- Col 1: Pavement Index -->
-          <div class="border-r border-[#E0E0E0] pr-2 flex flex-col justify-between">
-            <div class="text-[10px] font-bold text-[#666666] uppercase tracking-wider">PAVEMENT INDEX</div>
-            <div id="kpi-pci" class="text-base font-bold text-[#111111] font-sans leading-tight my-0.5">-- <span class="text-xs font-normal text-[#666666]">/100</span></div>
-            <div class="text-[11px] text-[#666666]">IRC:82 Standard</div>
-          </div>
-
-          <!-- Col 2: PWD Budget & Dispatches -->
-          <div class="pl-1 flex flex-col justify-between">
-            <div class="text-[10px] font-bold text-[#666666] uppercase tracking-wider">PWD REPAIR BUDGET</div>
-            <div id="kpi-cost" class="text-base font-bold text-[#111111] font-sans leading-tight my-0.5">₹ --</div>
-            <div class="text-[11px] text-[#666666]">Dispatches: <strong id="kpi-work-orders" class="font-bold text-[#111111]">--</strong></div>
-          </div>
-        </div>
+      <!-- Right Side: Up / Down Carousel Navigation Buttons (Matching Reference) -->
+      <div class="hidden sm:flex flex-col gap-1.5 shrink-0 pl-2">
+        <button type="button" class="w-7 h-7 rounded-full bg-white/20 hover:bg-white/35 border border-white/40 flex items-center justify-center text-white transition-all cursor-pointer shadow-xs" title="Previous Stats">
+          <i data-lucide="chevron-up" class="w-4 h-4 text-white"></i>
+        </button>
+        <button type="button" class="w-7 h-7 rounded-full bg-white/20 hover:bg-white/35 border border-white/40 flex items-center justify-center text-white transition-all cursor-pointer shadow-xs" title="Next Stats">
+          <i data-lucide="chevron-down" class="w-4 h-4 text-white"></i>
+        </button>
       </div>
 
     </div>
   </section>
+
 
   <!-- Main View Container with Uploaded Highway Photo Overlay Background -->
   <main class="flex-1 p-6 overflow-y-auto gis-section-bg">
