@@ -8,63 +8,73 @@
 
   const translations = {
     en: {
-      // Header
+      // Header & Gov Bar
+      gov_india: "भारत सरकार | Government of India",
+      gov_morth: "सड़क परिवहन और राजमार्ग मंत्रालय | Ministry of Road Transport & Highways",
+      nhai_helpline: "NHAI 24/7 Helpline:",
+      live_telemetry_badge: "IRC:82 LIVE TELEMETRY",
       app_title: "SADAK-SURAKSHA",
       app_badge: "AI 🇮🇳",
-      system_live: "System Live",
-      app_subtitle: "AI-Powered Road Safety & Maintenance Platform",
-      location_label: "Location:",
-      all_india: "🇮🇳 All India",
-      select_city: "Select City",
-      theme_light: "Light",
-      theme_dark: "Dark",
-      report_road_issue: "Report Road Issue",
-      citizen_portal: "📱 Citizen Portal",
-      gemini_key: "Gemini Key",
+      header_dept: "NHAI • NATIONAL COMMAND",
+      header_title_sub: "National Multimodal AI Road Hazard & Infrastructure Maintenance Intelligence Platform",
+      header_mandate_1: "MoRTH IRC:82 Standard Pavement Monitoring",
+      header_mandate_2: "16 State Transport Corridors",
+      citizen_portal_btn: "Citizen Portal ↗",
+      exit_session_btn: "Exit Session",
 
-      // Navigation Dock
-      nav_dashboard: "Dashboard",
-      nav_ai_intel: "AI Intelligence",
-      nav_operations: "Operations",
-      nav_insights: "Insights",
+      // Navigation & Filter Bar
+      nav_dropdown_label: "GIS Hazard Map",
+      state_label: "State:",
+      city_label: "City:",
+      actions_tools_btn: "Actions & Tools",
+      tools_heading: "Engineering Tools",
+      tools_status_active: "Active",
+      tool_ingest_title: "Ingest Road Incident",
+      tool_ingest_sub: "Submit manual shock / defect data",
+      tool_gemini_title: "Gemini API Key",
+      tool_gemini_sub: "Configure cloud multimodal AI",
+      tool_exit_title: "Switch Role / Exit",
+      tool_exit_sub: "Return to role gateway",
 
-      // Dropdown: AI Intelligence
+      // Navigation Modules Dropdown
+      nav_gis_map: "GIS Hazard Map",
+      nav_gis_map_desc: "Live geotagged road defect triage",
       nav_forecast: "AI Road Forecast",
       nav_forecast_desc: "7-day predictive risk corridors",
-      nav_inspection: "AI Inspection",
-      nav_inspection_desc: "Upload photos or road video streams",
-      nav_assistant: "AI Assistant",
-      nav_assistant_desc: "Ask maintenance & query assistant",
+      nav_resource: "Resource Intelligence",
+      nav_resource_desc: "Auto-dispatch PWD repair units",
+      nav_studio: "Sensor Fusion Studio",
+      nav_studio_desc: "Interactive 4-modal physics corroboration",
+      nav_patrol: "Patrol Simulator",
+      nav_patrol_desc: "Live GPS telemetry & road anomaly feed",
+      nav_work_orders: "PWD Work Orders",
+      nav_work_orders_desc: "Clustered contractor repair dispatches",
+      nav_copilot: "NHAI Assistant",
+      nav_copilot_desc: "MoRTH IRC:82 natural language copilot",
+      nav_audit: "Audit & Compliance",
+      nav_audit_desc: "IRC:82 compliance & budget analytics",
+      nav_citizen: "Citizen Portal",
+      nav_citizen_desc: "Public ticket tracking & reporting",
 
-      // Dropdown: Operations
-      nav_resources: "Resource Intelligence",
-      nav_resources_desc: "Auto-dispatch PWD repair units",
-      nav_tasks: "Repair Tasks",
-      nav_tasks_desc: "Work orders & track crew progress",
-      nav_live_data: "Live Data",
-      nav_live_data_desc: "Inspect real-time CCTV/IoT sensor feeds",
+      // Stats Strip
+      kpi_critical_hazards: "Critical Hazards",
+      kpi_critical_desc: "Emergency 24h PWD action required for deep potholes >8cm and structural cave-ins on hospital corridors and high-speed transit routes.",
+      kpi_active_incidents: "Active Incidents",
+      kpi_active_desc: "Live verified road defects across 16 states currently under AI sensor, CCTV, and citizen 311 monitoring awaiting contractor closure.",
+      kpi_work_dispatches: "Work Dispatches",
+      kpi_work_desc: "Spatially clustered road repair and asphalt paving work orders auto-generated and dispatched to regional PWD teams.",
+      kpi_noise_filtered: "Noise Filtered",
+      kpi_noise_desc: "Harmless tree shadows, road paint marks, and sensor vibration noise successfully rejected by 4-Modal Sensor Fusion AI.",
 
-      // Dropdown: Insights
-      nav_reports: "Reports & Insights",
-      nav_reports_desc: "Export GIS audit & compliance metrics",
-      nav_city_analytics: "City Analytics",
-      nav_city_analytics_desc: "Urban infrastructure health scoring",
-      nav_trends: "Trends & Statistics",
-      nav_trends_desc: "Hazard patterns & historical analysis",
-
-      // KPI Metrics
-      kpi_active_issues: "ACTIVE ISSUES",
-      kpi_active_sub: "Live Geotagged Hazards",
-      kpi_critical_issues: "CRITICAL SEVERITY",
-      kpi_critical_sub: "Immediate Danger",
-      kpi_road_health: "ROAD HEALTH INDEX",
-      kpi_road_health_sub: "Avg Structural Quality",
-      kpi_repair_teams: "REPAIR TEAMS",
-      kpi_repair_teams_sub: "Active / Standby Units",
-      kpi_false_positives: "FALSE POSITIVES",
-      kpi_false_positives_sub: "Filtered by AI Fusion",
-      kpi_est_cost: "EST. REPAIR COST",
-      kpi_est_cost_sub: "Prioritized Budget Need",
+      // Priority Backlog Feed Box
+      feed_box_title: "Priority Backlog Feed 🇮🇳",
+      feed_box_subtitle: "Live Defect Triage",
+      feed_box_hint: "Click to Open / Close",
+      feed_filter_all: "All Hazards",
+      feed_filter_pothole: "Potholes",
+      feed_filter_water: "Waterlogging",
+      feed_filter_structural: "Structural",
+      feed_search_ph: "Search hazards, roads, cities...",
 
       // Severity Legend
       legend_severity: "SEVERITY",
@@ -192,63 +202,73 @@
     },
 
     hi: {
-      // Header
+      // Header & Gov Bar
+      gov_india: "भारत सरकार | Government of India",
+      gov_morth: "सड़क परिवहन और राजमार्ग मंत्रालय | Ministry of Road Transport & Highways",
+      nhai_helpline: "एनएचएआई 24/7 हेल्पलाइन:",
+      live_telemetry_badge: "IRC:82 लाइव टेलीमेट्री",
       app_title: "सड़क-सुरक्षा",
       app_badge: "एआई 🇮🇳",
-      system_live: "सिस्टम लाइव",
-      app_subtitle: "एआई-संचालित सड़क सुरक्षा एवं रखरखाव मंच",
-      location_label: "स्थान:",
-      all_india: "🇮🇳 संपूर्ण भारत",
-      select_city: "शहर चुनें",
-      theme_light: "लाइट",
-      theme_dark: "डार्क",
-      report_road_issue: "सड़क समस्या दर्ज करें",
-      citizen_portal: "📱 नागरिक पोर्टल",
-      gemini_key: "जेमिनी कुंजी",
+      header_dept: "एनएचएआई • राष्ट्रीय कमान",
+      header_title_sub: "राष्ट्रीय मल्टीमॉडल एआई सड़क खतरा एवं अवसंरचना रखरखाव इंटेलिजेंस मंच",
+      header_mandate_1: "सड़क मंत्रालय IRC:82 मानक सड़क निगरानी",
+      header_mandate_2: "16 राज्य परिवहन गलियारे",
+      citizen_portal_btn: "नागरिक पोर्टल ↗",
+      exit_session_btn: "सत्र समाप्त",
 
-      // Navigation Dock
-      nav_dashboard: "डैशबोर्ड",
-      nav_ai_intel: "एआई इंटेलिजेंस",
-      nav_operations: "परिचालन",
-      nav_insights: "इनसाइट्स",
+      // Navigation & Filter Bar
+      nav_dropdown_label: "जीआईएस खतरा मानचित्र",
+      state_label: "राज्य:",
+      city_label: "शहर:",
+      actions_tools_btn: "कार्रवाई एवं उपकरण",
+      tools_heading: "इंजीनियरिंग उपकरण",
+      tools_status_active: "सक्रिय",
+      tool_ingest_title: "सड़क घटना दर्ज करें",
+      tool_ingest_sub: "मैनुअल कंपन / दोष डेटा सबमिट करें",
+      tool_gemini_title: "जेमिनी एपीआई कुंजी",
+      tool_gemini_sub: "क्लाउड मल्टीमॉडल एआई कॉन्फ़िगर करें",
+      tool_exit_title: "भूमिका बदलें / बाहर निकलें",
+      tool_exit_sub: "रोल गेटवे पर वापस जाएं",
 
-      // Dropdown: AI Intelligence
+      // Navigation Modules Dropdown
+      nav_gis_map: "जीआईएस खतरा मानचित्र",
+      nav_gis_map_desc: "लाइव जियोटैग की गई सड़क दोष प्राथमिकता",
       nav_forecast: "एआई सड़क पूर्वानुमान",
       nav_forecast_desc: "7-दिवसीय पूर्वानुमानित जोखिम गलियारे",
-      nav_inspection: "एआई निरीक्षण",
-      nav_inspection_desc: "फ़ोटो या सड़क वीडियो स्ट्रीम अपलोड करें",
-      nav_assistant: "एआई सहायक",
-      nav_assistant_desc: "रखरखाव एवं प्रश्न सहायक से पूछें",
+      nav_resource: "संसाधन इंटेलिजेंस",
+      nav_resource_desc: "पीडब्ल्यूडी मरम्मत इकाइयों का स्वचालित प्रेषण",
+      nav_studio: "सेंसर फ़्यूज़न स्टूडियो",
+      nav_studio_desc: "इंटरैक्टिव 4-मॉडल भौतिकी सत्यापन",
+      nav_patrol: "गश्ती सिम्युलेटर",
+      nav_patrol_desc: "लाइव जीपीएस टेलीमेट्री एवं सड़क विसंगति फ़ीड",
+      nav_work_orders: "पीडब्ल्यूडी कार्य आदेश",
+      nav_work_orders_desc: "समूहीकृत ठेकेदार मरम्मत प्रेषण",
+      nav_copilot: "एनएचएआई एआई सहायक",
+      nav_copilot_desc: "सड़क मंत्रालय IRC:82 प्राकृतिक भाषा सहायक",
+      nav_audit: "ऑडिट एवं अनुपालन",
+      nav_audit_desc: "IRC:82 अनुपालन एवं बजट विश्लेषण",
+      nav_citizen: "नागरिक पोर्टल",
+      nav_citizen_desc: "सार्वजनिक टिकट ट्रैकिंग एवं रिपोर्टिंग",
 
-      // Dropdown: Operations
-      nav_resources: "संसाधन इंटेलिजेंस",
-      nav_resources_desc: "पीडब्ल्यूडी मरम्मत इकाइयों का स्वचालित प्रेषण",
-      nav_tasks: "मरम्मत कार्य",
-      nav_tasks_desc: "कार्य आदेश एवं टीम प्रगति ट्रैकिंग",
-      nav_live_data: "लाइव डेटा",
-      nav_live_data_desc: "रीयल-टाइम सीसीटीवी/आईओटी सेंसर फ़ीड देखें",
+      // Stats Strip
+      kpi_critical_hazards: "गंभीर खतरे",
+      kpi_critical_desc: "अस्पताल गलियारों और हाई-स्पीड पारगमन मार्गों पर >8 सेमी गहरे गड्ढों और धंसने के लिए तत्काल 24 घंटे में पीडब्ल्यूडी कार्रवाई आवश्यक।",
+      kpi_active_incidents: "सक्रिय घटनाएं",
+      kpi_active_desc: "16 राज्यों में लाइव सत्यापित सड़क दोष जो वर्तमान में एआई सेंसर, सीसीटीवी और नागरिक 311 निगरानी में ठेकेदार द्वारा मरम्मत की प्रतीक्षा में हैं।",
+      kpi_work_dispatches: "कार्य प्रेषण",
+      kpi_work_desc: "क्षेत्रीय पीडब्ल्यूडी टीमों को स्वचालित रूप से उत्पन्न और प्रेषित स्थानिक रूप से समूहीकृत सड़क मरम्मत और डामरीकरण कार्य आदेश।",
+      kpi_noise_filtered: "शोर फ़िल्टर किया गया",
+      kpi_noise_desc: "4-मॉडल सेंसर फ्यूज़न एआई द्वारा पेड़ की हानिरहित छाया, सड़क के पेंट के निशान और सेंसर कंपन के शोर को सफलतापूर्वक खारिज किया गया।",
 
-      // Dropdown: Insights
-      nav_reports: "रिपोर्ट एवं इनसाइट्स",
-      nav_reports_desc: "जीआईएस ऑडिट एवं अनुपालन रिपोर्ट निर्यात करें",
-      nav_city_analytics: "शहर विश्लेषण",
-      nav_city_analytics_desc: "शहरी बुनियादी ढांचा स्वास्थ्य स्कोरिंग",
-      nav_trends: "रुझान एवं सांख्यिकी",
-      nav_trends_desc: "खतरे के पैटर्न एवं ऐतिहासिक विश्लेषण",
-
-      // KPI Metrics
-      kpi_active_issues: "सक्रिय समस्याएँ",
-      kpi_active_sub: "लाइव जियोटैग किए गए खतरे",
-      kpi_critical_issues: "गंभीर समस्याएँ",
-      kpi_critical_sub: "तत्काल खतरे वाली सड़कें",
-      kpi_road_health: "सड़क स्वास्थ्य सूचकांक",
-      kpi_road_health_sub: "औसत संरचनात्मक गुणवत्ता",
-      kpi_repair_teams: "उपलब्ध टीमें",
-      kpi_repair_teams_sub: "सक्रिय / स्टैंडबाय इकाइयां",
-      kpi_false_positives: "गलत रिपोर्टें",
-      kpi_false_positives_sub: "एआई फ़्यूज़न द्वारा फ़िल्टर",
-      kpi_est_cost: "अनुमानित लागत",
-      kpi_est_cost_sub: "प्राथमिकता बजट आवश्यकता",
+      // Priority Backlog Feed Box
+      feed_box_title: "प्राथमिकता बैकलॉग फ़ीड 🇮🇳",
+      feed_box_subtitle: "लाइव दोष प्राथमिकता",
+      feed_box_hint: "खोलने / बंद करने के लिए क्लिक करें",
+      feed_filter_all: "सभी खतरे",
+      feed_filter_pothole: "सड़क गड्ढे",
+      feed_filter_water: "जलभराव",
+      feed_filter_structural: "संरचनात्मक क्षति",
+      feed_search_ph: "खतरे, सड़कें, शहर खोजें...",
 
       // Severity Legend
       legend_severity: "गंभीरता",
@@ -374,6 +394,7 @@
       loading: "लोड हो रहा है...",
       status: "स्थिति"
     }
+
   };
 
   // Helper translations for dynamic values

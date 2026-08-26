@@ -548,11 +548,18 @@ function renderIncidentFeed(hazards) {
       }
     };
 
+    const severityLabel = h.fusion.is_false_positive 
+      ? (window.t ? window.t('status_audited_fp', 'FALSE POSITIVE') : 'FALSE POSITIVE') 
+      : (window.translateSeverity ? window.translateSeverity(h.severity) : h.severity);
+    const riskLabel = window.t ? window.t('risk_label', 'Risk:') : 'Risk:';
+    const depthLabel = window.getLanguage && window.getLanguage() === 'hi' ? 'गहराई' : 'Depth';
+    const areaLabel = window.getLanguage && window.getLanguage() === 'hi' ? 'क्षेत्र' : 'Area';
+
     card.innerHTML = `
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-1.5">
           <span class="text-[10px] font-mono px-2 py-0.5 rounded-md ${badgeBg} uppercase font-bold">
-            ${h.fusion.is_false_positive ? 'FALSE POSITIVE' : h.severity}
+            ${severityLabel}
           </span>
           <span class="text-[10px] text-slate-700 font-bold bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-md">${h.state}</span>
         </div>
@@ -560,7 +567,7 @@ function renderIncidentFeed(hazards) {
           <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Open location in Google Maps" class="text-blue-900 hover:bg-blue-100 inline-flex items-center gap-0.5 text-[10px] font-mono font-bold bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded-md">
             🗺️ Maps ↗
           </a>
-          <span class="text-xs font-mono ${riskColor}">Risk: ${h.priority.raw_risk_score}</span>
+          <span class="text-xs font-mono ${riskColor}">${riskLabel} ${h.priority.raw_risk_score}</span>
         </div>
       </div>
       <div>
@@ -568,8 +575,8 @@ function renderIncidentFeed(hazards) {
         <p class="text-[11px] text-slate-800 truncate mt-0.5 font-semibold">${h.address}</p>
       </div>
       <div class="flex items-center justify-between text-[10px] text-slate-900 font-mono font-black border-t border-slate-200/80 pt-2">
-        <span>Depth: ${h.fusion.physical_depth_cm}cm</span>
-        <span>Area: ${h.fusion.physical_area_sqm}m²</span>
+        <span>${depthLabel}: ${h.fusion.physical_depth_cm}cm</span>
+        <span>${areaLabel}: ${h.fusion.physical_area_sqm}m²</span>
         <span class="text-purple-950 font-black">${formatINR(h.priority.estimated_repair_cost_usd)}</span>
       </div>
 

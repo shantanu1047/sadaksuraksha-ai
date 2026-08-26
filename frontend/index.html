@@ -39,6 +39,9 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
+  <!-- Internationalization (i18n) Engine -->
+  <script src="/static/js/i18n.js"></script>
+
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/static/css/styles.css">
 </head>
@@ -225,21 +228,21 @@
           <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
           <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07l14.14-14.14" stroke="currentColor" stroke-width="1.2"/>
         </svg>
-        <span class="font-bold text-slate-200 tracking-wide">भारत सरकार | Government of India</span>
+        <span data-i18n="gov_india" class="font-bold text-slate-200 tracking-wide">भारत सरकार | Government of India</span>
       </div>
       <span class="text-slate-600 hidden sm:inline">•</span>
-      <span class="text-slate-400 font-medium hidden sm:inline">सड़क परिवहन और राजमार्ग मंत्रालय | Ministry of Road Transport & Highways</span>
+      <span data-i18n="gov_morth" class="text-slate-400 font-medium hidden sm:inline">सड़क परिवहन और राजमार्ग मंत्रालय | Ministry of Road Transport & Highways</span>
     </div>
 
     <div class="flex items-center gap-4 text-slate-300 font-mono text-[10px]">
       <span class="hidden md:flex items-center gap-1">
         <i data-lucide="phone" class="w-3 h-3 text-[#F47216]"></i>
-        <span>NHAI 24/7 Helpline: <strong class="text-white font-bold">1073</strong></span>
+        <span><span data-i18n="nhai_helpline">NHAI 24/7 Helpline:</span> <strong class="text-white font-bold">1073</strong></span>
       </span>
       <span class="text-slate-700 hidden md:inline">|</span>
       <span class="flex items-center gap-1.5">
         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        <span class="text-emerald-400 font-bold tracking-wider">IRC:82 LIVE TELEMETRY</span>
+        <span data-i18n="live_telemetry_badge" class="text-emerald-400 font-bold tracking-wider">IRC:82 LIVE TELEMETRY</span>
       </span>
     </div>
   </div>
@@ -268,22 +271,22 @@
           <div>
             <div class="flex items-center gap-2.5 flex-wrap">
               <h1 class="text-2xl md:text-3xl font-black tracking-tight text-white font-sans flex items-center gap-2">
-                <span>SADAK-SURAKSHA</span>
+                <span data-i18n="app_title">SADAK-SURAKSHA</span>
                 <span class="text-[#FF9933]">AI</span>
                 <span class="text-xl">🇮🇳</span>
               </h1>
               <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-md text-[10px] font-black bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-mono tracking-wider">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span id="header-dept-text">NHAI • NATIONAL COMMAND</span>
+                <span id="header-dept-text" data-i18n="header_dept">NHAI • NATIONAL COMMAND</span>
               </span>
             </div>
-            <p class="text-xs md:text-sm text-slate-200 font-medium tracking-wide mt-1 leading-relaxed">
+            <p data-i18n="header_title_sub" class="text-xs md:text-sm text-slate-200 font-medium tracking-wide mt-1 leading-relaxed">
               National Multimodal AI Road Hazard & Infrastructure Maintenance Intelligence Platform
             </p>
             <p class="text-[11px] text-amber-300/90 font-mono font-semibold mt-0.5 flex items-center gap-2">
-              <span>MoRTH IRC:82 Standard Pavement Monitoring</span>
+              <span data-i18n="header_mandate_1">MoRTH IRC:82 Standard Pavement Monitoring</span>
               <span class="text-slate-400">•</span>
-              <span>16 State Transport Corridors</span>
+              <span data-i18n="header_mandate_2">16 State Transport Corridors</span>
             </p>
           </div>
         </div>
@@ -292,17 +295,18 @@
         <div class="flex items-center gap-3 ml-auto">
           <a href="/report" target="_blank" class="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-white/20 text-white text-xs font-bold transition-all shadow-sm">
             <i data-lucide="smartphone" class="w-4 h-4 text-amber-400"></i>
-            <span>Citizen Portal ↗</span>
+            <span data-i18n="citizen_portal_btn">Citizen Portal ↗</span>
           </a>
 
           <button type="button" onclick="handleLogout()" class="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-red-950/60 hover:bg-red-900/70 border border-red-500/40 text-red-200 text-xs font-bold transition-all shadow-sm cursor-pointer" title="Exit to Role Gateway">
             <i data-lucide="log-out" class="w-4 h-4 text-red-400"></i>
-            <span class="hidden md:inline">Exit Session</span>
+            <span data-i18n="exit_session_btn" class="hidden md:inline">Exit Session</span>
           </button>
         </div>
 
       </div>
     </div>
+
 
     <!-- =========================================================
          3. SLEEK ELEVATED NHAI FILTER & CONTROLS DOCK (Sticky / Fixed on Scroll)
@@ -322,7 +326,7 @@
         <div class="relative" id="dropdown-nav-wrapper">
           <button type="button" onclick="toggleNavDropdown(event)" id="nav-dropdown-btn" class="nhai-input-field flex items-center gap-2.5 px-3.5 py-2 text-xs font-extrabold cursor-pointer shadow-2xs">
             <i data-lucide="layout-grid" class="w-4 h-4 text-[#F47216]"></i>
-            <span id="nav-dropdown-label" class="text-slate-900 font-black">GIS Hazard Map</span>
+            <span id="nav-dropdown-label" data-i18n="nav_dropdown_label" class="text-slate-900 font-black">GIS Hazard Map</span>
             <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-500 transition-transform duration-200" id="nav-dropdown-arrow"></i>
           </button>
 
@@ -332,7 +336,7 @@
             
             <div class="flex items-center justify-between px-3 py-1.5 bg-slate-100 rounded-md border border-slate-200">
               <span class="text-[10px] font-black uppercase tracking-wider text-slate-800 font-mono flex items-center gap-1.5">
-                <i data-lucide="layers" class="w-3.5 h-3.5 text-[#0A3161]"></i> Platform Modules
+                <i data-lucide="layers" class="w-3.5 h-3.5 text-[#0A3161]"></i> <span data-i18n="tools_heading">Platform Modules</span>
               </span>
               <span class="text-[9px] bg-[#0A3161] text-white font-mono px-2 py-0.5 rounded-sm font-bold">9 Views</span>
             </div>
@@ -343,8 +347,8 @@
                 <i data-lucide="map" class="w-4 h-4 text-[#F47216]"></i>
               </div>
               <div>
-                <p class="text-xs font-bold text-slate-900 leading-none">GIS Hazard Map</p>
-                <p class="text-[11px] text-slate-600 font-medium mt-1">Spatial priority backlog & live pins</p>
+                <p data-i18n="nav_gis_map" class="text-xs font-bold text-slate-900 leading-none">GIS Hazard Map</p>
+                <p data-i18n="nav_gis_map_desc" class="text-[11px] text-slate-600 font-medium mt-1">Spatial priority backlog & live pins</p>
               </div>
             </button>
 
@@ -354,8 +358,8 @@
                 <i data-lucide="trending-up" class="w-4 h-4 text-purple-700"></i>
               </div>
               <div>
-                <p class="text-xs font-bold text-slate-900 leading-none">AI Road Forecast</p>
-                <p class="text-[11px] text-slate-600 font-medium mt-1">Predictive 7-day failure risk & weather</p>
+                <p data-i18n="nav_forecast" class="text-xs font-bold text-slate-900 leading-none">AI Road Forecast</p>
+                <p data-i18n="nav_forecast_desc" class="text-[11px] text-slate-600 font-medium mt-1">Predictive 7-day failure risk & weather</p>
               </div>
             </button>
 
@@ -365,8 +369,8 @@
                 <i data-lucide="cpu" class="w-4 h-4 text-cyan-800"></i>
               </div>
               <div>
-                <p class="text-xs font-bold text-slate-900 leading-none">Resource Intelligence</p>
-                <p class="text-[11px] text-slate-600 font-medium mt-1">Auto-dispatch PWD repair units & fleet</p>
+                <p data-i18n="nav_resource" class="text-xs font-bold text-slate-900 leading-none">Resource Intelligence</p>
+                <p data-i18n="nav_resource_desc" class="text-[11px] text-slate-600 font-medium mt-1">Auto-dispatch PWD repair units & fleet</p>
               </div>
             </button>
 
@@ -376,8 +380,8 @@
                 <i data-lucide="scan" class="w-4 h-4 text-[#0A3161]"></i>
               </div>
               <div>
-                <p class="text-xs font-bold text-slate-900 leading-none">Inspection Studio</p>
-                <p class="text-[11px] text-slate-600 font-medium mt-1">Visual AI & 4-modal sensor fusion</p>
+                <p data-i18n="nav_studio" class="text-xs font-bold text-slate-900 leading-none">Inspection Studio</p>
+                <p data-i18n="nav_studio_desc" class="text-[11px] text-slate-600 font-medium mt-1">Visual AI & 4-modal sensor fusion</p>
               </div>
             </button>
 
@@ -387,8 +391,8 @@
                 <i data-lucide="car" class="w-4 h-4 text-emerald-800"></i>
               </div>
               <div>
-                <p class="text-xs font-bold text-slate-900 leading-none">Patrol Simulator</p>
-                <p class="text-[11px] text-slate-600 font-medium mt-1">Live vehicle telemetry & roughness</p>
+                <p data-i18n="nav_patrol" class="text-xs font-bold text-slate-900 leading-none">Patrol Simulator</p>
+                <p data-i18n="nav_patrol_desc" class="text-[11px] text-slate-600 font-medium mt-1">Live vehicle telemetry & roughness</p>
               </div>
             </button>
 
@@ -398,8 +402,8 @@
                 <i data-lucide="clipboard-list" class="w-4 h-4 text-orange-700"></i>
               </div>
               <div>
-                <p class="text-xs font-bold text-slate-900 leading-none">Work Orders</p>
-                <p class="text-[11px] text-slate-600 font-medium mt-1">Clustered PWD repair schedule</p>
+                <p data-i18n="nav_work_orders" class="text-xs font-bold text-slate-900 leading-none">Work Orders</p>
+                <p data-i18n="nav_work_orders_desc" class="text-[11px] text-slate-600 font-medium mt-1">Clustered PWD repair schedule</p>
               </div>
             </button>
 
@@ -409,8 +413,8 @@
                 <i data-lucide="bot" class="w-4 h-4 text-[#0A3161]"></i>
               </div>
               <div>
-                <p class="text-xs font-bold text-slate-900 leading-none">AI Co-Pilot</p>
-                <p class="text-[11px] text-slate-600 font-medium mt-1">MoRTH & IRC engineering chat</p>
+                <p data-i18n="nav_copilot" class="text-xs font-bold text-slate-900 leading-none">AI Co-Pilot</p>
+                <p data-i18n="nav_copilot_desc" class="text-[11px] text-slate-600 font-medium mt-1">MoRTH & IRC engineering chat</p>
               </div>
             </button>
 
@@ -420,8 +424,8 @@
                 <i data-lucide="bar-chart-3" class="w-4 h-4 text-emerald-800"></i>
               </div>
               <div>
-                <p class="text-xs font-bold text-slate-900 leading-none">Analytics & Reports</p>
-                <p class="text-[11px] text-slate-600 font-medium mt-1">Defect distribution & cost charts</p>
+                <p data-i18n="nav_audit" class="text-xs font-bold text-slate-900 leading-none">Analytics & Reports</p>
+                <p data-i18n="nav_audit_desc" class="text-[11px] text-slate-600 font-medium mt-1">Defect distribution & cost charts</p>
               </div>
             </button>
 
@@ -431,8 +435,8 @@
                 <i data-lucide="radio-tower" class="w-4 h-4 text-orange-700"></i>
               </div>
               <div>
-                <p class="text-xs font-bold text-slate-900 leading-none">Multi-Source Ingestion</p>
-                <p class="text-[11px] text-slate-600 font-medium mt-1">CCTV, Google Maps & Citizen 311</p>
+                <p data-i18n="nav_live_data" class="text-xs font-bold text-slate-900 leading-none">Multi-Source Ingestion</p>
+                <p data-i18n="nav_live_data_desc" class="text-[11px] text-slate-600 font-medium mt-1">CCTV, Google Maps & Citizen 311</p>
               </div>
             </button>
           </div>
@@ -440,7 +444,7 @@
 
         <!-- 2. STATE SELECTOR -->
         <div class="flex items-center gap-1.5">
-          <label for="state-selector" class="text-xs font-bold text-slate-700">State:</label>
+          <label for="state-selector" data-i18n="state_label" class="text-xs font-bold text-slate-700">State:</label>
           <select id="state-selector" onchange="handleStateChange(this.value)" class="nhai-input-field px-3 py-2 cursor-pointer">
             <option value="all">🇮🇳 All India (16 States)</option>
             <option value="Karnataka" selected>📍 Karnataka (Bengaluru)</option>
@@ -465,7 +469,7 @@
 
         <!-- 3. CITY SELECTOR -->
         <div class="hidden sm:flex items-center gap-1.5">
-          <label for="city-selector" class="text-xs font-bold text-slate-700">City:</label>
+          <label for="city-selector" data-i18n="city_label" class="text-xs font-bold text-slate-700">City:</label>
           <select id="city-selector" onchange="handleCityChange(this.value)" class="nhai-input-field px-3 py-2 cursor-pointer">
             <option value="all">All Cities</option>
           </select>
@@ -486,7 +490,7 @@
         <div class="relative" id="dropdown-actions-wrapper">
           <button type="button" onclick="toggleActionsDropdown(event)" id="actions-dropdown-btn" class="nhai-btn-saffron flex items-center gap-2 px-4 py-2 text-xs cursor-pointer">
             <i data-lucide="wrench" class="w-4 h-4 text-white"></i>
-            <span>Actions & Tools</span>
+            <span data-i18n="actions_tools_btn">Actions & Tools</span>
             <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-white" id="actions-dropdown-arrow"></i>
           </button>
 
@@ -496,9 +500,9 @@
 
             <div class="flex items-center justify-between px-3 py-1.5 bg-amber-50 rounded-md border border-amber-200">
               <span class="text-[10px] font-black uppercase tracking-wider text-amber-950 font-mono flex items-center gap-1.5">
-                <i data-lucide="wrench" class="w-3.5 h-3.5 text-[#F47216]"></i> Engineering Tools
+                <i data-lucide="wrench" class="w-3.5 h-3.5 text-[#F47216]"></i> <span data-i18n="tools_heading">Engineering Tools</span>
               </span>
-              <span class="text-[9px] bg-[#F47216] text-white font-mono px-2 py-0.5 rounded-sm font-bold">Active</span>
+              <span data-i18n="tools_status_active" class="text-[9px] bg-[#F47216] text-white font-mono px-2 py-0.5 rounded-sm font-bold">Active</span>
             </div>
             
             <button type="button" onclick="triggerQuickScanModal(); closeAllDropdowns();" class="w-full flex items-center gap-3 p-2.5 rounded-lg hover:bg-amber-50/70 border border-transparent hover:border-amber-200 transition-all text-left group cursor-pointer">
@@ -506,8 +510,8 @@
                 <i data-lucide="plus-circle" class="w-4 h-4 text-[#F47216]"></i>
               </div>
               <div>
-                <p class="text-xs font-bold text-slate-900 group-hover:text-amber-800 transition-colors leading-none">Ingest Road Incident</p>
-                <p class="text-[11px] text-slate-600 font-medium mt-1">Submit manual shock / defect data</p>
+                <p data-i18n="tool_ingest_title" class="text-xs font-bold text-slate-900 group-hover:text-amber-800 transition-colors leading-none">Ingest Road Incident</p>
+                <p data-i18n="tool_ingest_sub" class="text-[11px] text-slate-600 font-medium mt-1">Submit manual shock / defect data</p>
               </div>
             </button>
 
@@ -516,8 +520,8 @@
                 <i data-lucide="key" class="w-4 h-4 text-[#0A3161]"></i>
               </div>
               <div>
-                <p class="text-xs font-bold text-slate-900 group-hover:text-blue-900 transition-colors leading-none" id="apiKeyBtnText">Gemini API Key</p>
-                <p class="text-[11px] text-slate-600 font-medium mt-1">Configure cloud multimodal AI</p>
+                <p data-i18n="tool_gemini_title" class="text-xs font-bold text-slate-900 group-hover:text-blue-900 transition-colors leading-none" id="apiKeyBtnText">Gemini API Key</p>
+                <p data-i18n="tool_gemini_sub" class="text-[11px] text-slate-600 font-medium mt-1">Configure cloud multimodal AI</p>
               </div>
             </button>
 
@@ -528,14 +532,15 @@
                 <i data-lucide="log-out" class="w-4 h-4 text-red-600"></i>
               </div>
               <div>
-                <p class="text-xs font-bold text-red-600 group-hover:text-red-700 transition-colors leading-none">Switch Role / Exit</p>
-                <p class="text-[11px] text-slate-600 font-medium mt-1">Return to role gateway</p>
+                <p data-i18n="tool_exit_title" class="text-xs font-bold text-red-600 group-hover:text-red-700 transition-colors leading-none">Switch Role / Exit</p>
+                <p data-i18n="tool_exit_sub" class="text-[11px] text-slate-600 font-medium mt-1">Return to role gateway</p>
               </div>
             </button>
           </div>
         </div>
 
       </div>
+
       </div>
     </div>
 
@@ -558,7 +563,7 @@
             <div>
               <div id="kpi-critical" class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white font-sans leading-none tracking-tight drop-shadow-md">4</div>
               <div class="text-xs md:text-sm font-bold text-white mt-1 tracking-wide drop-shadow-xs flex items-center gap-1">
-                <span>Critical Hazards</span>
+                <span data-i18n="kpi_critical_hazards">Critical Hazards</span>
                 <i data-lucide="info" class="w-3 h-3 text-white/70 group-hover:text-amber-300 transition-colors"></i>
               </div>
             </div>
@@ -568,9 +573,9 @@
               <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-0 border-4 border-transparent border-b-slate-950"></div>
               <div class="flex items-center gap-2 mb-1.5 pb-1 border-b border-white/10">
                 <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                <span class="text-xs font-black text-white uppercase tracking-wider">Critical Hazards</span>
+                <span data-i18n="kpi_critical_hazards" class="text-xs font-black text-white uppercase tracking-wider">Critical Hazards</span>
               </div>
-              <p class="text-[11px] text-slate-200 leading-snug font-normal">
+              <p data-i18n="kpi_critical_desc" class="text-[11px] text-slate-200 leading-snug font-normal">
                 Emergency 24h PWD action required for deep potholes &gt;8cm and structural cave-ins on hospital corridors and high-speed transit routes.
               </p>
             </div>
@@ -584,7 +589,7 @@
             <div>
               <div id="kpi-total" class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white font-sans leading-none tracking-tight drop-shadow-md">20</div>
               <div class="text-xs md:text-sm font-bold text-white mt-1 tracking-wide drop-shadow-xs flex items-center gap-1">
-                <span>Active Incidents</span>
+                <span data-i18n="kpi_active_incidents">Active Incidents</span>
                 <i data-lucide="info" class="w-3 h-3 text-white/70 group-hover:text-amber-300 transition-colors"></i>
               </div>
             </div>
@@ -594,9 +599,9 @@
               <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-0 border-4 border-transparent border-b-slate-950"></div>
               <div class="flex items-center gap-2 mb-1.5 pb-1 border-b border-white/10">
                 <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                <span class="text-xs font-black text-white uppercase tracking-wider">Active Incidents</span>
+                <span data-i18n="kpi_active_incidents" class="text-xs font-black text-white uppercase tracking-wider">Active Incidents</span>
               </div>
-              <p class="text-[11px] text-slate-200 leading-snug font-normal">
+              <p data-i18n="kpi_active_desc" class="text-[11px] text-slate-200 leading-snug font-normal">
                 Live verified road defects across 16 states currently under AI sensor, CCTV, and citizen 311 monitoring awaiting contractor closure.
               </p>
             </div>
@@ -610,7 +615,7 @@
             <div>
               <div id="kpi-work-orders" class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white font-sans leading-none tracking-tight drop-shadow-md">212</div>
               <div class="text-xs md:text-sm font-bold text-white mt-1 tracking-wide drop-shadow-xs flex items-center gap-1">
-                <span>Work Dispatches</span>
+                <span data-i18n="kpi_work_dispatches">Work Dispatches</span>
                 <i data-lucide="info" class="w-3 h-3 text-white/70 group-hover:text-amber-300 transition-colors"></i>
               </div>
             </div>
@@ -620,9 +625,9 @@
               <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-0 border-4 border-transparent border-b-slate-950"></div>
               <div class="flex items-center gap-2 mb-1.5 pb-1 border-b border-white/10">
                 <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
-                <span class="text-xs font-black text-white uppercase tracking-wider">Work Dispatches</span>
+                <span data-i18n="kpi_work_dispatches" class="text-xs font-black text-white uppercase tracking-wider">Work Dispatches</span>
               </div>
-              <p class="text-[11px] text-slate-200 leading-snug font-normal">
+              <p data-i18n="kpi_work_desc" class="text-[11px] text-slate-200 leading-snug font-normal">
                 Spatially clustered road repair and asphalt paving work orders auto-generated and dispatched to regional PWD teams.
               </p>
             </div>
@@ -636,7 +641,7 @@
             <div>
               <div id="kpi-fp" class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white font-sans leading-none tracking-tight drop-shadow-md">3890</div>
               <div class="text-xs md:text-sm font-bold text-white mt-1 tracking-wide drop-shadow-xs flex items-center gap-1">
-                <span>Noise Filtered</span>
+                <span data-i18n="kpi_noise_filtered">Noise Filtered</span>
                 <i data-lucide="info" class="w-3 h-3 text-white/70 group-hover:text-amber-300 transition-colors"></i>
               </div>
             </div>
@@ -646,15 +651,16 @@
               <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-0 border-4 border-transparent border-b-slate-950"></div>
               <div class="flex items-center gap-2 mb-1.5 pb-1 border-b border-white/10">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span class="text-xs font-black text-white uppercase tracking-wider">Noise Filtered</span>
+                <span data-i18n="kpi_noise_filtered" class="text-xs font-black text-white uppercase tracking-wider">Noise Filtered</span>
               </div>
-              <p class="text-[11px] text-slate-200 leading-snug font-normal">
+              <p data-i18n="kpi_noise_desc" class="text-[11px] text-slate-200 leading-snug font-normal">
                 Harmless tree shadows, road paint marks, and sensor vibration noise successfully rejected by 4-Modal Sensor Fusion AI.
               </p>
             </div>
           </div>
 
         </div>
+
 
 
 
@@ -693,9 +699,9 @@
               </div>
               <div class="text-left">
                 <h2 class="text-xs font-black text-black uppercase tracking-wider flex items-center gap-1.5">
-                  <span>Priority Backlog Feed</span> <span class="text-xs">🇮🇳</span>
+                  <span data-i18n="feed_box_title">Priority Backlog Feed</span> <span class="text-xs">🇮🇳</span>
                 </h2>
-                <p class="text-[10px] text-slate-500 font-medium" id="feed-dropdown-subtext">Click to open backlog</p>
+                <p class="text-[10px] text-slate-500 font-medium" id="feed-dropdown-subtext" data-i18n="feed_box_hint">Click to open backlog</p>
               </div>
             </div>
             <div class="flex items-center gap-2">
@@ -708,16 +714,16 @@
           <div id="priority-feed-content" class="hidden flex-col gap-2.5 p-4 pt-2 border-t border-white/60 max-h-[460px]">
             <!-- Search Bar -->
             <div class="relative">
-              <input type="text" id="hazard-search-input" placeholder="Search road, city, or hazard..." oninput="handleSearchFilter(this.value)" class="w-full bg-white/60 focus:bg-white/95 border border-white/80 rounded-xl pl-8 pr-3 py-2 text-xs text-black font-extrabold placeholder-slate-600 focus:outline-none focus:border-orange-500 transition-colors shadow-xs">
+              <input type="text" id="hazard-search-input" data-i18n-placeholder="feed_search_ph" placeholder="Search road, city, or hazard..." oninput="handleSearchFilter(this.value)" class="w-full bg-white/60 focus:bg-white/95 border border-white/80 rounded-xl pl-8 pr-3 py-2 text-xs text-black font-extrabold placeholder-slate-600 focus:outline-none focus:border-orange-500 transition-colors shadow-xs">
               <i data-lucide="search" class="w-3.5 h-3.5 text-slate-700 absolute left-2.5 top-3"></i>
             </div>
 
             <!-- Quick Filters -->
             <div class="flex flex-wrap gap-1.5 text-xs">
-              <button onclick="filterMap('all')" class="filter-pill active px-3 py-1 rounded-lg text-[11px] bg-white/70 hover:bg-white text-black font-bold border border-white/80">All</button>
-              <button onclick="filterMap('critical')" class="filter-pill px-3 py-1 rounded-lg text-red-700 text-[11px] bg-white/70 hover:bg-white font-extrabold border border-white/80">Critical</button>
-              <button onclick="filterMap('pothole')" class="filter-pill px-3 py-1 rounded-lg text-amber-800 text-[11px] bg-white/70 hover:bg-white font-extrabold border border-white/80">Potholes</button>
-              <button onclick="filterMap('hospital')" class="filter-pill px-3 py-1 rounded-lg text-blue-800 text-[11px] bg-white/70 hover:bg-white font-extrabold border border-white/80">Hospital Routes</button>
+              <button onclick="filterMap('all')" data-i18n="legend_all" class="filter-pill active px-3 py-1 rounded-lg text-[11px] bg-white/70 hover:bg-white text-black font-bold border border-white/80">All</button>
+              <button onclick="filterMap('critical')" data-i18n="severity_critical" class="filter-pill px-3 py-1 rounded-lg text-red-700 text-[11px] bg-white/70 hover:bg-white font-extrabold border border-white/80">Critical</button>
+              <button onclick="filterMap('pothole')" data-i18n="hazard_pothole" class="filter-pill px-3 py-1 rounded-lg text-amber-800 text-[11px] bg-white/70 hover:bg-white font-extrabold border border-white/80">Potholes</button>
+              <button onclick="filterMap('hospital')" data-i18n="source_emergency" class="filter-pill px-3 py-1 rounded-lg text-blue-800 text-[11px] bg-white/70 hover:bg-white font-extrabold border border-white/80">Hospital Routes</button>
             </div>
 
 
