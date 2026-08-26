@@ -527,29 +527,29 @@ function renderIncidentFeed(hazards) {
     const sev = (h.severity || '').toLowerCase();
 
     let accentBorder = 'border-l-blue-500';
-    let badgeClasses = 'bg-blue-50 text-blue-700 border-blue-200/80';
+    let badgeClasses = 'bg-white/80 text-blue-700 border-blue-200/80';
     let dotColor = 'bg-blue-500';
-    let riskBadge = 'text-blue-700 bg-blue-50/80 border-blue-100';
+    let riskBadge = 'text-blue-700 bg-white/80 border-blue-100';
 
     if (isFP) {
       accentBorder = 'border-l-slate-400';
-      badgeClasses = 'bg-slate-100 text-slate-600 border-slate-200';
+      badgeClasses = 'bg-white/80 text-slate-600 border-slate-200';
       dotColor = 'bg-slate-400';
-      riskBadge = 'text-slate-500 bg-slate-100 border-slate-200';
+      riskBadge = 'text-slate-500 bg-white/80 border-slate-200';
     } else if (sev === 'critical') {
       accentBorder = 'border-l-rose-500';
-      badgeClasses = 'bg-rose-50 text-rose-700 border-rose-200/80';
+      badgeClasses = 'bg-rose-50/90 text-rose-700 border-rose-200/80';
       dotColor = 'bg-rose-500';
-      riskBadge = 'text-rose-700 bg-rose-50/80 border-rose-200/60';
+      riskBadge = 'text-rose-700 bg-rose-50/90 border-rose-200/60';
     } else if (sev === 'high') {
       accentBorder = 'border-l-amber-500';
-      badgeClasses = 'bg-amber-50 text-amber-800 border-amber-200/80';
+      badgeClasses = 'bg-amber-50/90 text-amber-800 border-amber-200/80';
       dotColor = 'bg-amber-500';
-      riskBadge = 'text-amber-800 bg-amber-50/80 border-amber-200/60';
+      riskBadge = 'text-amber-800 bg-amber-50/90 border-amber-200/60';
     }
 
     const card = document.createElement('div');
-    card.className = `group bg-white hover:bg-slate-50/80 border border-slate-200/90 border-l-[3.5px] ${accentBorder} rounded-xl p-3 cursor-pointer transition-all duration-150 shadow-2xs hover:shadow-md flex flex-col gap-1.5`;
+    card.className = `group translucent-feed-card border-l-[3.5px] ${accentBorder} rounded-xl p-3 cursor-pointer transition-all duration-150 flex flex-col gap-1.5`;
     card.onclick = () => {
       openIncidentModal(h.id);
       if (gisMap) {
@@ -569,34 +569,34 @@ function renderIncidentFeed(hazards) {
       <!-- Top Row: Badge + Location + Maps Link + Risk Score -->
       <div class="flex items-center justify-between gap-2">
         <div class="flex items-center gap-1.5 min-w-0">
-          <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10.5px] font-semibold border ${badgeClasses}">
+          <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10.5px] font-semibold border ${badgeClasses} shadow-2xs">
             <span class="w-1.5 h-1.5 rounded-full ${dotColor}"></span>
             <span>${severityLabel}</span>
           </span>
-          <span class="text-[11px] text-slate-500 font-medium truncate">${h.state}</span>
+          <span class="text-[11px] text-slate-600 font-medium truncate">${h.state}</span>
         </div>
         
         <div class="flex items-center gap-1.5 shrink-0">
-          <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Open location in Google Maps" class="inline-flex items-center gap-0.5 text-[11px] text-slate-500 hover:text-blue-700 hover:underline px-1 py-0.5 rounded transition-colors font-medium">
+          <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Open location in Google Maps" class="inline-flex items-center gap-0.5 text-[11px] text-slate-600 hover:text-blue-700 hover:underline px-1 py-0.5 rounded transition-colors font-medium">
             <span>Maps</span>
             <span class="text-[9px]">↗</span>
           </a>
-          <span class="text-[10.5px] font-semibold px-1.5 py-0.5 rounded border ${riskBadge}">${riskLabel} ${h.priority.raw_risk_score}</span>
+          <span class="text-[10.5px] font-semibold px-1.5 py-0.5 rounded border ${riskBadge} shadow-2xs">${riskLabel} ${h.priority.raw_risk_score}</span>
         </div>
       </div>
 
       <!-- Title & Road Location -->
       <div>
         <h4 class="text-[12.5px] font-semibold text-slate-900 group-hover:text-blue-900 leading-snug line-clamp-2 transition-colors">${h.title}</h4>
-        <p class="text-[11px] text-slate-500 truncate font-normal mt-0.5">${h.address}</p>
+        <p class="text-[11px] text-slate-600 truncate font-normal mt-0.5">${h.address}</p>
       </div>
 
       <!-- Bottom Metadata Row: Depth, Area, Est Cost -->
-      <div class="flex items-center justify-between text-[11px] text-slate-600 pt-1.5 border-t border-slate-100 font-medium">
-        <div class="flex items-center gap-2 text-slate-500">
-          <span>${depthLabel}: <strong class="text-slate-700 font-medium">${h.fusion.physical_depth_cm}cm</strong></span>
-          <span class="text-slate-300">•</span>
-          <span>${areaLabel}: <strong class="text-slate-700 font-medium">${h.fusion.physical_area_sqm}m²</strong></span>
+      <div class="flex items-center justify-between text-[11px] text-slate-700 pt-1.5 border-t border-slate-200/50 font-medium">
+        <div class="flex items-center gap-2 text-slate-600">
+          <span>${depthLabel}: <strong class="text-slate-800 font-medium">${h.fusion.physical_depth_cm}cm</strong></span>
+          <span class="text-slate-400">•</span>
+          <span>${areaLabel}: <strong class="text-slate-800 font-medium">${h.fusion.physical_area_sqm}m²</strong></span>
         </div>
         <span class="font-semibold text-slate-900">${formatINR(h.priority.estimated_repair_cost_usd)}</span>
       </div>
