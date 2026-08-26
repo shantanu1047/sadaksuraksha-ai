@@ -538,7 +538,7 @@
     <!-- =========================================================
          4. SUNSET HIGHWAY INFRASTRUCTURE PANORAMIC STATS STRIP
          ========================================================= -->
-    <div class="w-full overflow-hidden border-t border-amber-900/30">
+    <div class="w-full overflow-visible border-t border-amber-900/30 relative z-50">
       <div class="max-w-7xl mx-auto px-6 md:px-10 py-5 flex items-center justify-between gap-4">
         
         <!-- 4 High-Impact Metric Items with Interactive Downward Popover Explanation Boxes -->
@@ -557,8 +557,8 @@
               </div>
             </div>
 
-            <!-- Explanation Box (Appears Downwards on Hover / Touch) -->
-            <div class="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-64 bg-slate-950/95 backdrop-blur-md border border-red-500/50 rounded-xl p-3 shadow-2xl opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus:opacity-100 group-focus:translate-y-0 transition-all duration-200 pointer-events-none z-50">
+            <!-- Explanation Box (Opens Downwards into Lower Section, 100% Unclipped) -->
+            <div class="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-72 md:w-80 bg-slate-950/95 backdrop-blur-md border border-red-500/60 rounded-xl p-3.5 shadow-2xl opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus:opacity-100 group-focus:translate-y-0 transition-all duration-200 pointer-events-none z-[9999]">
               <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-0 border-4 border-transparent border-b-slate-950"></div>
               <div class="flex items-center gap-2 mb-1.5 pb-1 border-b border-white/10">
                 <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
@@ -583,8 +583,8 @@
               </div>
             </div>
 
-            <!-- Explanation Box (Appears Downwards on Hover / Touch) -->
-            <div class="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-64 bg-slate-950/95 backdrop-blur-md border border-amber-500/50 rounded-xl p-3 shadow-2xl opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus:opacity-100 group-focus:translate-y-0 transition-all duration-200 pointer-events-none z-50">
+            <!-- Explanation Box (Opens Downwards into Lower Section, 100% Unclipped) -->
+            <div class="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-72 md:w-80 bg-slate-950/95 backdrop-blur-md border border-amber-500/60 rounded-xl p-3.5 shadow-2xl opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus:opacity-100 group-focus:translate-y-0 transition-all duration-200 pointer-events-none z-[9999]">
               <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-0 border-4 border-transparent border-b-slate-950"></div>
               <div class="flex items-center gap-2 mb-1.5 pb-1 border-b border-white/10">
                 <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
@@ -609,8 +609,8 @@
               </div>
             </div>
 
-            <!-- Explanation Box (Appears Downwards on Hover / Touch) -->
-            <div class="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-64 bg-slate-950/95 backdrop-blur-md border border-blue-500/50 rounded-xl p-3 shadow-2xl opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus:opacity-100 group-focus:translate-y-0 transition-all duration-200 pointer-events-none z-50">
+            <!-- Explanation Box (Opens Downwards into Lower Section, 100% Unclipped) -->
+            <div class="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-72 md:w-80 bg-slate-950/95 backdrop-blur-md border border-blue-500/60 rounded-xl p-3.5 shadow-2xl opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus:opacity-100 group-focus:translate-y-0 transition-all duration-200 pointer-events-none z-[9999]">
               <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-0 border-4 border-transparent border-b-slate-950"></div>
               <div class="flex items-center gap-2 mb-1.5 pb-1 border-b border-white/10">
                 <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
@@ -635,8 +635,8 @@
               </div>
             </div>
 
-            <!-- Explanation Box (Appears Downwards on Hover / Touch) -->
-            <div class="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-64 bg-slate-950/95 backdrop-blur-md border border-emerald-500/50 rounded-xl p-3 shadow-2xl opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus:opacity-100 group-focus:translate-y-0 transition-all duration-200 pointer-events-none z-50">
+            <!-- Explanation Box (Opens Downwards into Lower Section, 100% Unclipped) -->
+            <div class="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-72 md:w-80 bg-slate-950/95 backdrop-blur-md border border-emerald-500/60 rounded-xl p-3.5 shadow-2xl opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus:opacity-100 group-focus:translate-y-0 transition-all duration-200 pointer-events-none z-[9999]">
               <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-0 border-4 border-transparent border-b-slate-950"></div>
               <div class="flex items-center gap-2 mb-1.5 pb-1 border-b border-white/10">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -649,6 +649,7 @@
           </div>
 
         </div>
+
 
 
 
