@@ -1611,6 +1611,52 @@ function navigateToHome() {
 window.navigateToHome = navigateToHome;
 
 // ==========================================
+// MAP FULLSCREEN CONTROLLER
+// ==========================================
+function toggleMapFullscreen() {
+  const mapWrapper = document.getElementById('map-wrapper');
+  if (!mapWrapper) return;
+
+  const isFullscreen = mapWrapper.classList.contains('map-fullscreen-active');
+  const textEl = document.getElementById('text-map-fullscreen');
+  const iconEl = document.getElementById('icon-map-fullscreen');
+
+  if (!isFullscreen) {
+    mapWrapper.classList.add('map-fullscreen-active');
+    document.body.classList.add('overflow-hidden');
+    if (textEl) textEl.textContent = 'Exit Fullscreen';
+    if (iconEl) iconEl.setAttribute('data-lucide', 'minimize-2');
+  } else {
+    mapWrapper.classList.remove('map-fullscreen-active');
+    document.body.classList.remove('overflow-hidden');
+    if (textEl) textEl.textContent = 'Fullscreen';
+    if (iconEl) iconEl.setAttribute('data-lucide', 'maximize-2');
+  }
+
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    window.lucide.createIcons();
+  }
+
+  // Allow layout recalculation then invalidate map size
+  setTimeout(() => {
+    if (gisMap) {
+      gisMap.invalidateSize();
+    }
+  }, 120);
+}
+window.toggleMapFullscreen = toggleMapFullscreen;
+
+// Support Escape key to exit fullscreen
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const mapWrapper = document.getElementById('map-wrapper');
+    if (mapWrapper && mapWrapper.classList.contains('map-fullscreen-active')) {
+      toggleMapFullscreen();
+    }
+  }
+});
+
+// ==========================================
 // PRIORITY BACKLOG FEED DRAWER TOGGLER
 // ==========================================
 function toggleFeedDrawer(explicitState) {
@@ -1627,9 +1673,10 @@ function toggleFeedDrawer(explicitState) {
     drawer.classList.add('hidden');
     if (btn) btn.classList.remove('hidden');
   }
-  lucide.createIcons();
+  if (window.lucide) lucide.createIcons();
 }
 window.toggleFeedDrawer = toggleFeedDrawer;
+
 
 // ==========================================
 // FEATURE 1: AI ROAD FORECAST ENGINE
