@@ -1616,31 +1616,39 @@ function navigateToHome() {
 window.navigateToHome = navigateToHome;
 
 // ==========================================
-// PRIORITY BACKLOG FEED DRAWER TOGGLER
+// PRIORITY BACKLOG FEED POPUP / DROPDOWN TOGGLER
 // ==========================================
-function toggleFeedDrawer(explicitState) {
-  const drawer = document.getElementById('priority-feed-drawer');
-  const btn = document.getElementById('btn-toggle-feed-drawer');
-  if (!drawer) return;
-  
-  const shouldOpen = explicitState !== undefined ? explicitState : drawer.classList.contains('hidden');
-  
-  if (shouldOpen) {
-    drawer.classList.remove('hidden');
-    if (btn) btn.classList.add('hidden');
+function toggleFeedPopup(event) {
+  if (event) event.stopPropagation();
+  const popup = document.getElementById('priority-feed-popup') || document.getElementById('priority-feed-drawer');
+  const chevron = document.getElementById('feed-popup-chevron');
+  if (!popup) return;
+
+  const isHidden = popup.classList.contains('hidden');
+  if (isHidden) {
+    popup.classList.remove('hidden');
+    if (chevron) chevron.style.transform = 'rotate(180deg)';
   } else {
-    drawer.classList.add('hidden');
-    if (btn) btn.classList.remove('hidden');
-  }
-  if (gisMap) {
-    setTimeout(() => gisMap.invalidateSize(), 50);
-    setTimeout(() => gisMap.invalidateSize(), 250);
+    popup.classList.add('hidden');
+    if (chevron) chevron.style.transform = 'rotate(0deg)';
   }
   if (window.lucide && typeof window.lucide.createIcons === 'function') {
     window.lucide.createIcons();
   }
 }
-window.toggleFeedDrawer = toggleFeedDrawer;
+window.toggleFeedPopup = toggleFeedPopup;
+window.toggleFeedDrawer = toggleFeedPopup;
+
+document.addEventListener('click', (e) => {
+  const wrapper = document.getElementById('priority-feed-wrapper');
+  const popup = document.getElementById('priority-feed-popup');
+  const chevron = document.getElementById('feed-popup-chevron');
+  if (wrapper && !wrapper.contains(e.target) && popup && !popup.classList.contains('hidden')) {
+    popup.classList.add('hidden');
+    if (chevron) chevron.style.transform = 'rotate(0deg)';
+  }
+});
+
 
 
 // ==========================================
