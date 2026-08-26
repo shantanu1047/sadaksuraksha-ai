@@ -67,10 +67,10 @@
       kpi_noise_desc: "Harmless tree shadows, road paint marks, and sensor vibration noise successfully rejected by 4-Modal Sensor Fusion AI.",
 
       // Priority Backlog Feed Box
-      feed_box_title: "Priority Backlog Feed 🇮🇳",
+      feed_box_title: "Priority Backlog",
       feed_box_subtitle: "Live Defect Triage",
-      feed_box_hint: "Click to Open / Close",
-      feed_filter_all: "All Hazards",
+      feed_box_hint: "Click to expand backlog",
+      feed_filter_all: "All",
       feed_filter_pothole: "Potholes",
       feed_filter_water: "Waterlogging",
       feed_filter_structural: "Structural",
@@ -78,11 +78,12 @@
 
       // Severity Legend
       legend_severity: "SEVERITY",
-      legend_all: "ALL",
+      legend_all: "All",
       severity_critical: "Critical",
       severity_high: "High",
       severity_medium: "Medium",
       severity_low: "Low",
+
 
       // Workflow Statuses
       status_unresolved: "UNRESOLVED",
@@ -261,10 +262,10 @@
       kpi_noise_desc: "4-मॉडल सेंसर फ्यूज़न एआई द्वारा पेड़ की हानिरहित छाया, सड़क के पेंट के निशान और सेंसर कंपन के शोर को सफलतापूर्वक खारिज किया गया।",
 
       // Priority Backlog Feed Box
-      feed_box_title: "प्राथमिकता बैकलॉग फ़ीड 🇮🇳",
+      feed_box_title: "प्राथमिकता बैकलॉग",
       feed_box_subtitle: "लाइव दोष प्राथमिकता",
-      feed_box_hint: "खोलने / बंद करने के लिए क्लिक करें",
-      feed_filter_all: "सभी खतरे",
+      feed_box_hint: "बैकलॉग देखने के लिए क्लिक करें",
+      feed_filter_all: "सभी",
       feed_filter_pothole: "सड़क गड्ढे",
       feed_filter_water: "जलभराव",
       feed_filter_structural: "संरचनात्मक क्षति",

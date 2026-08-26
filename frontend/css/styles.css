@@ -60,28 +60,27 @@ code, pre, .font-mono {
   position: relative;
 }
 
-/* High-Transparency Glassmorphic Feed Card (Solid Opaque Typography) */
+/* Clean Enterprise Feed Box & Cards */
 .translucent-feed-box {
-  background: rgba(240, 246, 254, 0.48) !important;
-  backdrop-filter: blur(18px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(18px) saturate(180%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.75) !important;
-  box-shadow: 0 10px 35px -5px rgba(10, 49, 97, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.3) inset !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.08) !important;
 }
 
 .translucent-feed-card {
-  background: rgba(255, 255, 255, 0.55) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.85) !important;
-  box-shadow: 0 2px 8px 0 rgba(10, 49, 97, 0.06) !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04) !important;
 }
 
 .translucent-feed-card:hover {
-  background: rgba(255, 255, 255, 0.75) !important;
-  border-color: rgba(147, 197, 253, 0.95) !important;
-  box-shadow: 0 6px 18px -2px rgba(10, 49, 97, 0.18) !important;
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08) !important;
 }
+
 
 
 
@@ -292,48 +291,72 @@ code, pre, .font-mono {
   color: #000080 !important;
 }
 
-/* Custom Scrollbar */
+/* Modern Subtle Clean Scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #ffffff;
-  border-left: 1px solid #000000;
+  background: transparent;
+  border: none;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #000000;
-  border-radius: 0px;
+  background: #cbd5e1;
+  border-radius: 4px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #94a3b8;
 }
 
-/* Flat Navigation Tabs & Filter Pills */
+/* Modern Segmented Feed Filter Buttons */
+.feed-filter-btn {
+  background: transparent;
+  color: #64748b;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.15s ease-in-out;
+}
+
+.feed-filter-btn:hover {
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.feed-filter-btn.active {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  font-weight: 600 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Flat Navigation Tabs & Filter Pills (Legacy support) */
 .active-tab {
-  background: #000000 !important;
+  background: #0a3161 !important;
   color: #ffffff !important;
-  border: 2px solid #000000 !important;
 }
 
 .filter-pill {
   background-color: #ffffff;
-  color: #000000;
-  border: 2px solid #000000;
-  font-weight: 700;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  font-weight: 600;
   transition: all 0.15s ease;
 }
 
 .filter-pill:hover {
-  background-color: #FFF3E6; /* Saffron tint on hover */
-  border-color: #000000;
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
 }
 
 .filter-pill.active {
-  background-color: #000000 !important;
+  background-color: #0f172a !important;
   color: #ffffff !important;
-  border: 2px solid #000000 !important;
+  border-color: #0f172a !important;
 }
+
 
 /* Leaflet Customization & Stacking Isolation */
 .leaflet-container {

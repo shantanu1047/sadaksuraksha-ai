@@ -687,52 +687,52 @@
 
       <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-5 items-start">
         
-        <!-- LEFT SIDE: Priority Backlog Feed Dropdown Box (Click to Open / Close - Translucent Sky Tint) -->
-        <div class="w-full lg:w-[380px] shrink-0 translucent-feed-box rounded-2xl text-black transition-all duration-300 overflow-hidden z-20" id="priority-feed-container">
-          <div class="tricolor-strip"></div>
+        <!-- LEFT SIDE: Priority Backlog Feed Box (Clean Modern Enterprise Style) -->
+        <div class="w-full lg:w-[380px] shrink-0 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl text-slate-900 shadow-md transition-all duration-300 overflow-hidden z-20" id="priority-feed-container">
+          <div class="tricolor-strip-sm"></div>
 
-          <!-- Dropdown Trigger Header (Always Visible, Click to Toggle) -->
-          <button type="button" onclick="toggleFeedDropdown()" id="btn-toggle-feed-dropdown" class="w-full flex items-center justify-between p-3.5 hover:bg-white/40 transition-colors cursor-pointer select-none border-b border-transparent" aria-expanded="false">
-            <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-lg bg-orange-100/90 border border-orange-200 flex items-center justify-center shadow-xs shrink-0">
-                <i data-lucide="flame" class="w-4 h-4 text-orange-700"></i>
+          <!-- Dropdown Trigger Header (Clean, Human & Uncluttered) -->
+          <button type="button" onclick="toggleFeedDropdown()" id="btn-toggle-feed-dropdown" class="w-full flex items-center justify-between p-3.5 hover:bg-slate-50/80 transition-colors cursor-pointer select-none border-b border-slate-100" aria-expanded="false">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shadow-2xs shrink-0">
+                <i data-lucide="flame" class="w-4 h-4 text-amber-600"></i>
               </div>
               <div class="text-left">
-                <h2 class="text-xs font-black text-black uppercase tracking-wider flex items-center gap-1.5">
-                  <span data-i18n="feed_box_title">Priority Backlog Feed</span> <span class="text-xs">🇮🇳</span>
+                <h2 class="text-[13px] font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
+                  <span data-i18n="feed_box_title">Priority Backlog</span>
                 </h2>
-                <p class="text-[10px] text-slate-500 font-medium" id="feed-dropdown-subtext" data-i18n="feed_box_hint">Click to open backlog</p>
+                <p class="text-[11px] text-slate-500 font-normal" id="feed-dropdown-subtext" data-i18n="feed_box_hint">Click to expand backlog</p>
               </div>
             </div>
             <div class="flex items-center gap-2">
-              <span id="feed-count" class="text-xs bg-black text-white px-2.5 py-0.5 rounded-full font-mono font-bold">0</span>
-              <i data-lucide="chevron-down" id="feed-dropdown-chevron" class="w-4 h-4 text-slate-600 transition-transform duration-300"></i>
+              <span id="feed-count" class="text-xs bg-slate-100 text-slate-700 font-semibold px-2.5 py-0.5 rounded-full border border-slate-200/80">0</span>
+              <i data-lucide="chevron-down" id="feed-dropdown-chevron" class="w-4 h-4 text-slate-400 transition-transform duration-200"></i>
             </div>
           </button>
 
-          <!-- Dropdown Collapsible Content (Opens Downwards on Click) -->
-          <div id="priority-feed-content" class="hidden flex-col gap-2.5 p-4 pt-2 border-t border-white/60 max-h-[460px]">
-            <!-- Search Bar -->
+          <!-- Dropdown Collapsible Content -->
+          <div id="priority-feed-content" class="hidden flex-col gap-3 p-3.5 bg-slate-50/50 max-h-[480px]">
+            <!-- Clean Search Bar -->
             <div class="relative">
-              <input type="text" id="hazard-search-input" data-i18n-placeholder="feed_search_ph" placeholder="Search road, city, or hazard..." oninput="handleSearchFilter(this.value)" class="w-full bg-white/60 focus:bg-white/95 border border-white/80 rounded-xl pl-8 pr-3 py-2 text-xs text-black font-extrabold placeholder-slate-600 focus:outline-none focus:border-orange-500 transition-colors shadow-xs">
-              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-700 absolute left-2.5 top-3"></i>
+              <input type="text" id="hazard-search-input" data-i18n-placeholder="feed_search_ph" placeholder="Search hazards, roads, cities..." oninput="handleSearchFilter(this.value)" class="w-full bg-white border border-slate-200 focus:border-slate-400 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400/10 transition-all shadow-2xs">
+              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
             </div>
 
-            <!-- Quick Filters -->
-            <div class="flex flex-wrap gap-1.5 text-xs">
-              <button onclick="filterMap('all')" data-i18n="legend_all" class="filter-pill active px-3 py-1 rounded-lg text-[11px] bg-white/70 hover:bg-white text-black font-bold border border-white/80">All</button>
-              <button onclick="filterMap('critical')" data-i18n="severity_critical" class="filter-pill px-3 py-1 rounded-lg text-red-700 text-[11px] bg-white/70 hover:bg-white font-extrabold border border-white/80">Critical</button>
-              <button onclick="filterMap('pothole')" data-i18n="hazard_pothole" class="filter-pill px-3 py-1 rounded-lg text-amber-800 text-[11px] bg-white/70 hover:bg-white font-extrabold border border-white/80">Potholes</button>
-              <button onclick="filterMap('hospital')" data-i18n="source_emergency" class="filter-pill px-3 py-1 rounded-lg text-blue-800 text-[11px] bg-white/70 hover:bg-white font-extrabold border border-white/80">Hospital Routes</button>
+            <!-- Segmented Filter Control -->
+            <div class="flex items-center gap-1 bg-slate-200/60 p-1 rounded-lg border border-slate-200/80 text-xs">
+              <button onclick="filterMap('all')" data-i18n="legend_all" class="feed-filter-btn active flex-1 py-1 px-2 rounded-md text-[11px] font-medium text-slate-600 transition-all text-center">All</button>
+              <button onclick="filterMap('critical')" data-i18n="severity_critical" class="feed-filter-btn flex-1 py-1 px-2 rounded-md text-[11px] font-medium text-slate-600 transition-all text-center">Critical</button>
+              <button onclick="filterMap('pothole')" data-i18n="hazard_pothole" class="feed-filter-btn flex-1 py-1 px-2 rounded-md text-[11px] font-medium text-slate-600 transition-all text-center">Potholes</button>
+              <button onclick="filterMap('hospital')" data-i18n="source_emergency" class="feed-filter-btn flex-1 py-1 px-2 rounded-md text-[11px] font-medium text-slate-600 transition-all text-center">Emergency</button>
             </div>
 
-
-            <!-- List of Incident Cards -->
-            <div id="incident-feed-list" class="flex-1 overflow-y-auto space-y-2.5 pr-1 custom-scrollbar max-h-[340px]">
+            <!-- Clean Incident Feed Cards List -->
+            <div id="incident-feed-list" class="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar max-h-[350px]">
               <!-- Dynamic Incident Cards Injected Here -->
             </div>
           </div>
         </div>
+
 
 
         <!-- RIGHT SIDE: The Map Box (On the right side of the page) -->

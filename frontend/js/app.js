@@ -296,10 +296,12 @@ function handleSearchFilter(query) {
 
 function filterMap(category) {
   currentCategoryFilter = category;
-  document.querySelectorAll('.filter-pill').forEach(btn => btn.classList.remove('active'));
-  if (event && event.target) event.target.classList.add('active');
+  document.querySelectorAll('.filter-pill, .feed-filter-btn').forEach(btn => btn.classList.remove('active'));
+  const target = window.event ? (window.event.currentTarget || window.event.target) : null;
+  if (target) target.classList.add('active');
   applyStateAndSearchFilters();
 }
+
 
 function getFilteredHazards() {
   return allHazards.filter(h => {
@@ -508,7 +510,7 @@ function refreshMapData() {
 function renderIncidentFeed(hazards) {
   const container = document.getElementById('incident-feed-list');
   const feedCount = document.getElementById('feed-count');
-  if (feedCount) feedCount.textContent = hazards.length;
+  if (feedCount) feedCount.textContent = `${hazards.length} active`;
   const drawerBadge = document.getElementById('feed-drawer-badge');
   if (drawerBadge) drawerBadge.textContent = hazards.length;
   
@@ -516,31 +518,38 @@ function renderIncidentFeed(hazards) {
   container.innerHTML = '';
 
   if (hazards.length === 0) {
-    container.innerHTML = `<div class="text-xs text-slate-500 italic p-4 text-center">No defects found for ${currentStateFilter}.</div>`;
+    container.innerHTML = `<div class="text-xs text-slate-500 font-medium p-6 text-center bg-white rounded-xl border border-slate-200/80">No active defects found for ${currentStateFilter}.</div>`;
     return;
   }
 
   hazards.forEach(h => {
-    let badgeBg = 'bg-blue-50 text-blue-950 border border-blue-200';
-    let riskColor = 'text-blue-700 font-bold';
+    const isFP = h.fusion.is_false_positive;
+    const sev = (h.severity || '').toLowerCase();
 
-    if (h.fusion.is_false_positive) {
-      badgeBg = 'bg-slate-100 border border-slate-200 text-slate-700';
-      riskColor = 'text-slate-500 font-bold';
-    } else if (h.severity === 'critical') {
-      badgeBg = 'bg-red-50 border border-red-200 text-red-950';
-      riskColor = 'text-red-600 font-black';
-    } else if (h.severity === 'high') {
-      badgeBg = 'bg-amber-50 border border-amber-200 text-amber-950';
-      riskColor = 'text-amber-700 font-black';
+    let accentBorder = 'border-l-blue-500';
+    let badgeClasses = 'bg-blue-50 text-blue-700 border-blue-200/80';
+    let dotColor = 'bg-blue-500';
+    let riskBadge = 'text-blue-700 bg-blue-50/80 border-blue-100';
+
+    if (isFP) {
+      accentBorder = 'border-l-slate-400';
+      badgeClasses = 'bg-slate-100 text-slate-600 border-slate-200';
+      dotColor = 'bg-slate-400';
+      riskBadge = 'text-slate-500 bg-slate-100 border-slate-200';
+    } else if (sev === 'critical') {
+      accentBorder = 'border-l-rose-500';
+      badgeClasses = 'bg-rose-50 text-rose-700 border-rose-200/80';
+      dotColor = 'bg-rose-500';
+      riskBadge = 'text-rose-700 bg-rose-50/80 border-rose-200/60';
+    } else if (sev === 'high') {
+      accentBorder = 'border-l-amber-500';
+      badgeClasses = 'bg-amber-50 text-amber-800 border-amber-200/80';
+      dotColor = 'bg-amber-500';
+      riskBadge = 'text-amber-800 bg-amber-50/80 border-amber-200/60';
     }
 
     const card = document.createElement('div');
-    const borderLeftColor = h.fusion.is_false_positive 
-      ? 'border-l-4 border-l-slate-400' 
-      : (h.severity === 'critical' ? 'border-l-4 border-l-red-600' : (h.severity === 'high' ? 'border-l-4 border-l-[#FF9933]' : 'border-l-4 border-l-blue-600'));
-
-    card.className = `translucent-feed-card ${borderLeftColor} rounded-xl p-3.5 cursor-pointer transition-all shadow-xs flex flex-col gap-2 group text-black overflow-hidden relative`;
+    card.className = `group bg-white hover:bg-slate-50/80 border border-slate-200/90 border-l-[3.5px] ${accentBorder} rounded-xl p-3 cursor-pointer transition-all duration-150 shadow-2xs hover:shadow-md flex flex-col gap-1.5`;
     card.onclick = () => {
       openIncidentModal(h.id);
       if (gisMap) {
@@ -548,38 +557,49 @@ function renderIncidentFeed(hazards) {
       }
     };
 
-    const severityLabel = h.fusion.is_false_positive 
-      ? (window.t ? window.t('status_audited_fp', 'FALSE POSITIVE') : 'FALSE POSITIVE') 
-      : (window.translateSeverity ? window.translateSeverity(h.severity) : h.severity);
-    const riskLabel = window.t ? window.t('risk_label', 'Risk:') : 'Risk:';
+    const severityLabel = isFP 
+      ? (window.t ? window.t('status_audited_fp', 'Filtered') : 'Filtered') 
+      : (window.translateSeverity ? window.translateSeverity(h.severity) : (h.severity.charAt(0).toUpperCase() + h.severity.slice(1)));
+    
+    const riskLabel = window.t ? window.t('risk_label', 'Risk') : 'Risk';
     const depthLabel = window.getLanguage && window.getLanguage() === 'hi' ? 'गहराई' : 'Depth';
     const areaLabel = window.getLanguage && window.getLanguage() === 'hi' ? 'क्षेत्र' : 'Area';
 
     card.innerHTML = `
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-1.5">
-          <span class="text-[10px] font-mono px-2 py-0.5 rounded-md ${badgeBg} uppercase font-bold">
-            ${severityLabel}
+      <!-- Top Row: Badge + Location + Maps Link + Risk Score -->
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-1.5 min-w-0">
+          <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10.5px] font-semibold border ${badgeClasses}">
+            <span class="w-1.5 h-1.5 rounded-full ${dotColor}"></span>
+            <span>${severityLabel}</span>
           </span>
-          <span class="text-[10px] text-slate-700 font-bold bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-md">${h.state}</span>
+          <span class="text-[11px] text-slate-500 font-medium truncate">${h.state}</span>
         </div>
-        <div class="flex items-center gap-2">
-          <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Open location in Google Maps" class="text-blue-900 hover:bg-blue-100 inline-flex items-center gap-0.5 text-[10px] font-mono font-bold bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded-md">
-            🗺️ Maps ↗
+        
+        <div class="flex items-center gap-1.5 shrink-0">
+          <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Open location in Google Maps" class="inline-flex items-center gap-0.5 text-[11px] text-slate-500 hover:text-blue-700 hover:underline px-1 py-0.5 rounded transition-colors font-medium">
+            <span>Maps</span>
+            <span class="text-[9px]">↗</span>
           </a>
-          <span class="text-xs font-mono ${riskColor}">${riskLabel} ${h.priority.raw_risk_score}</span>
+          <span class="text-[10.5px] font-semibold px-1.5 py-0.5 rounded border ${riskBadge}">${riskLabel} ${h.priority.raw_risk_score}</span>
         </div>
-      </div>
-      <div>
-        <h4 class="text-xs font-black text-black group-hover:text-blue-900 transition-colors leading-snug">${h.title}</h4>
-        <p class="text-[11px] text-slate-800 truncate mt-0.5 font-semibold">${h.address}</p>
-      </div>
-      <div class="flex items-center justify-between text-[10px] text-slate-900 font-mono font-black border-t border-slate-200/80 pt-2">
-        <span>${depthLabel}: ${h.fusion.physical_depth_cm}cm</span>
-        <span>${areaLabel}: ${h.fusion.physical_area_sqm}m²</span>
-        <span class="text-purple-950 font-black">${formatINR(h.priority.estimated_repair_cost_usd)}</span>
       </div>
 
+      <!-- Title & Road Location -->
+      <div>
+        <h4 class="text-[12.5px] font-semibold text-slate-900 group-hover:text-blue-900 leading-snug line-clamp-2 transition-colors">${h.title}</h4>
+        <p class="text-[11px] text-slate-500 truncate font-normal mt-0.5">${h.address}</p>
+      </div>
+
+      <!-- Bottom Metadata Row: Depth, Area, Est Cost -->
+      <div class="flex items-center justify-between text-[11px] text-slate-600 pt-1.5 border-t border-slate-100 font-medium">
+        <div class="flex items-center gap-2 text-slate-500">
+          <span>${depthLabel}: <strong class="text-slate-700 font-medium">${h.fusion.physical_depth_cm}cm</strong></span>
+          <span class="text-slate-300">•</span>
+          <span>${areaLabel}: <strong class="text-slate-700 font-medium">${h.fusion.physical_area_sqm}m²</strong></span>
+        </div>
+        <span class="font-semibold text-slate-900">${formatINR(h.priority.estimated_repair_cost_usd)}</span>
+      </div>
     `;
 
     container.appendChild(card);
