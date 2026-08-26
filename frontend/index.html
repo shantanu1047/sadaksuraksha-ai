@@ -541,50 +541,110 @@
     <div class="w-full overflow-hidden border-t border-amber-900/30">
       <div class="max-w-7xl mx-auto px-6 md:px-10 py-5 flex items-center justify-between gap-4">
         
-        <!-- 4 High-Impact Metric Items with Circular White Ring Icons -->
+        <!-- 4 High-Impact Metric Items with Interactive Explanation Tooltips on Hover/Touch -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-12 flex-1">
           
-          <!-- Metric 1: Billboards / Critical Hazards -->
-          <div class="flex items-center gap-3.5 group">
+          <!-- Metric 1: Critical Hazards -->
+          <div class="relative flex items-center gap-3.5 group cursor-pointer select-none" tabindex="0">
             <div class="w-13 h-13 md:w-15 md:h-15 rounded-full border-2 border-white flex items-center justify-center bg-white/15 backdrop-blur-xs shrink-0 shadow-md transition-transform group-hover:scale-105">
               <i data-lucide="tv" class="w-6 h-6 md:w-7 md:h-7 text-white"></i>
             </div>
             <div>
               <div id="kpi-critical" class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white font-sans leading-none tracking-tight drop-shadow-md">4</div>
-              <div class="text-xs md:text-sm font-medium text-white/95 mt-1 tracking-wide drop-shadow-xs">Critical Hazards</div>
+              <div class="text-xs md:text-sm font-medium text-white/95 mt-1 tracking-wide drop-shadow-xs flex items-center gap-1">
+                <span>Critical Hazards</span>
+                <i data-lucide="info" class="w-3 h-3 text-white/60 group-hover:text-amber-300 transition-colors"></i>
+              </div>
+            </div>
+
+            <!-- Explanation Box (Shows on Touch / Hover) -->
+            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-64 bg-slate-950/95 backdrop-blur-md border border-red-500/50 rounded-xl p-3 shadow-2xl opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus:opacity-100 group-focus:translate-y-0 transition-all duration-200 pointer-events-none z-50">
+              <div class="flex items-center gap-2 mb-1.5 pb-1 border-b border-white/10">
+                <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                <span class="text-xs font-black text-white uppercase tracking-wider">Critical Hazards</span>
+              </div>
+              <p class="text-[11px] text-slate-200 leading-snug font-normal">
+                High-severity defects (deep potholes &gt;8cm, cave-ins) along hospital corridors and national transit routes requiring immediate 24h PWD action.
+              </p>
+              <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-950"></div>
             </div>
           </div>
 
-          <!-- Metric 2: Traffic Lights / Active Incidents -->
-          <div class="flex items-center gap-3.5 group">
+          <!-- Metric 2: Active Incidents -->
+          <div class="relative flex items-center gap-3.5 group cursor-pointer select-none" tabindex="0">
             <div class="w-13 h-13 md:w-15 md:h-15 rounded-full border-2 border-white flex items-center justify-center bg-white/15 backdrop-blur-xs shrink-0 shadow-md transition-transform group-hover:scale-105">
               <i data-lucide="traffic-cone" class="w-6 h-6 md:w-7 md:h-7 text-white"></i>
             </div>
             <div>
               <div id="kpi-total" class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white font-sans leading-none tracking-tight drop-shadow-md">20</div>
-              <div class="text-xs md:text-sm font-medium text-white/95 mt-1 tracking-wide drop-shadow-xs">Active Incidents</div>
+              <div class="text-xs md:text-sm font-medium text-white/95 mt-1 tracking-wide drop-shadow-xs flex items-center gap-1">
+                <span>Active Incidents</span>
+                <i data-lucide="info" class="w-3 h-3 text-white/60 group-hover:text-amber-300 transition-colors"></i>
+              </div>
+            </div>
+
+            <!-- Explanation Box (Shows on Touch / Hover) -->
+            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-64 bg-slate-950/95 backdrop-blur-md border border-amber-500/50 rounded-xl p-3 shadow-2xl opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus:opacity-100 group-focus:translate-y-0 transition-all duration-200 pointer-events-none z-50">
+              <div class="flex items-center gap-2 mb-1.5 pb-1 border-b border-white/10">
+                <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                <span class="text-xs font-black text-white uppercase tracking-wider">Active Incidents</span>
+              </div>
+              <p class="text-[11px] text-slate-200 leading-snug font-normal">
+                Total verified road hazards across 16 states currently under continuous AI sensor and CCTV monitoring awaiting PWD repair closure.
+              </p>
+              <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-950"></div>
             </div>
           </div>
 
-          <!-- Metric 3: Rumble Strips / Work Dispatches -->
-          <div class="flex items-center gap-3.5 group">
+          <!-- Metric 3: Work Dispatches -->
+          <div class="relative flex items-center gap-3.5 group cursor-pointer select-none" tabindex="0">
             <div class="w-13 h-13 md:w-15 md:h-15 rounded-full border-2 border-white flex items-center justify-center bg-white/15 backdrop-blur-xs shrink-0 shadow-md transition-transform group-hover:scale-105">
               <i data-lucide="layers" class="w-6 h-6 md:w-7 md:h-7 text-white"></i>
             </div>
             <div>
               <div id="kpi-work-orders" class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white font-sans leading-none tracking-tight drop-shadow-md">212</div>
-              <div class="text-xs md:text-sm font-medium text-white/95 mt-1 tracking-wide drop-shadow-xs">Work Dispatches</div>
+              <div class="text-xs md:text-sm font-medium text-white/95 mt-1 tracking-wide drop-shadow-xs flex items-center gap-1">
+                <span>Work Dispatches</span>
+                <i data-lucide="info" class="w-3 h-3 text-white/60 group-hover:text-amber-300 transition-colors"></i>
+              </div>
+            </div>
+
+            <!-- Explanation Box (Shows on Touch / Hover) -->
+            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-64 bg-slate-950/95 backdrop-blur-md border border-blue-500/50 rounded-xl p-3 shadow-2xl opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus:opacity-100 group-focus:translate-y-0 transition-all duration-200 pointer-events-none z-50">
+              <div class="flex items-center gap-2 mb-1.5 pb-1 border-b border-white/10">
+                <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+                <span class="text-xs font-black text-white uppercase tracking-wider">Work Dispatches</span>
+              </div>
+              <p class="text-[11px] text-slate-200 leading-snug font-normal">
+                Spatially clustered repair work orders auto-dispatched to municipal road contractors and PWD engineering teams for scheduled asphalt paving.
+              </p>
+              <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-950"></div>
             </div>
           </div>
 
-          <!-- Metric 4: Manholes / Sensor Noise Filtered -->
-          <div class="flex items-center gap-3.5 group">
+          <!-- Metric 4: Noise Filtered -->
+          <div class="relative flex items-center gap-3.5 group cursor-pointer select-none" tabindex="0">
             <div class="w-13 h-13 md:w-15 md:h-15 rounded-full border-2 border-white flex items-center justify-center bg-white/15 backdrop-blur-xs shrink-0 shadow-md transition-transform group-hover:scale-105">
               <i data-lucide="disc" class="w-6 h-6 md:w-7 md:h-7 text-white"></i>
             </div>
             <div>
               <div id="kpi-fp" class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white font-sans leading-none tracking-tight drop-shadow-md">3890</div>
-              <div class="text-xs md:text-sm font-medium text-white/95 mt-1 tracking-wide drop-shadow-xs">Noise Filtered</div>
+              <div class="text-xs md:text-sm font-medium text-white/95 mt-1 tracking-wide drop-shadow-xs flex items-center gap-1">
+                <span>Noise Filtered</span>
+                <i data-lucide="info" class="w-3 h-3 text-white/60 group-hover:text-amber-300 transition-colors"></i>
+              </div>
+            </div>
+
+            <!-- Explanation Box (Shows on Touch / Hover) -->
+            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-64 bg-slate-950/95 backdrop-blur-md border border-emerald-500/50 rounded-xl p-3 shadow-2xl opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus:opacity-100 group-focus:translate-y-0 transition-all duration-200 pointer-events-none z-50">
+              <div class="flex items-center gap-2 mb-1.5 pb-1 border-b border-white/10">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="text-xs font-black text-white uppercase tracking-wider">Noise Filtered</span>
+              </div>
+              <p class="text-[11px] text-slate-200 leading-snug font-normal">
+                Sensor noise, harmless shadows, and road paint marks successfully rejected by the 4-Modal Sensor Fusion engine to prevent false dispatches.
+              </p>
+              <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-950"></div>
             </div>
           </div>
 
@@ -594,15 +654,6 @@
         <span id="kpi-pci" class="hidden">-- /100</span>
         <span id="kpi-cost" class="hidden">₹ --</span>
 
-        <!-- Right Side: Up / Down Carousel Navigation Buttons (Matching Reference) -->
-        <div class="hidden sm:flex flex-col gap-1.5 shrink-0 pl-2">
-          <button type="button" class="w-7 h-7 rounded-full bg-white/20 hover:bg-white/35 border border-white/40 flex items-center justify-center text-white transition-all cursor-pointer shadow-xs" title="Previous Stats">
-            <i data-lucide="chevron-up" class="w-4 h-4 text-white"></i>
-          </button>
-          <button type="button" class="w-7 h-7 rounded-full bg-white/20 hover:bg-white/35 border border-white/40 flex items-center justify-center text-white transition-all cursor-pointer shadow-xs" title="Next Stats">
-            <i data-lucide="chevron-down" class="w-4 h-4 text-white"></i>
-          </button>
-        </div>
 
       </div>
     </div>
