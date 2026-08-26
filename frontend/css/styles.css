@@ -55,27 +55,29 @@ code, pre, .font-mono {
   position: relative;
 }
 
-/* Translucent Lighter Shade Glassmorphic Feed Card */
+/* High-Transparency Glassmorphic Feed Card (Solid Opaque Typography) */
 .translucent-feed-box {
-  background: rgba(244, 248, 254, 0.85) !important;
-  backdrop-filter: blur(14px) !important;
-  -webkit-backdrop-filter: blur(14px) !important;
-  border: 1px solid rgba(186, 215, 243, 0.75) !important;
-  box-shadow: 0 8px 30px -4px rgba(10, 49, 97, 0.10) !important;
+  background: rgba(240, 246, 254, 0.48) !important;
+  backdrop-filter: blur(18px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.75) !important;
+  box-shadow: 0 10px 35px -5px rgba(10, 49, 97, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.3) inset !important;
 }
 
 .translucent-feed-card {
-  background: rgba(255, 255, 255, 0.88) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
-  border: 1px solid rgba(219, 234, 254, 0.85) !important;
+  background: rgba(255, 255, 255, 0.55) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.85) !important;
+  box-shadow: 0 2px 8px 0 rgba(10, 49, 97, 0.06) !important;
 }
 
 .translucent-feed-card:hover {
-  background: rgba(255, 255, 255, 0.96) !important;
-  border-color: rgba(147, 197, 253, 0.9) !important;
-  box-shadow: 0 4px 14px -2px rgba(10, 49, 97, 0.12) !important;
+  background: rgba(255, 255, 255, 0.75) !important;
+  border-color: rgba(147, 197, 253, 0.95) !important;
+  box-shadow: 0 6px 18px -2px rgba(10, 49, 97, 0.18) !important;
 }
+
 
 /* Subtle Highway Grid & Infrastructure Texture Overlay */
 .nhai-portal-header::before {

@@ -617,20 +617,21 @@
           </button>
 
           <!-- Dropdown Collapsible Content (Opens Downwards on Click) -->
-          <div id="priority-feed-content" class="hidden flex-col gap-2.5 p-4 pt-2 border-t border-sky-200/60 max-h-[460px]">
+          <div id="priority-feed-content" class="hidden flex-col gap-2.5 p-4 pt-2 border-t border-white/60 max-h-[460px]">
             <!-- Search Bar -->
             <div class="relative">
-              <input type="text" id="hazard-search-input" placeholder="Search road, city, or hazard..." oninput="handleSearchFilter(this.value)" class="w-full bg-white/90 border border-sky-200/80 rounded-xl pl-8 pr-3 py-2 text-xs text-black font-bold placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:bg-white">
-              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-3"></i>
+              <input type="text" id="hazard-search-input" placeholder="Search road, city, or hazard..." oninput="handleSearchFilter(this.value)" class="w-full bg-white/60 focus:bg-white/95 border border-white/80 rounded-xl pl-8 pr-3 py-2 text-xs text-black font-extrabold placeholder-slate-600 focus:outline-none focus:border-orange-500 transition-colors shadow-xs">
+              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-700 absolute left-2.5 top-3"></i>
             </div>
 
             <!-- Quick Filters -->
             <div class="flex flex-wrap gap-1.5 text-xs">
-              <button onclick="filterMap('all')" class="filter-pill active px-3 py-1 rounded-lg text-[11px] bg-white/80">All</button>
-              <button onclick="filterMap('critical')" class="filter-pill px-3 py-1 rounded-lg text-red-600 text-[11px] bg-white/80">Critical</button>
-              <button onclick="filterMap('pothole')" class="filter-pill px-3 py-1 rounded-lg text-amber-700 text-[11px] bg-white/80">Potholes</button>
-              <button onclick="filterMap('hospital')" class="filter-pill px-3 py-1 rounded-lg text-blue-700 text-[11px] bg-white/80">Hospital Routes</button>
+              <button onclick="filterMap('all')" class="filter-pill active px-3 py-1 rounded-lg text-[11px] bg-white/70 hover:bg-white text-black font-bold border border-white/80">All</button>
+              <button onclick="filterMap('critical')" class="filter-pill px-3 py-1 rounded-lg text-red-700 text-[11px] bg-white/70 hover:bg-white font-extrabold border border-white/80">Critical</button>
+              <button onclick="filterMap('pothole')" class="filter-pill px-3 py-1 rounded-lg text-amber-800 text-[11px] bg-white/70 hover:bg-white font-extrabold border border-white/80">Potholes</button>
+              <button onclick="filterMap('hospital')" class="filter-pill px-3 py-1 rounded-lg text-blue-800 text-[11px] bg-white/70 hover:bg-white font-extrabold border border-white/80">Hospital Routes</button>
             </div>
+
 
             <!-- List of Incident Cards -->
             <div id="incident-feed-list" class="flex-1 overflow-y-auto space-y-2.5 pr-1 custom-scrollbar max-h-[340px]">

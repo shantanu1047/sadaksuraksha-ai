@@ -564,14 +564,15 @@ function renderIncidentFeed(hazards) {
         </div>
       </div>
       <div>
-        <h4 class="text-xs font-bold text-black group-hover:text-orange-700 transition-colors leading-snug">${h.title}</h4>
-        <p class="text-[11px] text-slate-600 truncate mt-0.5 font-medium">${h.address}</p>
+        <h4 class="text-xs font-black text-black group-hover:text-blue-900 transition-colors leading-snug">${h.title}</h4>
+        <p class="text-[11px] text-slate-800 truncate mt-0.5 font-semibold">${h.address}</p>
       </div>
-      <div class="flex items-center justify-between text-[10px] text-slate-700 font-mono font-bold border-t border-slate-100 pt-2">
+      <div class="flex items-center justify-between text-[10px] text-slate-900 font-mono font-black border-t border-slate-200/80 pt-2">
         <span>Depth: ${h.fusion.physical_depth_cm}cm</span>
         <span>Area: ${h.fusion.physical_area_sqm}m²</span>
-        <span class="text-purple-900 font-black">${formatINR(h.priority.estimated_repair_cost_usd)}</span>
+        <span class="text-purple-950 font-black">${formatINR(h.priority.estimated_repair_cost_usd)}</span>
       </div>
+
     `;
 
     container.appendChild(card);
