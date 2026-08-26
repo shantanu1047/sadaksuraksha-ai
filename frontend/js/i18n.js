@@ -499,13 +499,14 @@
     const btnHi = document.getElementById('lang-btn-hi');
     if (btnEn && btnHi) {
       if (currentLang === 'hi') {
-        btnHi.className = 'nhai-lang-btn active';
-        btnEn.className = 'nhai-lang-btn';
+        btnHi.className = 'flat-lang-btn active';
+        btnEn.className = 'flat-lang-btn';
       } else {
-        btnEn.className = 'nhai-lang-btn active';
-        btnHi.className = 'nhai-lang-btn';
+        btnEn.className = 'flat-lang-btn active';
+        btnHi.className = 'flat-lang-btn';
       }
     }
+
 
 
     // 6. Update document lang attribute
