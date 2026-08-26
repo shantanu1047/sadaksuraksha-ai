@@ -768,7 +768,139 @@
         </div>
 
       </div>
+
+      <!-- ROAD INFRASTRUCTURE & SAFETY FIELD OPERATIONS GALLERY (Auto-Circulating Loop Stream) -->
+      <div class="max-w-7xl mx-auto mt-6 pt-5 border-t border-slate-300/80">
+        <!-- Gallery Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-white/80 backdrop-blur-xs border border-slate-300/80 flex items-center justify-center text-slate-800 shadow-2xs">
+              <i data-lucide="camera" class="w-4 h-4 text-blue-700"></i>
+            </div>
+            <div>
+              <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                <span>Road Infrastructure & Safety Field Operations Stream</span>
+                <span class="text-xs">🇮🇳</span>
+              </h3>
+              <p class="text-[11px] text-slate-600 font-medium">Live pictorial feed of national highway inspection, maintenance operations, and public awareness campaigns</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-white/80 backdrop-blur-xs border border-emerald-400 text-emerald-950 shadow-2xs">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+              Auto-Circulating Loop
+            </span>
+          </div>
+        </div>
+
+        <!-- Marquee Looping Gallery Track -->
+        <div class="gallery-marquee-wrapper py-1">
+          <div class="gallery-marquee-track">
+            <!-- Item 1: Engineers Field Inspection -->
+            <div onclick="openGalleryModal('/static/assets/gallery/engineers_inspection.jpg', 'NHAI Structural Overpass Inspection', 'Field Operations', 'Structural engineers inspecting bridge underside & pier alignments on key transport corridor.')" class="gallery-item-card group bg-white border border-slate-200/90 shadow-xs hover:shadow-xl">
+              <img src="/static/assets/gallery/engineers_inspection.jpg" alt="NHAI Inspection" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent flex flex-col justify-end p-3 text-white">
+                <span class="self-start text-[9px] font-mono font-bold px-2 py-0.5 rounded-md bg-amber-500 text-slate-950 uppercase mb-1">Field Operations</span>
+                <h4 class="text-xs font-bold text-white line-clamp-1 leading-snug">NHAI Structural Overpass Inspection</h4>
+                <p class="text-[10px] text-slate-300 line-clamp-1 mt-0.5">Engineers verifying girder & deck alignment</p>
+              </div>
+            </div>
+
+            <!-- Item 2: Highway Aerial Corridor -->
+            <div onclick="openGalleryModal('/static/assets/gallery/highway_aerial.jpg', 'National Expressway Flow Monitoring', 'Surveillance', 'Aerial panoramic perspective of high-speed dual carriageway corridor and median barrier.')" class="gallery-item-card group bg-white border border-slate-200/90 shadow-xs hover:shadow-xl">
+              <img src="/static/assets/gallery/highway_aerial.jpg" alt="Expressway Aerial" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent flex flex-col justify-end p-3 text-white">
+                <span class="self-start text-[9px] font-mono font-bold px-2 py-0.5 rounded-md bg-blue-500 text-white uppercase mb-1">Surveillance</span>
+                <h4 class="text-xs font-bold text-white line-clamp-1 leading-snug">Expressway Corridor & Flow</h4>
+                <p class="text-[10px] text-slate-300 line-clamp-1 mt-0.5">High-speed dual carriageway monitoring</p>
+              </div>
+            </div>
+
+            <!-- Item 3: Public Awareness Report Poster -->
+            <div onclick="openGalleryModal('/static/assets/gallery/report_hazard_poster.jpg', 'Public Awareness: Spot, Capture, Share', 'Citizen Drive', 'Official MoRTH guidelines on mobile citizen reporting of potholes, damaged signs, and broken barriers.')" class="gallery-item-card group bg-white border border-slate-200/90 shadow-xs hover:shadow-xl">
+              <img src="/static/assets/gallery/report_hazard_poster.jpg" alt="Report Hazard Campaign" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent flex flex-col justify-end p-3 text-white">
+                <span class="self-start text-[9px] font-mono font-bold px-2 py-0.5 rounded-md bg-emerald-500 text-white uppercase mb-1">Citizen Drive</span>
+                <h4 class="text-xs font-bold text-white line-clamp-1 leading-snug">See A Hazard? Report It.</h4>
+                <p class="text-[10px] text-slate-300 line-clamp-1 mt-0.5">Spot, Capture, Share, and Submit</p>
+              </div>
+            </div>
+
+            <!-- Item 4: Safety Impact Campaign -->
+            <div onclick="openGalleryModal('/static/assets/gallery/safety_impact_poster.jpg', 'Report Today, Save Tomorrow', 'Life Safety', 'Preventing catastrophic accidents through rapid crowdsourced defect reporting and golden-hour repair.')" class="gallery-item-card group bg-white border border-slate-200/90 shadow-xs hover:shadow-xl">
+              <img src="/static/assets/gallery/safety_impact_poster.jpg" alt="Safety Impact" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent flex flex-col justify-end p-3 text-white">
+                <span class="self-start text-[9px] font-mono font-bold px-2 py-0.5 rounded-md bg-rose-500 text-white uppercase mb-1">Life Safety</span>
+                <h4 class="text-xs font-bold text-white line-clamp-1 leading-snug">Report Today, Save Tomorrow</h4>
+                <p class="text-[10px] text-slate-300 line-clamp-1 mt-0.5">Quick action saves motorists lives</p>
+              </div>
+            </div>
+
+            <!-- Item 5: Marine Sea Link Bridge -->
+            <div onclick="openGalleryModal('/static/assets/gallery/sealink_sunset.png', 'Modern Sea Link Infrastructure', 'Infrastructure', 'Bandra-Worli Sea Link cable-stayed bridge sunset vista representing modern Indian connectivity.')" class="gallery-item-card group bg-white border border-slate-200/90 shadow-xs hover:shadow-xl">
+              <img src="/static/assets/gallery/sealink_sunset.png" alt="Sea Link Sunset" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent flex flex-col justify-end p-3 text-white">
+                <span class="self-start text-[9px] font-mono font-bold px-2 py-0.5 rounded-md bg-purple-500 text-white uppercase mb-1">Infrastructure</span>
+                <h4 class="text-xs font-bold text-white line-clamp-1 leading-snug">Marine Expressway Infrastructure</h4>
+                <p class="text-[10px] text-slate-300 line-clamp-1 mt-0.5">Cable-stayed coastal link bridge</p>
+              </div>
+            </div>
+
+            <!-- DUPLICATE SET FOR SEAMLESS 100% INFINITE CSS MARQUEE LOOP -->
+            <!-- Duplicate 1 -->
+            <div onclick="openGalleryModal('/static/assets/gallery/engineers_inspection.jpg', 'NHAI Structural Overpass Inspection', 'Field Operations', 'Structural engineers inspecting bridge underside & pier alignments on key transport corridor.')" class="gallery-item-card group bg-white border border-slate-200/90 shadow-xs hover:shadow-xl">
+              <img src="/static/assets/gallery/engineers_inspection.jpg" alt="NHAI Inspection" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent flex flex-col justify-end p-3 text-white">
+                <span class="self-start text-[9px] font-mono font-bold px-2 py-0.5 rounded-md bg-amber-500 text-slate-950 uppercase mb-1">Field Operations</span>
+                <h4 class="text-xs font-bold text-white line-clamp-1 leading-snug">NHAI Structural Overpass Inspection</h4>
+                <p class="text-[10px] text-slate-300 line-clamp-1 mt-0.5">Engineers verifying girder & deck alignment</p>
+              </div>
+            </div>
+
+            <!-- Duplicate 2 -->
+            <div onclick="openGalleryModal('/static/assets/gallery/highway_aerial.jpg', 'National Expressway Flow Monitoring', 'Surveillance', 'Aerial panoramic perspective of high-speed dual carriageway corridor and median barrier.')" class="gallery-item-card group bg-white border border-slate-200/90 shadow-xs hover:shadow-xl">
+              <img src="/static/assets/gallery/highway_aerial.jpg" alt="Expressway Aerial" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent flex flex-col justify-end p-3 text-white">
+                <span class="self-start text-[9px] font-mono font-bold px-2 py-0.5 rounded-md bg-blue-500 text-white uppercase mb-1">Surveillance</span>
+                <h4 class="text-xs font-bold text-white line-clamp-1 leading-snug">Expressway Corridor & Flow</h4>
+                <p class="text-[10px] text-slate-300 line-clamp-1 mt-0.5">High-speed dual carriageway monitoring</p>
+              </div>
+            </div>
+
+            <!-- Duplicate 3 -->
+            <div onclick="openGalleryModal('/static/assets/gallery/report_hazard_poster.jpg', 'Public Awareness: Spot, Capture, Share', 'Citizen Drive', 'Official MoRTH guidelines on mobile citizen reporting of potholes, damaged signs, and broken barriers.')" class="gallery-item-card group bg-white border border-slate-200/90 shadow-xs hover:shadow-xl">
+              <img src="/static/assets/gallery/report_hazard_poster.jpg" alt="Report Hazard Campaign" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent flex flex-col justify-end p-3 text-white">
+                <span class="self-start text-[9px] font-mono font-bold px-2 py-0.5 rounded-md bg-emerald-500 text-white uppercase mb-1">Citizen Drive</span>
+                <h4 class="text-xs font-bold text-white line-clamp-1 leading-snug">See A Hazard? Report It.</h4>
+                <p class="text-[10px] text-slate-300 line-clamp-1 mt-0.5">Spot, Capture, Share, and Submit</p>
+              </div>
+            </div>
+
+            <!-- Duplicate 4 -->
+            <div onclick="openGalleryModal('/static/assets/gallery/safety_impact_poster.jpg', 'Report Today, Save Tomorrow', 'Life Safety', 'Preventing catastrophic accidents through rapid crowdsourced defect reporting and golden-hour repair.')" class="gallery-item-card group bg-white border border-slate-200/90 shadow-xs hover:shadow-xl">
+              <img src="/static/assets/gallery/safety_impact_poster.jpg" alt="Safety Impact" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent flex flex-col justify-end p-3 text-white">
+                <span class="self-start text-[9px] font-mono font-bold px-2 py-0.5 rounded-md bg-rose-500 text-white uppercase mb-1">Life Safety</span>
+                <h4 class="text-xs font-bold text-white line-clamp-1 leading-snug">Report Today, Save Tomorrow</h4>
+                <p class="text-[10px] text-slate-300 line-clamp-1 mt-0.5">Quick action saves motorists lives</p>
+              </div>
+            </div>
+
+            <!-- Duplicate 5 -->
+            <div onclick="openGalleryModal('/static/assets/gallery/sealink_sunset.png', 'Modern Sea Link Infrastructure', 'Infrastructure', 'Bandra-Worli Sea Link cable-stayed bridge sunset vista representing modern Indian connectivity.')" class="gallery-item-card group bg-white border border-slate-200/90 shadow-xs hover:shadow-xl">
+              <img src="/static/assets/gallery/sealink_sunset.png" alt="Sea Link Sunset" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent flex flex-col justify-end p-3 text-white">
+                <span class="self-start text-[9px] font-mono font-bold px-2 py-0.5 rounded-md bg-purple-500 text-white uppercase mb-1">Infrastructure</span>
+                <h4 class="text-xs font-bold text-white line-clamp-1 leading-snug">Marine Expressway Infrastructure</h4>
+                <p class="text-[10px] text-slate-300 line-clamp-1 mt-0.5">Cable-stayed coastal link bridge</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
 
 
 
@@ -1911,8 +2043,33 @@
     </div>
   </div>
 
+  <!-- GALLERY IMAGE LIGHTBOX MODAL -->
+  <div id="gallery-lightbox-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[99999] hidden flex items-center justify-center p-4" onclick="closeGalleryModal()" style="z-index: 99999 !important;">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-3xl w-full overflow-hidden text-white shadow-2xl relative" onclick="event.stopPropagation()">
+      <div class="relative max-h-[72vh] bg-black flex items-center justify-center overflow-hidden">
+        <img id="gallery-lightbox-img" src="" alt="Gallery High Resolution" class="max-h-[72vh] w-auto max-w-full object-contain">
+        <button onclick="closeGalleryModal()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center transition-colors cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="p-4 bg-slate-900 flex items-center justify-between border-t border-slate-800 gap-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span id="gallery-lightbox-tag" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500 text-slate-950 uppercase">Field Operations</span>
+          </div>
+          <h3 id="gallery-lightbox-title" class="text-sm font-black text-white">Photo Title</h3>
+          <p id="gallery-lightbox-desc" class="text-xs text-slate-400 mt-0.5">Photo Description</p>
+        </div>
+        <button onclick="closeGalleryModal()" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white border border-slate-700 shrink-0 cursor-pointer">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script src="/static/js/i18n.js"></script>
   <script src="/static/js/app.js"></script>
 </body>
 </html>
+
 

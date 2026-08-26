@@ -2508,3 +2508,39 @@ if (document.readyState === 'loading') {
   initStickyFilterDock();
 }
 
+// ==========================================
+// ROAD INFRASTRUCTURE GALLERY LIGHTBOX
+// ==========================================
+function openGalleryModal(imgSrc, title, tag, desc) {
+  const modal = document.getElementById('gallery-lightbox-modal');
+  const imgElem = document.getElementById('gallery-lightbox-img');
+  const titleElem = document.getElementById('gallery-lightbox-title');
+  const tagElem = document.getElementById('gallery-lightbox-tag');
+  const descElem = document.getElementById('gallery-lightbox-desc');
+
+  if (imgElem) imgElem.src = imgSrc;
+  if (titleElem) titleElem.textContent = title;
+  if (tagElem) tagElem.textContent = tag;
+  if (descElem) descElem.textContent = desc;
+
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    window.lucide.createIcons();
+  }
+}
+window.openGalleryModal = openGalleryModal;
+
+function closeGalleryModal() {
+  const modal = document.getElementById('gallery-lightbox-modal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}
+window.closeGalleryModal = closeGalleryModal;
+
+
