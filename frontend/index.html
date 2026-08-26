@@ -541,7 +541,7 @@
     <div class="w-full overflow-hidden border-t border-amber-900/30">
       <div class="max-w-7xl mx-auto px-6 md:px-10 py-5 flex items-center justify-between gap-4">
         
-        <!-- 4 High-Impact Metric Items with Interactive Explanation Tooltips on Hover/Touch -->
+        <!-- 4 High-Impact Metric Items with Interactive Explanation Tooltips on Hover/Touch (Opens Downwards) -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-12 flex-1">
           
           <!-- Metric 1: Critical Hazards -->
@@ -557,8 +557,9 @@
               </div>
             </div>
 
-            <!-- Explanation Box (Shows on Touch / Hover) -->
-            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-64 bg-slate-950/95 backdrop-blur-md border border-red-500/50 rounded-xl p-3 shadow-2xl opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus:opacity-100 group-focus:translate-y-0 transition-all duration-200 pointer-events-none z-50">
+            <!-- Explanation Box (Opens Downwards on Touch / Hover) -->
+            <div class="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-64 bg-slate-950/95 backdrop-blur-md border border-red-500/50 rounded-xl p-3 shadow-2xl opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus:opacity-100 group-focus:translate-y-0 transition-all duration-200 pointer-events-none z-50">
+              <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-0 border-4 border-transparent border-b-slate-950"></div>
               <div class="flex items-center gap-2 mb-1.5 pb-1 border-b border-white/10">
                 <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
                 <span class="text-xs font-black text-white uppercase tracking-wider">Critical Hazards</span>
@@ -566,7 +567,6 @@
               <p class="text-[11px] text-slate-200 leading-snug font-normal">
                 High-severity defects (deep potholes &gt;8cm, cave-ins) along hospital corridors and national transit routes requiring immediate 24h PWD action.
               </p>
-              <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-950"></div>
             </div>
           </div>
 
@@ -583,8 +583,9 @@
               </div>
             </div>
 
-            <!-- Explanation Box (Shows on Touch / Hover) -->
-            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-64 bg-slate-950/95 backdrop-blur-md border border-amber-500/50 rounded-xl p-3 shadow-2xl opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus:opacity-100 group-focus:translate-y-0 transition-all duration-200 pointer-events-none z-50">
+            <!-- Explanation Box (Opens Downwards on Touch / Hover) -->
+            <div class="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-64 bg-slate-950/95 backdrop-blur-md border border-amber-500/50 rounded-xl p-3 shadow-2xl opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus:opacity-100 group-focus:translate-y-0 transition-all duration-200 pointer-events-none z-50">
+              <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-0 border-4 border-transparent border-b-slate-950"></div>
               <div class="flex items-center gap-2 mb-1.5 pb-1 border-b border-white/10">
                 <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
                 <span class="text-xs font-black text-white uppercase tracking-wider">Active Incidents</span>
@@ -592,7 +593,6 @@
               <p class="text-[11px] text-slate-200 leading-snug font-normal">
                 Total verified road hazards across 16 states currently under continuous AI sensor and CCTV monitoring awaiting PWD repair closure.
               </p>
-              <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-950"></div>
             </div>
           </div>
 
@@ -609,8 +609,9 @@
               </div>
             </div>
 
-            <!-- Explanation Box (Shows on Touch / Hover) -->
-            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-64 bg-slate-950/95 backdrop-blur-md border border-blue-500/50 rounded-xl p-3 shadow-2xl opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus:opacity-100 group-focus:translate-y-0 transition-all duration-200 pointer-events-none z-50">
+            <!-- Explanation Box (Opens Downwards on Touch / Hover) -->
+            <div class="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-64 bg-slate-950/95 backdrop-blur-md border border-blue-500/50 rounded-xl p-3 shadow-2xl opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus:opacity-100 group-focus:translate-y-0 transition-all duration-200 pointer-events-none z-50">
+              <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-0 border-4 border-transparent border-b-slate-950"></div>
               <div class="flex items-center gap-2 mb-1.5 pb-1 border-b border-white/10">
                 <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
                 <span class="text-xs font-black text-white uppercase tracking-wider">Work Dispatches</span>
@@ -618,7 +619,6 @@
               <p class="text-[11px] text-slate-200 leading-snug font-normal">
                 Spatially clustered repair work orders auto-dispatched to municipal road contractors and PWD engineering teams for scheduled asphalt paving.
               </p>
-              <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-950"></div>
             </div>
           </div>
 
@@ -635,8 +635,9 @@
               </div>
             </div>
 
-            <!-- Explanation Box (Shows on Touch / Hover) -->
-            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-64 bg-slate-950/95 backdrop-blur-md border border-emerald-500/50 rounded-xl p-3 shadow-2xl opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus:opacity-100 group-focus:translate-y-0 transition-all duration-200 pointer-events-none z-50">
+            <!-- Explanation Box (Opens Downwards on Touch / Hover) -->
+            <div class="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-64 bg-slate-950/95 backdrop-blur-md border border-emerald-500/50 rounded-xl p-3 shadow-2xl opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus:opacity-100 group-focus:translate-y-0 transition-all duration-200 pointer-events-none z-50">
+              <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-0 border-4 border-transparent border-b-slate-950"></div>
               <div class="flex items-center gap-2 mb-1.5 pb-1 border-b border-white/10">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                 <span class="text-xs font-black text-white uppercase tracking-wider">Noise Filtered</span>
@@ -644,11 +645,11 @@
               <p class="text-[11px] text-slate-200 leading-snug font-normal">
                 Sensor noise, harmless shadows, and road paint marks successfully rejected by the 4-Modal Sensor Fusion engine to prevent false dispatches.
               </p>
-              <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-950"></div>
             </div>
           </div>
 
         </div>
+
 
         <!-- Hidden Support Elements for PCI & Cost -->
         <span id="kpi-pci" class="hidden">-- /100</span>
