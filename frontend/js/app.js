@@ -540,7 +540,7 @@ function renderIncidentFeed(hazards) {
       ? 'border-l-4 border-l-slate-400' 
       : (h.severity === 'critical' ? 'border-l-4 border-l-red-600' : (h.severity === 'high' ? 'border-l-4 border-l-[#FF9933]' : 'border-l-4 border-l-blue-600'));
 
-    card.className = `bg-white hover:bg-slate-50/80 border border-slate-200 ${borderLeftColor} rounded-xl p-3.5 cursor-pointer transition-all shadow-xs hover:shadow-md flex flex-col gap-2 group text-black overflow-hidden relative`;
+    card.className = `translucent-feed-card ${borderLeftColor} rounded-xl p-3.5 cursor-pointer transition-all shadow-xs flex flex-col gap-2 group text-black overflow-hidden relative`;
     card.onclick = () => {
       openIncidentModal(h.id);
       if (gisMap) {
