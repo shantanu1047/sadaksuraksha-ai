@@ -146,7 +146,6 @@ const CITY_VIEWPORTS = {
 // Map instances
 let gisMap = null;
 let gisMarkerLayer = null;
-let gisClusterLayer = null;
 let patrolMap = null;
 let patrolCarMarker = null;
 let patrolWs = null;
@@ -665,7 +664,6 @@ function initGisMap() {
   }).addTo(gisMap);
 
   gisMarkerLayer = L.layerGroup().addTo(gisMap);
-  gisClusterLayer = L.layerGroup().addTo(gisMap);
 
   // Click on empty area of Leaflet map: dismiss active selection & close popup
   gisMap.on('click', () => {
@@ -674,14 +672,6 @@ function initGisMap() {
     }
     selectedHazard = null;
     clearFeedHighlights();
-  });
-
-  document.getElementById('toggle-clusters').addEventListener('change', (e) => {
-    if (e.target.checked) {
-      gisMap.addLayer(gisClusterLayer);
-    } else {
-      gisMap.removeLayer(gisClusterLayer);
-    }
   });
 
   const filterPanel = document.getElementById('map-severity-filter');
@@ -714,7 +704,6 @@ function clearFeedHighlights() {
 function renderMapMarkers(hazards) {
   if (!gisMarkerLayer) return;
   gisMarkerLayer.clearLayers();
-  gisClusterLayer.clearLayers();
 
   const activeHazardIds = new Set(hazards.map(h => h.id));
 
@@ -820,37 +809,6 @@ function renderMapMarkers(hazards) {
 
     marker.bindPopup(popupHtml, { autoClose: true, closeOnClick: true });
     gisMarkerLayer.addLayer(marker);
-  });
-
-  // Render Clustered Work Order Outlines ONLY for work orders matching active hazards
-  allWorkOrders.forEach(wo => {
-    if (currentStateFilter !== 'all' && wo.state && wo.state.toLowerCase() !== currentStateFilter.toLowerCase()) {
-      return;
-    }
-    if (currentCityFilter !== 'all' && wo.city && wo.city.toLowerCase() !== currentCityFilter.toLowerCase()) {
-      return;
-    }
-    const matchingHazardsCount = wo.target_hazard_ids ? wo.target_hazard_ids.filter(id => activeHazardIds.has(id)).length : 0;
-    if (matchingHazardsCount === 0) {
-      return;
-    }
-
-    const circle = L.circle([wo.cluster_center_lat, wo.cluster_center_lng], {
-      radius: 650,
-      color: '#00f0ff',
-      weight: 1.5,
-      fillColor: '#00f0ff',
-      fillOpacity: 0.08,
-      dashArray: '4, 8'
-    });
-
-    circle.bindTooltip(`<strong>${wo.id}</strong><br/>${wo.title} (${matchingHazardsCount} active issues)`, {
-      permanent: false,
-      direction: 'top',
-      className: 'bg-slate-900 text-white text-xs border border-cyan-500 rounded p-1 font-sans'
-    });
-
-    gisClusterLayer.addLayer(circle);
   });
 
   if (typeof lucide !== 'undefined' && lucide.createIcons) {

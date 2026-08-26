@@ -401,22 +401,7 @@
 
         <!-- Right Interactive Road Safety Map -->
         <div class="lg:col-span-3 bg-[#101726] border border-slate-800 rounded-2xl overflow-hidden relative shadow-2xl flex flex-col">
-          <!-- Top Right Controls (Heatmap, Clusters, Refresh) -->
-          <div class="absolute top-4 right-4 z-[400] flex items-center gap-2 bg-[#0e1626]/90 backdrop-blur-md border border-slate-700/80 p-2 rounded-xl shadow-xl">
-            <label class="text-xs text-slate-300 font-medium flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" id="toggle-heatmap" checked class="accent-cyan-400 rounded">
-              <span>Risk Heatmap</span>
-            </label>
-            <span class="text-slate-700">|</span>
-            <label class="text-xs text-slate-300 font-medium flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" id="toggle-clusters" checked class="accent-cyan-400 rounded">
-              <span>Grouped Repair Tasks</span>
-            </label>
-            <span class="text-slate-700">|</span>
-            <button onclick="refreshMapData()" class="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1 font-semibold">
-              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh
-            </button>
-          </div>
+
 
           <!-- Bottom Left Interactive Map Severity Control (Always Visible) -->
           <div id="map-severity-filter" class="absolute bottom-6 left-6 z-[400] bg-[#0c1424]/92 backdrop-blur-md border border-slate-700/80 rounded-xl p-1.5 shadow-2xl flex items-center gap-1 pointer-events-auto select-none">
