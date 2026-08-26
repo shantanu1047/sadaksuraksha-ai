@@ -17,6 +17,84 @@ let currentSearchQuery = '';
 let selectedHazard = null;
 let userApiKey = localStorage.getItem('SADAKSURAKSHA_GEMINI_KEY') || localStorage.getItem('SADAKSUKHA_GEMINI_KEY') || localStorage.getItem('AERO_GEMINI_KEY') || '';
 
+// ==========================================
+// THEME MANAGER (Default: Light Mode)
+// ==========================================
+let currentTheme = localStorage.getItem('sadaksuraksha_theme') || 'light';
+let gisTileLayer = null;
+let patrolTileLayer = null;
+let forecastTileLayer = null;
+
+const TILE_URLS = {
+  light: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+  dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+};
+
+function applyTheme(theme) {
+  currentTheme = theme === 'dark' ? 'dark' : 'light';
+  try {
+    localStorage.setItem('sadaksuraksha_theme', currentTheme);
+  } catch (e) {
+    console.warn('Could not save theme preference:', e);
+  }
+
+  const root = document.documentElement;
+  if (currentTheme === 'dark') {
+    root.classList.add('dark');
+    root.classList.remove('light');
+    root.setAttribute('data-theme', 'dark');
+    if (document.body) {
+      document.body.classList.add('dark');
+      document.body.classList.remove('light');
+    }
+  } else {
+    root.classList.add('light');
+    root.classList.remove('dark');
+    root.setAttribute('data-theme', 'light');
+    if (document.body) {
+      document.body.classList.add('light');
+      document.body.classList.remove('dark');
+    }
+  }
+
+  // Update theme toggle button UI
+  const toggleIcon = document.getElementById('theme-toggle-icon');
+  const toggleText = document.getElementById('theme-toggle-text');
+  if (toggleIcon) {
+    toggleIcon.setAttribute('data-lucide', currentTheme === 'dark' ? 'sun' : 'moon');
+    toggleIcon.className = currentTheme === 'dark' ? 'w-3.5 h-3.5 text-amber-400' : 'w-3.5 h-3.5 text-slate-700';
+  }
+  if (toggleText) {
+    toggleText.textContent = currentTheme === 'dark' ? 'Dark' : 'Light';
+  }
+
+  updateMapTheme(currentTheme);
+
+  if (typeof lucide !== 'undefined' && lucide.createIcons) {
+    lucide.createIcons();
+  }
+}
+window.applyTheme = applyTheme;
+
+function toggleTheme() {
+  const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  applyTheme(nextTheme);
+}
+window.toggleTheme = toggleTheme;
+
+function updateMapTheme(theme) {
+  const url = TILE_URLS[theme] || TILE_URLS.light;
+  if (gisTileLayer && typeof gisTileLayer.setUrl === 'function') {
+    gisTileLayer.setUrl(url);
+  }
+  if (patrolTileLayer && typeof patrolTileLayer.setUrl === 'function') {
+    patrolTileLayer.setUrl(url);
+  }
+  if (forecastTileLayer && typeof forecastTileLayer.setUrl === 'function') {
+    forecastTileLayer.setUrl(url);
+  }
+}
+
 // Indian Geographic Center Coordinates by State
 const STATE_VIEWPORTS = {
   all: { center: [22.5937, 78.9629], zoom: 4.8 },
@@ -178,6 +256,7 @@ function formatINR(amount) {
 // INITIALIZATION
 // ==========================================
 document.addEventListener('DOMContentLoaded', async () => {
+  applyTheme(currentTheme);
   lucide.createIcons();
   updateApiKeyDisplay();
   setupGlobalInteractionHandlers();
@@ -353,9 +432,22 @@ function getHazardIconName(hazardType) {
   if (ht === 'damaged_guardrail' || ht === 'guardrail') return 'shield-alert';
   if (ht === 'debris') return 'mountain';
   if (ht === 'obscured_sign' || ht === 'signage') return 'signpost';
+  if (ht === 'alligator_crack' || ht === 'road_distress') return 'activity';
   return 'help-circle';
 }
 window.getHazardIconName = getHazardIconName;
+
+function getHazardEmoji(hazardType) {
+  const ht = (hazardType || '').toLowerCase().trim();
+  if (ht === 'pothole') return '🕳️';
+  if (ht === 'standing_water' || ht === 'waterlogging') return '🌊';
+  if (ht === 'damaged_guardrail' || ht === 'guardrail') return '🛡️';
+  if (ht === 'debris') return '🪨';
+  if (ht === 'obscured_sign' || ht === 'signage') return '🪧';
+  if (ht === 'alligator_crack' || ht === 'road_distress') return '⚡';
+  return '⚠️';
+}
+window.getHazardEmoji = getHazardEmoji;
 
 // ==========================================
 // MAP SEVERITY QUICK FILTER (BOTTOM-LEFT MAP OVERLAY)
@@ -656,7 +748,8 @@ function initGisMap() {
 
   L.control.zoom({ position: 'bottomright' }).addTo(gisMap);
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  const initialGisTileUrl = TILE_URLS[currentTheme] || TILE_URLS.light;
+  gisTileLayer = L.tileLayer(initialGisTileUrl, {
     attribution: '&copy; CartoDB &copy; OpenStreetMap',
     maxZoom: 20,
     minZoom: 4,
@@ -705,6 +798,38 @@ function clearFeedHighlights() {
   });
 }
 
+function getSeverityFeedSymbol(severity) {
+  const s = (severity || '').toLowerCase();
+  if (s === 'critical') {
+    return `<svg viewBox="0 0 16 16" width="13" height="13" class="shrink-0 inline-block" style="vertical-align: -1px;">
+      <polygon points="8,1 15,14 1,14" fill="#dc2626" stroke="none"/>
+      <line x1="8" y1="5" x2="8" y2="9.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="8" cy="12" r="0.8" fill="#ffffff"/>
+    </svg>`;
+  }
+  if (s === 'high') {
+    return `<svg viewBox="0 0 16 16" width="13" height="13" class="shrink-0 inline-block" style="vertical-align: -1px;">
+      <path d="M8,1 C11,1 14,2 14.8,4 C14.8,9.5 11,14 8,15.5 C5,14 1.2,9.5 1.2,4 C2,2 5,1 8,1 Z" fill="#eab308" stroke="none"/>
+      <line x1="8" y1="4.5" x2="8" y2="9" stroke="#0f172a" stroke-width="1.4" stroke-linecap="round"/>
+      <circle cx="8" cy="11.5" r="0.7" fill="#0f172a"/>
+    </svg>`;
+  }
+  if (s === 'medium') {
+    return `<svg viewBox="0 0 16 16" width="12" height="12" class="shrink-0 inline-block" style="vertical-align: -1px;">
+      <rect x="1.5" y="1.5" width="13" height="13" rx="3" fill="#0284c7" stroke="none"/>
+      <line x1="8" y1="4.5" x2="8" y2="8.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="8" cy="11" r="0.8" fill="#ffffff"/>
+    </svg>`;
+  }
+  // low
+  return `<svg viewBox="0 0 16 16" width="12" height="12" class="shrink-0 inline-block" style="vertical-align: -1px;">
+    <circle cx="8" cy="8" r="6.5" fill="#10b981" stroke="none"/>
+    <line x1="8" y1="4.5" x2="8" y2="8.5" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round"/>
+    <circle cx="8" cy="11" r="0.7" fill="#ffffff"/>
+  </svg>`;
+}
+window.getSeverityFeedSymbol = getSeverityFeedSymbol;
+
 function renderMapMarkers(hazards) {
   if (!gisMarkerLayer) return;
   gisMarkerLayer.clearLayers();
@@ -712,28 +837,53 @@ function renderMapMarkers(hazards) {
   const activeHazardIds = new Set(hazards.map(h => h.id));
 
   hazards.forEach(h => {
-    let pinClass = 'pin-medium';
-    let size = 32;
+    let svgHtml = '';
+    let size = 24;
 
     if (h.fusion && h.fusion.is_false_positive) {
-      pinClass = 'pin-fp';
-      size = 26;
+      size = 20;
+      svgHtml = `<svg viewBox="0 0 20 20" width="20" height="20" style="overflow:visible;">
+        <circle cx="10" cy="10" r="9.5" fill="#64748b" stroke="none"/>
+        <line x1="6" y1="6" x2="14" y2="14" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="14" y1="6" x2="6" y2="14" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>`;
     } else if (h.severity === 'critical') {
-      pinClass = 'pin-critical';
-      size = 38;
-    } else if (h.severity === 'high') {
-      pinClass = 'pin-high';
-      size = 34;
-    } else if (h.severity === 'low') {
-      pinClass = 'pin-low';
+      // Critical: Red Triangle with ! (No white border, slightly larger for prominence)
       size = 28;
+      svgHtml = `<svg viewBox="0 0 28 28" width="28" height="28" style="overflow:visible;">
+        <polygon points="14,1 27,25 1,25" fill="#dc2626" stroke="none"/>
+        <line x1="14" y1="9" x2="14" y2="16" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round"/>
+        <circle cx="14" cy="20.5" r="1.3" fill="#ffffff"/>
+      </svg>`;
+    } else if (h.severity === 'high') {
+      // High: Yellow Shield with ! (No white border)
+      size = 24;
+      svgHtml = `<svg viewBox="0 0 24 24" width="24" height="24" style="overflow:visible;">
+        <path d="M12,1 C16.5,1 21,2.5 22,5.5 C22,14 16.5,20.5 12,23 C7.5,20.5 2,14 2,5.5 C3,2.5 7.5,1 12,1 Z" fill="#eab308" stroke="none"/>
+        <line x1="12" y1="6.5" x2="12" y2="13" stroke="#0f172a" stroke-width="2.2" stroke-linecap="round"/>
+        <circle cx="12" cy="17" r="1.2" fill="#0f172a"/>
+      </svg>`;
+    } else if (h.severity === 'medium') {
+      // Medium: Blue Square with ! (No white border)
+      size = 22;
+      svgHtml = `<svg viewBox="0 0 22 22" width="22" height="22" style="overflow:visible;">
+        <rect x="1" y="1" width="20" height="20" rx="4" fill="#0284c7" stroke="none"/>
+        <line x1="11" y1="5.5" x2="11" y2="11.5" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/>
+        <circle cx="11" cy="15.5" r="1.2" fill="#ffffff"/>
+      </svg>`;
+    } else {
+      // Low: Green Circle with ! (No white border)
+      size = 20;
+      svgHtml = `<svg viewBox="0 0 20 20" width="20" height="20" style="overflow:visible;">
+        <circle cx="10" cy="10" r="9.5" fill="#10b981" stroke="none"/>
+        <line x1="10" y1="5" x2="10" y2="10.5" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="10" cy="14" r="1.1" fill="#ffffff"/>
+      </svg>`;
     }
 
-    const iconName = getHazardIconName(h.hazard_type);
-
     const customIcon = L.divIcon({
-      className: `custom-hazard-pin ${pinClass}`,
-      html: `<i data-lucide="${iconName}" style="width:${Math.round(size*0.5)}px;height:${Math.round(size*0.5)}px;color:white;"></i>`,
+      className: `custom-hazard-pin severity-pin-${h.severity}`,
+      html: svgHtml,
       iconSize: [size, size],
       iconAnchor: [size / 2, size / 2]
     });
@@ -753,59 +903,74 @@ function renderMapMarkers(hazards) {
     });
 
     const wfStatus = getHazardWorkflowStatus(h);
-    let wfBadgeStyle = 'background:#fef2f2;border:1px solid #f87171;color:#b91c1c;';
-    let wfLabel = 'UNRESOLVED';
-    let wfColor = '#ef4444';
+    let wfBadgeStyle = 'background:#fef3c7;border:1px solid #fde68a;color:#92400e;';
+    let wfLabel = typeof window.translateWorkflowStatus === 'function' ? window.translateWorkflowStatus('unresolved') : 'UNRESOLVED';
+    let wfColor = '#b45309';
 
     if (wfStatus === 'in_progress') {
-      wfBadgeStyle = 'background:#fffbeb;border:1px solid #fbbf24;color:#b45309;';
-      wfLabel = 'IN PROGRESS';
-      wfColor = '#d97706';
+      wfBadgeStyle = 'background:#eff6ff;border:1px solid #93c5fd;color:#1d4ed8;';
+      wfLabel = typeof window.translateWorkflowStatus === 'function' ? window.translateWorkflowStatus('in_progress') : 'IN PROGRESS';
+      wfColor = '#2563eb';
     } else if (wfStatus === 'resolved') {
       wfBadgeStyle = 'background:#ecfdf5;border:1px solid #34d399;color:#047857;';
-      wfLabel = 'RESOLVED';
+      wfLabel = typeof window.translateWorkflowStatus === 'function' ? window.translateWorkflowStatus('resolved') : 'RESOLVED';
       wfColor = '#059669';
     }
 
+    const hazardEmoji = getHazardEmoji(h.hazard_type);
+    const hazardTypeName = typeof window.translateHazardType === 'function' ? window.translateHazardType(h.hazard_type) : (h.hazard_type || 'pothole').replace('_', ' ');
+
+    const sevTranslated = typeof window.translateSeverity === 'function' ? window.translateSeverity(h.severity) : (h.severity || '').toUpperCase();
+    let sevBadge = `<span style="background:#fee2e2;border:1px solid #fecaca;color:#dc2626;padding:2px 8px;border-radius:6px;font-weight:bold;font-size:10px;display:inline-flex;align-items:center;gap:4px;"><span>🔺</span> <span>${sevTranslated}</span></span>`;
+    if (h.severity === 'high') {
+      sevBadge = `<span style="background:#fef3c7;border:1px solid #fde68a;color:#b45309;padding:2px 8px;border-radius:6px;font-weight:bold;font-size:10px;display:inline-flex;align-items:center;gap:4px;"><span>🛡️</span> <span>${sevTranslated}</span></span>`;
+    } else if (h.severity === 'medium') {
+      sevBadge = `<span style="background:#e0f2fe;border:1px solid #bae6fd;color:#0369a1;padding:2px 8px;border-radius:6px;font-weight:bold;font-size:10px;display:inline-flex;align-items:center;gap:4px;"><span>■</span> <span>${sevTranslated}</span></span>`;
+    } else if (h.severity === 'low') {
+      sevBadge = `<span style="background:#dcfce7;border:1px solid #bbf7d0;color:#059669;padding:2px 8px;border-radius:6px;font-weight:bold;font-size:10px;display:inline-flex;align-items:center;gap:4px;"><span>●</span> <span>${sevTranslated}</span></span>`;
+    }
+
+    const riskLabelTxt = typeof window.t === 'function' ? window.t('risk_label', 'Risk Score:') : 'Risk Score:';
+    const estCostLabelTxt = typeof window.t === 'function' ? window.t('est_cost_label', 'Est. Repair Cost:') : 'Est. Repair Cost:';
+    const viewDetailsTxt = typeof window.t === 'function' ? window.t('view_details', 'View Full Details →') : 'View Full Details →';
+    const openMapsTxt = typeof window.t === 'function' ? window.t('open_maps', '🗺️ Open in Google Maps ↗') : '🗺️ Open in Google Maps ↗';
+
     const popupHtml = `
-      <div class="p-2 text-xs font-sans" style="color:#0f172a;min-width:250px;">
-        <div class="flex items-center justify-between font-bold border-b pb-1 mb-1.5">
-          <span style="color:#0284c7;font-weight:bold;">${h.id} (${h.city}, ${h.state})</span>
-          <span style="color:${h.severity === 'critical' ? '#dc2626' : (h.severity === 'high' ? '#d97706' : '#059669')};text-transform:uppercase;font-weight:bold;">${h.severity}</span>
+      <div class="p-2.5 text-xs font-sans relative" style="color:#0f172a;min-width:270px;">
+        <!-- Top Right Corner Hazard-Type Icon + Problem Name Directly Below -->
+        <div style="position:absolute;top:8px;right:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:64px;max-width:76px;padding:3px 4px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;text-align:center;box-shadow:0 1px 2px rgba(0,0,0,0.05);" title="Hazard Type: ${hazardTypeName}">
+          <span style="font-size:16px;line-height:1;margin-bottom:2px;">${hazardEmoji}</span>
+          <span style="font-size:9px;font-weight:700;color:#334155;line-height:1.1;text-transform:capitalize;word-break:break-word;">${hazardTypeName}</span>
         </div>
-        <div class="mb-1.5 flex items-center justify-between">
-          <span style="font-size:10px;font-weight:bold;${wfBadgeStyle}padding:2px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:0.5px;">Status: ${wfLabel}</span>
-          <span style="font-size:10px;color:#475569;font-weight:600;text-transform:capitalize;">${(h.hazard_type || '').replace('_', ' ')}</span>
+
+        <div style="padding-right:80px;margin-bottom:6px;">
+          <span style="font-size:10px;color:#0284c7;font-weight:bold;font-family:monospace;">${h.id} • ${h.city || h.state}</span>
+          <h4 style="font-size:13px;font-weight:800;color:#020617;line-height:1.2;margin:2px 0 2px 0;">${h.title}</h4>
+          <p style="font-size:11px;color:#475569;margin:0;line-height:1.25;">${h.address}</p>
         </div>
-        <p class="font-bold text-sm mb-1" style="color:#0f172a;line-height:1.25;">${h.title}</p>
-        <p class="text-slate-600 mb-1.5 leading-tight text-[11px]">${h.address}</p>
-        <div class="bg-slate-100 p-2 rounded font-mono text-[11px] mb-2 border border-slate-200">
+
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
+          ${sevBadge}
+          <span style="font-size:10px;font-weight:bold;${wfBadgeStyle}padding:2px 7px;border-radius:6px;text-transform:uppercase;letter-spacing:0.3px;">${wfLabel}</span>
+        </div>
+
+        <div style="background:#f8fafc;padding:6px 8px;border-radius:8px;font-family:monospace;font-size:11px;margin-bottom:8px;border:1px solid #e2e8f0;">
           <div style="display:flex;justify-content:space-between;margin-bottom:2px;">
-            <strong style="color:#334155;">Status:</strong>
-            <strong style="color:${wfColor};">${wfLabel}</strong>
+            <strong style="color:#475569;">${riskLabelTxt}</strong>
+            <strong style="color:${h.severity === 'critical' ? '#dc2626' : (h.severity === 'high' ? '#d97706' : '#059669')};">${h.priority.raw_risk_score}/100</strong>
           </div>
           <div style="display:flex;justify-content:space-between;margin-bottom:2px;">
-            <strong style="color:#334155;">Risk Level:</strong>
-            <strong style="color:${h.severity === 'critical' ? '#dc2626' : '#d97706'};">${h.priority.raw_risk_score}/100</strong>
-          </div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:2px;">
-            <strong style="color:#334155;">Depth / Area:</strong>
-            <span>${h.fusion.physical_depth_cm > 0 ? h.fusion.physical_depth_cm + ' cm' : h.fusion.physical_area_sqm + ' m²'}</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;">
-            <strong style="color:#334155;">Est. Repair Cost:</strong>
+            <strong style="color:#475569;">${estCostLabelTxt}</strong>
             <strong style="color:#7c3aed;">${formatINR(h.priority.estimated_repair_cost_usd)}</strong>
           </div>
         </div>
-        <div class="space-y-1.5">
-          <button onclick="openIncidentModal('${h.id}')" style="background:#0284c7;color:white;padding:6px 8px;border-radius:6px;width:100%;font-weight:bold;cursor:pointer;border:none;font-size:11px;box-shadow:0 1px 2px rgba(0,0,0,0.1);">
-            View Full Incident Details
+
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <button onclick="openIncidentModal('${h.id}')" style="background:#0284c7;color:white;padding:6px 8px;border-radius:6px;width:100%;font-weight:bold;cursor:pointer;border:none;font-size:11px;box-shadow:0 1px 2px rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;gap:4px;">
+            <span>${viewDetailsTxt}</span>
           </button>
           <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;gap:4px;background:#2563eb;color:white;padding:5px 8px;border-radius:6px;width:100%;font-weight:bold;text-decoration:none;font-size:11px;box-sizing:border-box;">
-            🗺️ Open in Google Maps ↗
-          </a>
-          <a href="https://www.google.com/maps/dir/?api=1&destination=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;color:#0284c7;font-size:10px;text-decoration:none;font-weight:600;">
-            🧭 Navigate to Location
+            ${openMapsTxt}
           </a>
         </div>
       </div>
@@ -851,7 +1016,8 @@ function renderIncidentFeed(hazards) {
   container.innerHTML = '';
 
   if (hazards.length === 0) {
-    container.innerHTML = `<div class="text-xs text-slate-500 italic p-4 text-center">No road issues found matching the selected filters.</div>`;
+    const emptyMsg = typeof window.t === 'function' ? window.t('empty_incidents', 'No road issues found matching the selected filters.') : 'No road issues found matching the selected filters.';
+    container.innerHTML = `<div class="text-xs text-slate-500 italic p-4 text-center">${emptyMsg}</div>`;
     return;
   }
 
@@ -868,20 +1034,30 @@ function renderIncidentFeed(hazards) {
     } else if (h.severity === 'high') {
       badgeBg = 'bg-amber-950/80 border border-amber-500/40 text-amber-300';
       riskColor = 'text-amber-400';
+    } else if (h.severity === 'medium') {
+      badgeBg = 'bg-blue-950/80 border border-blue-500/40 text-blue-300';
+      riskColor = 'text-blue-400';
+    } else {
+      badgeBg = 'bg-emerald-950/80 border border-emerald-500/40 text-emerald-300';
+      riskColor = 'text-emerald-400';
     }
 
     const wfStatus = getHazardWorkflowStatus(h);
-    let wfBadgeBg = 'bg-rose-950/80 border border-rose-500/40 text-rose-300';
-    let wfLabel = 'UNRESOLVED';
+    let wfBadgeBg = 'status-badge-unresolved bg-amber-950/60 border border-amber-500/40 text-amber-300';
+    let wfLabel = typeof window.translateWorkflowStatus === 'function' ? window.translateWorkflowStatus('unresolved') : 'UNRESOLVED';
     if (wfStatus === 'in_progress') {
-      wfBadgeBg = 'bg-amber-950/80 border border-amber-500/40 text-amber-300';
-      wfLabel = 'IN PROGRESS';
+      wfBadgeBg = 'status-badge-in-progress bg-blue-950/80 border border-blue-500/40 text-blue-300';
+      wfLabel = typeof window.translateWorkflowStatus === 'function' ? window.translateWorkflowStatus('in_progress') : 'IN PROGRESS';
     } else if (wfStatus === 'resolved') {
-      wfBadgeBg = 'bg-emerald-950/80 border border-emerald-500/40 text-emerald-300';
-      wfLabel = 'RESOLVED';
+      wfBadgeBg = 'status-badge-resolved bg-emerald-950/80 border border-emerald-500/40 text-emerald-300';
+      wfLabel = typeof window.translateWorkflowStatus === 'function' ? window.translateWorkflowStatus('resolved') : 'RESOLVED';
     }
 
     const iconName = getHazardIconName(h.hazard_type);
+    const hazardTypeName = typeof window.translateHazardType === 'function' ? window.translateHazardType(h.hazard_type) : (h.hazard_type || 'pothole').replace('_', ' ');
+    const sevLabel = typeof window.translateSeverity === 'function' ? window.translateSeverity(h.severity) : (h.severity || '').toUpperCase();
+    const riskLabelTxt = typeof window.t === 'function' ? window.t('risk_label', 'Risk:') : 'Risk:';
+    const viewDetailsTxt = typeof window.t === 'function' ? window.t('view_details', 'View Details →') : 'View Details →';
 
     const isSelected = selectedHazard && selectedHazard.id === h.id;
     const selectClasses = isSelected ? 'ring-1 ring-cyan-400 border-cyan-500/80 bg-[#1a263d]' : '';
@@ -901,33 +1077,47 @@ function renderIncidentFeed(hazards) {
     card.innerHTML = `
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-1.5 flex-wrap">
-          <span class="text-[10px] font-mono px-2 py-0.5 rounded ${badgeBg} uppercase font-bold flex items-center gap-1">
-            <i data-lucide="${iconName}" class="w-3 h-3"></i>
-            ${h.fusion.is_false_positive ? 'FALSE ALERT' : h.severity}
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded ${badgeBg} uppercase font-bold flex items-center gap-1.5">
+            ${getSeverityFeedSymbol(h.severity)}
+            <span>${h.fusion.is_false_positive ? 'FALSE ALERT' : sevLabel}</span>
           </span>
           <span class="text-[9px] font-mono px-1.5 py-0.5 rounded ${wfBadgeBg} uppercase font-semibold">${wfLabel}</span>
-          <span class="text-[10px] text-slate-400 font-semibold bg-slate-900 px-1.5 py-0.5 rounded">${h.state}</span>
         </div>
-        <div class="flex items-center gap-2">
-          <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Open location in Google Maps" class="text-blue-400 hover:text-blue-300 hover:underline inline-flex items-center gap-0.5 text-[10px] font-mono font-bold bg-blue-950/60 border border-blue-500/30 px-1.5 py-0.5 rounded">
-            🗺️ Maps ↗
-          </a>
-          <span class="text-xs font-mono font-bold ${riskColor}">Risk: ${h.priority.raw_risk_score}</span>
-        </div>
+        <span class="text-xs font-mono font-bold ${riskColor}">${riskLabelTxt} ${h.priority.raw_risk_score}/100</span>
       </div>
       <div>
-        <h4 class="text-xs font-bold text-slate-100 group-hover:text-cyan-400 transition-colors leading-snug">${h.title}</h4>
+        <div class="flex items-center justify-between gap-1">
+          <h4 class="text-xs font-bold text-slate-100 group-hover:text-cyan-400 transition-colors leading-snug truncate">${h.title}</h4>
+          <span class="text-[10px] text-slate-400 font-mono shrink-0">${h.city || h.state}</span>
+        </div>
         <p class="text-[11px] text-slate-400 truncate mt-0.5">${h.address}</p>
       </div>
-      <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono border-t border-slate-800/80 pt-1.5">
-        <span>Depth: ${h.fusion.physical_depth_cm}cm</span>
-        <span>Area: ${h.fusion.physical_area_sqm}m²</span>
-        <span class="text-purple-300 font-semibold">${formatINR(h.priority.estimated_repair_cost_usd)}</span>
+      <div class="flex items-center justify-between border-t border-slate-800/80 pt-1.5 mt-0.5">
+        <span class="text-[10px] text-slate-400 font-mono capitalize flex items-center gap-1">
+          <i data-lucide="${iconName}" class="w-3 h-3 text-cyan-400"></i>
+          <span>${hazardTypeName}</span>
+        </span>
+        <button onclick="event.stopPropagation(); selectedHazard=allHazards.find(x=>x.id==='${h.id}')||selectedHazard; openIncidentModal('${h.id}');" class="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-950/70 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 transition-all flex items-center gap-1">
+          <span>${viewDetailsTxt}</span> <i data-lucide="chevron-right" class="w-2.5 h-2.5"></i>
+        </button>
       </div>
     `;
 
     container.appendChild(card);
   });
+
+  const dashForecast = document.getElementById('dash-forecast-count');
+  if (dashForecast && typeof ROAD_FORECAST_DATA !== 'undefined') {
+    dashForecast.textContent = ROAD_FORECAST_DATA.length;
+  }
+  const dashTeams = document.getElementById('dash-teams-count');
+  if (dashTeams && typeof RESOURCE_TEAMS !== 'undefined') {
+    dashTeams.textContent = RESOURCE_TEAMS.filter(t => t.status === 'available').length;
+  }
+  const dashTasks = document.getElementById('dash-tasks-count');
+  if (dashTasks && typeof RESOURCE_ALLOCATIONS !== 'undefined') {
+    dashTasks.textContent = RESOURCE_ALLOCATIONS.length;
+  }
 
   if (typeof lucide !== 'undefined' && lucide.createIcons) {
     lucide.createIcons();
@@ -1127,7 +1317,8 @@ function initPatrolMap() {
 
   L.control.zoom({ position: 'bottomright' }).addTo(patrolMap);
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  const initialPatrolTileUrl = TILE_URLS[currentTheme] || TILE_URLS.light;
+  patrolTileLayer = L.tileLayer(initialPatrolTileUrl, {
     attribution: '&copy; CartoDB &copy; OpenStreetMap',
     maxZoom: 20,
     minZoom: 4,
@@ -1570,9 +1761,10 @@ function dismissActiveOverlays() {
   // 3. Forcibly remove any popup DOM nodes from the DOM tree
   document.querySelectorAll('.leaflet-popup').forEach(el => el.remove());
 
-  // 4. Close Sort & Filter popover if open
+  // 4. Close Sort & Filter popover and nav dropdowns
   const advPop = document.getElementById('adv-filter-popover');
   if (advPop) advPop.classList.add('hidden');
+  closeAllNavDropdowns();
 
   // 5. Clear active hazard selection and feed highlights
   selectedHazard = null;
@@ -1580,6 +1772,22 @@ function dismissActiveOverlays() {
     clearFeedHighlights();
   }
 }
+
+function toggleNavDropdown(menuId) {
+  const menu = document.getElementById(menuId);
+  if (!menu) return;
+  const isHidden = menu.classList.contains('hidden');
+  closeAllNavDropdowns();
+  if (isHidden) {
+    menu.classList.remove('hidden');
+  }
+}
+window.toggleNavDropdown = toggleNavDropdown;
+
+function closeAllNavDropdowns() {
+  document.querySelectorAll('.nav-dropdown-menu').forEach(m => m.classList.add('hidden'));
+}
+window.closeAllNavDropdowns = closeAllNavDropdowns;
 
 function setupGlobalInteractionHandlers() {
   // 1. Backdrop click dismissal for all modals
@@ -1602,7 +1810,7 @@ function setupGlobalInteractionHandlers() {
     }
   });
 
-  // 3. Click outside Sort & Filter popover to close it
+  // 3. Click outside Sort & Filter popover and navigation dropdowns to close them
   document.addEventListener('click', (e) => {
     const pop = document.getElementById('adv-filter-popover');
     const btn = document.getElementById('btn-toggle-adv-filter');
@@ -1611,6 +1819,10 @@ function setupGlobalInteractionHandlers() {
         pop.classList.add('hidden');
       }
     }
+
+    if (!e.target.closest('.group\\/nav')) {
+      closeAllNavDropdowns();
+    }
   });
 }
 
@@ -1618,8 +1830,9 @@ function switchTab(tabId) {
   // 1. Dismiss all open modals, map popups, and active hazard selections
   dismissActiveOverlays();
 
-  // 2. Update tab buttons and tab views
+  // 2. Update tab buttons, dropdown parents, and tab views
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active-tab'));
+  document.querySelectorAll('.nav-dropdown-trigger').forEach(d => d.classList.remove('active-tab'));
   document.querySelectorAll('.tab-view').forEach(v => v.classList.add('hidden'));
 
   const tabBtn = document.getElementById(`tab-${tabId}`);
@@ -1627,6 +1840,18 @@ function switchTab(tabId) {
 
   if (tabBtn) tabBtn.classList.add('active-tab');
   if (viewElem) viewElem.classList.remove('hidden');
+
+  // Highlight parent dropdown button if sub-tab is selected
+  if (['forecast', 'studio', 'copilot'].includes(tabId)) {
+    const pBtn = document.getElementById('dropdown-btn-intelligence');
+    if (pBtn) pBtn.classList.add('active-tab');
+  } else if (['resource-intel', 'patrol', 'backlog'].includes(tabId)) {
+    const pBtn = document.getElementById('dropdown-btn-operations');
+    if (pBtn) pBtn.classList.add('active-tab');
+  } else if (['analytics', 'ingestion'].includes(tabId)) {
+    const pBtn = document.getElementById('dropdown-btn-insights');
+    if (pBtn) pBtn.classList.add('active-tab');
+  }
 
   // 3. Tab-specific lifecycle activations
   if (tabId === 'map' && gisMap) {
@@ -1762,21 +1987,21 @@ function openIncidentModal(hazardId) {
   const typeBadge = document.getElementById('modal-badge-type');
 
   if (sevText) {
-    sevText.textContent = (h.severity || 'HIGH').toUpperCase();
+    sevText.textContent = typeof window.translateSeverity === 'function' ? window.translateSeverity(h.severity) : (h.severity || 'HIGH').toUpperCase();
     sevText.className = h.severity === 'critical' ? 'font-bold text-red-400' : (h.severity === 'high' ? 'font-bold text-amber-400' : 'font-bold text-emerald-400');
   }
 
-  let wfLabel = 'UNRESOLVED';
-  let wfClass = 'bg-rose-950/80 border border-rose-500/40 text-rose-300';
-  let wfTextClass = 'font-bold text-rose-400 font-mono';
+  let wfLabel = typeof window.translateWorkflowStatus === 'function' ? window.translateWorkflowStatus('unresolved') : 'UNRESOLVED';
+  let wfClass = 'status-badge-unresolved bg-amber-950/60 border border-amber-500/40 text-amber-300';
+  let wfTextClass = 'status-text-unresolved font-bold text-amber-400 font-mono';
 
   if (wfStatus === 'in_progress') {
-    wfLabel = 'IN PROGRESS';
-    wfClass = 'bg-amber-950/80 border border-amber-500/40 text-amber-300';
-    wfTextClass = 'font-bold text-amber-400 font-mono';
+    wfLabel = typeof window.translateWorkflowStatus === 'function' ? window.translateWorkflowStatus('in_progress') : 'IN PROGRESS';
+    wfClass = 'status-badge-in-progress bg-blue-950/80 border border-blue-500/40 text-blue-300';
+    wfTextClass = 'font-bold text-blue-400 font-mono';
   } else if (wfStatus === 'resolved') {
-    wfLabel = 'RESOLVED';
-    wfClass = 'bg-emerald-950/80 border border-emerald-500/40 text-emerald-300';
+    wfLabel = typeof window.translateWorkflowStatus === 'function' ? window.translateWorkflowStatus('resolved') : 'RESOLVED';
+    wfClass = 'status-badge-resolved bg-emerald-950/80 border border-emerald-500/40 text-emerald-300';
     wfTextClass = 'font-bold text-emerald-400 font-mono';
   }
 
@@ -1789,7 +2014,7 @@ function openIncidentModal(hazardId) {
     statusText.textContent = wfLabel;
   }
   if (typeBadge) {
-    typeBadge.textContent = (h.hazard_type || '').replace('_', ' ').toUpperCase();
+    typeBadge.textContent = typeof window.translateHazardType === 'function' ? window.translateHazardType(h.hazard_type).toUpperCase() : (h.hazard_type || '').replace('_', ' ').toUpperCase();
   }
 
   document.getElementById('modal-image').src = SCENARIO_IMAGES[h.hazard_type] || SCENARIO_IMAGES.pothole;
@@ -2507,7 +2732,8 @@ function initForecastMap() {
       attributionControl: false
     });
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    const initialForecastTileUrl = TILE_URLS[currentTheme] || TILE_URLS.light;
+    forecastTileLayer = L.tileLayer(initialForecastTileUrl, {
       maxZoom: 19,
       subdomains: 'abcd'
     }).addTo(forecastMap);

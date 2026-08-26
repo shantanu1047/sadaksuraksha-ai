@@ -4,11 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>SadakSuraksha AI 🇮🇳 - Report a Road Issue</title>
+
+    <!-- Anti-Flash Theme Script (Default: Light Mode) -->
+    <script>
+      (function() {
+        try {
+          const savedTheme = localStorage.getItem('sadaksuraksha_theme');
+          const theme = savedTheme === 'dark' ? 'dark' : 'light';
+          if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+            document.documentElement.setAttribute('data-theme', 'dark');
+          } else {
+            document.documentElement.classList.add('light');
+            document.documentElement.classList.remove('dark');
+            document.documentElement.setAttribute('data-theme', 'light');
+          }
+        } catch (e) {
+          document.documentElement.classList.add('light');
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
@@ -32,6 +56,78 @@
             background-color: #080c14;
             color: #f8fafc;
             -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Light Theme Overrides (Default) */
+        html.light body,
+        html:not(.dark) body,
+        [data-theme="light"] body {
+            background-color: #f8fafc !important;
+            color: #0f172a !important;
+        }
+
+        html.light .bg-card,
+        html:not(.dark) .bg-card,
+        [data-theme="light"] .bg-card {
+            background-color: #ffffff !important;
+            border-color: #e2e8f0 !important;
+        }
+
+        html.light header,
+        html:not(.dark) header,
+        [data-theme="light"] header {
+            background-color: rgba(255, 255, 255, 0.96) !important;
+            border-bottom-color: #e2e8f0 !important;
+        }
+
+        html.light .bg-slate-900,
+        html.light .bg-slate-800,
+        html:not(.dark) .bg-slate-900,
+        html:not(.dark) .bg-slate-800,
+        [data-theme="light"] .bg-slate-900,
+        [data-theme="light"] .bg-slate-800 {
+            background-color: #f1f5f9 !important;
+            border-color: #cbd5e1 !important;
+            color: #0f172a !important;
+        }
+
+        html.light .text-white,
+        html.light .text-slate-100,
+        html.light .text-slate-200,
+        html:not(.dark) .text-white,
+        html:not(.dark) .text-slate-100,
+        html:not(.dark) .text-slate-200,
+        [data-theme="light"] .text-white,
+        [data-theme="light"] .text-slate-100,
+        [data-theme="light"] .text-slate-200 {
+            color: #020617 !important;
+            font-weight: 600;
+        }
+
+        html.light h1, html.light h2, html:not(.dark) h1, html:not(.dark) h2, [data-theme="light"] h1, [data-theme="light"] h2 {
+            color: #020617 !important;
+            font-weight: 800 !important;
+        }
+
+        html.light .text-slate-400,
+        html:not(.dark) .text-slate-400,
+        [data-theme="light"] .text-slate-400 {
+            color: #334155 !important;
+            font-weight: 500;
+        }
+
+        html.light input,
+        html.light select,
+        html.light textarea,
+        html:not(.dark) input,
+        html:not(.dark) select,
+        html:not(.dark) textarea,
+        [data-theme="light"] input,
+        [data-theme="light"] select,
+        [data-theme="light"] textarea {
+            background-color: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            color: #0f172a !important;
         }
         
         .step {

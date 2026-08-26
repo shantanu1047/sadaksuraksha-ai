@@ -72,6 +72,39 @@ code, pre, .font-mono {
   box-shadow: 0 0 12px rgba(56, 189, 248, 0.12);
 }
 
+/* Navigation Bar & Dropdown Stacking Context (Guaranteed above Leaflet map & panes z:400-1000) */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10001 !important;
+}
+
+nav {
+  position: relative;
+  z-index: 10000 !important;
+  background-color: #0F2747;
+}
+
+/* Navigation Dropdown Menus */
+.nav-dropdown-menu {
+  min-width: 240px;
+  z-index: 10002 !important;
+  animation: navDropdownFade 0.15s ease-out;
+}
+
+@keyframes navDropdownFade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.group\/nav:hover .nav-dropdown-menu {
+  display: flex !important;
+}
+
+.group\/nav:hover .nav-dropdown-trigger i:last-child {
+  transform: rotate(180deg);
+}
+
 .workflow-pill {
   user-select: none;
   cursor: pointer;
@@ -128,6 +161,11 @@ code, pre, .font-mono {
   background: rgba(120, 53, 15, 0.4) !important;
 }
 
+.map-severity-btn[data-severity="medium"].active {
+  border-color: rgba(2, 132, 199, 0.6) !important;
+  background: rgba(8, 47, 73, 0.4) !important;
+}
+
 .map-severity-btn[data-severity="low"].active {
   border-color: rgba(16, 185, 129, 0.6) !important;
   background: rgba(6, 78, 59, 0.4) !important;
@@ -179,49 +217,30 @@ code, pre, .font-mono {
   image-rendering: crisp-edges;
 }
 
-/* Custom Map Hazard Marker Pins */
+/* Custom Map Hazard Marker Pins (Clean vector shapes with NO shadow, NO border) */
 .custom-hazard-pin {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  box-shadow: 0 0 14px rgba(0,0,0,0.8);
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  filter: none !important;
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .custom-hazard-pin:hover {
   transform: scale(1.25);
   z-index: 1000 !important;
+  filter: none !important;
+  box-shadow: none !important;
 }
 
-.pin-critical {
-  background: radial-gradient(circle, #ef4444 0%, #991b1b 100%);
-  border: 2px solid #fecaca;
-  box-shadow: 0 0 16px rgba(239, 68, 68, 0.8);
-}
-
-.pin-high {
-  background: radial-gradient(circle, #f59e0b 0%, #b45309 100%);
-  border: 2px solid #fef3c7;
-  box-shadow: 0 0 14px rgba(245, 158, 11, 0.8);
-}
-
-.pin-medium {
-  background: radial-gradient(circle, #3b82f6 0%, #1d4ed8 100%);
-  border: 2px solid #dbeafe;
-  box-shadow: 0 0 12px rgba(59, 130, 246, 0.8);
-}
-
-.pin-low {
-  background: radial-gradient(circle, #10b981 0%, #047857 100%);
-  border: 2px solid #a7f3d0;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
-}
-
-.pin-fp {
-  background: radial-gradient(circle, #64748b 0%, #334155 100%);
-  border: 2px dashed #cbd5e1;
-  opacity: 0.6;
+.custom-hazard-pin svg {
+  display: block;
+  overflow: visible;
+  filter: none !important;
 }
 
 /* Car Patrol Pin */
@@ -278,3 +297,863 @@ code, pre, .font-mono {
   border: 1px solid rgba(71, 85, 105, 0.45);
   color: #cbd5e1;
 }
+
+/* ==========================================================================
+   THEME MANAGER: LIGHT MODE (DEFAULT) & DARK MODE STYLING
+   ========================================================================== */
+
+/* 1. Base Body & Container in Light Mode */
+html.light body,
+html:not(.dark) body,
+[data-theme="light"] body {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* 2. Top Header in Light Mode */
+html.light header,
+html:not(.dark) header,
+[data-theme="light"] header {
+  background-color: rgba(255, 255, 255, 0.96) !important;
+  border-bottom-color: #e2e8f0 !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* 3. Navigation Dock Bar (#0F2747 Navy Blue in all modes) */
+nav {
+  position: relative;
+  z-index: 10000 !important;
+  background-color: #0F2747 !important;
+}
+
+html.light nav,
+html:not(.dark) nav,
+[data-theme="light"] nav {
+  background-color: #0F2747 !important;
+  border-bottom-color: #1e3a5f !important;
+  box-shadow: inset 0 -1px 0 #1e3a5f !important;
+}
+
+html.light nav > div > .nav-tab,
+html.light nav > div > .relative > .nav-tab,
+html:not(.dark) nav > div > .nav-tab,
+html:not(.dark) nav > div > .relative > .nav-tab,
+[data-theme="light"] nav > div > .nav-tab,
+[data-theme="light"] nav > div > .relative > .nav-tab {
+  color: #e2e8f0 !important;
+  border-color: transparent !important;
+}
+
+html.light nav > div > .nav-tab:hover,
+html.light nav > div > .relative > .nav-tab:hover,
+html:not(.dark) nav > div > .nav-tab:hover,
+html:not(.dark) nav > div > .relative > .nav-tab:hover,
+[data-theme="light"] nav > div > .nav-tab:hover,
+[data-theme="light"] nav > div > .relative > .nav-tab:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+html.light nav > div > .active-tab,
+html.light nav > div > .relative > .active-tab,
+html:not(.dark) nav > div > .active-tab,
+html:not(.dark) nav > div > .relative > .active-tab,
+[data-theme="light"] nav > div > .active-tab,
+[data-theme="light"] nav > div > .relative > .active-tab {
+  background: rgba(56, 189, 248, 0.22) !important;
+  border-color: #38bdf8 !important;
+  color: #38bdf8 !important;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.18) !important;
+}
+
+html.light .nav-dropdown-menu,
+html:not(.dark) .nav-dropdown-menu,
+[data-theme="light"] .nav-dropdown-menu {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+}
+
+html.light .nav-dropdown-menu .nav-tab,
+html:not(.dark) .nav-dropdown-menu .nav-tab,
+[data-theme="light"] .nav-dropdown-menu .nav-tab {
+  color: #334155 !important;
+}
+
+html.light .nav-dropdown-menu .nav-tab:hover,
+html:not(.dark) .nav-dropdown-menu .nav-tab:hover,
+[data-theme="light"] .nav-dropdown-menu .nav-tab:hover {
+  background-color: #f1f5f9 !important;
+  color: #020617 !important;
+}
+
+html.light .nav-dropdown-menu span.text-slate-200,
+html:not(.dark) .nav-dropdown-menu span.text-slate-200,
+[data-theme="light"] .nav-dropdown-menu span.text-slate-200 {
+  color: #020617 !important;
+}
+
+/* 4. Key Metrics Ticker Bar & Soft KPI Cards */
+html.light section.bg-\[\#0b101c\],
+html:not(.dark) section.bg-\[\#0b101c\],
+[data-theme="light"] section.bg-\[\#0b101c\] {
+  background-color: #f8fafc !important;
+  border-bottom-color: #e2e8f0 !important;
+}
+
+/* Active Issues: Soft Light Yellow / Amber */
+html.light .kpi-card-active,
+html:not(.dark) .kpi-card-active,
+[data-theme="light"] .kpi-card-active {
+  background-color: #fef3c7 !important;
+  border-color: #fde68a !important;
+  box-shadow: 0 1px 3px 0 rgba(217, 119, 6, 0.08) !important;
+}
+html.light .kpi-card-active .kpi-icon-box,
+html:not(.dark) .kpi-card-active .kpi-icon-box,
+[data-theme="light"] .kpi-card-active .kpi-icon-box {
+  background-color: #fef08a !important;
+  border-color: #facc15 !important;
+  color: #b45309 !important;
+}
+html.light .kpi-card-active .kpi-title,
+html:not(.dark) .kpi-card-active .kpi-title,
+[data-theme="light"] .kpi-card-active .kpi-title {
+  color: #92400e !important;
+  font-weight: 700 !important;
+}
+html.light .kpi-card-active .kpi-value,
+html:not(.dark) .kpi-card-active .kpi-value,
+[data-theme="light"] .kpi-card-active .kpi-value {
+  color: #b45309 !important;
+  font-weight: 800 !important;
+}
+html.light .kpi-card-active .kpi-subtitle,
+html:not(.dark) .kpi-card-active .kpi-subtitle,
+[data-theme="light"] .kpi-card-active .kpi-subtitle {
+  color: #a16207 !important;
+  font-weight: 600 !important;
+}
+
+/* Critical Issues: Soft Light Red */
+html.light .kpi-card-critical,
+html:not(.dark) .kpi-card-critical,
+[data-theme="light"] .kpi-card-critical {
+  background-color: #fee2e2 !important;
+  border-color: #fecaca !important;
+  box-shadow: 0 1px 3px 0 rgba(220, 38, 38, 0.08) !important;
+}
+html.light .kpi-card-critical .kpi-icon-box,
+html:not(.dark) .kpi-card-critical .kpi-icon-box,
+[data-theme="light"] .kpi-card-critical .kpi-icon-box {
+  background-color: #fecaca !important;
+  border-color: #f87171 !important;
+  color: #b91c1c !important;
+}
+html.light .kpi-card-critical .kpi-title,
+html:not(.dark) .kpi-card-critical .kpi-title,
+[data-theme="light"] .kpi-card-critical .kpi-title {
+  color: #991b1b !important;
+  font-weight: 700 !important;
+}
+html.light .kpi-card-critical .kpi-value,
+html:not(.dark) .kpi-card-critical .kpi-value,
+[data-theme="light"] .kpi-card-critical .kpi-value {
+  color: #b91c1c !important;
+  font-weight: 800 !important;
+}
+html.light .kpi-card-critical .kpi-subtitle,
+html:not(.dark) .kpi-card-critical .kpi-subtitle,
+[data-theme="light"] .kpi-card-critical .kpi-subtitle {
+  color: #b91c1c !important;
+  font-weight: 600 !important;
+}
+
+/* Road Health: Soft Light Blue */
+html.light .kpi-card-health,
+html:not(.dark) .kpi-card-health,
+[data-theme="light"] .kpi-card-health {
+  background-color: #dbeafe !important;
+  border-color: #bfdbfe !important;
+  box-shadow: 0 1px 3px 0 rgba(2, 132, 199, 0.08) !important;
+}
+html.light .kpi-card-health .kpi-icon-box,
+html:not(.dark) .kpi-card-health .kpi-icon-box,
+[data-theme="light"] .kpi-card-health .kpi-icon-box {
+  background-color: #bfdbfe !important;
+  border-color: #60a5fa !important;
+  color: #1d4ed8 !important;
+}
+html.light .kpi-card-health .kpi-title,
+html:not(.dark) .kpi-card-health .kpi-title,
+[data-theme="light"] .kpi-card-health .kpi-title {
+  color: #1e40af !important;
+  font-weight: 700 !important;
+}
+html.light .kpi-card-health .kpi-value,
+html:not(.dark) .kpi-card-health .kpi-value,
+[data-theme="light"] .kpi-card-health .kpi-value {
+  color: #1d4ed8 !important;
+  font-weight: 800 !important;
+}
+html.light .kpi-card-health .kpi-subtitle,
+html:not(.dark) .kpi-card-health .kpi-subtitle,
+[data-theme="light"] .kpi-card-health .kpi-subtitle {
+  color: #2563eb !important;
+  font-weight: 600 !important;
+}
+
+/* Teams Available: Soft Light Green */
+html.light .kpi-card-teams,
+html:not(.dark) .kpi-card-teams,
+[data-theme="light"] .kpi-card-teams {
+  background-color: #dcfce7 !important;
+  border-color: #bbf7d0 !important;
+  box-shadow: 0 1px 3px 0 rgba(5, 150, 105, 0.08) !important;
+}
+html.light .kpi-card-teams .kpi-icon-box,
+html:not(.dark) .kpi-card-teams .kpi-icon-box,
+[data-theme="light"] .kpi-card-teams .kpi-icon-box {
+  background-color: #bbf7d0 !important;
+  border-color: #4ade80 !important;
+  color: #15803d !important;
+}
+html.light .kpi-card-teams .kpi-title,
+html:not(.dark) .kpi-card-teams .kpi-title,
+[data-theme="light"] .kpi-card-teams .kpi-title {
+  color: #166534 !important;
+  font-weight: 700 !important;
+}
+html.light .kpi-card-teams .kpi-value,
+html:not(.dark) .kpi-card-teams .kpi-value,
+[data-theme="light"] .kpi-card-teams .kpi-value {
+  color: #15803d !important;
+  font-weight: 800 !important;
+}
+html.light .kpi-card-teams .kpi-subtitle,
+html:not(.dark) .kpi-card-teams .kpi-subtitle,
+[data-theme="light"] .kpi-card-teams .kpi-subtitle {
+  color: #16a34a !important;
+  font-weight: 600 !important;
+}
+
+/* 5. Cards, Panels, Sidebars & Modal Containers */
+html.light .bg-\[\#101726\],
+html.light .bg-\[\#121929\],
+html.light .bg-\[\#121929\]\/80,
+html.light .bg-\[\#141d30\],
+html.light .bg-\[\#0a101d\],
+html.light .bg-\[\#0d1322\],
+html.light .bg-\[\#080c14\],
+html:not(.dark) .bg-\[\#101726\],
+html:not(.dark) .bg-\[\#121929\],
+html:not(.dark) .bg-\[\#121929\]\/80,
+html:not(.dark) .bg-\[\#141d30\],
+html:not(.dark) .bg-\[\#0a101d\],
+html:not(.dark) .bg-\[\#0d1322\],
+[data-theme="light"] .bg-\[\#101726\],
+[data-theme="light"] .bg-\[\#121929\],
+[data-theme="light"] .bg-\[\#121929\]\/80,
+[data-theme="light"] .bg-\[\#141d30\],
+[data-theme="light"] .bg-\[\#0a101d\],
+[data-theme="light"] .bg-\[\#0d1322\] {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Incident Feed Card Hover & Selection in Light Mode */
+html.light .hover\:bg-\[\#18233a\]:hover,
+html:not(.dark) .hover\:bg-\[\#18233a\]:hover,
+[data-theme="light"] .hover\:bg-\[\#18233a\]:hover {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.light .bg-\[\#1a263d\],
+html:not(.dark) .bg-\[\#1a263d\],
+[data-theme="light"] .bg-\[\#1a263d\] {
+  background-color: #f0f9ff !important;
+  border-color: #38bdf8 !important;
+}
+
+html.light #incident-feed-list .bg-cyan-950\/70,
+html:not(.dark) #incident-feed-list .bg-cyan-950\/70,
+[data-theme="light"] #incident-feed-list .bg-cyan-950\/70 {
+  background-color: #e0f2fe !important;
+  border-color: #bae6fd !important;
+  color: #0284c7 !important;
+}
+
+html.light #incident-feed-list .bg-cyan-950\/70:hover,
+html:not(.dark) #incident-feed-list .bg-cyan-950\/70:hover,
+[data-theme="light"] #incident-feed-list .bg-cyan-950\/70:hover {
+  background-color: #bae6fd !important;
+  color: #0369a1 !important;
+}
+
+html.light #incident-feed-list .bg-amber-950\/80,
+html:not(.dark) #incident-feed-list .bg-amber-950\/80,
+[data-theme="light"] #incident-feed-list .bg-amber-950\/80 {
+  background-color: #fef3c7 !important;
+  border-color: #fde68a !important;
+  color: #b45309 !important;
+}
+
+html.light #incident-feed-list .bg-emerald-950\/80,
+html:not(.dark) #incident-feed-list .bg-emerald-950\/80,
+[data-theme="light"] #incident-feed-list .bg-emerald-950\/80 {
+  background-color: #dcfce7 !important;
+  border-color: #bbf7d0 !important;
+  color: #15803d !important;
+}
+
+/* 6. Sub-panels & Nested Elements */
+html.light .bg-slate-900,
+html.light .bg-slate-900\/80,
+html.light .bg-slate-900\/90,
+html.light .bg-slate-900\/50,
+html.light .bg-slate-800,
+html.light .bg-slate-800\/80,
+html.light .bg-slate-800\/90,
+html.light .bg-slate-800\/60,
+html:not(.dark) .bg-slate-900,
+html:not(.dark) .bg-slate-900\/80,
+html:not(.dark) .bg-slate-900\/90,
+html:not(.dark) .bg-slate-900\/50,
+html:not(.dark) .bg-slate-800,
+html:not(.dark) .bg-slate-800\/80,
+html:not(.dark) .bg-slate-800\/90,
+[data-theme="light"] .bg-slate-900,
+[data-theme="light"] .bg-slate-900\/80,
+[data-theme="light"] .bg-slate-900\/90,
+[data-theme="light"] .bg-slate-800,
+[data-theme="light"] .bg-slate-800\/80,
+[data-theme="light"] .bg-slate-800\/90 {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #1e293b;
+}
+
+/* Card Hover States in Light Mode */
+html.light .hover\:bg-\[\#162035\]:hover,
+html:not(.dark) .hover\:bg-\[\#162035\]:hover,
+[data-theme="light"] .hover\:bg-\[\#162035\]:hover {
+  background-color: #f1f5f9 !important;
+}
+
+/* ==========================================================================
+   7. ENHANCED TYPOGRAPHY HIERARCHY IN LIGHT THEME
+   ========================================================================== */
+
+/* 7.1. Main Headings: Very dark text, font-weight 700-800 */
+html.light h1,
+html:not(.dark) h1,
+[data-theme="light"] h1 {
+  color: #020617 !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em;
+}
+
+html.light h2,
+html:not(.dark) h2,
+[data-theme="light"] h2 {
+  color: #090d16 !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em;
+}
+
+/* 7.2. Section Headings: Dark text, font-weight 650-700 */
+html.light h3,
+html.light h4,
+html:not(.dark) h3,
+html:not(.dark) h4,
+[data-theme="light"] h3,
+[data-theme="light"] h4 {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+/* 7.3. Primary Text & Bold Elements */
+html.light .text-white,
+html.light .text-slate-100,
+html.light .text-slate-200,
+html:not(.dark) .text-white,
+html:not(.dark) .text-slate-100,
+html:not(.dark) .text-slate-200,
+[data-theme="light"] .text-white,
+[data-theme="light"] .text-slate-100,
+[data-theme="light"] .text-slate-200 {
+  color: #020617 !important;
+  font-weight: 600;
+}
+
+/* 7.4. Normal Body Text: Dark charcoal, font-weight 500-600 */
+html.light p,
+html:not(.dark) p,
+[data-theme="light"] p {
+  color: #1e293b;
+  font-weight: 500;
+}
+
+html.light .text-slate-300,
+html:not(.dark) .text-slate-300,
+[data-theme="light"] .text-slate-300 {
+  color: #1e293b !important;
+  font-weight: 550;
+}
+
+/* 7.5. Labels & Field Headers: Dark charcoal, font-weight 600 */
+html.light label,
+html:not(.dark) label,
+[data-theme="light"] label,
+html.light .font-semibold.uppercase,
+html:not(.dark) .font-semibold.uppercase,
+[data-theme="light"] .font-semibold.uppercase {
+  color: #1e293b !important;
+  font-weight: 600 !important;
+}
+
+/* 7.6. Secondary & Helper Text: Medium charcoal, readable weight 500 */
+html.light .text-slate-400,
+html.light .text-slate-500,
+html.light .text-slate-600,
+html:not(.dark) .text-slate-400,
+html:not(.dark) .text-slate-500,
+html:not(.dark) .text-slate-600,
+[data-theme="light"] .text-slate-400,
+[data-theme="light"] .text-slate-500,
+[data-theme="light"] .text-slate-600 {
+  color: #334155 !important;
+  font-weight: 500;
+}
+
+/* 7.7. Important Numbers & KPI Values: Dark text, font-weight 700-800 */
+html.light #kpi-total,
+html:not(.dark) #kpi-total,
+[data-theme="light"] #kpi-total {
+  color: #d97706 !important;
+  font-weight: 800 !important;
+}
+
+html.light #kpi-critical,
+html:not(.dark) #kpi-critical,
+[data-theme="light"] #kpi-critical {
+  color: #dc2626 !important;
+  font-weight: 800 !important;
+}
+
+html.light #kpi-pci,
+html:not(.dark) #kpi-pci,
+[data-theme="light"] #kpi-pci {
+  color: #0284c7 !important;
+  font-weight: 800 !important;
+}
+
+html.light #kpi-work-orders,
+html:not(.dark) #kpi-work-orders,
+[data-theme="light"] #kpi-work-orders {
+  color: #059669 !important;
+  font-weight: 800 !important;
+}
+
+/* 7.8. Navigation Text */
+html.light nav > div > .nav-tab,
+html.light nav > div > .relative > .nav-tab,
+html:not(.dark) nav > div > .nav-tab,
+html:not(.dark) nav > div > .relative > .nav-tab,
+[data-theme="light"] nav > div > .nav-tab,
+[data-theme="light"] nav > div > .relative > .nav-tab {
+  color: #e2e8f0 !important;
+  font-weight: 600 !important;
+}
+
+html.light nav > div > .nav-tab:hover,
+html.light nav > div > .relative > .nav-tab:hover,
+html:not(.dark) nav > div > .nav-tab:hover,
+html:not(.dark) nav > div > .relative > .nav-tab:hover,
+[data-theme="light"] nav > div > .nav-tab:hover,
+[data-theme="light"] nav > div > .relative > .nav-tab:hover {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  font-weight: 600 !important;
+}
+
+html.light nav > div > .active-tab,
+html.light nav > div > .relative > .active-tab,
+html:not(.dark) nav > div > .active-tab,
+html:not(.dark) nav > div > .relative > .active-tab,
+[data-theme="light"] nav > div > .active-tab,
+[data-theme="light"] nav > div > .relative > .active-tab {
+  color: #38bdf8 !important;
+  font-weight: 700 !important;
+}
+
+html.light .nav-dropdown-menu .nav-tab,
+html:not(.dark) .nav-dropdown-menu .nav-tab,
+[data-theme="light"] .nav-dropdown-menu .nav-tab {
+  color: #334155 !important;
+  font-weight: 600 !important;
+}
+
+/* 7.9. Card Text & Feed Items: Dark and readable */
+html.light #incident-feed-list h4,
+html:not(.dark) #incident-feed-list h4,
+[data-theme="light"] #incident-feed-list h4 {
+  color: #020617 !important;
+  font-weight: 700 !important;
+}
+
+html.light #incident-feed-list p,
+html:not(.dark) #incident-feed-list p,
+[data-theme="light"] #incident-feed-list p {
+  color: #334155 !important;
+  font-weight: 500 !important;
+}
+
+html.light #incident-feed-list span,
+html:not(.dark) #incident-feed-list span,
+[data-theme="light"] #incident-feed-list span {
+  font-weight: 600;
+}
+
+/* 8. Borders in Light Theme */
+html.light .border-slate-800,
+html.light .border-slate-800\/80,
+html.light .border-slate-800\/60,
+html.light .border-slate-700,
+html.light .border-slate-700\/80,
+html:not(.dark) .border-slate-800,
+html:not(.dark) .border-slate-800\/80,
+html:not(.dark) .border-slate-800\/60,
+html:not(.dark) .border-slate-700,
+[data-theme="light"] .border-slate-800,
+[data-theme="light"] .border-slate-800\/80,
+[data-theme="light"] .border-slate-800\/60,
+[data-theme="light"] .border-slate-700 {
+  border-color: #e2e8f0 !important;
+}
+
+/* 9. Form Controls, Inputs, Selects in Light Theme */
+html.light select,
+html.light input[type="text"],
+html.light input[type="search"],
+html.light input[type="password"],
+html.light textarea,
+html:not(.dark) select,
+html:not(.dark) input[type="text"],
+html:not(.dark) input[type="search"],
+html:not(.dark) input[type="password"],
+html:not(.dark) textarea,
+[data-theme="light"] select,
+[data-theme="light"] input[type="text"],
+[data-theme="light"] input[type="search"],
+[data-theme="light"] input[type="password"],
+[data-theme="light"] textarea {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder,
+html:not(.dark) input::placeholder,
+[data-theme="light"] input::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* 10. Badges & Alert Tints in Light Theme */
+/* Unresolved Status Badge: Soft Light Amber (#FEF3C7 / #92400E / #FDE68A) */
+.status-badge-unresolved {
+  background-color: rgba(120, 53, 15, 0.4);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #fcd34d;
+}
+
+html.light .status-badge-unresolved,
+html:not(.dark) .status-badge-unresolved,
+[data-theme="light"] .status-badge-unresolved {
+  background-color: #fef3c7 !important;
+  color: #92400e !important;
+  border-color: #fde68a !important;
+}
+
+html.light #modal-status-text.status-text-unresolved,
+html:not(.dark) #modal-status-text.status-text-unresolved,
+[data-theme="light"] #modal-status-text.status-text-unresolved {
+  color: #b45309 !important;
+}
+
+/* In Progress Status Badge: Soft Light Blue (#EFF6FF / #1D4ED8 / #BFDBFE) */
+.status-badge-in-progress {
+  background-color: rgba(30, 58, 138, 0.4);
+  border-color: rgba(59, 130, 246, 0.4);
+  color: #93c5fd;
+}
+
+html.light .status-badge-in-progress,
+html:not(.dark) .status-badge-in-progress,
+[data-theme="light"] .status-badge-in-progress {
+  background-color: #eff6ff !important;
+  color: #1d4ed8 !important;
+  border-color: #bfdbfe !important;
+}
+
+/* Resolved Status Badge: Soft Light Green (#DCFCE7 / #15803D / #BBF7D0) */
+.status-badge-resolved {
+  background-color: rgba(6, 78, 59, 0.4);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #6ee7b7;
+}
+
+html.light .status-badge-resolved,
+html:not(.dark) .status-badge-resolved,
+[data-theme="light"] .status-badge-resolved {
+  background-color: #dcfce7 !important;
+  color: #15803d !important;
+  border-color: #bbf7d0 !important;
+}
+
+html.light .bg-red-950\/60,
+html.light .bg-red-950\/80,
+html:not(.dark) .bg-red-950\/60,
+html:not(.dark) .bg-red-950\/80,
+[data-theme="light"] .bg-red-950\/60,
+[data-theme="light"] .bg-red-950\/80 {
+  background-color: #fef2f2 !important;
+  border-color: #fecaca !important;
+  color: #dc2626 !important;
+}
+
+html.light .bg-amber-950\/60,
+html.light .bg-amber-950\/80,
+html:not(.dark) .bg-amber-950\/60,
+html:not(.dark) .bg-amber-950\/80,
+[data-theme="light"] .bg-amber-950\/60,
+[data-theme="light"] .bg-amber-950\/80 {
+  background-color: #fffbeb !important;
+  border-color: #fde68a !important;
+  color: #d97706 !important;
+}
+
+html.light .bg-emerald-950\/60,
+html.light .bg-emerald-950\/80,
+html:not(.dark) .bg-emerald-950\/60,
+html:not(.dark) .bg-emerald-950\/80,
+[data-theme="light"] .bg-emerald-950\/60,
+[data-theme="light"] .bg-emerald-950\/80 {
+  background-color: #ecfdf5 !important;
+  border-color: #a7f3d0 !important;
+  color: #059669 !important;
+}
+
+html.light .bg-cyan-950\/60,
+html.light .bg-cyan-950\/80,
+html:not(.dark) .bg-cyan-950\/60,
+html:not(.dark) .bg-cyan-950\/80,
+[data-theme="light"] .bg-cyan-950\/60,
+[data-theme="light"] .bg-cyan-950\/80 {
+  background-color: #ecfeff !important;
+  border-color: #a5f3fc !important;
+  color: #0891b2 !important;
+}
+
+html.light .bg-blue-950\/60,
+html.light .bg-blue-950\/80,
+html:not(.dark) .bg-blue-950\/60,
+html:not(.dark) .bg-blue-950\/80,
+[data-theme="light"] .bg-blue-950\/60,
+[data-theme="light"] .bg-blue-950\/80 {
+  background-color: #eff6ff !important;
+  border-color: #bfdbfe !important;
+  color: #2563eb !important;
+}
+
+html.light .bg-purple-950\/20,
+html.light .bg-purple-950\/60,
+html.light .bg-purple-950\/80,
+html:not(.dark) .bg-purple-950\/20,
+html:not(.dark) .bg-purple-950\/60,
+html:not(.dark) .bg-purple-950\/80,
+[data-theme="light"] .bg-purple-950\/20,
+[data-theme="light"] .bg-purple-950\/60,
+[data-theme="light"] .bg-purple-950\/80 {
+  background-color: #faf5ff !important;
+  border-color: #e9d5ff !important;
+  color: #7e22ce !important;
+}
+
+/* 11. Modals in Light Theme */
+html.light #incident-modal > div,
+html.light #apikey-modal > div,
+html.light #ingest-modal > div,
+html.light #citizen-portal-modal > div,
+html.light #road-forecast-modal > div,
+html:not(.dark) #incident-modal > div,
+html:not(.dark) #apikey-modal > div,
+html:not(.dark) #ingest-modal > div,
+html:not(.dark) #citizen-portal-modal > div,
+html:not(.dark) #road-forecast-modal > div,
+[data-theme="light"] #incident-modal > div,
+[data-theme="light"] #apikey-modal > div,
+[data-theme="light"] #ingest-modal > div,
+[data-theme="light"] #citizen-portal-modal > div,
+[data-theme="light"] #road-forecast-modal > div {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+}
+
+html.light .sticky.top-0,
+html:not(.dark) .sticky.top-0,
+[data-theme="light"] .sticky.top-0 {
+  background-color: #ffffff !important;
+}
+
+/* 12. Leaflet Light Map Styling */
+html.light .leaflet-container,
+html:not(.dark) .leaflet-container,
+[data-theme="light"] .leaflet-container {
+  background-color: #f1f5f9 !important;
+}
+
+html.light .leaflet-control-zoom,
+html:not(.dark) .leaflet-control-zoom,
+[data-theme="light"] .leaflet-control-zoom {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+}
+
+html.light .leaflet-control-zoom a,
+html:not(.dark) .leaflet-control-zoom a,
+[data-theme="light"] .leaflet-control-zoom a {
+  background-color: #ffffff !important;
+  color: #0284c7 !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+html.light .leaflet-control-zoom a:hover,
+html:not(.dark) .leaflet-control-zoom a:hover,
+[data-theme="light"] .leaflet-control-zoom a:hover {
+  background-color: #f8fafc !important;
+  color: #0369a1 !important;
+}
+
+html.light .leaflet-popup-content-wrapper,
+html:not(.dark) .leaflet-popup-content-wrapper,
+[data-theme="light"] .leaflet-popup-content-wrapper {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
+}
+
+html.light .leaflet-popup-tip,
+html:not(.dark) .leaflet-popup-tip,
+[data-theme="light"] .leaflet-popup-tip {
+  background: #ffffff !important;
+}
+
+/* 13. Custom Scrollbar in Light Theme */
+html.light .custom-scrollbar::-webkit-scrollbar-track,
+html:not(.dark) .custom-scrollbar::-webkit-scrollbar-track,
+[data-theme="light"] .custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+html.light .custom-scrollbar::-webkit-scrollbar-thumb,
+html:not(.dark) .custom-scrollbar::-webkit-scrollbar-thumb,
+[data-theme="light"] .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
+html.light .custom-scrollbar::-webkit-scrollbar-thumb:hover,
+html:not(.dark) .custom-scrollbar::-webkit-scrollbar-thumb:hover,
+[data-theme="light"] .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* 14. Floating Map Severity Filter in Light Theme */
+html.light #map-severity-filter,
+html:not(.dark) #map-severity-filter,
+[data-theme="light"] #map-severity-filter {
+  background-color: rgba(255, 255, 255, 0.96) !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.12) !important;
+}
+
+html.light #map-severity-filter span.text-slate-300,
+html:not(.dark) #map-severity-filter span.text-slate-300,
+[data-theme="light"] #map-severity-filter span.text-slate-300 {
+  color: #020617 !important;
+  font-weight: 700 !important;
+}
+
+html.light .map-severity-btn:hover,
+html:not(.dark) .map-severity-btn:hover,
+[data-theme="light"] .map-severity-btn:hover {
+  background: #f1f5f9;
+}
+
+html.light .map-severity-btn.active,
+html:not(.dark) .map-severity-btn.active,
+[data-theme="light"] .map-severity-btn.active {
+  background: #ffffff !important;
+  border-color: #94a3b8 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 15. Evidence Items in Light Theme */
+html.light .evidence-item,
+html:not(.dark) .evidence-item,
+[data-theme="light"] .evidence-item {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+html.light .evidence-item:hover,
+html:not(.dark) .evidence-item:hover,
+[data-theme="light"] .evidence-item:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+html.light .evidence-tag,
+html:not(.dark) .evidence-tag,
+[data-theme="light"] .evidence-tag {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+/* 16. Compact AI Summaries on Dashboard (Light Mode) */
+html.light .bg-purple-950\/70,
+html:not(.dark) .bg-purple-950\/70,
+[data-theme="light"] .bg-purple-950\/70 {
+  background-color: #f3e8ff !important;
+  border-color: #d8b4fe !important;
+  color: #7e22ce !important;
+}
+html.light .bg-purple-950\/70:hover,
+html:not(.dark) .bg-purple-950\/70:hover,
+[data-theme="light"] .bg-purple-950\/70:hover {
+  background-color: #e9d5ff !important;
+}
+
+html.light .bg-cyan-950\/70,
+html:not(.dark) .bg-cyan-950\/70,
+[data-theme="light"] .bg-cyan-950\/70 {
+  background-color: #e0f2fe !important;
+  border-color: #7dd3fc !important;
+  color: #0284c7 !important;
+}
+html.light .bg-cyan-950\/70:hover,
+html:not(.dark) .bg-cyan-950\/70:hover,
+[data-theme="light"] .bg-cyan-950\/70:hover {
+  background-color: #bae6fd !important;
+}
+
+
