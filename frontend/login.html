@@ -55,9 +55,22 @@
       background-position: center 35%;
       background-repeat: no-repeat;
     }
+
+    /* National Emergency Helplines Section Backdrop (Sea Link Suspension Bridge Sunset Panorama) */
+    .emergency-helpline-bg {
+      background-color: #f1f5f9;
+      background-image: 
+        linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(248, 250, 252, 0.82) 100%),
+        url('/static/assets/emergency_sealink_bg.png');
+      background-size: cover;
+      background-position: center 38%;
+      background-repeat: no-repeat;
+      position: relative;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-amber-200 selection:text-black">
+
 
   <!-- Top Indian Tricolour Strip -->
   <div class="tricolor-strip"></div>
@@ -251,57 +264,57 @@
        ========================================== -->
   <section class="mt-8 border-t border-slate-300 bg-white text-black">
 
-    <!-- 1. NATIONAL EMERGENCY HELPLINE STRIP (Expansive Height & Clean Badges) -->
-    <div class="bg-[#f8f9fa] border-b border-slate-200 px-8 py-7">
+    <!-- 1. NATIONAL EMERGENCY HELPLINE STRIP (Expansive Height & Clean NHAI Badges with Sea Link Sunset Panorama) -->
+    <div class="emergency-helpline-bg border-b border-slate-300/80 px-8 py-7">
       <div class="max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-5">
         
         <div class="flex items-center gap-3.5">
-          <div class="w-12 h-12 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center text-black shrink-0 shadow-xs">
-            <i data-lucide="phone-call" class="w-6 h-6 text-black"></i>
+          <div class="w-12 h-12 rounded-xl bg-amber-500/20 backdrop-blur-xs border border-amber-500/40 flex items-center justify-center text-slate-900 shrink-0 shadow-xs">
+            <i data-lucide="phone-call" class="w-6 h-6 text-amber-800"></i>
           </div>
           <div>
-            <h4 class="text-xs font-black text-black uppercase tracking-wider flex items-center gap-2">
+            <h4 class="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
               <span>National Road Safety & Emergency Helplines (24x7 Toll-Free)</span>
-              <span class="px-2.5 py-0.5 rounded-full bg-red-100 text-red-950 border border-red-200 text-[10px] font-mono font-bold">EMERGENCY</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-rose-100/90 backdrop-blur-xs text-rose-950 border border-rose-200 text-[10px] font-mono font-bold shadow-2xs">EMERGENCY</span>
             </h4>
-            <p class="text-[11px] text-slate-600 font-medium mt-0.5">Government of India official emergency response & highway rescue support services</p>
+            <p class="text-[11px] text-slate-700 font-semibold mt-0.5">Government of India official emergency response & highway rescue support services</p>
           </div>
         </div>
 
         <!-- Helpline Clean Tiles Grid -->
         <div class="flex flex-wrap items-center gap-3">
           <!-- NHAI 1033 -->
-          <a href="tel:1033" class="group flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white hover:bg-orange-50/80 border border-slate-200 hover:border-orange-300 shadow-xs transition-all">
+          <a href="tel:1033" class="group flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white/88 hover:bg-white backdrop-blur-md border border-white/80 hover:border-orange-300 shadow-xs hover:shadow-md transition-all">
             <div class="w-7 h-7 rounded-lg bg-orange-100 border border-orange-200 flex items-center justify-center text-black font-bold text-xs shadow-xs">📞</div>
             <div>
-              <p class="text-[10px] text-slate-500 font-bold leading-none">NHAI Highway Rescue</p>
+              <p class="text-[10px] text-slate-600 font-bold leading-none">NHAI Highway Rescue</p>
               <p class="text-sm font-black font-mono text-orange-700 mt-0.5">1033</p>
             </div>
           </a>
 
           <!-- National Emergency 112 -->
-          <a href="tel:112" class="group flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white hover:bg-red-50/80 border border-slate-200 hover:border-red-300 shadow-xs transition-all">
+          <a href="tel:112" class="group flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white/88 hover:bg-white backdrop-blur-md border border-white/80 hover:border-red-300 shadow-xs hover:shadow-md transition-all">
             <div class="w-7 h-7 rounded-lg bg-red-100 border border-red-200 flex items-center justify-center text-black font-bold text-xs shadow-xs">🚨</div>
             <div>
-              <p class="text-[10px] text-slate-500 font-bold leading-none">National Emergency</p>
+              <p class="text-[10px] text-slate-600 font-bold leading-none">National Emergency</p>
               <p class="text-sm font-black font-mono text-red-600 mt-0.5">112</p>
             </div>
           </a>
 
           <!-- Ambulance 108 -->
-          <a href="tel:108" class="group flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white hover:bg-emerald-50/80 border border-slate-200 hover:border-emerald-300 shadow-xs transition-all">
+          <a href="tel:108" class="group flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white/88 hover:bg-white backdrop-blur-md border border-white/80 hover:border-emerald-300 shadow-xs hover:shadow-md transition-all">
             <div class="w-7 h-7 rounded-lg bg-emerald-100 border border-emerald-200 flex items-center justify-center text-black font-bold text-xs shadow-xs">🚑</div>
             <div>
-              <p class="text-[10px] text-slate-500 font-bold leading-none">Trauma Ambulance</p>
+              <p class="text-[10px] text-slate-600 font-bold leading-none">Trauma Ambulance</p>
               <p class="text-sm font-black font-mono text-emerald-700 mt-0.5">108</p>
             </div>
           </a>
 
           <!-- Road Safety 1073 -->
-          <a href="tel:1073" class="group flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white hover:bg-blue-50/80 border border-slate-200 hover:border-blue-300 shadow-xs transition-all">
+          <a href="tel:1073" class="group flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white/88 hover:bg-white backdrop-blur-md border border-white/80 hover:border-blue-300 shadow-xs hover:shadow-md transition-all">
             <div class="w-7 h-7 rounded-lg bg-blue-100 border border-blue-200 flex items-center justify-center text-black font-bold text-xs shadow-xs">🛡️</div>
             <div>
-              <p class="text-[10px] text-slate-500 font-bold leading-none">Road Safety Hotline</p>
+              <p class="text-[10px] text-slate-600 font-bold leading-none">Road Safety Hotline</p>
               <p class="text-sm font-black font-mono text-blue-700 mt-0.5">1073</p>
             </div>
           </a>
