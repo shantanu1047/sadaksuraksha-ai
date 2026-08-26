@@ -578,5 +578,14 @@ select option:checked {
   width: 720px;
 }
 
-
-
+/* ==========================================
+   OFFICIAL GOVERNMENT OF INDIA MANDATE & PARTNERS FOOTER STRIP
+   ========================================== */
+.morth-mandate-footer-bg {
+  background-color: #07152b;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(29, 78, 216, 0.28) 0%, transparent 65%),
+    linear-gradient(135deg, #07152b 0%, #0d274c 50%, #061226 100%);
+  background-size: cover;
+  position: relative;
+}
