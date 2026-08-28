@@ -102,7 +102,7 @@ def save_persisted_citizen_hazards(incidents: List[HazardIncident]):
     except Exception as e:
         logger.debug(f"Could not persist hazard to disk: {e}")
 
-hazards_db: List[HazardIncident] = load_persisted_citizen_hazards() + get_demo_hazards()
+hazards_db: List[HazardIncident] = load_persisted_citizen_hazards()
 roads_db: List[RoadSegment] = get_demo_road_segments()
 work_orders_db: List[WorkOrder] = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
 
@@ -162,7 +162,7 @@ async def set_api_key(payload: Dict[str, Any]):
 @app.post("/api/hazards/reset")
 @app.delete("/api/hazards/citizen")
 async def reset_citizen_hazards():
-    """Clear all persisted citizen complaints and reset to fresh state."""
+    """Clear all persisted citizen complaints and reset to completely clean fresh state (0 hazards)."""
     global hazards_db, work_orders_db
     p = get_persisted_file()
     try:
@@ -172,11 +172,25 @@ async def reset_citizen_hazards():
     except Exception as e:
         logger.debug(f"Reset write error: {e}")
     
-    hazards_db = get_demo_hazards()
+    hazards_db = []
+    work_orders_db = []
+    return {
+        "status": "success",
+        "message": "Database completely emptied (0 road hazards).",
+        "active_incidents": 0,
+        "active_work_orders": 0
+    }
+
+
+@app.post("/api/hazards/seed-demo")
+async def seed_demo_hazards():
+    """Optionally re-populate 95 benchmark demo hazards across 16 states."""
+    global hazards_db, work_orders_db
+    hazards_db = load_persisted_citizen_hazards() + get_demo_hazards()
     work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
     return {
         "status": "success",
-        "message": "Database reset to clean fresh state.",
+        "message": f"Populated {len(hazards_db)} demo road hazards.",
         "active_incidents": len(hazards_db),
         "active_work_orders": len(work_orders_db)
     }

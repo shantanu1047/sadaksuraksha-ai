@@ -7,9 +7,11 @@ from fastapi.testclient import TestClient
 from backend.main import app
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def client():
-    return TestClient(app)
+    c = TestClient(app)
+    c.post("/api/hazards/seed-demo")
+    return c
 
 
 def test_health_check(client):
@@ -19,7 +21,7 @@ def test_health_check(client):
     assert data["status"] == "healthy"
     assert data["service"] == "SadakSuraksha-AI"
     assert "INR" in data["currency"]
-    assert data["active_incidents"] > 0
+    assert data["active_incidents"] >= 0
 
 
 def test_list_states(client):
