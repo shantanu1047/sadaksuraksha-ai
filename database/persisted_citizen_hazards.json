@@ -12,10 +12,10 @@
     "latitude": 12.9716,
     "longitude": 77.5946,
     "address": "Citizen GPS: 12.9716\u00b0N, 77.5946\u00b0E (ORR Bellandur, Bengaluru, Karnataka)",
-    "detected_at": "2026-08-29 01:13:15",
+    "detected_at": "2026-08-29 01:29:31",
     "visual_detections": [],
     "telemetry": {
-      "timestamp": "2026-08-29 01:13:15",
+      "timestamp": "2026-08-29 01:29:31",
       "latitude": 12.9716,
       "longitude": 77.5946,
       "speed_kmh": 30.0,
@@ -26,7 +26,7 @@
       "iri_roughness_m_km": 9.2
     },
     "acoustic": {
-      "timestamp": "2026-08-29 01:13:15",
+      "timestamp": "2026-08-29 01:29:31",
       "dominant_freq_hz": 800.0,
       "impact_energy_db": 75.0,
       "acoustic_anomaly_score": 1.0,
@@ -34,7 +34,7 @@
     },
     "citizen_report": {
       "report_id": "CITIZEN-SURAKSHA-0004",
-      "timestamp": "2026-08-29 01:13:15",
+      "timestamp": "2026-08-29 01:29:31",
       "text_content": "Cracked pavement on Outer Ring Road.",
       "reporter_urgency": 5,
       "source": "SadakSuraksha_Citizen_Portal",
@@ -339,10 +339,10 @@
     "latitude": 19.076,
     "longitude": 72.8777,
     "address": "Citizen GPS: 19.0760\u00b0N, 72.8777\u00b0E (WEH Bandra Flyover, Mumbai, Maharashtra)",
-    "detected_at": "2026-08-29 01:13:15",
+    "detected_at": "2026-08-29 01:29:31",
     "visual_detections": [],
     "telemetry": {
-      "timestamp": "2026-08-29 01:13:15",
+      "timestamp": "2026-08-29 01:29:31",
       "latitude": 19.076,
       "longitude": 72.8777,
       "speed_kmh": 30.0,
@@ -353,7 +353,7 @@
       "iri_roughness_m_km": 7.8
     },
     "acoustic": {
-      "timestamp": "2026-08-29 01:13:15",
+      "timestamp": "2026-08-29 01:29:31",
       "dominant_freq_hz": 800.0,
       "impact_energy_db": 70.0,
       "acoustic_anomaly_score": 0.8,
@@ -361,7 +361,7 @@
     },
     "citizen_report": {
       "report_id": "CITIZEN-SURAKSHA-0003",
-      "timestamp": "2026-08-29 01:13:15",
+      "timestamp": "2026-08-29 01:29:31",
       "text_content": "Deep pothole on Western Express Highway.",
       "reporter_urgency": 4,
       "source": "SadakSuraksha_Citizen_Portal",

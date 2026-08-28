@@ -357,11 +357,12 @@ async function refreshAllData() {
 
     // 3. Fallback Cloud Database sync across serverless workers & devices
     try {
-      const cloudRes = await fetch('https://crudcrud.com/api/e72cbc1dcc884f279d5110b685dc331c/hazards', {
+      const cloudRes = await fetch('https://api.restful-api.dev/objects/ff8081819ff5b11001a049f2fd8d573c', {
         headers: { 'Accept': 'application/json' }
       });
       if (cloudRes.ok) {
-        const cloudHazards = await cloudRes.json();
+        const resObj = await cloudRes.json();
+        const cloudHazards = resObj?.data?.hazards;
         if (Array.isArray(cloudHazards)) {
           cloudHazards.forEach(rawCh => {
             const ch = normalizeHazard(rawCh);
@@ -385,8 +386,9 @@ async function refreshAllData() {
       const hasOrder = allWorkOrders.some(wo => wo.target_hazard_ids && wo.target_hazard_ids.includes(h.id));
       if (!hasOrder) {
         const stateCode = (h.state || 'IND').substring(0, 3).toUpperCase();
+        const cleanId = (h.id || 'CITIZEN').replace(/[^a-zA-Z0-9]/g, '').slice(-8);
         allWorkOrders.unshift({
-          id: `WO-${stateCode}-CITIZEN-${(h.id || '').replace(/[^0-9]/g, '').slice(-4) || Math.floor(Math.random()*900+100)}`,
+          id: `WO-${stateCode}-${cleanId}`,
           title: `Citizen Action Order: ${h.title || 'Road Hazard'} (${h.road_name || h.city || h.state})`,
           state: h.state || 'Karnataka',
           city: h.city || 'Bengaluru',
@@ -1477,7 +1479,7 @@ function updateAnalyticsCharts(analytics, roads) {
     const values = Object.values(analytics.hazard_type_distribution);
     hazardDistChart.data.labels = keys.map(k => k.replace('_', ' ').toUpperCase());
     hazardDistChart.data.datasets[0].data = values;
-    hazardDistChart.update();
+    hazardDistChart.update('none');
   }
 
   if (roadPciChart && roads.length > 0) {
@@ -1487,7 +1489,7 @@ function updateAnalyticsCharts(analytics, roads) {
 
     roadPciChart.data.labels = subsetRoads.map(r => r.name.split(' ')[0] + ` (${r.city})`);
     roadPciChart.data.datasets[0].data = subsetRoads.map(r => r.current_pci);
-    roadPciChart.update();
+    roadPciChart.update('none');
   }
 }
 

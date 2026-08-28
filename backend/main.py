@@ -71,7 +71,7 @@ copilot_service = CopilotService()
 ingestion_service = IngestionService()
 forecast_service = ForecastService()
 
-DEFAULT_CLOUD_ENDPOINT = "https://crudcrud.com/api/e72cbc1dcc884f279d5110b685dc331c/hazards"
+DEFAULT_CLOUD_ENDPOINT = "https://api.restful-api.dev/objects/ff8081819ff5b11001a049f2fd8d573c"
 
 def get_cloud_endpoint() -> str:
     return os.environ.get("CLOUD_DB_URL", DEFAULT_CLOUD_ENDPOINT).strip()
@@ -84,17 +84,19 @@ def fetch_hazards_from_cloud() -> List[HazardIncident]:
             endpoint,
             headers={
                 "Content-Type": "application/json",
-                "User-Agent": "Mozilla/5.0 SadakSuraksha-CloudSync/1.0",
+                "User-Agent": "SadakSuraksha-Production/1.0",
             },
             method="GET",
         )
-        with urllib.request.urlopen(req, timeout=3) as res:
+        with urllib.request.urlopen(req, timeout=4) as res:
             if res.status == 200:
                 raw = res.read().decode("utf-8")
-                data = json.loads(raw)
-                if isinstance(data, list):
+                res_obj = json.loads(raw)
+                data_block = res_obj.get("data", {}) if isinstance(res_obj, dict) else {}
+                hazards_list = data_block.get("hazards", []) if isinstance(data_block, dict) else []
+                if isinstance(hazards_list, list):
                     items = []
-                    for d in data:
+                    for d in hazards_list:
                         if isinstance(d, dict) and d.get("id"):
                             d.pop("_id", None)
                             try:
@@ -106,53 +108,49 @@ def fetch_hazards_from_cloud() -> List[HazardIncident]:
         logger.debug(f"Cloud DB fetch error: {e}")
     return []
 
-def push_hazard_to_cloud(hazard_dict: Dict[str, Any]) -> bool:
-    """Pushes a newly created citizen hazard to Cloud Database."""
+def save_hazards_to_cloud(hazards: List[HazardIncident]) -> bool:
+    """Saves entire citizen hazard list atomically to Cloud Database."""
     endpoint = get_cloud_endpoint()
     try:
-        clean = dict(hazard_dict)
-        clean.pop("_id", None)
-        payload = json.dumps(clean, default=str).encode("utf-8")
+        citizen_only = [inc.model_dump() for inc in hazards if inc.id.startswith("HAZ-")]
+        payload = json.dumps({
+            "name": "sadaksuraksha_hazards_store",
+            "data": {"hazards": citizen_only[:100]}
+        }, default=str).encode("utf-8")
         req = urllib.request.Request(
             endpoint,
             data=payload,
             headers={
                 "Content-Type": "application/json",
-                "User-Agent": "Mozilla/5.0 SadakSuraksha-CloudSync/1.0",
+                "User-Agent": "SadakSuraksha-Production/1.0",
             },
-            method="POST",
+            method="PUT",
         )
-        with urllib.request.urlopen(req, timeout=4) as res:
+        with urllib.request.urlopen(req, timeout=5) as res:
             return res.status in (200, 201)
     except Exception as e:
-        logger.debug(f"Cloud DB push error: {e}")
+        logger.debug(f"Cloud DB save error: {e}")
         return False
 
 def clear_cloud_hazards():
     """Wipes all hazard records from Cloud Database."""
     endpoint = get_cloud_endpoint()
     try:
+        payload = json.dumps({
+            "name": "sadaksuraksha_hazards_store",
+            "data": {"hazards": []}
+        }).encode("utf-8")
         req = urllib.request.Request(
             endpoint,
-            headers={"User-Agent": "Mozilla/5.0 SadakSuraksha/1.0"},
-            method="GET",
+            data=payload,
+            headers={
+                "Content-Type": "application/json",
+                "User-Agent": "SadakSuraksha-Production/1.0",
+            },
+            method="PUT",
         )
-        with urllib.request.urlopen(req, timeout=3) as res:
-            if res.status == 200:
-                data = json.loads(res.read().decode("utf-8"))
-                if isinstance(data, list):
-                    for item in data:
-                        doc_id = item.get("_id")
-                        if doc_id:
-                            del_req = urllib.request.Request(
-                                f"{endpoint}/{doc_id}",
-                                headers={"User-Agent": "Mozilla/5.0 SadakSuraksha/1.0"},
-                                method="DELETE",
-                            )
-                            try:
-                                urllib.request.urlopen(del_req, timeout=2)
-                            except Exception:
-                                pass
+        with urllib.request.urlopen(req, timeout=4) as res:
+            pass
     except Exception as e:
         logger.debug(f"Cloud DB clear error: {e}")
 
@@ -215,6 +213,7 @@ def save_persisted_citizen_hazards(incidents: List[HazardIncident]):
     citizen_only = citizen_only[:200]
     payload_str = json.dumps(citizen_only, indent=2, default=str)
     
+    # 1. Save to local disk paths
     for p in get_storage_paths():
         try:
             p.parent.mkdir(parents=True, exist_ok=True)
@@ -222,6 +221,9 @@ def save_persisted_citizen_hazards(incidents: List[HazardIncident]):
                 f.write(payload_str)
         except Exception as e:
             logger.debug(f"Could not persist hazard to {p}: {e}")
+
+    # 2. Save atomically to Cloud Database
+    save_hazards_to_cloud(incidents)
 
 
 def sync_hazards_from_disk():
