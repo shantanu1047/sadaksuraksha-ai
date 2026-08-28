@@ -44,11 +44,26 @@
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .login-interchange-bg {
+      position: relative;
+      background-color: #0f172a;
+      background-image: 
+        linear-gradient(180deg, rgba(255, 255, 255, 0.62) 0%, rgba(240, 246, 255, 0.46) 50%, rgba(245, 248, 252, 0.66) 100%),
+        url('/static/assets/login_interchange_bg.jpg'),
+        url('/assets/login_interchange_bg.jpg'),
+        url('assets/login_interchange_bg.jpg');
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+    }
+  </style>
 </head>
 <body class="bg-[#f8f9fa] text-black min-h-screen flex flex-col font-sans selection:bg-amber-200 selection:text-black">
 
   <!-- ROLE SELECTION & LOGIN GATEWAY (PRIOR SCREEN OVERLAY) -->
-  <div id="role-gateway-overlay" class="fixed inset-0 bg-[#f8f9fa] z-[100000] flex flex-col justify-between overflow-y-auto" style="z-index: 100000 !important;">
+  <div id="role-gateway-overlay" class="fixed inset-0 bg-slate-900 z-[100000] flex flex-col justify-between overflow-y-auto" style="z-index: 100000 !important;">
     
     <!-- Top Indian Tricolour Strip -->
     <div class="tricolor-strip"></div>

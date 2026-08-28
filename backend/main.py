@@ -467,6 +467,12 @@ async def websocket_patrol_simulation(websocket: WebSocket):
 frontend_dir = Path(__file__).parent.parent / "frontend"
 if frontend_dir.exists():
     app.mount("/static", StaticFiles(directory=str(frontend_dir)), name="static")
+    if (frontend_dir / "assets").exists():
+        app.mount("/assets", StaticFiles(directory=str(frontend_dir / "assets")), name="assets")
+    if (frontend_dir / "css").exists():
+        app.mount("/css", StaticFiles(directory=str(frontend_dir / "css")), name="css")
+    if (frontend_dir / "js").exists():
+        app.mount("/js", StaticFiles(directory=str(frontend_dir / "js")), name="js")
 
     @app.get("/")
     async def serve_gateway():
