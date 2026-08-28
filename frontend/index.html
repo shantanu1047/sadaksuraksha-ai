@@ -1517,13 +1517,22 @@
 
         <!-- Main Forecast Content Split (Map Left + Predictions Right) -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <!-- Predictive Failure Heatmap -->
+          <!-- Predictive Failure Heatmap with Google Maps -->
           <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="text-xs font-black text-black uppercase tracking-wider flex items-center gap-2">
-                <i data-lucide="map" class="w-4 h-4 text-purple-700"></i> Predictive Deterioration Map
-              </h3>
-              <span class="text-[10px] font-mono font-bold text-slate-500">Live Forecast Layer</span>
+            <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+              <div>
+                <h3 class="text-xs font-black text-black uppercase tracking-wider flex items-center gap-2">
+                  <i data-lucide="map" class="w-4 h-4 text-purple-700"></i> Predictive Deterioration Map
+                </h3>
+                <span class="text-[10px] font-bold text-slate-500">Google Maps HD Predictive Layer</span>
+              </div>
+              <!-- Google Map Layer Selector -->
+              <div class="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200 text-[11px] font-bold text-slate-700 gap-1">
+                <button onclick="setForecastGoogleMapLayer('roadmap')" id="fc-map-btn-roadmap" class="px-2 py-0.5 rounded bg-white shadow-xs text-purple-800 font-extrabold cursor-pointer">Road</button>
+                <button onclick="setForecastGoogleMapLayer('satellite')" id="fc-map-btn-satellite" class="px-2 py-0.5 rounded hover:bg-white/80 text-slate-600 cursor-pointer">Sat</button>
+                <button onclick="setForecastGoogleMapLayer('hybrid')" id="fc-map-btn-hybrid" class="px-2 py-0.5 rounded hover:bg-white/80 text-slate-600 cursor-pointer">Hybrid</button>
+                <button onclick="setForecastGoogleMapLayer('traffic')" id="fc-map-btn-traffic" class="px-2 py-0.5 rounded hover:bg-white/80 text-slate-600 cursor-pointer">Traffic</button>
+              </div>
             </div>
             <div id="forecast-map" class="w-full h-[450px] min-h-[450px] rounded-xl overflow-hidden border border-slate-300 bg-slate-100 relative z-10"></div>
             <div class="flex items-center justify-between text-[11px] text-slate-700 font-bold mt-3 pt-2 border-t border-slate-200">

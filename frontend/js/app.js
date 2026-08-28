@@ -1970,6 +1970,38 @@ function updateForecastKpis(summary) {
   }
 }
 
+let currentForecastGoogleMapLayer = null;
+
+function setForecastGoogleMapLayer(layerType) {
+  if (!forecastMap) return;
+  const cfg = GOOGLE_MAP_TILE_LAYERS[layerType] || GOOGLE_MAP_TILE_LAYERS.roadmap;
+  if (currentForecastGoogleMapLayer) {
+    forecastMap.removeLayer(currentForecastGoogleMapLayer);
+  }
+  currentForecastGoogleMapLayer = L.tileLayer(cfg.url, {
+    attribution: cfg.attribution,
+    maxZoom: cfg.maxZoom || 20,
+    subdomains: cfg.subdomains || ['mt0', 'mt1', 'mt2', 'mt3']
+  }).addTo(forecastMap);
+
+  if (forecastMarkersLayer && forecastMap.hasLayer(forecastMarkersLayer)) {
+    forecastMarkersLayer.bringToFront();
+  }
+
+  // Update button active state
+  ['roadmap', 'satellite', 'hybrid', 'traffic'].forEach(t => {
+    const btn = document.getElementById(`fc-map-btn-${t}`);
+    if (btn) {
+      if (t === layerType) {
+        btn.className = 'px-2 py-0.5 rounded bg-white shadow-xs text-purple-800 font-extrabold cursor-pointer';
+      } else {
+        btn.className = 'px-2 py-0.5 rounded hover:bg-white/80 text-slate-600 cursor-pointer';
+      }
+    }
+  });
+}
+window.setForecastGoogleMapLayer = setForecastGoogleMapLayer;
+
 function initForecastMap() {
   const mapContainer = document.getElementById('forecast-map');
   if (!mapContainer) return;
@@ -1986,11 +2018,7 @@ function initForecastMap() {
         attributionControl: false
       });
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; CartoDB &copy; OpenStreetMap',
-        maxZoom: 19,
-        subdomains: 'abcd'
-      }).addTo(forecastMap);
+      setForecastGoogleMapLayer('roadmap');
 
       forecastMarkersLayer = L.layerGroup().addTo(forecastMap);
     } catch (e) {
