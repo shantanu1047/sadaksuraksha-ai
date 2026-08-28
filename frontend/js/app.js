@@ -630,10 +630,10 @@ function setGoogleMapLayer(layerType) {
   }).addTo(gisMap);
 
   if (gisClusterLayer && gisMap.hasLayer(gisClusterLayer)) {
-    gisClusterLayer.bringToFront();
+    if (typeof gisClusterLayer.bringToFront === 'function') gisClusterLayer.bringToFront();
   }
   if (gisMarkerLayer && gisMap.hasLayer(gisMarkerLayer)) {
-    gisMarkerLayer.bringToFront();
+    if (typeof gisMarkerLayer.bringToFront === 'function') gisMarkerLayer.bringToFront();
   }
 }
 window.setGoogleMapLayer = setGoogleMapLayer;
@@ -642,7 +642,7 @@ function initGisMap() {
   const mapElem = document.getElementById('gis-map');
   if (!mapElem) return;
 
-  const defaultVp = STATE_VIEWPORTS[currentStateFilter] || STATE_VIEWPORTS.Karnataka;
+  const defaultVp = STATE_VIEWPORTS[currentStateFilter] || STATE_VIEWPORTS.all;
 
   gisMap = L.map('gis-map', {
     center: defaultVp.center,
@@ -659,7 +659,48 @@ function initGisMap() {
   // Initialize with Google Maps Roadmap layer
   setGoogleMapLayer('roadmap');
 
-  gisMarkerLayer = L.layerGroup().addTo(gisMap);
+  if (typeof L.markerClusterGroup === 'function') {
+    gisMarkerLayer = L.markerClusterGroup({
+      showCoverageOnHover: false,
+      maxClusterRadius: 55,
+      spiderfyOnMaxZoom: true,
+      zoomToBoundsOnClick: true,
+      disableClusteringAtZoom: 15,
+      iconCreateFunction: function(cluster) {
+        const count = cluster.getChildCount();
+        const markers = cluster.getAllChildMarkers();
+        const hasCritical = markers.some(m => m._isCriticalHazard);
+        
+        let sizeClass = 'nhai-cluster-small';
+        let dim = 42;
+        if (count > 25) {
+          sizeClass = 'nhai-cluster-large';
+          dim = 52;
+        } else if (count > 8) {
+          sizeClass = 'nhai-cluster-medium';
+          dim = 46;
+        }
+        
+        const critClass = hasCritical ? 'nhai-cluster-has-critical' : '';
+        
+        return L.divIcon({
+          html: `
+            <div class="nhai-cluster-bubble ${sizeClass} ${critClass}">
+              <span class="nhai-cluster-count">${count}</span>
+              <span class="nhai-cluster-label">Defects</span>
+            </div>
+          `,
+          className: 'nhai-hazard-cluster',
+          iconSize: [dim, dim],
+          iconAnchor: [dim / 2, dim / 2]
+        });
+      }
+    });
+  } else {
+    gisMarkerLayer = L.layerGroup();
+  }
+
+  gisMarkerLayer.addTo(gisMap);
   gisClusterLayer = L.layerGroup().addTo(gisMap);
 
   const toggleClusters = document.getElementById('toggle-clusters');
@@ -681,7 +722,9 @@ function initGisMap() {
 
 function renderMapMarkers(hazards) {
   if (!gisMarkerLayer) return;
-  gisMarkerLayer.clearLayers();
+  if (typeof gisMarkerLayer.clearLayers === 'function') {
+    gisMarkerLayer.clearLayers();
+  }
   gisClusterLayer.clearLayers();
 
   const SVG_ICONS = {
@@ -692,15 +735,13 @@ function renderMapMarkers(hazards) {
     fp: `<svg class="w-3.5 h-3.5 text-slate-800" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`
   };
 
-  const validMarkers = [];
+  const markersToAdd = [];
 
   hazards.forEach(rawH => {
     const h = normalizeHazard(rawH);
     const lat = parseFloat(h.latitude);
     const lng = parseFloat(h.longitude);
     if (isNaN(lat) || isNaN(lng)) return;
-
-    validMarkers.push([lat, lng]);
 
     let pinClass = 'pin-medium';
     let iconSvg = SVG_ICONS.medium;
@@ -732,6 +773,7 @@ function renderMapMarkers(hazards) {
     });
 
     const marker = L.marker([lat, lng], { icon: customIcon });
+    marker._isCriticalHazard = (h.severity === 'critical' && !h.fusion?.is_false_positive);
 
     let sevBadgeBg = 'bg-amber-100/80 text-amber-900 border-amber-300/70';
     if (h.severity === 'critical') {
@@ -780,23 +822,25 @@ function renderMapMarkers(hazards) {
     `;
 
     marker.bindPopup(popupHtml);
-    gisMarkerLayer.addLayer(marker);
+    markersToAdd.push(marker);
   });
 
-  // Auto-focus and frame map bounds if single or few hazards exist
-  if (gisMap && validMarkers.length > 0 && !window._userHasPannedMap) {
-    if (validMarkers.length === 1) {
-      gisMap.setView(validMarkers[0], 14, { animate: true });
-    } else if (validMarkers.length <= 15) {
-      try {
-        const b = L.latLngBounds(validMarkers);
-        gisMap.fitBounds(b.pad(0.25), { maxZoom: 15 });
-      } catch (e) {}
-    }
+  if (typeof gisMarkerLayer.addLayers === 'function') {
+    gisMarkerLayer.addLayers(markersToAdd);
+  } else {
+    markersToAdd.forEach(m => gisMarkerLayer.addLayer(m));
   }
 
-  if (window.lucide && typeof window.lucide.createIcons === 'function') {
-    window.lucide.createIcons();
+  // Auto-focus framing
+  if (gisMap && markersToAdd.length > 0 && !window._userHasPannedMap) {
+    if (currentStateFilter !== 'all') {
+      const stateVp = STATE_VIEWPORTS[currentStateFilter];
+      if (stateVp) {
+        gisMap.setView(stateVp.center, stateVp.zoom);
+      }
+    } else {
+      gisMap.setView(STATE_VIEWPORTS.all.center, STATE_VIEWPORTS.all.zoom);
+    }
   }
 
   // Render Clustered Work Order Outlines

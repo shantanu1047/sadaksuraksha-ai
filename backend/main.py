@@ -226,6 +226,17 @@ def save_persisted_citizen_hazards(incidents: List[HazardIncident]):
     save_hazards_to_cloud(incidents)
 
 
+def load_all_initial_hazards() -> List[HazardIncident]:
+    citizen = load_persisted_citizen_hazards()
+    demo = get_demo_hazards()
+    citizen_ids = {c.id for c in citizen}
+    combined = list(citizen)
+    for d in demo:
+        if d.id not in citizen_ids:
+            combined.append(d)
+    return combined
+
+
 def sync_hazards_from_disk():
     """Ensures in-memory hazards_db and work_orders_db are synchronized with persistent cloud & disk storage."""
     global hazards_db, work_orders_db
@@ -241,7 +252,7 @@ def sync_hazards_from_disk():
         work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
 
 
-hazards_db: List[HazardIncident] = load_persisted_citizen_hazards()
+hazards_db: List[HazardIncident] = load_all_initial_hazards()
 roads_db: List[RoadSegment] = get_demo_road_segments()
 work_orders_db: List[WorkOrder] = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
 
