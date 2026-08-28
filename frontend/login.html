@@ -56,6 +56,18 @@
       background-repeat: no-repeat;
     }
 
+    /* Login Portal Hero Section Background (Highway Interchange with Frosted Atmospheric Overlay) */
+    .login-interchange-bg {
+      position: relative;
+      background-color: #f1f5f9;
+      background-image: 
+        linear-gradient(180deg, rgba(255, 255, 255, 0.84) 0%, rgba(248, 250, 252, 0.76) 50%, rgba(241, 245, 249, 0.90) 100%),
+        url('/static/assets/login_interchange_bg.jpg');
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+    }
+
     /* National Emergency Helplines Section Backdrop (Sea Link Suspension Bridge Sunset Panorama) */
     .emergency-helpline-bg {
       background-color: #f1f5f9;
@@ -66,18 +78,6 @@
       background-position: center 38%;
       background-repeat: no-repeat;
       position: relative;
-    }
-
-    /* Select Your Portal / Role Gateway Section Background (Aerial Interchange Flyover) */
-    .gateway-portal-bg {
-      position: relative;
-      background-color: #f1f5f9;
-      background-image: 
-        linear-gradient(180deg, rgba(255, 255, 255, 0.82) 0%, rgba(248, 250, 252, 0.78) 40%, rgba(241, 245, 249, 0.88) 100%),
-        url('/static/assets/gateway_interchange_bg.jpg');
-      background-size: cover;
-      background-position: center center;
-      background-repeat: no-repeat;
     }
   </style>
 </head>
@@ -120,19 +120,19 @@
     </div>
   </header>
 
-  <!-- Hero & Gateway Section -->
-  <main class="gateway-portal-bg px-6 py-14 flex-1 flex flex-col justify-center border-b border-slate-200/80">
-    <div class="max-w-6xl mx-auto w-full">
+  <!-- Hero & Gateway Section (with Night Highway Interchange Backdrop) -->
+  <div class="login-interchange-bg border-b border-slate-300">
+    <main class="max-w-6xl mx-auto px-6 py-14 flex-1 flex flex-col justify-center">
 
       <!-- Title Section -->
       <div class="text-center max-w-3xl mx-auto mb-12">
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 shadow-xs text-black text-xs font-bold mb-4">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-white/80 shadow-xs text-black text-xs font-bold mb-4">
           <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i> Single-Sign-On & Public Reporting Gateway
         </div>
-        <h2 class="text-3xl sm:text-4xl font-black text-black tracking-tight leading-tight">
+        <h2 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight">
           National Road Infrastructure Intelligence & Safety Gateway
         </h2>
-        <p class="text-sm sm:text-base text-slate-700 font-medium mt-3">
+        <p class="text-sm sm:text-base text-slate-700 font-semibold mt-3">
           Select your role below. Citizens can report road hazards and waterlogging directly without login, while authorized officials access the AI Command Center.
         </p>
       </div>
@@ -141,7 +141,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto w-full">
 
         <!-- 1. CITIZEN CARD -->
-        <div class="nhai-card bg-white/92 backdrop-blur-md p-8 flex flex-col justify-between relative overflow-hidden text-black border-l-6 border-l-[#138808] shadow-md hover:shadow-xl transition-all duration-300">
+        <div class="nhai-card bg-white/88 hover:bg-white/96 backdrop-blur-xl border border-white/85 p-8 flex flex-col justify-between relative overflow-hidden text-black border-l-6 border-l-[#138808] shadow-xl hover:shadow-2xl transition-all duration-300">
           <div>
             <div class="flex items-center justify-between mb-6">
               <div class="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center shadow-xs">
@@ -186,92 +186,92 @@
         </div>
 
         <!-- 2. GOVERNMENT OFFICIAL CARD -->
-        <div class="nhai-card bg-white/92 backdrop-blur-md p-8 flex flex-col justify-between relative overflow-hidden text-black border-l-6 border-l-[#FF9933] shadow-md hover:shadow-xl transition-all duration-300">
-        <div>
-          <div class="flex items-center justify-between mb-6">
-            <div class="w-14 h-14 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center shadow-xs">
-              <i data-lucide="building-2" class="w-7 h-7 text-orange-700"></i>
+        <div class="nhai-card bg-white/88 hover:bg-white/96 backdrop-blur-xl border border-white/85 p-8 flex flex-col justify-between relative overflow-hidden text-black border-l-6 border-l-[#FF9933] shadow-xl hover:shadow-2xl transition-all duration-300">
+          <div>
+            <div class="flex items-center justify-between mb-6">
+              <div class="w-14 h-14 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center shadow-xs">
+                <i data-lucide="building-2" class="w-7 h-7 text-orange-700"></i>
+              </div>
+              <span class="px-3 py-1 rounded-full text-xs font-bold font-mono bg-orange-50 text-orange-950 border border-orange-300 shadow-xs">
+                RESTRICTED ACCESS
+              </span>
             </div>
-            <span class="px-3 py-1 rounded-full text-xs font-bold font-mono bg-orange-50 text-orange-950 border border-orange-300 shadow-xs">
-              RESTRICTED ACCESS
-            </span>
+
+            <h3 class="text-2xl font-black text-black mb-2 flex items-center gap-2">
+              <span>Government Authority Login</span> <span class="text-lg">🏛️</span>
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mb-6">
+              For NHAI Highway Engineers, State PWD Officers, Smart City ICCC Commanders, and Municipal Road Maintenance Teams.
+            </p>
+
+            <!-- Department Selector & Credentials Form -->
+            <form id="gov-login-form" onsubmit="handleGovLogin(event)" class="space-y-3.5 mb-6">
+              <div>
+                <label class="block text-xs font-bold text-black mb-1">Department / Organization:</label>
+                <select id="gov-dept" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-black font-semibold focus:outline-none focus:border-orange-500">
+                  <option value="nhai">NHAI — National Highways Authority of India</option>
+                  <option value="morth">MoRTH — Ministry of Road Transport & Highways</option>
+                  <option value="pwd_ka">Karnataka State PWD (Bengaluru Division)</option>
+                  <option value="pwd_mh">Maharashtra PWD / BMC Smart City</option>
+                  <option value="pwd_dl">Delhi NCR PWD / ITMS Command</option>
+                  <option value="pwd_tn">Tamil Nadu Highways Dept (Chennai)</option>
+                  <option value="pwd_ts">Telangana Roads & Buildings (Hyderabad)</option>
+                  <option value="smart_city">Smart City Integrated Command & Control (ICCC)</option>
+                </select>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-bold text-black mb-1">Officer Badge ID:</label>
+                  <input type="text" id="officer-id" value="NHAI-ENG-8429" placeholder="e.g. NHAI-7740" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:border-orange-500">
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-black mb-1">Security PIN / Token:</label>
+                  <input type="password" id="officer-pin" value="••••••••" placeholder="Security PIN" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:border-orange-500">
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 pt-1">
+                <button type="button" onclick="quickDemoLogin('nhai')" class="text-[11px] bg-slate-100 hover:bg-slate-200 border border-slate-300 text-black font-bold px-3 py-1 rounded-lg transition-colors cursor-pointer shadow-xs">
+                  ⚡ NHAI Engineer Demo
+                </button>
+                <button type="button" onclick="quickDemoLogin('pwd')" class="text-[11px] bg-slate-100 hover:bg-slate-200 border border-slate-300 text-black font-bold px-3 py-1 rounded-lg transition-colors cursor-pointer shadow-xs">
+                  ⚡ State PWD Demo
+                </button>
+              </div>
+
+              <button type="submit" class="w-full py-4 px-6 rounded-xl bg-[#FF9933] hover:bg-[#F28500] border border-amber-600 text-black font-black text-sm flex items-center justify-center gap-2.5 shadow-xs transition-colors mt-4 cursor-pointer">
+                <i data-lucide="shield-check" class="w-4 h-4"></i>
+                <span>Access AI Command Center</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+              </button>
+            </form>
           </div>
 
-          <h3 class="text-2xl font-black text-black mb-2 flex items-center gap-2">
-            <span>Government Authority Login</span> <span class="text-lg">🏛️</span>
-          </h3>
-          <p class="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mb-6">
-            For NHAI Highway Engineers, State PWD Officers, Smart City ICCC Commanders, and Municipal Road Maintenance Teams.
-          </p>
-
-          <!-- Department Selector & Credentials Form -->
-          <form id="gov-login-form" onsubmit="handleGovLogin(event)" class="space-y-3.5 mb-6">
-            <div>
-              <label class="block text-xs font-bold text-black mb-1">Department / Organization:</label>
-              <select id="gov-dept" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-black font-semibold focus:outline-none focus:border-orange-500">
-                <option value="nhai">NHAI — National Highways Authority of India</option>
-                <option value="morth">MoRTH — Ministry of Road Transport & Highways</option>
-                <option value="pwd_ka">Karnataka State PWD (Bengaluru Division)</option>
-                <option value="pwd_mh">Maharashtra PWD / BMC Smart City</option>
-                <option value="pwd_dl">Delhi NCR PWD / ITMS Command</option>
-                <option value="pwd_tn">Tamil Nadu Highways Dept (Chennai)</option>
-                <option value="pwd_ts">Telangana Roads & Buildings (Hyderabad)</option>
-                <option value="smart_city">Smart City Integrated Command & Control (ICCC)</option>
-              </select>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-xs font-bold text-black mb-1">Officer Badge ID:</label>
-                <input type="text" id="officer-id" value="NHAI-ENG-8429" placeholder="e.g. NHAI-7740" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:border-orange-500">
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-black mb-1">Security PIN / Token:</label>
-                <input type="password" id="officer-pin" value="••••••••" placeholder="Security PIN" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:border-orange-500">
-              </div>
-            </div>
-
-            <div class="flex items-center gap-2 pt-1">
-              <button type="button" onclick="quickDemoLogin('nhai')" class="text-[11px] bg-slate-100 hover:bg-slate-200 border border-slate-300 text-black font-bold px-3 py-1 rounded-lg transition-colors cursor-pointer shadow-xs">
-                ⚡ NHAI Engineer Demo
-              </button>
-              <button type="button" onclick="quickDemoLogin('pwd')" class="text-[11px] bg-slate-100 hover:bg-slate-200 border border-slate-300 text-black font-bold px-3 py-1 rounded-lg transition-colors cursor-pointer shadow-xs">
-                ⚡ State PWD Demo
-              </button>
-            </div>
-
-            <button type="submit" class="w-full py-4 px-6 rounded-xl bg-[#FF9933] hover:bg-[#F28500] border border-amber-600 text-black font-black text-sm flex items-center justify-center gap-2.5 shadow-xs transition-colors mt-4 cursor-pointer">
-              <i data-lucide="shield-check" class="w-4 h-4"></i>
-              <span>Access AI Command Center</span>
-              <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
-            </button>
-          </form>
+          <div class="border-t border-slate-100 pt-3">
+            <p class="text-[11px] text-slate-600 font-medium flex items-center justify-center gap-1.5">
+              <i data-lucide="lock" class="w-3.5 h-3.5 text-black"></i>
+              <span>Authorized GIS Triage, PWD Work Orders & Multimodal Inspection Access</span>
+            </p>
+          </div>
         </div>
 
-        <div class="border-t border-slate-100 pt-3">
-          <p class="text-[11px] text-slate-600 font-medium flex items-center justify-center gap-1.5">
-            <i data-lucide="lock" class="w-3.5 h-3.5 text-black"></i>
-            <span>Authorized GIS Triage, PWD Work Orders & Multimodal Inspection Access</span>
-          </p>
+      </div>
+
+      <!-- Live Platform Telemetry Bar -->
+      <div class="mt-12 max-w-5xl mx-auto w-full bg-white/90 backdrop-blur-xl border border-white/80 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 text-xs font-bold text-black shadow-md">
+        <div class="flex items-center gap-2 text-slate-800">
+          <i data-lucide="zap" class="w-4 h-4 text-amber-500"></i>
+          <span><strong>Multimodal Fusion</strong>: 3-Axis IMU (Gz), Optical Edge/Depth, Tire Acoustic dB & Citizen Verification</span>
+        </div>
+        <div class="flex items-center gap-4 text-slate-800 font-mono">
+          <span>Curvature & Depth Accuracy: <strong class="text-blue-800">98.4%</strong></span>
+          <span>MoRTH Standard: <strong class="text-emerald-700">IRC:82-2015</strong></span>
         </div>
       </div>
 
-    </div>
-
-    <!-- Live Platform Telemetry Bar -->
-    <div class="mt-12 max-w-5xl mx-auto w-full bg-white border border-slate-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 text-xs font-bold text-black shadow-xs">
-      <div class="flex items-center gap-2 text-slate-800">
-        <i data-lucide="zap" class="w-4 h-4 text-amber-500"></i>
-        <span><strong>Multimodal Fusion</strong>: 3-Axis IMU (Gz), Optical Edge/Depth, Tire Acoustic dB & Citizen Verification</span>
-      </div>
-      <div class="flex items-center gap-4 text-slate-800 font-mono">
-        <span>Curvature & Depth Accuracy: <strong class="text-blue-800">98.4%</strong></span>
-        <span>MoRTH Standard: <strong class="text-emerald-700">IRC:82-2015</strong></span>
-      </div>
-    </div>
-
-    </div>
-  </main>
+    </main>
+  </div>
 
   <!-- ==========================================
        GOVERNMENT OF INDIA HELPLINES & NOTIFICATION HUB
