@@ -71,6 +71,91 @@ copilot_service = CopilotService()
 ingestion_service = IngestionService()
 forecast_service = ForecastService()
 
+DEFAULT_CLOUD_ENDPOINT = "https://crudcrud.com/api/e72cbc1dcc884f279d5110b685dc331c/hazards"
+
+def get_cloud_endpoint() -> str:
+    return os.environ.get("CLOUD_DB_URL", DEFAULT_CLOUD_ENDPOINT).strip()
+
+def fetch_hazards_from_cloud() -> List[HazardIncident]:
+    """Fetches real-time persisted citizen complaints from Cloud Database."""
+    endpoint = get_cloud_endpoint()
+    try:
+        req = urllib.request.Request(
+            endpoint,
+            headers={
+                "Content-Type": "application/json",
+                "User-Agent": "Mozilla/5.0 SadakSuraksha-CloudSync/1.0",
+            },
+            method="GET",
+        )
+        with urllib.request.urlopen(req, timeout=3) as res:
+            if res.status == 200:
+                raw = res.read().decode("utf-8")
+                data = json.loads(raw)
+                if isinstance(data, list):
+                    items = []
+                    for d in data:
+                        if isinstance(d, dict) and d.get("id"):
+                            d.pop("_id", None)
+                            try:
+                                items.append(HazardIncident(**d))
+                            except Exception:
+                                pass
+                    return items
+    except Exception as e:
+        logger.debug(f"Cloud DB fetch error: {e}")
+    return []
+
+def push_hazard_to_cloud(hazard_dict: Dict[str, Any]) -> bool:
+    """Pushes a newly created citizen hazard to Cloud Database."""
+    endpoint = get_cloud_endpoint()
+    try:
+        clean = dict(hazard_dict)
+        clean.pop("_id", None)
+        payload = json.dumps(clean, default=str).encode("utf-8")
+        req = urllib.request.Request(
+            endpoint,
+            data=payload,
+            headers={
+                "Content-Type": "application/json",
+                "User-Agent": "Mozilla/5.0 SadakSuraksha-CloudSync/1.0",
+            },
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=4) as res:
+            return res.status in (200, 201)
+    except Exception as e:
+        logger.debug(f"Cloud DB push error: {e}")
+        return False
+
+def clear_cloud_hazards():
+    """Wipes all hazard records from Cloud Database."""
+    endpoint = get_cloud_endpoint()
+    try:
+        req = urllib.request.Request(
+            endpoint,
+            headers={"User-Agent": "Mozilla/5.0 SadakSuraksha/1.0"},
+            method="GET",
+        )
+        with urllib.request.urlopen(req, timeout=3) as res:
+            if res.status == 200:
+                data = json.loads(res.read().decode("utf-8"))
+                if isinstance(data, list):
+                    for item in data:
+                        doc_id = item.get("_id")
+                        if doc_id:
+                            del_req = urllib.request.Request(
+                                f"{endpoint}/{doc_id}",
+                                headers={"User-Agent": "Mozilla/5.0 SadakSuraksha/1.0"},
+                                method="DELETE",
+                            )
+                            try:
+                                urllib.request.urlopen(del_req, timeout=2)
+                            except Exception:
+                                pass
+    except Exception as e:
+        logger.debug(f"Cloud DB clear error: {e}")
+
 def get_storage_paths() -> List[Path]:
     paths = []
     # Primary local database folder
@@ -98,6 +183,12 @@ def get_storage_paths() -> List[Path]:
 
 def load_persisted_citizen_hazards() -> List[HazardIncident]:
     loaded_map: Dict[str, HazardIncident] = {}
+    
+    # 1. Cloud Database (Primary source of truth across serverless workers)
+    for ch in fetch_hazards_from_cloud():
+        loaded_map[ch.id] = ch
+
+    # 2. Local Disk Stores (Secondary fallback)
     for p in get_storage_paths():
         try:
             if p.exists():
@@ -109,11 +200,13 @@ def load_persisted_citizen_hazards() -> List[HazardIncident]:
                             for d in data:
                                 if isinstance(d, dict) and d.get("id"):
                                     try:
-                                        loaded_map[d["id"]] = HazardIncident(**d)
+                                        if d["id"] not in loaded_map:
+                                            loaded_map[d["id"]] = HazardIncident(**d)
                                     except Exception:
                                         pass
         except Exception as e:
             logger.debug(f"Could not load persisted hazards from {p}: {e}")
+            
     return list(loaded_map.values())
 
 
@@ -132,7 +225,7 @@ def save_persisted_citizen_hazards(incidents: List[HazardIncident]):
 
 
 def sync_hazards_from_disk():
-    """Ensures in-memory hazards_db and work_orders_db are synchronized with persistent disk storage."""
+    """Ensures in-memory hazards_db and work_orders_db are synchronized with persistent cloud & disk storage."""
     global hazards_db, work_orders_db
     persisted = load_persisted_citizen_hazards()
     existing_ids = {h.id for h in hazards_db}
@@ -208,6 +301,7 @@ async def set_api_key(payload: Dict[str, Any]):
 async def reset_citizen_hazards():
     """Clear all persisted citizen complaints and reset to completely clean fresh state (0 hazards)."""
     global hazards_db, work_orders_db
+    clear_cloud_hazards()
     for p in get_storage_paths():
         try:
             if p.exists() or p.parent.exists():

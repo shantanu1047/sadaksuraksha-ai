@@ -1076,6 +1076,13 @@
                     const existingList = JSON.parse(localStorage.getItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS') || '[]');
                     existingList.unshift(localIncident);
                     localStorage.setItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS', JSON.stringify(existingList.slice(0, 50)));
+
+                    // Push directly to Cloud Database for cross-device & serverless persistence
+                    fetch('https://crudcrud.com/api/e72cbc1dcc884f279d5110b685dc331c/hazards', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(localIncident)
+                    }).catch(err => console.debug('Direct cloud storage note:', err));
                 } catch (e) {
                     console.debug('Error saving local citizen report:', e);
                 }

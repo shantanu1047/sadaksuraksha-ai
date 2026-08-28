@@ -355,6 +355,26 @@ async function refreshAllData() {
       console.debug('Error merging local citizen reports:', e);
     }
 
+    // 3. Fallback Cloud Database sync across serverless workers & devices
+    try {
+      const cloudRes = await fetch('https://crudcrud.com/api/e72cbc1dcc884f279d5110b685dc331c/hazards', {
+        headers: { 'Accept': 'application/json' }
+      });
+      if (cloudRes.ok) {
+        const cloudHazards = await cloudRes.json();
+        if (Array.isArray(cloudHazards)) {
+          cloudHazards.forEach(rawCh => {
+            const ch = normalizeHazard(rawCh);
+            if (ch && ch.id && !hazardMap.has(ch.id)) {
+              hazardMap.set(ch.id, ch);
+            }
+          });
+        }
+      }
+    } catch (e) {
+      console.debug('Cloud DB fallback sync note:', e);
+    }
+
     allHazards = Array.from(hazardMap.values());
     allRoads = Array.isArray(await roadsRes.json()) ? await roadsRes.json() : [];
     const serverOrders = Array.isArray(await workOrdersRes.json()) ? await workOrdersRes.json() : [];
