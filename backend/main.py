@@ -9,6 +9,7 @@ import json
 import asyncio
 import logging
 import uuid
+import urllib.request
 from datetime import datetime
 from typing import List, Optional, Dict, Any, Set
 from pathlib import Path
@@ -66,6 +67,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.middleware("http")
+async def add_api_no_store_headers(request, call_next):
+    response = await call_next(request)
+    if request.url.path.startswith("/api/"):
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+    return response
+
 vision_engine = VisionEngine()
 fusion_engine = SensorFusionEngine()
 prioritization_engine = PrioritizationEngine()
@@ -77,11 +87,13 @@ def get_cloud_endpoint() -> Optional[str]:
     url = os.environ.get("CLOUD_DB_URL", "").strip()
     return url if url else None
 
-def fetch_hazards_from_cloud() -> List[HazardIncident]:
-    """Fetches real-time persisted citizen complaints from Cloud Database if configured."""
+def is_vercel_runtime() -> bool:
+    return bool(os.environ.get("VERCEL") or os.environ.get("VERCEL_ENV"))
+
+def cloud_data_block() -> Optional[Dict[str, Any]]:
     endpoint = get_cloud_endpoint()
     if not endpoint:
-        return []
+        return None
     try:
         req = urllib.request.Request(
             endpoint,
@@ -92,35 +104,50 @@ def fetch_hazards_from_cloud() -> List[HazardIncident]:
             method="GET",
         )
         with urllib.request.urlopen(req, timeout=2) as res:
-            if res.status == 200:
-                raw = res.read().decode("utf-8")
-                res_obj = json.loads(raw)
-                data_block = res_obj.get("data", {}) if isinstance(res_obj, dict) else {}
-                hazards_list = data_block.get("hazards", []) if isinstance(data_block, dict) else []
-                if isinstance(hazards_list, list):
-                    items = []
-                    for d in hazards_list:
-                        if isinstance(d, dict) and d.get("id"):
-                            d.pop("_id", None)
-                            try:
-                                items.append(HazardIncident(**d))
-                            except Exception:
-                                pass
-                    return items
+            if res.status != 200:
+                return None
+            raw = res.read().decode("utf-8")
+            res_obj = json.loads(raw)
+            data_block = res_obj.get("data", {}) if isinstance(res_obj, dict) else {}
+            return data_block if isinstance(data_block, dict) else None
     except Exception as e:
         logger.debug(f"Cloud DB fetch error: {e}")
+    return None
+
+def fetch_hazards_from_cloud() -> List[HazardIncident]:
+    """Fetches real-time persisted citizen complaints from Cloud Database if configured."""
+    data_block = cloud_data_block()
+    if data_block is None:
+        return []
+    try:
+        hazards_list = data_block.get("hazards", [])
+        if isinstance(hazards_list, list):
+            items = []
+            for d in hazards_list:
+                if isinstance(d, dict) and d.get("id"):
+                    d.pop("_id", None)
+                    try:
+                        items.append(HazardIncident(**d))
+                    except Exception:
+                        pass
+            return items
+    except Exception as e:
+        logger.debug(f"Cloud DB parse error: {e}")
     return []
 
-def save_hazards_to_cloud(hazards: List[HazardIncident]) -> bool:
+def save_hazards_to_cloud(hazards: List[HazardIncident], demo_seeded: Optional[bool] = None) -> bool:
     """Saves citizen hazard list atomically to Cloud Database if configured."""
     endpoint = get_cloud_endpoint()
     if not endpoint:
         return False
     try:
-        citizen_only = [inc.model_dump() for inc in hazards if inc.id.startswith("HAZ-")]
+        citizen_only = [inc.model_dump() for inc in hazards if _is_citizen_hazard(inc.id)]
+        data_block: Dict[str, Any] = {"hazards": citizen_only[:100]}
+        if demo_seeded is not None:
+            data_block["demo_seeded"] = demo_seeded
         payload = json.dumps({
             "name": "sadaksuraksha_hazards_store",
-            "data": {"hazards": citizen_only[:100]}
+            "data": data_block,
         }, default=str).encode("utf-8")
         req = urllib.request.Request(
             endpoint,
@@ -145,7 +172,7 @@ def clear_cloud_hazards():
     try:
         payload = json.dumps({
             "name": "sadaksuraksha_hazards_store",
-            "data": {"hazards": []}
+            "data": {"hazards": [], "demo_seeded": False}
         }).encode("utf-8")
         req = urllib.request.Request(
             endpoint,
@@ -162,6 +189,9 @@ def clear_cloud_hazards():
         logger.debug(f"Cloud DB clear error: {e}")
 
 def get_storage_paths() -> List[Path]:
+    if is_vercel_runtime() and not os.environ.get("ALLOW_SERVERLESS_FILE_STORAGE"):
+        return []
+
     paths = []
     # Primary local database folder
     try:
@@ -184,6 +214,14 @@ def get_storage_paths() -> List[Path]:
         pass
 
     return paths
+
+
+def demo_hazards_enabled() -> bool:
+    cloud_state = cloud_data_block()
+    if cloud_state and isinstance(cloud_state.get("demo_seeded"), bool):
+        return cloud_state["demo_seeded"]
+
+    return os.environ.get("SEED_DEMO_DATA", "true").strip().lower() not in {"0", "false", "no", "off"}
 
 
 def load_persisted_citizen_hazards() -> List[HazardIncident]:
@@ -216,7 +254,7 @@ def load_persisted_citizen_hazards() -> List[HazardIncident]:
 
 
 def save_persisted_citizen_hazards(incidents: List[HazardIncident]):
-    citizen_only = [inc.model_dump() for inc in incidents if inc.id.startswith("HAZ-")]
+    citizen_only = [inc.model_dump() for inc in incidents if _is_citizen_hazard(inc.id)]
     citizen_only = citizen_only[:200]
     payload_str = json.dumps(citizen_only, indent=2, default=str)
     
@@ -275,9 +313,8 @@ def sync_hazards_from_disk():
     work_orders_db = [wo for wo in raw_orders if wo.id.upper() not in deleted_work_order_ids]
 
 
-# Initialise hazards_db with BOTH persisted citizen reports AND demo benchmark data so that
-# the very first API request (before any sync) never returns an empty dataset.
-hazards_db: List[HazardIncident] = load_persisted_citizen_hazards() + get_demo_hazards()
+# Initialise hazards_db with persisted citizen reports, plus demo benchmark data when enabled.
+hazards_db: List[HazardIncident] = load_persisted_citizen_hazards() + (get_demo_hazards() if demo_hazards_enabled() else [])
 roads_db: List[RoadSegment] = get_demo_road_segments()
 work_orders_db: List[WorkOrder] = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
 
@@ -366,6 +403,7 @@ async def seed_demo_hazards():
     global hazards_db, work_orders_db, deleted_work_order_ids
     deleted_work_order_ids.clear()
     hazards_db = load_persisted_citizen_hazards() + get_demo_hazards()
+    save_hazards_to_cloud(hazards_db, demo_seeded=True)
     work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
     return {
         "status": "success",
@@ -901,5 +939,3 @@ async def serve_citizen_report():
     if file_path.exists():
         return FileResponse(str(file_path))
     return FileResponse(str(fdir / "index.html"))
-
-

@@ -315,14 +315,22 @@ async function clearCopilotDirectApiKey() {
 // ==========================================
 async function refreshAllData() {
   try {
+    const freshFetch = (url, options = {}) => fetch(url, { cache: 'no-store', ...options });
     const [hazardsRes, roadsRes, workOrdersRes, analyticsRes] = await Promise.all([
-      fetch('/api/hazards'),
-      fetch('/api/roads'),
-      fetch('/api/work-orders'),
-      fetch(`/api/analytics/summary?state=${encodeURIComponent(currentStateFilter)}`)
+      freshFetch('/api/hazards'),
+      freshFetch('/api/roads'),
+      freshFetch('/api/work-orders'),
+      freshFetch(`/api/analytics/summary?state=${encodeURIComponent(currentStateFilter)}`)
     ]);
 
+    for (const res of [hazardsRes, roadsRes, workOrdersRes, analyticsRes]) {
+      if (!res.ok) throw new Error(`API request failed: ${res.url} (${res.status})`);
+    }
+
     const fetchedHazards = await hazardsRes.json();
+    const fetchedRoads = await roadsRes.json();
+    const fetchedWorkOrders = await workOrdersRes.json();
+    const analytics = await analyticsRes.json();
     const normalizedFetched = Array.isArray(fetchedHazards) ? fetchedHazards.map(normalizeHazard) : [];
 
     // Authoritative Single-Source Map Merge
@@ -333,20 +341,17 @@ async function refreshAllData() {
       if (h && h.id) hazardMap.set(h.id, h);
     });
 
-    // 2. Add/Merge local storage citizen hazards
+    // 2. Merge local image data only for hazards confirmed by the server.
+    // Browser-only records can be stale after a Vercel/serverless reset.
     try {
       const localReports = JSON.parse(localStorage.getItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS') || '[]');
       if (Array.isArray(localReports)) {
         localReports.forEach(rawLr => {
           const lr = normalizeHazard(rawLr);
-          if (lr && lr.id) {
-            if (hazardMap.has(lr.id)) {
-              const existing = hazardMap.get(lr.id);
-              if (!existing.image_url && lr.image_url) {
-                existing.image_url = lr.image_url;
-              }
-            } else {
-              hazardMap.set(lr.id, lr);
+          if (lr && lr.id && hazardMap.has(lr.id)) {
+            const existing = hazardMap.get(lr.id);
+            if (!existing.image_url && lr.image_url) {
+              existing.image_url = lr.image_url;
             }
           }
         });
@@ -356,8 +361,8 @@ async function refreshAllData() {
     }
 
     allHazards = Array.from(hazardMap.values());
-    allRoads = Array.isArray(await roadsRes.json()) ? await roadsRes.json() : [];
-    const serverOrders = Array.isArray(await workOrdersRes.json()) ? await workOrdersRes.json() : [];
+    allRoads = Array.isArray(fetchedRoads) ? fetchedRoads : [];
+    const serverOrders = Array.isArray(fetchedWorkOrders) ? fetchedWorkOrders : [];
     allWorkOrders = [...serverOrders];
 
     // Ensure every hazard in allHazards has an associated work order
@@ -391,7 +396,6 @@ async function refreshAllData() {
       }
     }
 
-    const analytics = await analyticsRes.json();
     applyStateAndSearchFilters();
     updateAnalyticsCharts(analytics, allRoads);
     lucide.createIcons();
@@ -781,6 +785,7 @@ function renderMapMarkers(hazards) {
 
     marker.bindPopup(popupHtml);
     gisMarkerLayer.addLayer(marker);
+    markersToAdd.push(marker);
   });
 
   // Auto-focus framing
@@ -3365,5 +3370,3 @@ function closeGalleryModal() {
   }
 }
 window.closeGalleryModal = closeGalleryModal;
-
-

@@ -1024,22 +1024,15 @@
                 if (response && response.ok) {
                     data = await response.json();
                 } else {
-                    console.warn("API returned error, falling back to local demo assessment", response.status);
-                    await new Promise(r => setTimeout(r, 1200));
-                    const ticketId = `CITIZEN-SURAKSHA-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
-                    const cost = Math.floor(Math.random() * 50000) + 5000;
-                    data = {
-                        ticket_id: ticketId,
-                        ai_severity: reportData.severity >= 4 ? 'High' : (reportData.severity <= 2 ? 'Low' : 'Medium'),
-                        ai_risk_score: (reportData.severity * 18) + Math.floor(Math.random() * 10),
-                        estimated_repair_cost_inr: cost,
-                        estimated_repair_days: reportData.severity >= 4 ? 2 : 5,
-                        message: `Detected ${reportData.category || 'hazard'} with estimated depth of ${Math.floor(Math.random() * 15)+2}cm.`
-                    };
+                    const errorText = response ? await response.text().catch(() => '') : '';
+                    throw new Error(`Report submission failed (${response?.status || 'network'}): ${errorText || 'API did not accept the report.'}`);
                 }
 
                 // Store submitted complaint into localStorage for instant cross-tab & dashboard sync
                 try {
+                    if (!data.hazard_id) {
+                        throw new Error('API response did not include a hazard_id.');
+                    }
                     const localIncident = {
                         id: data.hazard_id || `HAZ-CITIZEN-${Date.now()}`,
                         ticket_id: data.ticket_id,
