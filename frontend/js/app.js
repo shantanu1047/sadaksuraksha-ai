@@ -411,6 +411,10 @@ async function resetCitizenDatabase() {
   }
 }
 window.resetCitizenDatabase = resetCitizenDatabase;
+window.deleteWorkOrder = deleteWorkOrder;
+window.deleteHazardReport = deleteHazardReport;
+window.switchBacklogSubTab = switchBacklogSubTab;
+window.clearPriorityBacklog = clearPriorityBacklog;
 
 function normalizeHazard(h) {
   if (!h) return h;
@@ -542,6 +546,14 @@ function applyStateAndSearchFilters() {
   renderIncidentFeed(filteredHazards);
   renderMapMarkers(filteredHazards);
   renderWorkOrders(filteredWorkOrders);
+  renderBacklogReports(filteredHazards);
+
+  // Update Backlog sub-tab badges
+  const woCountBadge = document.getElementById('backlog-wo-tab-count');
+  if (woCountBadge) woCountBadge.textContent = filteredWorkOrders.length;
+  
+  const repCountBadge = document.getElementById('backlog-reports-tab-count');
+  if (repCountBadge) repCountBadge.textContent = filteredHazards.length;
 
   // Recalculate quick KPI values for current filtered subset
   const actionable = filteredHazards.filter(h => !h.fusion?.is_false_positive);
@@ -910,6 +922,9 @@ function renderIncidentFeed(hazards) {
           <button type="button" onclick="event.stopPropagation(); openIncidentModal('${h.id}')" title="View Multimodal Dossier" class="inline-flex items-center gap-0.5 text-[10px] font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-300 px-1.5 py-0.5 rounded transition-colors cursor-pointer">
             <span>Dossier</span>
           </button>
+          <button type="button" onclick="event.stopPropagation(); deleteHazardReport('${h.id}')" title="Delete defect from Priority Backlog" class="inline-flex items-center gap-0.5 text-[10px] font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-300 px-1.5 py-0.5 rounded transition-colors cursor-pointer">
+            <i data-lucide="trash-2" class="w-3 h-3"></i>
+          </button>
           <span class="text-[10.5px] font-semibold px-1.5 py-0.5 rounded border ${riskBadge} shadow-2xs">${riskLabel} ${h.priority?.raw_risk_score || 75}</span>
         </div>
       </div>
@@ -1193,6 +1208,58 @@ function updatePatrolHud(frame) {
 // ==========================================
 // WORK ORDERS & BACKLOG (₹ INR)
 // ==========================================
+let currentBacklogSubTab = 'orders';
+
+function switchBacklogSubTab(tabName) {
+  currentBacklogSubTab = tabName;
+  const btnOrders = document.getElementById('btn-backlog-tab-orders');
+  const btnReports = document.getElementById('btn-backlog-tab-reports');
+  const ordersContainer = document.getElementById('work-orders-container');
+  const reportsContainer = document.getElementById('backlog-reports-container');
+
+  if (tabName === 'orders') {
+    if (btnOrders) {
+      btnOrders.className = 'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black bg-black text-white shadow-xs transition-all cursor-pointer';
+    }
+    if (btnReports) {
+      btnReports.className = 'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 shadow-xs transition-all cursor-pointer';
+    }
+    if (ordersContainer) ordersContainer.classList.remove('hidden');
+    if (reportsContainer) reportsContainer.classList.add('hidden');
+  } else {
+    if (btnOrders) {
+      btnOrders.className = 'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 shadow-xs transition-all cursor-pointer';
+    }
+    if (btnReports) {
+      btnReports.className = 'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black bg-black text-white shadow-xs transition-all cursor-pointer';
+    }
+    if (ordersContainer) ordersContainer.classList.add('hidden');
+    if (reportsContainer) reportsContainer.classList.remove('hidden');
+  }
+}
+
+function showToastNotification(message, type = 'success') {
+  let toast = document.getElementById('global-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'global-toast';
+    toast.className = 'fixed bottom-6 right-6 z-[99999] px-4 py-3 rounded-2xl shadow-2xl border text-xs font-bold transition-all duration-300 transform translate-y-12 opacity-0 flex items-center gap-2.5';
+    document.body.appendChild(toast);
+  }
+  
+  if (type === 'error') {
+    toast.className = 'fixed bottom-6 right-6 z-[99999] px-4 py-3 rounded-2xl shadow-2xl border bg-red-900 text-white border-red-700 text-xs font-bold transition-all duration-300 transform translate-y-0 opacity-100 flex items-center gap-2.5';
+    toast.innerHTML = `<span>❌</span> <span>${message}</span>`;
+  } else {
+    toast.className = 'fixed bottom-6 right-6 z-[99999] px-4 py-3 rounded-2xl shadow-2xl border bg-black text-white border-slate-700 text-xs font-bold transition-all duration-300 transform translate-y-0 opacity-100 flex items-center gap-2.5';
+    toast.innerHTML = `<span class="text-emerald-400">✓</span> <span>${message}</span>`;
+  }
+  
+  setTimeout(() => {
+    toast.classList.add('translate-y-12', 'opacity-0');
+  }, 3500);
+}
+
 function renderWorkOrders(workOrders) {
   const container = document.getElementById('work-orders-container');
   if (!container) return;
@@ -1223,15 +1290,25 @@ function renderWorkOrders(workOrders) {
       ? wo.hazards_summary
       : (Array.isArray(wo.target_hazard_ids) ? wo.target_hazard_ids.map(id => ({ hazard_id: id, hazard_type: 'pothole', cost_inr: wo.estimated_cost_usd || 18000 })) : []);
 
-    let hazardsHtml = summaryList.map(h => `
-      <div class="flex items-center justify-between text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200 font-mono font-bold">
-        <div>
-          <span class="text-black font-bold">${h.hazard_id || 'HAZ'}</span>
-          <span class="text-slate-600 text-[11px] ml-1">(${h.hazard_type ? h.hazard_type.replace('_', ' ') : 'pothole'})</span>
+    let hazardsHtml = summaryList.map(h => {
+      const hid = h.hazard_id || h.id || 'HAZ';
+      const isCitizen = hid.match(/^HAZ-\d{6}-/);
+      return `
+      <div class="flex items-center justify-between text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200 font-mono font-bold group/item hover:bg-slate-100/80 transition-colors">
+        <div class="flex items-center gap-1.5 min-w-0">
+          <span class="text-black font-bold truncate">${hid}</span>
+          ${isCitizen ? '<span class="text-[9px] px-1 py-0.2 rounded bg-amber-100 text-amber-950 border border-amber-300 font-sans">Citizen</span>' : ''}
+          <span class="text-slate-600 text-[11px] truncate">(${h.hazard_type ? h.hazard_type.replace('_', ' ') : 'pothole'})</span>
         </div>
-        <span class="text-purple-900 font-black">${formatINR(h.cost_inr || wo.estimated_cost_usd || 15000)}</span>
+        <div class="flex items-center gap-2 shrink-0">
+          <span class="text-purple-900 font-black">${formatINR(h.cost_inr || wo.estimated_cost_usd || 15000)}</span>
+          <button onclick="event.stopPropagation(); deleteHazardReport('${hid}')" title="Delete defect report ${hid}" class="p-1 rounded text-slate-400 hover:text-red-700 hover:bg-red-50 transition-colors cursor-pointer" aria-label="Delete Defect">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
 
     const centerLat = wo.cluster_center_lat || 12.9716;
     const centerLng = wo.cluster_center_lng || 77.5946;
@@ -1267,21 +1344,28 @@ function renderWorkOrders(workOrders) {
         </div>
 
         <div class="space-y-2">
-          <p class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Clustered Defects:</p>
-          <div class="space-y-1.5 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
+          <div class="flex items-center justify-between">
+            <p class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Clustered Defects (${summaryList.length}):</p>
+            <span class="text-[10px] text-slate-500 font-medium">Click trash to remove defect</span>
+          </div>
+          <div class="space-y-1.5 max-h-36 overflow-y-auto pr-1 custom-scrollbar">
             ${hazardsHtml}
           </div>
         </div>
       </div>
 
-      <div class="flex items-center justify-between border-t border-slate-100 pt-3.5 text-xs">
+      <div class="flex flex-wrap items-center justify-between border-t border-slate-100 pt-3.5 gap-2 text-xs">
         <span class="text-slate-700 font-mono font-bold">Status: <strong class="text-emerald-800 font-black">${(wo.status || 'APPROVED').toUpperCase()}</strong></span>
-        <div class="flex items-center gap-2">
-          <a href="https://www.google.com/maps/search/?api=1&query=${centerLat},${centerLng}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-950 text-xs font-bold flex items-center gap-1 transition-colors shadow-xs">
+        <div class="flex items-center gap-1.5">
+          <button onclick="deleteWorkOrder('${wo.id}')" title="Cancel & Delete Work Order" class="px-2.5 py-1.5 rounded-xl font-bold bg-rose-50 hover:bg-rose-100 border border-rose-300 text-rose-800 text-xs transition-colors shadow-xs cursor-pointer flex items-center gap-1">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            <span>Cancel</span>
+          </button>
+          <a href="https://www.google.com/maps/search/?api=1&query=${centerLat},${centerLng}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-950 text-xs font-bold flex items-center gap-1 transition-colors shadow-xs">
             🗺️ Maps ↗
           </a>
-          <button onclick="dispatchWorkOrder('${wo.id}')" class="px-3.5 py-1.5 rounded-xl font-bold bg-[#138808] hover:bg-[#0f6b06] border border-emerald-700 text-white text-xs transition-colors shadow-xs cursor-pointer">
-            Dispatch Crew
+          <button onclick="dispatchWorkOrder('${wo.id}')" class="px-3 py-1.5 rounded-xl font-bold bg-[#138808] hover:bg-[#0f6b06] border border-emerald-700 text-white text-xs transition-colors shadow-xs cursor-pointer">
+            Dispatch
           </button>
         </div>
       </div>
@@ -1289,6 +1373,191 @@ function renderWorkOrders(workOrders) {
 
     container.appendChild(card);
   });
+  lucide.createIcons();
+}
+
+function renderBacklogReports(hazards) {
+  const tbody = document.getElementById('backlog-reports-table-body');
+  const statsElem = document.getElementById('backlog-reports-stats');
+  if (statsElem) statsElem.textContent = `Showing ${hazards.length} defect reports`;
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  if (!hazards || hazards.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-500 font-bold text-xs bg-slate-50">No hazard or citizen reports found for ${currentStateFilter}.</td></tr>`;
+    return;
+  }
+
+  hazards.forEach(rawH => {
+    const h = normalizeHazard(rawH);
+    const isCitizen = (h.id && h.id.match(/^HAZ-\d{6}-/)) || h.citizen_report;
+    const isFP = h.fusion?.is_false_positive || false;
+    const sev = (h.severity || 'high').toLowerCase();
+
+    let sevBadge = 'bg-blue-50 text-blue-900 border-blue-200';
+    if (isFP) {
+      sevBadge = 'bg-slate-100 text-slate-700 border-slate-300';
+    } else if (sev === 'critical') {
+      sevBadge = 'bg-red-50 text-red-950 border-red-200';
+    } else if (sev === 'high') {
+      sevBadge = 'bg-orange-50 text-orange-950 border-orange-200';
+    }
+
+    const linkedOrder = allWorkOrders.find(wo => wo.target_hazard_ids && wo.target_hazard_ids.includes(h.id));
+    const orderBadge = linkedOrder
+      ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-purple-50 text-purple-950 border border-purple-200">${linkedOrder.id}</span>`
+      : `<span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-slate-100 text-slate-600 border border-slate-200">Unassigned</span>`;
+
+    const citizenBadge = isCitizen
+      ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-950 border border-amber-300 ml-1.5">Citizen</span>`
+      : '';
+
+    const photoThumb = h.image_url
+      ? `<img src="${h.image_url}" class="w-8 h-8 rounded-lg object-cover border border-slate-300 shadow-2xs shrink-0 cursor-pointer" onclick="openGalleryModal('${h.image_url}', '${(h.title || 'Road Hazard').replace(/'/g, "\\'")}')" title="Click to enlarge" />`
+      : `<div class="w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 text-[10px] font-mono shrink-0">DEF</div>`;
+
+    const tr = document.createElement('tr');
+    tr.className = 'hover:bg-slate-50/80 transition-colors text-xs';
+    tr.innerHTML = `
+      <td class="py-3 px-3.5 align-middle">
+        <div class="flex items-center gap-2">
+          ${photoThumb}
+          <div>
+            <div class="flex items-center">
+              <span class="font-mono font-bold text-slate-900">${h.id}</span>
+              ${citizenBadge}
+            </div>
+            <span class="text-[11px] text-slate-600 capitalize block">${(h.hazard_type || 'pothole').replace('_', ' ')}</span>
+          </div>
+        </div>
+      </td>
+      <td class="py-3 px-3.5 align-middle">
+        <p class="font-bold text-black max-w-xs truncate">${h.title || 'Road Hazard'}</p>
+        <p class="text-[11px] text-slate-600 max-w-xs truncate">${h.address || h.road_name || 'Urban Corridor'}</p>
+      </td>
+      <td class="py-3 px-3.5 align-middle font-mono">
+        <span class="font-bold text-slate-900 block">${h.state || 'India'}</span>
+        <span class="text-[11px] text-slate-600">${h.city || 'City'}</span>
+      </td>
+      <td class="py-3 px-3.5 align-middle">
+        <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold border ${sevBadge} uppercase">${isFP ? 'Filtered (FP)' : (h.severity || 'HIGH')}</span>
+        <span class="block text-[10px] text-slate-600 font-mono mt-0.5">Risk: ${h.priority?.raw_risk_score || 75}/100</span>
+      </td>
+      <td class="py-3 px-3.5 align-middle font-mono font-bold text-purple-900">
+        ${formatINR(h.priority?.estimated_repair_cost_usd || 18000)}
+      </td>
+      <td class="py-3 px-3.5 align-middle">
+        ${orderBadge}
+      </td>
+      <td class="py-3 px-3.5 align-middle text-right">
+        <div class="flex items-center justify-end gap-1.5">
+          <button onclick="openIncidentModal('${h.id}')" title="Multimodal Dossier" class="px-2 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 text-[11px] font-bold cursor-pointer transition-colors">
+            Dossier
+          </button>
+          <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" title="View on Google Maps" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 text-[11px] font-bold transition-colors">
+            🗺️
+          </a>
+          <button onclick="deleteHazardReport('${h.id}')" title="Delete this hazard report" class="px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 border border-rose-300 text-rose-800 text-[11px] font-bold cursor-pointer transition-colors flex items-center gap-1">
+            <i data-lucide="trash-2" class="w-3 h-3"></i>
+            <span>Delete</span>
+          </button>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+  lucide.createIcons();
+}
+
+async function deleteWorkOrder(orderId) {
+  if (!confirm(`Are you sure you want to cancel/delete Work Order '${orderId}'?`)) return;
+  try {
+    const res = await fetch(`/api/work-orders/${encodeURIComponent(orderId)}`, { method: 'DELETE' });
+    allWorkOrders = allWorkOrders.filter(wo => wo.id.toUpperCase() !== orderId.toUpperCase());
+    applyStateAndSearchFilters();
+    showToastNotification(`Work Order ${orderId} cancelled.`);
+  } catch (err) {
+    console.error('Error deleting work order:', err);
+    allWorkOrders = allWorkOrders.filter(wo => wo.id.toUpperCase() !== orderId.toUpperCase());
+    applyStateAndSearchFilters();
+  }
+}
+
+async function deleteHazardReport(hazardId) {
+  if (!confirm(`Are you sure you want to delete Hazard Report '${hazardId}'?`)) return;
+  try {
+    const res = await fetch(`/api/hazards/${encodeURIComponent(hazardId)}`, { method: 'DELETE' });
+    
+    // Clear from local storage citizen reports
+    try {
+      let localReports = JSON.parse(localStorage.getItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS') || '[]');
+      localReports = localReports.filter(r => r && r.id !== hazardId && r.report_id !== hazardId);
+      localStorage.setItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS', JSON.stringify(localReports));
+    } catch (e) {
+      console.debug('Error clearing local report:', e);
+    }
+    
+    // Remove from in-memory allHazards
+    allHazards = allHazards.filter(h => h.id.toUpperCase() !== hazardId.toUpperCase());
+    
+    // Remove from in-memory work orders
+    allWorkOrders.forEach(wo => {
+      if (wo.target_hazard_ids) {
+        wo.target_hazard_ids = wo.target_hazard_ids.filter(id => id.toUpperCase() !== hazardId.toUpperCase());
+      }
+      if (wo.hazards_summary) {
+        wo.hazards_summary = wo.hazards_summary.filter(h => (h.hazard_id || h.id || '').toUpperCase() !== hazardId.toUpperCase());
+      }
+    });
+    
+    // Re-filter and refresh
+    applyStateAndSearchFilters();
+    showToastNotification(`Hazard Report ${hazardId} successfully deleted.`);
+    
+    // Background sync with server
+    refreshAllData().catch(e => console.debug('Background sync:', e));
+  } catch (err) {
+    console.error('Error deleting hazard report:', err);
+    allHazards = allHazards.filter(h => h.id.toUpperCase() !== hazardId.toUpperCase());
+    applyStateAndSearchFilters();
+  }
+}
+
+async function clearPriorityBacklog() {
+  const filtered = getFilteredHazards();
+  if (!filtered || filtered.length === 0) {
+    showToastNotification('No defects in the current Priority Backlog to delete.', 'error');
+    return;
+  }
+  
+  const stateLabel = currentStateFilter === 'all' ? 'All India' : currentStateFilter;
+  if (!confirm(`Are you sure you want to delete all ${filtered.length} defects in the Priority Backlog for ${stateLabel}?`)) return;
+
+  try {
+    const isGlobalReset = (currentStateFilter === 'all' && currentCityFilter === 'all' && currentCategoryFilter === 'all' && !currentSearchQuery);
+    if (isGlobalReset) {
+      await fetch('/api/hazards/reset', { method: 'POST' });
+      localStorage.removeItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS');
+      await refreshAllData();
+      showToastNotification('Priority Backlog completely emptied.');
+      return;
+    }
+
+    const idsToDelete = filtered.map(h => h.id);
+    await Promise.all(idsToDelete.map(id => fetch(`/api/hazards/${encodeURIComponent(id)}`, { method: 'DELETE' }).catch(e => null)));
+    
+    try {
+      let localReports = JSON.parse(localStorage.getItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS') || '[]');
+      localReports = localReports.filter(r => r && !idsToDelete.includes(r.id) && !idsToDelete.includes(r.report_id));
+      localStorage.setItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS', JSON.stringify(localReports));
+    } catch (e) {}
+
+    await refreshAllData();
+    showToastNotification(`Cleared ${idsToDelete.length} Priority Backlog defects for ${stateLabel}.`);
+  } catch (err) {
+    console.error('Error clearing priority backlog:', err);
+    await refreshAllData();
+  }
 }
 
 async function regenerateWorkOrders() {
@@ -1296,6 +1565,7 @@ async function regenerateWorkOrders() {
     const res = await fetch('/api/work-orders/generate', { method: 'POST' });
     allWorkOrders = await res.json();
     applyStateAndSearchFilters();
+    showToastNotification('Work orders re-optimized via spatial clustering.');
   } catch (err) {
     console.error('Work order generation failed:', err);
   }

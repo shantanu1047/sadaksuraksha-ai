@@ -10,7 +10,7 @@ import asyncio
 import logging
 import uuid
 from datetime import datetime
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Set
 from pathlib import Path
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, UploadFile, File, Form, HTTPException, Query
@@ -233,22 +233,51 @@ def save_persisted_citizen_hazards(incidents: List[HazardIncident]):
     save_hazards_to_cloud(incidents)
 
 
+import re as _re
+_CITIZEN_HAZARD_ID_RE = _re.compile(r'^HAZ-\d{6}-.+$')
+
+def _is_citizen_hazard(hazard_id: str) -> bool:
+    """Returns True only for citizen-submitted hazard IDs (HAZ-YYMMDD-XXXX format).
+    Demo hazards use HAZ-NNN (short number) and must never be treated as citizen reports."""
+    return bool(_CITIZEN_HAZARD_ID_RE.match(hazard_id))
+
+
+deleted_work_order_ids: Set[str] = set()
+
 def sync_hazards_from_disk():
-    """Ensures in-memory hazards_db and work_orders_db are synchronized with persistent cloud & disk storage."""
-    global hazards_db, work_orders_db
+    """Synchronises citizen-report hazards with persistent cloud & disk storage.
+
+    Demo hazards (HAZ-NNN short-number IDs) are ALWAYS kept in memory unchanged.
+    Only citizen-report hazards (HAZ-YYMMDD-XXXX datestamp IDs) are checked
+    against the persisted set and removed if they've been deleted from storage.
+    """
+    global hazards_db, work_orders_db, deleted_work_order_ids
     persisted = load_persisted_citizen_hazards()
     persisted_ids = {p.id for p in persisted}
-    # Synchronize in-memory DB with disk
-    hazards_db[:] = [h for h in hazards_db if h.id in persisted_ids]
+
+    # Keep: demo hazards already in memory + citizen hazards still present on disk.
+    # Demo hazards are NOT re-injected here — that only happens at server startup.
+    # This means a deliberate /api/hazards/reset correctly produces 0 hazards until
+    # the next server restart or an explicit POST /api/hazards/seed-demo call.
+    hazards_db[:] = [
+        h for h in hazards_db
+        if not _is_citizen_hazard(h.id) or h.id in persisted_ids
+    ]
+
+    # Merge any newly persisted citizen hazards not yet in memory
     existing_ids = {h.id for h in hazards_db}
     for p in persisted:
         if p.id not in existing_ids:
             hazards_db.insert(0, p)
             existing_ids.add(p.id)
-    work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+
+    raw_orders = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+    work_orders_db = [wo for wo in raw_orders if wo.id.upper() not in deleted_work_order_ids]
 
 
-hazards_db: List[HazardIncident] = load_persisted_citizen_hazards()
+# Initialise hazards_db with BOTH persisted citizen reports AND demo benchmark data so that
+# the very first API request (before any sync) never returns an empty dataset.
+hazards_db: List[HazardIncident] = load_persisted_citizen_hazards() + get_demo_hazards()
 roads_db: List[RoadSegment] = get_demo_road_segments()
 work_orders_db: List[WorkOrder] = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
 
@@ -309,7 +338,8 @@ async def set_api_key(payload: Dict[str, Any]):
 @app.delete("/api/hazards/citizen")
 async def reset_citizen_hazards():
     """Clear all persisted citizen complaints and reset to completely clean fresh state (0 hazards)."""
-    global hazards_db, work_orders_db
+    global hazards_db, work_orders_db, deleted_work_order_ids
+    deleted_work_order_ids.clear()
     clear_cloud_hazards()
     for p in get_storage_paths():
         try:
@@ -333,7 +363,8 @@ async def reset_citizen_hazards():
 @app.post("/api/hazards/seed-demo")
 async def seed_demo_hazards():
     """Optionally re-populate 95 benchmark demo hazards across 16 states."""
-    global hazards_db, work_orders_db
+    global hazards_db, work_orders_db, deleted_work_order_ids
+    deleted_work_order_ids.clear()
     hazards_db = load_persisted_citizen_hazards() + get_demo_hazards()
     work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
     return {
@@ -405,14 +436,31 @@ async def get_hazard_detail(hazard_id: str):
     raise HTTPException(status_code=404, detail=f"Hazard incident '{hazard_id}' not found.")
 
 
-@app.post("/api/hazards/reset")
-async def reset_hazards():
-    """Wipes all hazards and resets database to an empty clean state."""
+@app.delete("/api/hazards/{hazard_id}")
+async def delete_hazard(hazard_id: str):
+    """Deletes a specific hazard incident/report and updates persisted storage and work orders."""
     global hazards_db, work_orders_db
-    hazards_db.clear()
-    save_persisted_citizen_hazards([])
+    sync_hazards_from_disk()
+    target = None
+    for h in hazards_db:
+        if h.id.upper() == hazard_id.upper():
+            target = h
+            break
+
+    if not target:
+        raise HTTPException(status_code=404, detail=f"Hazard incident '{hazard_id}' not found.")
+
+    hazards_db.remove(target)
+    save_persisted_citizen_hazards(hazards_db)
     work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
-    return {"status": "reset", "total_hazards": 0}
+
+    return {
+        "status": "success",
+        "message": f"Hazard report '{hazard_id}' successfully deleted.",
+        "deleted_hazard_id": hazard_id,
+        "remaining_hazards": len(hazards_db),
+        "active_work_orders": len(work_orders_db),
+    }
 
 
 @app.post("/api/hazards/inspect", response_model=HazardIncident)
@@ -558,6 +606,29 @@ async def update_work_order_status(order_id: str, status: str = Form(...)):
             wo.status = status
             return {"success": True, "order_id": order_id, "new_status": status}
     raise HTTPException(status_code=404, detail="Work order not found")
+
+
+@app.delete("/api/work-orders/{order_id}")
+async def delete_work_order(order_id: str):
+    """Deletes/cancels a specific PWD work order."""
+    global work_orders_db, deleted_work_order_ids
+    target = None
+    for wo in work_orders_db:
+        if wo.id.upper() == order_id.upper():
+            target = wo
+            break
+
+    if not target:
+        raise HTTPException(status_code=404, detail=f"Work order '{order_id}' not found.")
+
+    deleted_work_order_ids.add(order_id.upper())
+    work_orders_db.remove(target)
+    return {
+        "status": "success",
+        "message": f"Work order '{order_id}' successfully cancelled/deleted.",
+        "deleted_order_id": order_id,
+        "remaining_work_orders": len(work_orders_db),
+    }
 
 
 @app.post("/api/copilot/chat", response_model=CopilotResponse)

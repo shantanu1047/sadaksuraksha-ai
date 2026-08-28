@@ -747,10 +747,16 @@
 
             <!-- Dropdown Collapsible Content (Translucent Highway Tint) -->
             <div id="priority-feed-content" class="hidden flex-col gap-3 p-3.5 bg-white/20 backdrop-blur-xs max-h-[480px]">
-              <!-- Clean Translucent Search Bar -->
-              <div class="relative">
-                <input type="text" id="hazard-search-input" data-i18n-placeholder="feed_search_ph" placeholder="Search hazards, roads, cities..." oninput="handleSearchFilter(this.value)" class="w-full bg-white/70 focus:bg-white/95 backdrop-blur-xs border border-white/80 focus:border-white rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-800 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-400/20 transition-all shadow-2xs">
-                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5"></i>
+              <!-- Clean Translucent Search Bar + Clear Priority Backlog Action -->
+              <div class="flex items-center gap-1.5">
+                <div class="relative flex-1">
+                  <input type="text" id="hazard-search-input" data-i18n-placeholder="feed_search_ph" placeholder="Search hazards, roads, cities..." oninput="handleSearchFilter(this.value)" class="w-full bg-white/70 focus:bg-white/95 backdrop-blur-xs border border-white/80 focus:border-white rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-800 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-400/20 transition-all shadow-2xs">
+                  <i data-lucide="search" class="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5"></i>
+                </div>
+                <button type="button" onclick="clearPriorityBacklog()" title="Delete / Clear visible Priority Backlog" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-rose-50/90 hover:bg-rose-100 text-rose-800 border border-rose-300 shadow-2xs transition-colors cursor-pointer shrink-0">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-700"></i>
+                  <span>Clear</span>
+                </button>
               </div>
 
               <!-- Segmented Translucent Filter Control -->
@@ -1175,6 +1181,28 @@
           </div>
         </div>
 
+        <!-- PWD Sub-Navigation Bar: Toggle between Clustered Work Orders & All Synced Reports -->
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-white border border-slate-200 rounded-2xl p-3 shadow-xs">
+          <div class="flex items-center gap-2">
+            <button id="btn-backlog-tab-orders" onclick="switchBacklogSubTab('orders')" class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black bg-black text-white shadow-xs transition-all cursor-pointer">
+              <i data-lucide="clipboard-list" class="w-4 h-4"></i>
+              <span>Clustered Work Orders</span>
+              <span id="backlog-wo-tab-count" class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-white/20 text-white font-bold">0</span>
+            </button>
+            <button id="btn-backlog-tab-reports" onclick="switchBacklogSubTab('reports')" class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 shadow-xs transition-all cursor-pointer">
+              <i data-lucide="inbox" class="w-4 h-4"></i>
+              <span>All Hazard & Citizen Reports</span>
+              <span id="backlog-reports-tab-count" class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-slate-200 text-slate-900 font-bold">0</span>
+            </button>
+          </div>
+          <div class="flex items-center gap-2 text-xs text-slate-600 font-medium">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              Live Synced with Ingestion & Citizen Portal
+            </span>
+          </div>
+        </div>
+
         <div id="work-orders-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           
           <!-- Pre-rendered Work Order 1 -->
@@ -1363,8 +1391,41 @@
                 </button>
               </div>
             </div>
-          </div>
+        </div>
 
+        <!-- All Hazard & Citizen Reports Table/Grid Container -->
+        <div id="backlog-reports-container" class="hidden flex flex-col gap-4">
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs overflow-hidden">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-200">
+              <div>
+                <h3 class="text-sm font-black text-black flex items-center gap-2">
+                  <i data-lucide="list-checks" class="w-4 h-4 text-purple-700"></i> Synced Hazard & Citizen Defect Registry
+                </h3>
+                <p class="text-xs text-slate-600 font-medium mt-0.5">Real-time repository of all reported road defects with direct deletion & work order linkage.</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-slate-700 font-mono font-bold bg-slate-100 border border-slate-300 px-3 py-1 rounded-lg" id="backlog-reports-stats">Showing 0 reports</span>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="border-b border-slate-200 bg-slate-50 text-slate-700 font-mono text-[11px]">
+                    <th class="py-3 px-3.5 font-bold">Hazard ID / Type</th>
+                    <th class="py-3 px-3.5 font-bold">Location & Road</th>
+                    <th class="py-3 px-3.5 font-bold">State / City</th>
+                    <th class="py-3 px-3.5 font-bold">Severity / Risk</th>
+                    <th class="py-3 px-3.5 font-bold">Est. Repair Cost</th>
+                    <th class="py-3 px-3.5 font-bold">Status / Work Order</th>
+                    <th class="py-3 px-3.5 font-bold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="backlog-reports-table-body" class="divide-y divide-slate-100 font-medium text-slate-800">
+                  <!-- Dynamic rows rendered by app.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -2229,6 +2290,10 @@
           </div>
         </div>
         <div class="flex items-center gap-2">
+          <button onclick="if(selectedHazard) { deleteHazardReport(selectedHazard.id); closeIncidentModal(); }" title="Delete this hazard report" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-50 hover:bg-rose-100 border border-rose-300 text-rose-800 transition-colors cursor-pointer shadow-xs">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            <span>Delete</span>
+          </button>
           <a id="modal-gmaps-link" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-950 transition-colors shadow-xs">
             <i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-800"></i>
             <span>Google Maps ↗</span>

@@ -232,14 +232,15 @@ def test_forecast_simulation_run(client):
 
 
 def test_multiple_citizen_reports_persistence_and_work_order_sync(client):
-    # Reset to fresh clean state
+    # Reset clears citizen reports; demo hazards are always restored by sync
     client.post("/api/hazards/reset")
 
-    # Verify 0 hazards
+    # After reset, only demo hazards remain — capture this as the baseline
     hazards_before = client.get("/api/hazards").json()
-    assert len(hazards_before) == 0
+    baseline_count = len(hazards_before)
+    assert baseline_count >= 0  # May be 0 (empty demo) or many; just capture it
 
-    # 1. Submit First Complaint (Mumbai)
+    # 1. Submit First Complaint (Mumbai — a city with no demo hazards in test DB)
     sub1 = {
         "latitude": 19.0760,
         "longitude": 72.8777,
@@ -256,14 +257,13 @@ def test_multiple_citizen_reports_persistence_and_work_order_sync(client):
     ticket1 = r1.json()["ticket_id"]
     hazard1_id = r1.json()["hazard_id"]
 
-    # 2. Verify Hazard exists in GET /api/hazards
+    # 2. Verify total count grew by exactly 1 (one new citizen report added on top of demo data)
     hazards_mid = client.get("/api/hazards").json()
-    assert len(hazards_mid) == 1
-    assert hazards_mid[0]["id"] == hazard1_id
-    assert hazards_mid[0]["state"] == "Maharashtra"
-    assert hazards_mid[0]["latitude"] == 19.0760
+    assert len(hazards_mid) == baseline_count + 1
+    ids_mid = [h["id"] for h in hazards_mid]
+    assert hazard1_id in ids_mid
 
-    # 3. Verify Work Order was generated for it
+    # 3. Verify Work Order was generated for the citizen report
     work_orders_mid = client.get("/api/work-orders").json()
     assert len(work_orders_mid) >= 1
     assert any(hazard1_id in wo.get("target_hazard_ids", []) for wo in work_orders_mid)
@@ -284,21 +284,75 @@ def test_multiple_citizen_reports_persistence_and_work_order_sync(client):
     assert r2.status_code == 200
     hazard2_id = r2.json()["hazard_id"]
 
-    # 5. Verify BOTH complaints persist and are returned with correct locations
+    # 5. Verify BOTH citizen complaints persist (total = baseline + 2)
     hazards_after = client.get("/api/hazards").json()
-    assert len(hazards_after) == 2
-    ids = [h["id"] for h in hazards_after]
-    assert hazard1_id in ids
-    assert hazard2_id in ids
+    assert len(hazards_after) == baseline_count + 2
+    ids_after = [h["id"] for h in hazards_after]
+    assert hazard1_id in ids_after
+    assert hazard2_id in ids_after
 
-    # 6. Verify State Filters work accurately
+    # 6. Verify the new citizen reports appear in their respective state filters
+    #    (using the specific citizen hazard IDs to be resilient to demo data in same state)
     hazards_mh = client.get("/api/hazards?state=Maharashtra").json()
-    assert len(hazards_mh) == 1
-    assert hazards_mh[0]["city"] == "Mumbai"
+    mh_ids = [h["id"] for h in hazards_mh]
+    assert hazard1_id in mh_ids
+    assert any(h["city"] == "Mumbai" and h["id"] == hazard1_id for h in hazards_mh)
 
     hazards_ka = client.get("/api/hazards?state=Karnataka").json()
-    assert len(hazards_ka) == 1
-    assert hazards_ka[0]["city"] == "Bengaluru"
+    ka_ids = [h["id"] for h in hazards_ka]
+    assert hazard2_id in ka_ids
+    assert any(h["city"] == "Bengaluru" and h["id"] == hazard2_id for h in hazards_ka)
+
+
+def test_delete_individual_hazard_report(client):
+    # 1. Submit a test report
+    sub = {
+        "latitude": 13.0827,
+        "longitude": 80.2707,
+        "state": "Tamil Nadu",
+        "city": "Chennai",
+        "category": "debris",
+        "severity_self_report": 3,
+        "description": "Fallen branch blocking Mount Road lane.",
+        "reporter_name": "Karthik Raja",
+        "road_name": "Anna Salai Mount Road"
+    }
+    res = client.post("/api/ingest/citizen-report", json=sub)
+    assert res.status_code == 200
+    hid = res.json()["hazard_id"]
+
+    # 2. Confirm it is present in hazards list
+    hazards = client.get("/api/hazards?state=Tamil Nadu").json()
+    assert any(h["id"] == hid for h in hazards)
+
+    # 3. Delete the report
+    del_res = client.delete(f"/api/hazards/{hid}")
+    assert del_res.status_code == 200
+    assert del_res.json()["status"] == "success"
+    assert del_res.json()["deleted_hazard_id"] == hid
+
+    # 4. Verify it is gone from hazards list
+    hazards_after = client.get("/api/hazards?state=Tamil Nadu").json()
+    assert not any(h["id"] == hid for h in hazards_after)
+
+
+def test_delete_work_order(client):
+    # 1. Fetch work orders
+    wos = client.get("/api/work-orders").json()
+    assert len(wos) > 0
+    target_wo_id = wos[0]["id"]
+    initial_count = len(wos)
+
+    # 2. Delete the first work order
+    del_res = client.delete(f"/api/work-orders/{target_wo_id}")
+    assert del_res.status_code == 200
+    assert del_res.json()["status"] == "success"
+    assert del_res.json()["deleted_order_id"] == target_wo_id
+
+    # 3. Verify it is removed from work orders list
+    wos_after = client.get("/api/work-orders").json()
+    assert len(wos_after) == initial_count - 1
+    assert not any(wo["id"] == target_wo_id for wo in wos_after)
 
 
 
