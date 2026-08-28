@@ -114,6 +114,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Fetch initial data
   await refreshAllData();
 
+  // Live periodic refresh so incoming citizen & sensor reports reflect instantly
+  setInterval(async () => {
+    try {
+      await refreshAllData();
+    } catch (e) {
+      console.debug("Live sync error:", e);
+    }
+  }, 6000);
+
+  window.addEventListener('focus', () => {
+    refreshAllData();
+  });
+
   // Initialize Studio with default scenario
   loadStudioScenario('pothole');
 });

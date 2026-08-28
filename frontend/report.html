@@ -784,34 +784,46 @@
             
             showStep(4);
             
-            // Simulation or real API call
+            const payload = {
+                latitude: reportData.lat || 12.9716,
+                longitude: reportData.lng || 77.5946,
+                lat: reportData.lat || 12.9716,
+                lng: reportData.lng || 77.5946,
+                state: reportData.state || "Karnataka",
+                city: reportData.city || "Bengaluru",
+                category: reportData.category || "pothole",
+                severity_self_report: reportData.severity || 3,
+                severity: reportData.severity || 3,
+                description: reportData.description || "",
+                reporter_name: reportData.name || "Anonymous Citizen",
+                reporter_phone: reportData.phone || "",
+                image_base64: reportData.photo_b64 || null,
+                road_name: reportData.road_name || ""
+            };
+
+            // Post to backend API
             try {
-                // If the API exists, it will hit this. If not, we simulate success for the demo.
                 const response = await fetch('/api/ingest/citizen-report', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(reportData)
-                }).catch(e => null); // Catch network errors if standalone
+                    body: JSON.stringify(payload)
+                });
 
                 let data;
                 if (response && response.ok) {
                     data = await response.json();
                 } else {
-                    // Simulation fallback
-                    await new Promise(r => setTimeout(r, 2500)); // Simulating AI delay
-                    
+                    console.warn("API returned error, falling back to local demo assessment", response.status);
+                    await new Promise(r => setTimeout(r, 1200));
                     const ticketId = `CITIZEN-SURAKSHA-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
                     const cost = Math.floor(Math.random() * 50000) + 5000;
-                    
                     data = {
                         ticket_id: ticketId,
-                        ai_assessment: {
-                            severity: reportData.severity >= 4 ? 'High' : (reportData.severity <= 2 ? 'Low' : 'Medium'),
-                            risk_score: (reportData.severity * 18) + Math.floor(Math.random() * 10), // out of 100
-                            est_cost: cost,
-                            est_timeline: reportData.severity >= 4 ? '24-48 Hours' : '3-7 Days',
-                            message: `Detected ${reportData.category.toLowerCase()} with estimated depth of ${Math.floor(Math.random() * 15)+2}cm.`
-                        }
+                        ai_severity: reportData.severity >= 4 ? 'High' : (reportData.severity <= 2 ? 'Low' : 'Medium'),
+                        ai_risk_score: (reportData.severity * 18) + Math.floor(Math.random() * 10),
+                        estimated_repair_cost_inr: cost,
+                        estimated_repair_days: reportData.severity >= 4 ? 2 : 5,
+                        message: `Detected ${reportData.category || 'hazard'} with estimated depth of ${Math.floor(Math.random() * 15)+2}cm.`
                     };
                 }
 

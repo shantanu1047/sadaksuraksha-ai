@@ -5,7 +5,7 @@ and Infrastructure Maintenance Prioritization in India (₹ INR).
 
 from enum import Enum
 from typing import List, Optional, Dict, Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from datetime import datetime
 
 
@@ -251,8 +251,8 @@ class IngestionSource(str, Enum):
 
 class CitizenSubmissionRequest(BaseModel):
     """Mobile citizen report submitted via /report portal."""
-    latitude: float
-    longitude: float
+    latitude: float = 12.9716
+    longitude: float = 77.5946
     state: str = "Karnataka"
     city: str = "Bengaluru"
     category: str = "pothole"  # pothole, waterlogging, guardrail, debris, signage, other
@@ -262,6 +262,24 @@ class CitizenSubmissionRequest(BaseModel):
     reporter_phone: str = ""
     image_base64: Optional[str] = None
     road_name: Optional[str] = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def normalize_citizen_fields(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            if "lat" in data and ("latitude" not in data or data["latitude"] is None):
+                data["latitude"] = float(data["lat"]) if data["lat"] is not None else 12.9716
+            if "lng" in data and ("longitude" not in data or data["longitude"] is None):
+                data["longitude"] = float(data["lng"]) if data["lng"] is not None else 77.5946
+            if "severity" in data and ("severity_self_report" not in data or data["severity_self_report"] is None):
+                data["severity_self_report"] = int(data["severity"]) if data["severity"] is not None else 3
+            if "name" in data and ("reporter_name" not in data or not data["reporter_name"]):
+                data["reporter_name"] = str(data["name"])
+            if "phone" in data and ("reporter_phone" not in data or not data["reporter_phone"]):
+                data["reporter_phone"] = str(data["phone"])
+            if "photo_b64" in data and ("image_base64" not in data or not data["image_base64"]):
+                data["image_base64"] = data["photo_b64"]
+        return data
 
 
 class CitizenTicketResponse(BaseModel):
