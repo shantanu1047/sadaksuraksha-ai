@@ -293,6 +293,8 @@ class PrioritizationEngine:
             wo = WorkOrder(
                 id=f"WO-2026-{order_idx:03d}",
                 title=f"Cluster Dispatch: {cluster[0].road_name} Sector ({len(cluster)} Defects)",
+                state=cluster[0].state,
+                city=cluster[0].city,
                 target_hazard_ids=[h.id for h in cluster],
                 assigned_crew=crew_name,
                 scheduled_date="2026-08-27",

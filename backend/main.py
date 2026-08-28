@@ -89,6 +89,45 @@ async def health_check():
     }
 
 
+@app.get("/api/config/apikey")
+async def get_api_key_status():
+    """Check if Gemini API Key is currently active on the server."""
+    key = os.environ.get("GEMINI_API_KEY", "")
+    masked = f"{key[:4]}...{key[-4:]}" if len(key) > 8 else ("Configured" if key else "")
+    return {
+        "configured": bool(key),
+        "masked_key": masked,
+        "model": "gemini-2.5-flash" if key else "onboard-heuristic-cv"
+    }
+
+
+@app.post("/api/config/apikey")
+async def set_api_key(payload: Dict[str, Any]):
+    """Hot-swap Gemini API Key dynamically on the live server."""
+    global vision_engine, copilot_service
+    key = str(payload.get("api_key", "")).strip()
+    if key:
+        os.environ["GEMINI_API_KEY"] = key
+        vision_engine = VisionEngine(api_key=key)
+        copilot_service = CopilotService(api_key=key)
+        return {
+            "status": "success",
+            "message": "Google Gemini 2.5 Flash API Key connected and active.",
+            "configured": True,
+            "model": "gemini-2.5-flash"
+        }
+    else:
+        os.environ.pop("GEMINI_API_KEY", None)
+        vision_engine = VisionEngine()
+        copilot_service = CopilotService()
+        return {
+            "status": "success",
+            "message": "Reverted to Onboard Local Computer Vision Engine.",
+            "configured": False,
+            "model": "onboard-heuristic-cv"
+        }
+
+
 @app.get("/api/states")
 async def list_states():
     """Returns available Indian States with regional incident statistics."""

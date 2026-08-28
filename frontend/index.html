@@ -1171,7 +1171,195 @@
         </div>
 
         <div id="work-orders-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Dynamic Work Order Cards in ₹ INR -->
+          
+          <!-- Pre-rendered Work Order 1 -->
+          <div class="nhai-card bg-white border border-slate-200 border-l-4 border-l-red-600 rounded-2xl p-5 flex flex-col justify-between gap-4 transition-all shadow-xs hover:shadow-md text-black overflow-hidden relative">
+            <div class="flex flex-col gap-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-mono font-bold text-slate-800 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-lg">WO-2026-001</span>
+                  <span class="text-[10px] text-slate-800 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-lg font-bold">Karnataka</span>
+                </div>
+                <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-full font-bold bg-red-50 text-red-950 border border-red-200">Tier 1 - Immediate Emergency (24h)</span>
+              </div>
+              <h3 class="text-sm font-black text-black leading-snug">Cluster Dispatch: Hosur Road Technology Corridor Sector (2 Defects)</h3>
+              
+              <div class="grid grid-cols-2 gap-2.5 text-xs font-mono bg-slate-50 p-3 rounded-xl border border-slate-200">
+                <div>
+                  <span class="text-slate-500 text-[10px] font-bold">Assigned Crew:</span>
+                  <p class="font-bold text-black text-[11px] truncate mt-0.5">PWD Rapid Action Unit 1</p>
+                </div>
+                <div>
+                  <span class="text-slate-500 text-[10px] font-bold">Scheduled Window:</span>
+                  <p class="font-bold text-black text-[11px] mt-0.5">2026-11-28</p>
+                </div>
+                <div class="mt-1">
+                  <span class="text-slate-500 text-[10px] font-bold">Est. Shift Hours:</span>
+                  <p class="font-bold text-blue-800 text-[11px] mt-0.5">4.5 hrs</p>
+                </div>
+                <div class="mt-1">
+                  <span class="text-slate-500 text-[10px] font-bold">Total Cost:</span>
+                  <p class="font-black text-purple-900 text-[11px] mt-0.5">₹ 48,500</p>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <p class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Clustered Defects:</p>
+                <div class="space-y-1.5 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
+                  <div class="flex items-center justify-between text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200 font-mono font-bold">
+                    <div>
+                      <span class="text-black font-bold">HAZ-KA-001</span>
+                      <span class="text-slate-600 text-[11px] ml-1">(pothole)</span>
+                    </div>
+                    <span class="text-purple-900 font-black">₹ 28,000</span>
+                  </div>
+                  <div class="flex items-center justify-between text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200 font-mono font-bold">
+                    <div>
+                      <span class="text-black font-bold">HAZ-KA-004</span>
+                      <span class="text-slate-600 text-[11px] ml-1">(alligator crack)</span>
+                    </div>
+                    <span class="text-purple-900 font-black">₹ 20,500</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between border-t border-slate-100 pt-3.5 text-xs">
+              <span class="text-slate-700 font-mono font-bold">Status: <strong class="text-emerald-800 font-black">SCHEDULED</strong></span>
+              <div class="flex items-center gap-2">
+                <a href="https://www.google.com/maps/search/?api=1&query=12.9340,77.6080" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-950 text-xs font-bold flex items-center gap-1 transition-colors shadow-xs">
+                  🗺️ Maps ↗
+                </a>
+                <button onclick="dispatchWorkOrder('WO-2026-001')" class="px-3.5 py-1.5 rounded-xl font-bold bg-[#138808] hover:bg-[#0f6b06] border border-emerald-700 text-white text-xs transition-colors shadow-xs cursor-pointer">
+                  Dispatch Crew
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pre-rendered Work Order 2 -->
+          <div class="nhai-card bg-white border border-slate-200 border-l-4 border-l-red-600 rounded-2xl p-5 flex flex-col justify-between gap-4 transition-all shadow-xs hover:shadow-md text-black overflow-hidden relative">
+            <div class="flex flex-col gap-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-mono font-bold text-slate-800 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-lg">WO-2026-002</span>
+                  <span class="text-[10px] text-slate-800 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-lg font-bold">Maharashtra</span>
+                </div>
+                <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-full font-bold bg-red-50 text-red-950 border border-red-200">Tier 1 - Immediate Emergency (24h)</span>
+              </div>
+              <h3 class="text-sm font-black text-black leading-snug">Cluster Dispatch: NH-48 Western Express Corridor Sector (2 Defects)</h3>
+              
+              <div class="grid grid-cols-2 gap-2.5 text-xs font-mono bg-slate-50 p-3 rounded-xl border border-slate-200">
+                <div>
+                  <span class="text-slate-500 text-[10px] font-bold">Assigned Crew:</span>
+                  <p class="font-bold text-black text-[11px] truncate mt-0.5">NHAI Incident Response Team</p>
+                </div>
+                <div>
+                  <span class="text-slate-500 text-[10px] font-bold">Scheduled Window:</span>
+                  <p class="font-bold text-black text-[11px] mt-0.5">2026-11-28</p>
+                </div>
+                <div class="mt-1">
+                  <span class="text-slate-500 text-[10px] font-bold">Est. Shift Hours:</span>
+                  <p class="font-bold text-blue-800 text-[11px] mt-0.5">5.2 hrs</p>
+                </div>
+                <div class="mt-1">
+                  <span class="text-slate-500 text-[10px] font-bold">Total Cost:</span>
+                  <p class="font-black text-purple-900 text-[11px] mt-0.5">₹ 62,000</p>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <p class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Clustered Defects:</p>
+                <div class="space-y-1.5 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
+                  <div class="flex items-center justify-between text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200 font-mono font-bold">
+                    <div>
+                      <span class="text-black font-bold">HAZ-MH-002</span>
+                      <span class="text-slate-600 text-[11px] ml-1">(pothole)</span>
+                    </div>
+                    <span class="text-purple-900 font-black">₹ 35,000</span>
+                  </div>
+                  <div class="flex items-center justify-between text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200 font-mono font-bold">
+                    <div>
+                      <span class="text-black font-bold">HAZ-MH-005</span>
+                      <span class="text-slate-600 text-[11px] ml-1">(rutting)</span>
+                    </div>
+                    <span class="text-purple-900 font-black">₹ 27,000</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between border-t border-slate-100 pt-3.5 text-xs">
+              <span class="text-slate-700 font-mono font-bold">Status: <strong class="text-emerald-800 font-black">SCHEDULED</strong></span>
+              <div class="flex items-center gap-2">
+                <a href="https://www.google.com/maps/search/?api=1&query=19.1136,72.8697" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-950 text-xs font-bold flex items-center gap-1 transition-colors shadow-xs">
+                  🗺️ Maps ↗
+                </a>
+                <button onclick="dispatchWorkOrder('WO-2026-002')" class="px-3.5 py-1.5 rounded-xl font-bold bg-[#138808] hover:bg-[#0f6b06] border border-emerald-700 text-white text-xs transition-colors shadow-xs cursor-pointer">
+                  Dispatch Crew
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pre-rendered Work Order 3 -->
+          <div class="nhai-card bg-white border border-slate-200 border-l-4 border-l-[#FF9933] rounded-2xl p-5 flex flex-col justify-between gap-4 transition-all shadow-xs hover:shadow-md text-black overflow-hidden relative">
+            <div class="flex flex-col gap-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-mono font-bold text-slate-800 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-lg">WO-2026-003</span>
+                  <span class="text-[10px] text-slate-800 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-lg font-bold">Delhi NCR</span>
+                </div>
+                <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-full font-bold bg-orange-50 text-orange-950 border border-orange-200">Tier 2 - High Priority (48-72h)</span>
+              </div>
+              <h3 class="text-sm font-black text-black leading-snug">Cluster Dispatch: Delhi-Meerut Expressway Sector (1 Defects)</h3>
+              
+              <div class="grid grid-cols-2 gap-2.5 text-xs font-mono bg-slate-50 p-3 rounded-xl border border-slate-200">
+                <div>
+                  <span class="text-slate-500 text-[10px] font-bold">Assigned Crew:</span>
+                  <p class="font-bold text-black text-[11px] truncate mt-0.5">Smart City Emergency Crew Alpha</p>
+                </div>
+                <div>
+                  <span class="text-slate-500 text-[10px] font-bold">Scheduled Window:</span>
+                  <p class="font-bold text-black text-[11px] mt-0.5">2026-11-29</p>
+                </div>
+                <div class="mt-1">
+                  <span class="text-slate-500 text-[10px] font-bold">Est. Shift Hours:</span>
+                  <p class="font-bold text-blue-800 text-[11px] mt-0.5">3.0 hrs</p>
+                </div>
+                <div class="mt-1">
+                  <span class="text-slate-500 text-[10px] font-bold">Total Cost:</span>
+                  <p class="font-black text-purple-900 text-[11px] mt-0.5">₹ 34,000</p>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <p class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Clustered Defects:</p>
+                <div class="space-y-1.5 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
+                  <div class="flex items-center justify-between text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200 font-mono font-bold">
+                    <div>
+                      <span class="text-black font-bold">HAZ-DL-003</span>
+                      <span class="text-slate-600 text-[11px] ml-1">(longitudinal crack)</span>
+                    </div>
+                    <span class="text-purple-900 font-black">₹ 34,000</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between border-t border-slate-100 pt-3.5 text-xs">
+              <span class="text-slate-700 font-mono font-bold">Status: <strong class="text-emerald-800 font-black">SCHEDULED</strong></span>
+              <div class="flex items-center gap-2">
+                <a href="https://www.google.com/maps/search/?api=1&query=28.5672,77.2100" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-950 text-xs font-bold flex items-center gap-1 transition-colors shadow-xs">
+                  🗺️ Maps ↗
+                </a>
+                <button onclick="dispatchWorkOrder('WO-2026-003')" class="px-3.5 py-1.5 rounded-xl font-bold bg-[#138808] hover:bg-[#0f6b06] border border-emerald-700 text-white text-xs transition-colors shadow-xs cursor-pointer">
+                  Dispatch Crew
+                </button>
+              </div>
+            </div>
+          </div>
+
         </div>
 
       </div>
@@ -2261,8 +2449,8 @@
     </div>
   </div>
 
-  <script src="/static/js/i18n.js?v=2.7.0"></script>
-  <script src="/static/js/app.js?v=2.7.0"></script>
+  <script src="/static/js/i18n.js?v=2.8.0"></script>
+  <script src="/static/js/app.js?v=2.8.0"></script>
 </body>
 </html>
 

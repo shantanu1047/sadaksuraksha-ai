@@ -1312,6 +1312,9 @@ function switchTab(tabId) {
       }
     }, 200);
   }
+  if (tabId === 'backlog') {
+    applyStateAndSearchFilters();
+  }
   if (tabId === 'resource-intel') {
     if (typeof initResourceIntelligenceView === 'function') initResourceIntelligenceView();
   }
