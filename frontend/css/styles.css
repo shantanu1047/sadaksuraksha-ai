@@ -259,6 +259,18 @@ code, pre, .font-mono {
   background-repeat: no-repeat;
 }
 
+/* Select Your Portal / Role Gateway Background (Illuminated Aerial Interchange Flyover) */
+.gateway-portal-bg {
+  position: relative;
+  background-color: #f1f5f9;
+  background-image: 
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82) 0%, rgba(248, 250, 252, 0.78) 40%, rgba(241, 245, 249, 0.88) 100%),
+    url('../assets/gateway_interchange_bg.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
 /* NHAI Card Design Reference: Clean, Minimal, Elevated */
 .nhai-card {
   background: #ffffff;

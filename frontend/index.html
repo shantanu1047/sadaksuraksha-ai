@@ -48,13 +48,13 @@
 <body class="bg-[#f8f9fa] text-black min-h-screen flex flex-col font-sans selection:bg-amber-200 selection:text-black">
 
   <!-- ROLE SELECTION & LOGIN GATEWAY (PRIOR SCREEN OVERLAY) -->
-  <div id="role-gateway-overlay" class="fixed inset-0 bg-[#f8f9fa] z-[100000] flex flex-col justify-between overflow-y-auto" style="z-index: 100000 !important;">
+  <div id="role-gateway-overlay" class="fixed inset-0 gateway-portal-bg z-[100000] flex flex-col justify-between overflow-y-auto" style="z-index: 100000 !important;">
     
     <!-- Top Indian Tricolour Strip -->
     <div class="tricolor-strip"></div>
 
     <!-- Gateway Header (Expansive & Modern) -->
-    <header class="px-8 py-5 border-b border-slate-200 bg-white sticky top-0 z-10 shadow-xs">
+    <header class="px-8 py-5 border-b border-slate-200/80 bg-white/95 backdrop-blur-md sticky top-0 z-10 shadow-xs">
       <div class="max-w-7xl mx-auto flex items-center justify-between">
         <div class="flex items-center gap-3.5">
           <div class="w-12 h-12 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center shadow-xs">
@@ -83,7 +83,7 @@
     <!-- Role Prompt Main Card Container -->
     <main class="max-w-6xl mx-auto px-6 py-12 flex-1 flex flex-col justify-center w-full">
       <div class="text-center max-w-3xl mx-auto mb-10">
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-slate-200 text-black text-xs font-bold shadow-xs mb-3">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 text-black text-xs font-bold shadow-xs mb-3">
           <i data-lucide="shield-check" class="w-4 h-4 text-emerald-700"></i> Identity & Role Verification
         </div>
         <h2 class="text-3xl sm:text-4xl font-black text-black tracking-tight">
@@ -97,7 +97,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto w-full">
 
         <!-- 1. CITIZEN CARD -->
-        <div class="nhai-card p-8 flex flex-col justify-between relative overflow-hidden text-black border-l-4 border-l-[#138808]">
+        <div class="nhai-card bg-white/92 backdrop-blur-md p-8 flex flex-col justify-between relative overflow-hidden text-black border-l-4 border-l-[#138808] shadow-md hover:shadow-xl transition-all duration-300">
           <div>
             <div class="flex items-center justify-between mb-6">
               <div class="w-13 h-13 rounded-xl bg-emerald-100 border border-emerald-300 flex items-center justify-center shadow-xs">
@@ -140,7 +140,7 @@
         </div>
 
         <!-- 2. GOVERNMENT OFFICIAL CARD -->
-        <div class="nhai-card p-8 flex flex-col justify-between relative overflow-hidden text-black border-l-4 border-l-[#FF9933]">
+        <div class="nhai-card bg-white/92 backdrop-blur-md p-8 flex flex-col justify-between relative overflow-hidden text-black border-l-4 border-l-[#FF9933] shadow-md hover:shadow-xl transition-all duration-300">
           <div>
             <div class="flex items-center justify-between mb-6">
               <div class="w-13 h-13 rounded-xl bg-orange-100 border border-orange-300 flex items-center justify-center shadow-xs">
