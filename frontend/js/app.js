@@ -322,7 +322,8 @@ async function refreshAllData() {
       fetch(`/api/analytics/summary?state=${encodeURIComponent(currentStateFilter)}`)
     ]);
 
-    allHazards = await hazardsRes.json();
+    const fetchedHazards = await hazardsRes.json();
+    allHazards = Array.isArray(fetchedHazards) ? fetchedHazards.map(normalizeHazard) : [];
     allRoads = await roadsRes.json();
     allWorkOrders = await workOrdersRes.json();
     const analytics = await analyticsRes.json();
@@ -332,7 +333,8 @@ async function refreshAllData() {
       const localReports = JSON.parse(localStorage.getItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS') || '[]');
       if (Array.isArray(localReports) && localReports.length > 0) {
         const existingIds = new Set(allHazards.map(h => h.id));
-        for (const lr of localReports) {
+        for (const rawLr of localReports) {
+          const lr = normalizeHazard(rawLr);
           if (!existingIds.has(lr.id)) {
             allHazards.unshift(lr);
             existingIds.add(lr.id);
@@ -348,6 +350,13 @@ async function refreshAllData() {
               state: lr.state || 'Karnataka',
               city: lr.city || 'Bengaluru',
               target_hazard_ids: [lr.id],
+              hazards_summary: [{
+                hazard_id: lr.id,
+                hazard_type: lr.hazard_type || 'pothole',
+                cost_inr: lr.priority?.estimated_repair_cost_usd || 22500
+              }],
+              cluster_center_lat: lr.latitude || 12.9716,
+              cluster_center_lng: lr.longitude || 77.5946,
               assigned_crew: `${lr.state || 'State'} PWD Fast-Response Patch Unit #02`,
               scheduled_date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
               priority_tier: (lr.severity === 'critical' || lr.severity === 'high') ? 'Tier 1 - Emergency MoRTH Dispatch (< 24 hrs)' : 'Tier 2 - Scheduled Maintenance (< 72 hrs)',
@@ -370,6 +379,34 @@ async function refreshAllData() {
   } catch (err) {
     console.error('Error loading data:', err);
   }
+}
+
+function normalizeHazard(h) {
+  if (!h) return h;
+  if (!h.fusion) {
+    h.fusion = {
+      physical_depth_cm: 6.5,
+      physical_area_sqm: 0.85,
+      is_false_positive: false,
+      fused_confidence: 0.92,
+      pci_deduct_value: 40.0
+    };
+  }
+  if (!h.priority) {
+    h.priority = {
+      raw_risk_score: h.severity === 'critical' ? 92 : (h.severity === 'high' ? 78 : 55),
+      estimated_repair_cost_usd: 18000,
+      recommended_repair_technique: 'Rapid Hot-Mix Compaction (MoRTH Spec 500)',
+      estimated_crew_hours: 3.5,
+      pci_deduct_value: 40.0
+    };
+  }
+  if (!h.road_name) h.road_name = h.address || `${h.city || 'Urban'} Road Sector`;
+  if (!h.state) h.state = 'Karnataka';
+  if (!h.city) h.city = 'Bengaluru';
+  if (!h.severity) h.severity = 'high';
+  if (!h.hazard_type) h.hazard_type = 'pothole';
+  return h;
 }
 
 // ==========================================
@@ -430,7 +467,8 @@ function filterMap(category) {
 
 
 function getFilteredHazards() {
-  return allHazards.filter(h => {
+  return allHazards.filter(rawH => {
+    const h = normalizeHazard(rawH);
     // 1. State Filter
     const matchesState = (currentStateFilter === 'all') || (h.state && h.state.toLowerCase() === currentStateFilter.toLowerCase());
     
@@ -442,12 +480,13 @@ function getFilteredHazards() {
 
     // 3. Category Filter
     let matchesCategory = true;
+    const isFP = h.fusion?.is_false_positive || false;
     if (currentCategoryFilter === 'critical') {
-      matchesCategory = (h.severity === 'critical' && !h.fusion.is_false_positive);
+      matchesCategory = (h.severity === 'critical' && !isFP);
     } else if (currentCategoryFilter === 'pothole') {
-      matchesCategory = (h.hazard_type === 'pothole' && !h.fusion.is_false_positive);
+      matchesCategory = (h.hazard_type === 'pothole' && !isFP);
     } else if (currentCategoryFilter === 'hospital') {
-      matchesCategory = (h.road_class === 'hospital_corridor' && !h.fusion.is_false_positive);
+      matchesCategory = (h.road_class === 'hospital_corridor' && !isFP);
     }
 
     // 4. Search Query Filter (State, City, Road Name, Title, Type)
@@ -474,10 +513,10 @@ function applyStateAndSearchFilters() {
   renderWorkOrders(filteredWorkOrders);
 
   // Recalculate quick KPI values for current filtered subset
-  const actionable = filteredHazards.filter(h => !h.fusion.is_false_positive);
+  const actionable = filteredHazards.filter(h => !h.fusion?.is_false_positive);
   const critical = actionable.filter(h => h.severity === 'critical').length;
-  const fp = filteredHazards.filter(h => h.fusion.is_false_positive).length;
-  const totalCost = actionable.reduce((acc, h) => acc + h.priority.estimated_repair_cost_usd, 0);
+  const fp = filteredHazards.filter(h => h.fusion?.is_false_positive).length;
+  const totalCost = actionable.reduce((acc, h) => acc + (h.priority?.estimated_repair_cost_usd || 0), 0);
 
   document.getElementById('kpi-critical').textContent = critical;
   document.getElementById('kpi-total').textContent = actionable.length;
@@ -716,9 +755,10 @@ function renderIncidentFeed(hazards) {
     return;
   }
 
-  hazards.forEach(h => {
-    const isFP = h.fusion.is_false_positive;
-    const sev = (h.severity || '').toLowerCase();
+  hazards.forEach(rawH => {
+    const h = normalizeHazard(rawH);
+    const isFP = h.fusion?.is_false_positive || false;
+    const sev = (h.severity || 'high').toLowerCase();
 
     let accentBorder = 'border-l-blue-500';
     let badgeClasses = 'bg-white/80 text-blue-700 border-blue-200/80';
@@ -759,6 +799,8 @@ function renderIncidentFeed(hazards) {
     const depthLabel = window.getLanguage && window.getLanguage() === 'hi' ? 'गहराई' : 'Depth';
     const areaLabel = window.getLanguage && window.getLanguage() === 'hi' ? 'क्षेत्र' : 'Area';
 
+    const photoBadge = h.image_url ? `<span class="px-1.5 py-0.5 text-[9.5px] font-bold bg-orange-100 text-orange-950 border border-orange-300 rounded">📸 Photo Attached</span>` : '';
+
     card.innerHTML = `
       <!-- Top Row: Badge + Location + Maps Link + Risk Score -->
       <div class="flex items-center justify-between gap-2">
@@ -767,7 +809,8 @@ function renderIncidentFeed(hazards) {
             <span class="w-1.5 h-1.5 rounded-full ${dotColor}"></span>
             <span>${severityLabel}</span>
           </span>
-          <span class="text-[11px] text-slate-600 font-medium truncate">${h.state}</span>
+          ${photoBadge}
+          <span class="text-[11px] text-slate-600 font-medium truncate">${h.state || 'India'}</span>
         </div>
         
         <div class="flex items-center gap-1.5 shrink-0">
@@ -775,24 +818,24 @@ function renderIncidentFeed(hazards) {
             <span>Maps</span>
             <span class="text-[9px]">↗</span>
           </a>
-          <span class="text-[10.5px] font-semibold px-1.5 py-0.5 rounded border ${riskBadge} shadow-2xs">${riskLabel} ${h.priority.raw_risk_score}</span>
+          <span class="text-[10.5px] font-semibold px-1.5 py-0.5 rounded border ${riskBadge} shadow-2xs">${riskLabel} ${h.priority?.raw_risk_score || 75}</span>
         </div>
       </div>
 
       <!-- Title & Road Location -->
       <div>
         <h4 class="text-[12.5px] font-semibold text-slate-900 group-hover:text-blue-900 leading-snug line-clamp-2 transition-colors">${h.title}</h4>
-        <p class="text-[11px] text-slate-600 truncate font-normal mt-0.5">${h.address}</p>
+        <p class="text-[11px] text-slate-600 truncate font-normal mt-0.5">${h.address || h.road_name}</p>
       </div>
 
       <!-- Bottom Metadata Row: Depth, Area, Est Cost -->
       <div class="flex items-center justify-between text-[11px] text-slate-700 pt-1.5 border-t border-slate-200/50 font-medium">
         <div class="flex items-center gap-2 text-slate-600">
-          <span>${depthLabel}: <strong class="text-slate-800 font-medium">${h.fusion.physical_depth_cm}cm</strong></span>
+          <span>${depthLabel}: <strong class="text-slate-800 font-medium">${h.fusion?.physical_depth_cm || 5.0}cm</strong></span>
           <span class="text-slate-400">•</span>
-          <span>${areaLabel}: <strong class="text-slate-800 font-medium">${h.fusion.physical_area_sqm}m²</strong></span>
+          <span>${areaLabel}: <strong class="text-slate-800 font-medium">${h.fusion?.physical_area_sqm || 0.8}m²</strong></span>
         </div>
-        <span class="font-semibold text-slate-900">${formatINR(h.priority.estimated_repair_cost_usd)}</span>
+        <span class="font-semibold text-slate-900">${formatINR(h.priority?.estimated_repair_cost_usd || 18000)}</span>
       </div>
     `;
 
@@ -820,7 +863,8 @@ function loadStudioScenario(type) {
   updateStudioTelemetry(hazardData);
 }
 
-function renderStudioCanvasOverlay(hazard) {
+function renderStudioCanvasOverlay(rawHazard) {
+  const hazard = normalizeHazard(rawHazard);
   const canvas = document.getElementById('studio-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
@@ -848,15 +892,15 @@ function renderStudioCanvasOverlay(hazard) {
       else ctx.lineTo(px, py);
     });
     ctx.closePath();
-    ctx.fillStyle = hazard.fusion.is_false_positive ? 'rgba(148, 163, 184, 0.25)' : 'rgba(0, 240, 255, 0.25)';
+    ctx.fillStyle = hazard.fusion?.is_false_positive ? 'rgba(148, 163, 184, 0.25)' : 'rgba(0, 240, 255, 0.25)';
     ctx.fill();
     ctx.lineWidth = 2;
-    ctx.strokeStyle = hazard.fusion.is_false_positive ? '#94a3b8' : '#00f0ff';
+    ctx.strokeStyle = hazard.fusion?.is_false_positive ? '#94a3b8' : '#00f0ff';
     ctx.stroke();
   }
 
   ctx.lineWidth = 2;
-  ctx.strokeStyle = hazard.fusion.is_false_positive ? '#cbd5e1' : '#f59e0b';
+  ctx.strokeStyle = hazard.fusion?.is_false_positive ? '#cbd5e1' : '#f59e0b';
   ctx.setLineDash([4, 4]);
   ctx.strokeRect(x, y, w, h);
   ctx.setLineDash([]);
@@ -869,14 +913,15 @@ function renderStudioCanvasOverlay(hazard) {
   ctx.beginPath(); ctx.moveTo(x, y + h - corner); ctx.lineTo(x, y + h); ctx.lineTo(x + corner, y + h); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(x + w - corner, y + h); ctx.lineTo(x + w, y + h); ctx.lineTo(x + w, y + h - corner); ctx.stroke();
 
-  ctx.fillStyle = hazard.fusion.is_false_positive ? 'rgba(51, 65, 85, 0.9)' : 'rgba(15, 23, 42, 0.9)';
+  ctx.fillStyle = hazard.fusion?.is_false_positive ? 'rgba(51, 65, 85, 0.9)' : 'rgba(15, 23, 42, 0.9)';
   ctx.fillRect(x, y - 24, 190, 22);
   ctx.font = 'bold 11px JetBrains Mono, monospace';
-  ctx.fillStyle = hazard.fusion.is_false_positive ? '#cbd5e1' : '#00f0ff';
+  ctx.fillStyle = hazard.fusion?.is_false_positive ? '#cbd5e1' : '#00f0ff';
   ctx.fillText(`${bbox.label} (${(det.confidence * 100).toFixed(0)}%)`, x + 6, y - 8);
 }
 
-function updateStudioTelemetry(hazard) {
+function updateStudioTelemetry(rawHazard) {
+  const hazard = normalizeHazard(rawHazard);
   const trace = hazard.telemetry_trace || generateSampleTelemetry(2.4);
   const labels = trace.map(t => `${t.time_sec}s`);
   const gzData = trace.map(t => t.acc_z);
@@ -893,26 +938,26 @@ function updateStudioTelemetry(hazard) {
   document.getElementById('imu-peak-badge').textContent = `Peak Shock: ${maxGz.toFixed(2)}g`;
 
   const f = hazard.fusion;
-  document.getElementById('fuse-vis-score').textContent = `${(f.visual_score * 100).toFixed(0)}%`;
-  document.getElementById('fuse-vis-bar').style.width = `${f.visual_score * 100}%`;
+  document.getElementById('fuse-vis-score').textContent = `${((f?.visual_score || 0.85) * 100).toFixed(0)}%`;
+  document.getElementById('fuse-vis-bar').style.width = `${(f?.visual_score || 0.85) * 100}%`;
 
-  document.getElementById('fuse-imu-score').textContent = `${(f.inertial_score * 100).toFixed(0)}%`;
-  document.getElementById('fuse-imu-bar').style.width = `${f.inertial_score * 100}%`;
+  document.getElementById('fuse-imu-score').textContent = `${((f?.inertial_score || 0.88) * 100).toFixed(0)}%`;
+  document.getElementById('fuse-imu-bar').style.width = `${(f?.inertial_score || 0.88) * 100}%`;
 
-  document.getElementById('fuse-aud-score').textContent = `${(f.acoustic_score * 100).toFixed(0)}%`;
-  document.getElementById('fuse-aud-bar').style.width = `${f.acoustic_score * 100}%`;
+  document.getElementById('fuse-aud-score').textContent = `${((f?.acoustic_score || 0.75) * 100).toFixed(0)}%`;
+  document.getElementById('fuse-aud-bar').style.width = `${(f?.acoustic_score || 0.75) * 100}%`;
 
-  document.getElementById('fuse-txt-score').textContent = `${(f.text_score * 100).toFixed(0)}%`;
-  document.getElementById('fuse-txt-bar').style.width = `${f.text_score * 100}%`;
+  document.getElementById('fuse-txt-score').textContent = `${((f?.text_score || 0.80) * 100).toFixed(0)}%`;
+  document.getElementById('fuse-txt-bar').style.width = `${(f?.text_score || 0.80) * 100}%`;
 
-  document.getElementById('fuse-depth').textContent = `${f.physical_depth_cm} cm`;
-  document.getElementById('fuse-area').textContent = `${f.physical_area_sqm} m²`;
-  document.getElementById('fuse-risk').textContent = `${hazard.priority.raw_risk_score} / 100`;
+  document.getElementById('fuse-depth').textContent = `${f?.physical_depth_cm || 5.0} cm`;
+  document.getElementById('fuse-area').textContent = `${f?.physical_area_sqm || 0.8} m²`;
+  document.getElementById('fuse-risk').textContent = `${hazard.priority?.raw_risk_score || 75} / 100`;
 
   const pill = document.getElementById('fusion-status-pill');
   const reasonBox = document.getElementById('fuse-reason-box');
 
-  if (f.is_false_positive) {
+  if (f?.is_false_positive) {
     pill.className = 'text-xs font-bold px-2.5 py-0.5 rounded font-mono bg-emerald-950/80 text-emerald-300 border border-emerald-500/40';
     pill.textContent = 'OPTICAL FALSE POSITIVE REJECTED';
     reasonBox.textContent = f.false_positive_reason || 'Tree shadow & oil stain filtered: 0.01g vertical response confirms undamaged road surface.';
@@ -1059,62 +1104,71 @@ function renderWorkOrders(workOrders) {
   if (!container) return;
   container.innerHTML = '';
 
-  if (workOrders.length === 0) {
+  if (!workOrders || workOrders.length === 0) {
     container.innerHTML = `<div class="col-span-3 text-center p-8 bg-white border-2 border-black rounded-none text-black text-xs font-bold">No scheduled work orders for ${currentStateFilter}.</div>`;
     return;
   }
 
   workOrders.forEach(wo => {
+    if (!wo) return;
     const card = document.createElement('div');
+    const priorityTier = wo.priority_tier || 'Tier 2 - Scheduled Maintenance';
     let tierBadge = 'bg-blue-50 text-blue-950 border border-blue-200';
     let borderAccent = 'border-l-4 border-l-blue-600';
-    if (wo.priority_tier.includes('Tier 1')) {
+    if (priorityTier.includes('Tier 1')) {
       tierBadge = 'bg-red-50 text-red-950 border border-red-200';
       borderAccent = 'border-l-4 border-l-red-600';
-    } else if (wo.priority_tier.includes('Tier 2')) {
+    } else if (priorityTier.includes('Tier 2')) {
       tierBadge = 'bg-orange-50 text-orange-950 border border-orange-200';
       borderAccent = 'border-l-4 border-l-[#FF9933]';
     }
 
     card.className = `nhai-card bg-white border border-slate-200 ${borderAccent} rounded-2xl p-5 flex flex-col justify-between gap-4 transition-all shadow-xs hover:shadow-md text-black overflow-hidden relative`;
 
-    let hazardsHtml = wo.hazards_summary.map(h => `
+    const summaryList = Array.isArray(wo.hazards_summary) && wo.hazards_summary.length > 0
+      ? wo.hazards_summary
+      : (Array.isArray(wo.target_hazard_ids) ? wo.target_hazard_ids.map(id => ({ hazard_id: id, hazard_type: 'pothole', cost_inr: wo.estimated_cost_usd || 18000 })) : []);
+
+    let hazardsHtml = summaryList.map(h => `
       <div class="flex items-center justify-between text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200 font-mono font-bold">
         <div>
-          <span class="text-black font-bold">${h.hazard_id}</span>
-          <span class="text-slate-600 text-[11px] ml-1">(${h.hazard_type.replace('_', ' ')})</span>
+          <span class="text-black font-bold">${h.hazard_id || 'HAZ'}</span>
+          <span class="text-slate-600 text-[11px] ml-1">(${h.hazard_type ? h.hazard_type.replace('_', ' ') : 'pothole'})</span>
         </div>
-        <span class="text-purple-900 font-black">${formatINR(h.cost_inr || 15000)}</span>
+        <span class="text-purple-900 font-black">${formatINR(h.cost_inr || wo.estimated_cost_usd || 15000)}</span>
       </div>
     `).join('');
+
+    const centerLat = wo.cluster_center_lat || 12.9716;
+    const centerLng = wo.cluster_center_lng || 77.5946;
 
     card.innerHTML = `
       <div class="flex flex-col gap-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="text-xs font-mono font-bold text-slate-800 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-lg">${wo.id}</span>
-            <span class="text-[10px] text-slate-800 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-lg font-bold">${wo.state}</span>
+            <span class="text-[10px] text-slate-800 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-lg font-bold">${wo.state || 'India'}</span>
           </div>
-          <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-full font-bold ${tierBadge}">${wo.priority_tier}</span>
+          <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-full font-bold ${tierBadge}">${priorityTier}</span>
         </div>
         <h3 class="text-sm font-black text-black leading-snug">${wo.title}</h3>
         
         <div class="grid grid-cols-2 gap-2.5 text-xs font-mono bg-slate-50 p-3 rounded-xl border border-slate-200">
           <div>
             <span class="text-slate-500 text-[10px] font-bold">Assigned Crew:</span>
-            <p class="font-bold text-black text-[11px] truncate mt-0.5">${wo.assigned_crew}</p>
+            <p class="font-bold text-black text-[11px] truncate mt-0.5">${wo.assigned_crew || 'PWD Maintenance Unit'}</p>
           </div>
           <div>
             <span class="text-slate-500 text-[10px] font-bold">Scheduled Window:</span>
-            <p class="font-bold text-black text-[11px] mt-0.5">${wo.scheduled_date}</p>
+            <p class="font-bold text-black text-[11px] mt-0.5">${wo.scheduled_date || 'Within 48 hrs'}</p>
           </div>
           <div class="mt-1">
             <span class="text-slate-500 text-[10px] font-bold">Est. Shift Hours:</span>
-            <p class="font-bold text-blue-800 text-[11px] mt-0.5">${wo.estimated_hours} hrs</p>
+            <p class="font-bold text-blue-800 text-[11px] mt-0.5">${wo.estimated_hours || 3.5} hrs</p>
           </div>
           <div class="mt-1">
             <span class="text-slate-500 text-[10px] font-bold">Total Cost:</span>
-            <p class="font-black text-purple-900 text-[11px] mt-0.5">${formatINR(wo.estimated_cost_usd)}</p>
+            <p class="font-black text-purple-900 text-[11px] mt-0.5">${formatINR(wo.estimated_cost_usd || 20000)}</p>
           </div>
         </div>
 
@@ -1127,9 +1181,9 @@ function renderWorkOrders(workOrders) {
       </div>
 
       <div class="flex items-center justify-between border-t border-slate-100 pt-3.5 text-xs">
-        <span class="text-slate-700 font-mono font-bold">Status: <strong class="text-emerald-800 font-black">${wo.status.toUpperCase()}</strong></span>
+        <span class="text-slate-700 font-mono font-bold">Status: <strong class="text-emerald-800 font-black">${(wo.status || 'APPROVED').toUpperCase()}</strong></span>
         <div class="flex items-center gap-2">
-          <a href="https://www.google.com/maps/search/?api=1&query=${wo.cluster_center_lat},${wo.cluster_center_lng}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-950 text-xs font-bold flex items-center gap-1 transition-colors shadow-xs">
+          <a href="https://www.google.com/maps/search/?api=1&query=${centerLat},${centerLng}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-950 text-xs font-bold flex items-center gap-1 transition-colors shadow-xs">
             🗺️ Maps ↗
           </a>
           <button onclick="dispatchWorkOrder('${wo.id}')" class="px-3.5 py-1.5 rounded-xl font-bold bg-[#138808] hover:bg-[#0f6b06] border border-emerald-700 text-white text-xs transition-colors shadow-xs cursor-pointer">
@@ -1459,18 +1513,19 @@ function navigateToHome() {
 }
 
 function openIncidentModal(hazardId) {
-  const h = allHazards.find(item => item.id === hazardId);
-  if (!h) return;
+  const rawH = allHazards.find(item => item.id === hazardId);
+  if (!rawH) return;
+  const h = normalizeHazard(rawH);
 
   selectedHazard = h;
   document.getElementById('modal-title').textContent = h.title;
-  document.getElementById('modal-address').textContent = `${h.address} (${h.road_name})`;
-  document.getElementById('modal-risk-score').innerHTML = `${h.priority.raw_risk_score} <span class="text-xs text-slate-500">/100</span>`;
-  document.getElementById('modal-pci-deduct').textContent = `-${h.priority.pci_deduct_value} pts`;
-  document.getElementById('modal-depth').textContent = `${h.fusion.physical_depth_cm} cm`;
-  document.getElementById('modal-repair-cost').textContent = formatINR(h.priority.estimated_repair_cost_usd);
-  document.getElementById('modal-repair-technique').textContent = h.priority.recommended_repair_technique;
-  document.getElementById('modal-repair-hours').textContent = `Estimated Crew Hours: ${h.priority.estimated_crew_hours} hrs`;
+  document.getElementById('modal-address').textContent = `${h.address || h.road_name} (${h.road_name || h.city})`;
+  document.getElementById('modal-risk-score').innerHTML = `${h.priority?.raw_risk_score || 75} <span class="text-xs text-slate-500">/100</span>`;
+  document.getElementById('modal-pci-deduct').textContent = `-${h.priority?.pci_deduct_value || 40} pts`;
+  document.getElementById('modal-depth').textContent = `${h.fusion?.physical_depth_cm || 5.0} cm`;
+  document.getElementById('modal-repair-cost').textContent = formatINR(h.priority?.estimated_repair_cost_usd || 18000);
+  document.getElementById('modal-repair-technique').textContent = h.priority?.recommended_repair_technique || 'Bituminous Hot-Mix Patching';
+  document.getElementById('modal-repair-hours').textContent = `Estimated Crew Hours: ${h.priority?.estimated_crew_hours || 3.5} hrs`;
 
   // Set Google Maps redirection links
   const modalGmaps = document.getElementById('modal-gmaps-link');
@@ -1483,17 +1538,17 @@ function openIncidentModal(hazardId) {
   }
 
   const badge = document.getElementById('modal-badge-severity');
-  if (h.fusion.is_false_positive) {
+  if (h.fusion?.is_false_positive) {
     badge.className = 'px-2.5 py-1 rounded text-xs font-bold font-mono bg-slate-800 text-slate-400 border border-slate-700';
     badge.textContent = 'FALSE POSITIVE';
     document.getElementById('modal-fp-warning').classList.remove('hidden');
   } else {
     badge.className = `px-2.5 py-1 rounded text-xs font-bold font-mono ${h.severity === 'critical' ? 'bg-red-950 text-red-400 border border-red-500/40' : 'bg-amber-950 text-amber-400 border border-amber-500/40'}`;
-    badge.textContent = h.severity.toUpperCase();
+    badge.textContent = (h.severity || 'HIGH').toUpperCase();
     document.getElementById('modal-fp-warning').classList.add('hidden');
   }
 
-  document.getElementById('modal-image').src = SCENARIO_IMAGES[h.hazard_type] || SCENARIO_IMAGES.pothole;
+  document.getElementById('modal-image').src = h.image_url || SCENARIO_IMAGES[h.hazard_type] || SCENARIO_IMAGES.pothole;
 
   setTimeout(() => {
     const ctx = document.getElementById('modal-imu-chart');

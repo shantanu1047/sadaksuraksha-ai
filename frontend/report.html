@@ -1019,11 +1019,19 @@
                         address: `Citizen GPS: ${(reportData.lat || 12.9716).toFixed(4)}°N, ${(reportData.lng || 77.5946).toFixed(4)}°E (${reportData.city || 'Bengaluru'}, ${reportData.state || 'Karnataka'})`,
                         detected_at: new Date().toISOString().replace('T', ' ').substring(0, 19),
                         image_url: reportData.photo_b64 || null,
+                        fusion: {
+                            physical_depth_cm: data.ai_depth_cm || (reportData.severity ? reportData.severity * 2.5 : 7.0),
+                            physical_area_sqm: 0.85,
+                            is_false_positive: false,
+                            fused_confidence: 0.94,
+                            pci_deduct_value: 45.0
+                        },
                         priority: {
-                            raw_risk_score: data.ai_risk_score || 85.0,
+                            raw_risk_score: data.ai_risk_score || (reportData.severity ? reportData.severity * 18 : 85.0),
                             estimated_repair_cost_usd: data.estimated_repair_cost_inr || 24000,
                             recommended_repair_technique: 'Rapid Hot-Mix Compaction (MoRTH Spec 500)',
-                            estimated_crew_hours: 4.5
+                            estimated_crew_hours: 4.5,
+                            pci_deduct_value: 45.0
                         },
                         citizen_report: {
                             report_id: data.ticket_id,
