@@ -741,11 +741,18 @@
             <div id="gis-map" class="w-full h-full"></div>
 
             <!-- Floating Top-Right Map Controls -->
-            <div class="absolute top-4 right-4 z-20 flex items-center gap-2.5 bg-white/95 backdrop-blur-md border border-slate-200 p-2.5 rounded-xl text-black shadow-md">
-              <label class="text-xs text-slate-800 font-bold flex items-center gap-1.5 cursor-pointer">
-                <input type="checkbox" id="toggle-heatmap" checked class="accent-orange-600 rounded">
-                <span>Risk Heatmap</span>
-              </label>
+            <div class="absolute top-4 right-4 z-20 flex flex-wrap items-center gap-2 bg-white/95 backdrop-blur-md border border-slate-200 p-2 rounded-xl text-black shadow-md">
+              <div class="flex items-center gap-1.5">
+                <span class="text-[11px] font-black text-slate-700 flex items-center gap-0.5">
+                  <span class="text-blue-600 font-extrabold">G</span><span class="text-red-500 font-extrabold">o</span><span class="text-amber-500 font-extrabold">o</span><span class="text-blue-600 font-extrabold">g</span><span class="text-emerald-600 font-extrabold">l</span><span class="text-red-500 font-extrabold">e</span> Maps:
+                </span>
+                <select id="google-map-type-selector" onchange="setGoogleMapLayer(this.value)" class="text-xs font-bold text-slate-800 bg-white border border-slate-300 rounded-md px-1.5 py-0.5 cursor-pointer focus:outline-none shadow-2xs">
+                  <option value="roadmap" selected>Roadmap</option>
+                  <option value="satellite">Satellite</option>
+                  <option value="terrain">Terrain</option>
+                  <option value="traffic">Live Traffic</option>
+                </select>
+              </div>
               <span class="text-slate-300">|</span>
               <label class="text-xs text-slate-800 font-bold flex items-center gap-1.5 cursor-pointer">
                 <input type="checkbox" id="toggle-clusters" checked class="accent-blue-700 rounded">

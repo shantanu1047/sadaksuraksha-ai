@@ -370,8 +370,57 @@ function updateKpiBar(analytics) {
 }
 
 // ==========================================
-// GIS MAP MODULE (INDIA)
+// GIS MAP MODULE (GOOGLE MAPS INTEGRATION)
 // ==========================================
+let currentGoogleMapLayer = null;
+const GOOGLE_MAP_TILE_LAYERS = {
+  roadmap: {
+    url: 'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+    attribution: 'Map data &copy; <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">Google Maps</a>',
+    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+    maxZoom: 20
+  },
+  satellite: {
+    url: 'https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',
+    attribution: 'Imagery &copy; <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">Google</a>',
+    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+    maxZoom: 20
+  },
+  terrain: {
+    url: 'https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',
+    attribution: 'Map data &copy; <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">Google Maps</a>',
+    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+    maxZoom: 20
+  },
+  traffic: {
+    url: 'https://{s}.google.com/vt/lyrs=m,traffic&x={x}&y={y}&z={z}',
+    attribution: 'Traffic data &copy; <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">Google Maps</a>',
+    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+    maxZoom: 20
+  }
+};
+
+function setGoogleMapLayer(layerType) {
+  if (!gisMap) return;
+  const cfg = GOOGLE_MAP_TILE_LAYERS[layerType] || GOOGLE_MAP_TILE_LAYERS.roadmap;
+  if (currentGoogleMapLayer) {
+    gisMap.removeLayer(currentGoogleMapLayer);
+  }
+  currentGoogleMapLayer = L.tileLayer(cfg.url, {
+    attribution: cfg.attribution,
+    maxZoom: cfg.maxZoom || 20,
+    subdomains: cfg.subdomains || ['mt0', 'mt1', 'mt2', 'mt3']
+  }).addTo(gisMap);
+
+  if (gisClusterLayer && gisMap.hasLayer(gisClusterLayer)) {
+    gisClusterLayer.bringToFront();
+  }
+  if (gisMarkerLayer && gisMap.hasLayer(gisMarkerLayer)) {
+    gisMarkerLayer.bringToFront();
+  }
+}
+window.setGoogleMapLayer = setGoogleMapLayer;
+
 function initGisMap() {
   const mapElem = document.getElementById('gis-map');
   if (!mapElem) return;
@@ -386,22 +435,22 @@ function initGisMap() {
 
   L.control.zoom({ position: 'bottomright' }).addTo(gisMap);
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; CartoDB &copy; OpenStreetMap',
-    maxZoom: 19,
-    subdomains: 'abcd'
-  }).addTo(gisMap);
+  // Initialize with Google Maps Roadmap layer
+  setGoogleMapLayer('roadmap');
 
   gisMarkerLayer = L.layerGroup().addTo(gisMap);
   gisClusterLayer = L.layerGroup().addTo(gisMap);
 
-  document.getElementById('toggle-clusters').addEventListener('change', (e) => {
-    if (e.target.checked) {
-      gisMap.addLayer(gisClusterLayer);
-    } else {
-      gisMap.removeLayer(gisClusterLayer);
-    }
-  });
+  const toggleClusters = document.getElementById('toggle-clusters');
+  if (toggleClusters) {
+    toggleClusters.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        gisMap.addLayer(gisClusterLayer);
+      } else {
+        gisMap.removeLayer(gisClusterLayer);
+      }
+    });
+  }
 
   setTimeout(() => {
     if (gisMap) gisMap.invalidateSize();
