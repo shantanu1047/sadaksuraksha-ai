@@ -530,7 +530,20 @@ async def websocket_patrol_simulation(websocket: WebSocket):
         logger.error(f"WebSocket error: {e}")
 
 
-frontend_dir = Path(__file__).parent.parent / "frontend"
+def get_frontend_dir() -> Path:
+    candidates = [
+        Path(__file__).resolve().parent.parent / "frontend",
+        Path(os.getcwd()) / "frontend",
+        Path("/var/task/frontend"),
+        Path("./frontend"),
+    ]
+    for c in candidates:
+        if c.exists() and (c / "index.html").exists():
+            return c
+    return candidates[0]
+
+frontend_dir = get_frontend_dir()
+
 if frontend_dir.exists():
     app.mount("/static", StaticFiles(directory=str(frontend_dir)), name="static")
     if (frontend_dir / "assets").exists():
@@ -540,28 +553,46 @@ if frontend_dir.exists():
     if (frontend_dir / "js").exists():
         app.mount("/js", StaticFiles(directory=str(frontend_dir / "js")), name="js")
 
-    @app.get("/")
-    async def serve_gateway():
-        """National Gateway & Role Selection Screen."""
-        return FileResponse(str(frontend_dir / "login.html"))
+@app.get("/")
+async def serve_gateway():
+    """National Gateway & Role Selection Screen."""
+    fdir = get_frontend_dir()
+    file_path = fdir / "login.html"
+    if file_path.exists():
+        return FileResponse(str(file_path))
+    return JSONResponse({"status": "active", "message": "SadakSuraksha AI API operational", "frontend_path": str(fdir)})
 
-    @app.get("/login")
-    async def serve_login():
-        """Login and role gateway."""
-        return FileResponse(str(frontend_dir / "login.html"))
+@app.get("/login")
+async def serve_login():
+    """Login and role gateway."""
+    fdir = get_frontend_dir()
+    file_path = fdir / "login.html"
+    if file_path.exists():
+        return FileResponse(str(file_path))
+    return FileResponse(str(fdir / "index.html"))
 
-    @app.get("/dashboard")
-    async def serve_dashboard():
-        """Government Official AI Command Center."""
-        return FileResponse(str(frontend_dir / "index.html"))
+@app.get("/dashboard")
+async def serve_dashboard():
+    """Government Official AI Command Center."""
+    fdir = get_frontend_dir()
+    file_path = fdir / "index.html"
+    if file_path.exists():
+        return FileResponse(str(file_path))
+    return JSONResponse({"status": "error", "message": f"Dashboard not found at {file_path}"})
 
-    @app.get("/admin")
-    async def serve_admin():
-        """Government Official AI Command Center alias."""
-        return FileResponse(str(frontend_dir / "index.html"))
+@app.get("/admin")
+async def serve_admin():
+    """Government Official AI Command Center alias."""
+    fdir = get_frontend_dir()
+    return FileResponse(str(fdir / "index.html"))
 
-    @app.get("/report")
-    async def serve_citizen_report():
-        """Indian Citizen Mobile Reporting Portal."""
-        return FileResponse(str(frontend_dir / "report.html"))
+@app.get("/report")
+async def serve_citizen_report():
+    """Indian Citizen Mobile Reporting Portal."""
+    fdir = get_frontend_dir()
+    file_path = fdir / "report.html"
+    if file_path.exists():
+        return FileResponse(str(file_path))
+    return FileResponse(str(fdir / "index.html"))
+
 
