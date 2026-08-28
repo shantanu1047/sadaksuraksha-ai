@@ -71,36 +71,80 @@ copilot_service = CopilotService()
 ingestion_service = IngestionService()
 forecast_service = ForecastService()
 
-def get_persisted_file() -> Path:
-    base = Path(__file__).resolve().parent.parent / "database"
-    if not base.exists():
-        try:
-            base.mkdir(parents=True, exist_ok=True)
-        except Exception:
-            return Path("/tmp") / "persisted_citizen_hazards.json"
-    return base / "persisted_citizen_hazards.json"
+def get_storage_paths() -> List[Path]:
+    paths = []
+    # Primary local database folder
+    try:
+        base = Path(__file__).resolve().parent.parent / "database"
+        base.mkdir(parents=True, exist_ok=True)
+        paths.append(base / "persisted_citizen_hazards.json")
+    except Exception:
+        pass
+
+    # Root workspace folder
+    try:
+        paths.append(Path.cwd() / "database" / "persisted_citizen_hazards.json")
+    except Exception:
+        pass
+
+    # Serverless / Lambda / Vercel writable /tmp location
+    try:
+        paths.append(Path("/tmp") / "persisted_citizen_hazards.json")
+    except Exception:
+        pass
+
+    return paths
+
 
 def load_persisted_citizen_hazards() -> List[HazardIncident]:
-    try:
-        p = get_persisted_file()
-        if p.exists():
-            with open(p, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                if isinstance(data, list):
-                    return [HazardIncident(**d) for d in data]
-    except Exception as e:
-        logger.debug(f"Could not load persisted hazards: {e}")
-    return []
+    loaded_map: Dict[str, HazardIncident] = {}
+    for p in get_storage_paths():
+        try:
+            if p.exists():
+                with open(p, "r", encoding="utf-8") as f:
+                    content = f.read().strip()
+                    if content:
+                        data = json.loads(content)
+                        if isinstance(data, list):
+                            for d in data:
+                                if isinstance(d, dict) and d.get("id"):
+                                    try:
+                                        loaded_map[d["id"]] = HazardIncident(**d)
+                                    except Exception:
+                                        pass
+        except Exception as e:
+            logger.debug(f"Could not load persisted hazards from {p}: {e}")
+    return list(loaded_map.values())
+
 
 def save_persisted_citizen_hazards(incidents: List[HazardIncident]):
-    try:
-        p = get_persisted_file()
-        citizen_only = [inc.model_dump() for inc in incidents if inc.id.startswith("HAZ-") and inc.citizen_report is not None]
-        citizen_only = citizen_only[:100]
-        with open(p, "w", encoding="utf-8") as f:
-            json.dump(citizen_only, f, indent=2, default=str)
-    except Exception as e:
-        logger.debug(f"Could not persist hazard to disk: {e}")
+    citizen_only = [inc.model_dump() for inc in incidents if inc.id.startswith("HAZ-")]
+    citizen_only = citizen_only[:200]
+    payload_str = json.dumps(citizen_only, indent=2, default=str)
+    
+    for p in get_storage_paths():
+        try:
+            p.parent.mkdir(parents=True, exist_ok=True)
+            with open(p, "w", encoding="utf-8") as f:
+                f.write(payload_str)
+        except Exception as e:
+            logger.debug(f"Could not persist hazard to {p}: {e}")
+
+
+def sync_hazards_from_disk():
+    """Ensures in-memory hazards_db and work_orders_db are synchronized with persistent disk storage."""
+    global hazards_db, work_orders_db
+    persisted = load_persisted_citizen_hazards()
+    existing_ids = {h.id for h in hazards_db}
+    new_found = False
+    for p in persisted:
+        if p.id not in existing_ids:
+            hazards_db.insert(0, p)
+            existing_ids.add(p.id)
+            new_found = True
+    if new_found or (not work_orders_db and hazards_db):
+        work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+
 
 hazards_db: List[HazardIncident] = load_persisted_citizen_hazards()
 roads_db: List[RoadSegment] = get_demo_road_segments()
@@ -164,13 +208,14 @@ async def set_api_key(payload: Dict[str, Any]):
 async def reset_citizen_hazards():
     """Clear all persisted citizen complaints and reset to completely clean fresh state (0 hazards)."""
     global hazards_db, work_orders_db
-    p = get_persisted_file()
-    try:
-        if p.exists():
-            with open(p, "w", encoding="utf-8") as f:
-                json.dump([], f)
-    except Exception as e:
-        logger.debug(f"Reset write error: {e}")
+    for p in get_storage_paths():
+        try:
+            if p.exists() or p.parent.exists():
+                p.parent.mkdir(parents=True, exist_ok=True)
+                with open(p, "w", encoding="utf-8") as f:
+                    f.write("[]")
+        except Exception as e:
+            logger.debug(f"Reset write error on {p}: {e}")
     
     hazards_db = []
     work_orders_db = []
@@ -199,6 +244,7 @@ async def seed_demo_hazards():
 @app.get("/api/states")
 async def list_states():
     """Returns available Indian States with regional incident statistics."""
+    sync_hazards_from_disk()
     states_dict = {}
     for h in hazards_db:
         st = h.state
@@ -229,6 +275,7 @@ async def list_hazards(
     min_risk: Optional[float] = None,
     exclude_false_positives: bool = False,
 ):
+    sync_hazards_from_disk()
     results = hazards_db
     if state and state.lower() != "all":
         results = [h for h in results if h.state.lower() == state.lower()]
@@ -375,6 +422,7 @@ async def list_roads(state: Optional[str] = None):
 
 @app.get("/api/work-orders", response_model=List[WorkOrder])
 async def list_work_orders(state: Optional[str] = None):
+    sync_hazards_from_disk()
     if state and state.lower() != "all":
         return [wo for wo in work_orders_db if wo.state.lower() == state.lower()]
     return work_orders_db
@@ -382,6 +430,7 @@ async def list_work_orders(state: Optional[str] = None):
 
 @app.post("/api/work-orders/generate", response_model=List[WorkOrder])
 async def regenerate_work_orders():
+    sync_hazards_from_disk()
     global work_orders_db
     work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
     return work_orders_db
@@ -398,6 +447,7 @@ async def update_work_order_status(order_id: str, status: str = Form(...)):
 
 @app.post("/api/copilot/chat", response_model=CopilotResponse)
 async def copilot_chat(query: CopilotQuery):
+    sync_hazards_from_disk()
     active_hazards = hazards_db
     if query.state_filter and query.state_filter.lower() != "all":
         active_hazards = [h for h in hazards_db if h.state.lower() == query.state_filter.lower()]
@@ -406,6 +456,7 @@ async def copilot_chat(query: CopilotQuery):
 
 @app.get("/api/analytics/summary")
 async def get_analytics_summary(state: Optional[str] = None):
+    sync_hazards_from_disk()
     subset_hazards = hazards_db
     subset_roads = roads_db
     subset_work_orders = work_orders_db

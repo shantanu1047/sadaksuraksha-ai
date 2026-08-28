@@ -9,7 +9,7 @@
 let allHazards = [];
 let allRoads = [];
 let allWorkOrders = [];
-let currentStateFilter = 'Karnataka';
+let currentStateFilter = 'all';
 let currentCityFilter = 'all';
 let currentCategoryFilter = 'all';
 let currentSearchQuery = '';
@@ -323,56 +323,74 @@ async function refreshAllData() {
     ]);
 
     const fetchedHazards = await hazardsRes.json();
-    allHazards = Array.isArray(fetchedHazards) ? fetchedHazards.map(normalizeHazard) : [];
-    allRoads = await roadsRes.json();
-    allWorkOrders = await workOrdersRes.json();
-    const analytics = await analyticsRes.json();
+    const normalizedFetched = Array.isArray(fetchedHazards) ? fetchedHazards.map(normalizeHazard) : [];
 
-    // Merge any citizen reports submitted from /report and generate PWD Work Orders
+    // Authoritative Single-Source Map Merge
+    const hazardMap = new Map();
+
+    // 1. Add server hazards
+    normalizedFetched.forEach(h => {
+      if (h && h.id) hazardMap.set(h.id, h);
+    });
+
+    // 2. Add/Merge local storage citizen hazards
     try {
       const localReports = JSON.parse(localStorage.getItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS') || '[]');
-      if (Array.isArray(localReports) && localReports.length > 0) {
-        const existingIds = new Set(allHazards.map(h => h.id));
-        for (const rawLr of localReports) {
+      if (Array.isArray(localReports)) {
+        localReports.forEach(rawLr => {
           const lr = normalizeHazard(rawLr);
-          if (!existingIds.has(lr.id)) {
-            allHazards.unshift(lr);
-            existingIds.add(lr.id);
+          if (lr && lr.id) {
+            if (hazardMap.has(lr.id)) {
+              const existing = hazardMap.get(lr.id);
+              if (!existing.image_url && lr.image_url) {
+                existing.image_url = lr.image_url;
+              }
+            } else {
+              hazardMap.set(lr.id, lr);
+            }
           }
-
-          // Ensure a PWD Work Order exists for newly reported citizen hazards
-          const hasOrder = allWorkOrders.some(wo => wo.target_hazard_ids && wo.target_hazard_ids.includes(lr.id));
-          if (!hasOrder) {
-            const stateCode = (lr.state || 'KAR').substring(0, 3).toUpperCase();
-            allWorkOrders.unshift({
-              id: `WO-${stateCode}-CITIZEN-${lr.id.replace(/[^0-9]/g, '').slice(-4) || Math.floor(Math.random()*900+100)}`,
-              title: `Citizen Action Order: ${lr.title} (${lr.road_name || lr.city})`,
-              state: lr.state || 'Karnataka',
-              city: lr.city || 'Bengaluru',
-              target_hazard_ids: [lr.id],
-              hazards_summary: [{
-                hazard_id: lr.id,
-                hazard_type: lr.hazard_type || 'pothole',
-                cost_inr: lr.priority?.estimated_repair_cost_usd || 22500
-              }],
-              cluster_center_lat: lr.latitude || 12.9716,
-              cluster_center_lng: lr.longitude || 77.5946,
-              assigned_crew: `${lr.state || 'State'} PWD Fast-Response Patch Unit #02`,
-              scheduled_date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
-              priority_tier: (lr.severity === 'critical' || lr.severity === 'high') ? 'Tier 1 - Emergency MoRTH Dispatch (< 24 hrs)' : 'Tier 2 - Scheduled Maintenance (< 72 hrs)',
-              estimated_cost_usd: lr.priority?.estimated_repair_cost_usd || 22500,
-              estimated_hours: lr.priority?.estimated_crew_hours || 3.5,
-              materials_required: ['Bituminous Concrete (BC) Hot Mix (MoRTH Spec 500)', 'Emulsion Tack Coat (RS-1)', 'High-Adhesion Polymer Binder'],
-              equipment_assigned: ['Vibratory Tandem Roller 8T', 'Pothole Infrared Recycler', 'MoRTH Compactor'],
-              status: 'Approved'
-            });
-          }
-        }
+        });
       }
     } catch (e) {
-      console.debug('Error merging local citizen reports & work orders:', e);
+      console.debug('Error merging local citizen reports:', e);
     }
 
+    allHazards = Array.from(hazardMap.values());
+    allRoads = Array.isArray(await roadsRes.json()) ? await roadsRes.json() : [];
+    const serverOrders = Array.isArray(await workOrdersRes.json()) ? await workOrdersRes.json() : [];
+    allWorkOrders = [...serverOrders];
+
+    // Ensure every hazard in allHazards has an associated work order
+    for (const h of allHazards) {
+      const hasOrder = allWorkOrders.some(wo => wo.target_hazard_ids && wo.target_hazard_ids.includes(h.id));
+      if (!hasOrder) {
+        const stateCode = (h.state || 'IND').substring(0, 3).toUpperCase();
+        allWorkOrders.unshift({
+          id: `WO-${stateCode}-CITIZEN-${(h.id || '').replace(/[^0-9]/g, '').slice(-4) || Math.floor(Math.random()*900+100)}`,
+          title: `Citizen Action Order: ${h.title || 'Road Hazard'} (${h.road_name || h.city || h.state})`,
+          state: h.state || 'Karnataka',
+          city: h.city || 'Bengaluru',
+          target_hazard_ids: [h.id],
+          hazards_summary: [{
+            hazard_id: h.id,
+            hazard_type: h.hazard_type || 'pothole',
+            cost_inr: h.priority?.estimated_repair_cost_usd || 22500
+          }],
+          cluster_center_lat: parseFloat(h.latitude) || 12.9716,
+          cluster_center_lng: parseFloat(h.longitude) || 77.5946,
+          assigned_crew: `${h.state || 'State'} PWD Fast-Response Patch Unit #02`,
+          scheduled_date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+          priority_tier: (h.severity === 'critical' || h.severity === 'high') ? 'Tier 1 - Emergency MoRTH Dispatch (< 24 hrs)' : 'Tier 2 - Scheduled Maintenance (< 72 hrs)',
+          estimated_cost_usd: h.priority?.estimated_repair_cost_usd || 22500,
+          estimated_hours: h.priority?.estimated_crew_hours || 3.5,
+          materials_required: ['Bituminous Concrete (BC) Hot Mix (MoRTH Spec 500)', 'Emulsion Tack Coat (RS-1)', 'High-Adhesion Polymer Binder'],
+          equipment_assigned: ['Vibratory Tandem Roller 8T', 'Pothole Infrared Recycler', 'MoRTH Compactor'],
+          status: 'Approved'
+        });
+      }
+    }
+
+    const analytics = await analyticsRes.json();
     applyStateAndSearchFilters();
     updateAnalyticsCharts(analytics, allRoads);
     lucide.createIcons();
@@ -640,12 +658,17 @@ function renderMapMarkers(hazards) {
   gisMarkerLayer.clearLayers();
   gisClusterLayer.clearLayers();
 
-  hazards.forEach(h => {
+  hazards.forEach(rawH => {
+    const h = normalizeHazard(rawH);
+    const lat = parseFloat(h.latitude);
+    const lng = parseFloat(h.longitude);
+    if (isNaN(lat) || isNaN(lng)) return;
+
     let pinClass = 'pin-medium';
     let iconName = 'alert-circle';
     let size = 32;
 
-    if (h.fusion.is_false_positive) {
+    if (h.fusion?.is_false_positive) {
       pinClass = 'pin-fp';
       iconName = 'eye-off';
       size = 26;
@@ -670,7 +693,7 @@ function renderMapMarkers(hazards) {
       iconAnchor: [size / 2, size / 2]
     });
 
-    const marker = L.marker([h.latitude, h.longitude], { icon: customIcon });
+    const marker = L.marker([lat, lng], { icon: customIcon });
 
     let sevBadgeBg = 'bg-amber-100/80 text-amber-900 border-amber-300/70';
     if (h.severity === 'critical') {
@@ -685,7 +708,7 @@ function renderMapMarkers(hazards) {
         <div class="flex items-center justify-between gap-2 pb-2 mb-2 border-b border-slate-200/60">
           <span class="inline-flex items-center gap-1 font-bold text-xs text-blue-900 bg-blue-50/80 border border-blue-200/80 px-2 py-0.5 rounded-md">
             <span>${h.id}</span>
-            <span class="text-[10px] text-blue-700 font-medium">(${h.state})</span>
+            <span class="text-[10px] text-blue-700 font-medium">(${h.state || 'India'})</span>
           </span>
           <span class="px-2 py-0.5 rounded-md text-[10.5px] font-bold uppercase tracking-wide border ${sevBadgeBg}">
             ${h.severity}
@@ -694,13 +717,13 @@ function renderMapMarkers(hazards) {
 
         <!-- Hazard Title & Address -->
         <h4 class="font-extrabold text-[13px] text-slate-900 mb-1 leading-snug tracking-tight">${h.title}</h4>
-        <p class="text-[11px] text-slate-600 mb-2.5 leading-tight font-medium">${h.address}</p>
+        <p class="text-[11px] text-slate-600 mb-2.5 leading-tight font-medium">${h.address || ((h.city || '') + ', ' + (h.state || ''))}</p>
 
         <!-- Metric Details Glass Box -->
         <div class="bg-white/60 backdrop-blur-xs p-2.5 rounded-xl border border-slate-200/70 text-[11px] mb-3 space-y-1 shadow-2xs font-sans">
-          <div class="flex justify-between items-center"><span class="text-slate-600 font-medium">Risk Priority:</span> <strong class="text-rose-600 font-extrabold font-mono">${h.priority.raw_risk_score}/100</strong></div>
-          <div class="flex justify-between items-center"><span class="text-slate-600 font-medium">Cavity Depth:</span> <strong class="text-blue-700 font-extrabold font-mono">${h.fusion.physical_depth_cm} cm</strong></div>
-          <div class="flex justify-between items-center"><span class="text-slate-600 font-medium">PWD Repair:</span> <strong class="text-slate-900 font-extrabold font-mono">${formatINR(h.priority.estimated_repair_cost_usd)}</strong></div>
+          <div class="flex justify-between items-center"><span class="text-slate-600 font-medium">Risk Priority:</span> <strong class="text-rose-600 font-extrabold font-mono">${h.priority?.raw_risk_score || 75}/100</strong></div>
+          <div class="flex justify-between items-center"><span class="text-slate-600 font-medium">Cavity Depth:</span> <strong class="text-blue-700 font-extrabold font-mono">${h.fusion?.physical_depth_cm || 5.0} cm</strong></div>
+          <div class="flex justify-between items-center"><span class="text-slate-600 font-medium">PWD Repair:</span> <strong class="text-slate-900 font-extrabold font-mono">${formatINR(h.priority?.estimated_repair_cost_usd || 24000)}</strong></div>
         </div>
 
         <!-- Action Buttons -->
@@ -708,10 +731,10 @@ function renderMapMarkers(hazards) {
           <button onclick="openIncidentModal('${h.id}')" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-2 px-3 rounded-xl shadow-xs border border-amber-400/40 flex items-center justify-center gap-1.5 text-xs transition-all cursor-pointer">
             <span>🇮🇳 View Multimodal Dossier</span>
           </button>
-          <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" class="w-full bg-slate-900/90 hover:bg-slate-900 text-white font-semibold py-1.5 px-3 rounded-xl shadow-xs border border-slate-700/50 flex items-center justify-center gap-1.5 text-[11.5px] transition-all no-underline text-center box-border">
+          <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank" rel="noopener noreferrer" class="w-full bg-slate-900/90 hover:bg-slate-900 text-white font-semibold py-1.5 px-3 rounded-xl shadow-xs border border-slate-700/50 flex items-center justify-center gap-1.5 text-[11.5px] transition-all no-underline text-center box-border">
             <span>🗺️ Open in Google Maps ↗</span>
           </a>
-          <a href="https://www.google.com/maps/dir/?api=1&destination=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" class="block text-center text-emerald-700 hover:text-emerald-800 font-bold text-[11px] no-underline pt-0.5 transition-colors">
+          <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" target="_blank" rel="noopener noreferrer" class="block text-center text-emerald-700 hover:text-emerald-800 font-bold text-[11px] no-underline pt-0.5 transition-colors">
             🧭 Navigate Route
           </a>
         </div>
@@ -721,6 +744,10 @@ function renderMapMarkers(hazards) {
     marker.bindPopup(popupHtml);
     gisMarkerLayer.addLayer(marker);
   });
+
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    window.lucide.createIcons();
+  }
 
   // Render Clustered Work Order Outlines
   allWorkOrders.forEach(wo => {

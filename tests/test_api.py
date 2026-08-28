@@ -231,3 +231,74 @@ def test_forecast_simulation_run(client):
         assert item["forecast_risk"] in ["Critical", "High", "Medium", "Low"]
 
 
+def test_multiple_citizen_reports_persistence_and_work_order_sync(client):
+    # Reset to fresh clean state
+    client.post("/api/hazards/reset")
+
+    # Verify 0 hazards
+    hazards_before = client.get("/api/hazards").json()
+    assert len(hazards_before) == 0
+
+    # 1. Submit First Complaint (Mumbai)
+    sub1 = {
+        "latitude": 19.0760,
+        "longitude": 72.8777,
+        "state": "Maharashtra",
+        "city": "Mumbai",
+        "category": "pothole",
+        "severity_self_report": 4,
+        "description": "Deep pothole on Western Express Highway.",
+        "reporter_name": "Rohan Sharma",
+        "road_name": "WEH Bandra Flyover"
+    }
+    r1 = client.post("/api/ingest/citizen-report", json=sub1)
+    assert r1.status_code == 200
+    ticket1 = r1.json()["ticket_id"]
+    hazard1_id = r1.json()["hazard_id"]
+
+    # 2. Verify Hazard exists in GET /api/hazards
+    hazards_mid = client.get("/api/hazards").json()
+    assert len(hazards_mid) == 1
+    assert hazards_mid[0]["id"] == hazard1_id
+    assert hazards_mid[0]["state"] == "Maharashtra"
+    assert hazards_mid[0]["latitude"] == 19.0760
+
+    # 3. Verify Work Order was generated for it
+    work_orders_mid = client.get("/api/work-orders").json()
+    assert len(work_orders_mid) >= 1
+    assert any(hazard1_id in wo.get("target_hazard_ids", []) for wo in work_orders_mid)
+
+    # 4. Submit Second Complaint (Bengaluru)
+    sub2 = {
+        "latitude": 12.9716,
+        "longitude": 77.5946,
+        "state": "Karnataka",
+        "city": "Bengaluru",
+        "category": "alligator_cracking",
+        "severity_self_report": 5,
+        "description": "Cracked pavement on Outer Ring Road.",
+        "reporter_name": "Priya Nair",
+        "road_name": "ORR Bellandur"
+    }
+    r2 = client.post("/api/ingest/citizen-report", json=sub2)
+    assert r2.status_code == 200
+    hazard2_id = r2.json()["hazard_id"]
+
+    # 5. Verify BOTH complaints persist and are returned with correct locations
+    hazards_after = client.get("/api/hazards").json()
+    assert len(hazards_after) == 2
+    ids = [h["id"] for h in hazards_after]
+    assert hazard1_id in ids
+    assert hazard2_id in ids
+
+    # 6. Verify State Filters work accurately
+    hazards_mh = client.get("/api/hazards?state=Maharashtra").json()
+    assert len(hazards_mh) == 1
+    assert hazards_mh[0]["city"] == "Mumbai"
+
+    hazards_ka = client.get("/api/hazards?state=Karnataka").json()
+    assert len(hazards_ka) == 1
+    assert hazards_ka[0]["city"] == "Bengaluru"
+
+
+
