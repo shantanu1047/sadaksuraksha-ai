@@ -327,7 +327,7 @@ async function refreshAllData() {
     allWorkOrders = await workOrdersRes.json();
     const analytics = await analyticsRes.json();
 
-    // Merge any citizen reports submitted from /report
+    // Merge any citizen reports submitted from /report and generate PWD Work Orders
     try {
       const localReports = JSON.parse(localStorage.getItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS') || '[]');
       if (Array.isArray(localReports) && localReports.length > 0) {
@@ -337,10 +337,31 @@ async function refreshAllData() {
             allHazards.unshift(lr);
             existingIds.add(lr.id);
           }
+
+          // Ensure a PWD Work Order exists for newly reported citizen hazards
+          const hasOrder = allWorkOrders.some(wo => wo.target_hazard_ids && wo.target_hazard_ids.includes(lr.id));
+          if (!hasOrder) {
+            const stateCode = (lr.state || 'KAR').substring(0, 3).toUpperCase();
+            allWorkOrders.unshift({
+              id: `WO-${stateCode}-CITIZEN-${lr.id.replace(/[^0-9]/g, '').slice(-4) || Math.floor(Math.random()*900+100)}`,
+              title: `Citizen Action Order: ${lr.title} (${lr.road_name || lr.city})`,
+              state: lr.state || 'Karnataka',
+              city: lr.city || 'Bengaluru',
+              target_hazard_ids: [lr.id],
+              assigned_crew: `${lr.state || 'State'} PWD Fast-Response Patch Unit #02`,
+              scheduled_date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+              priority_tier: (lr.severity === 'critical' || lr.severity === 'high') ? 'Tier 1 - Emergency MoRTH Dispatch (< 24 hrs)' : 'Tier 2 - Scheduled Maintenance (< 72 hrs)',
+              estimated_cost_usd: lr.priority?.estimated_repair_cost_usd || 22500,
+              estimated_hours: lr.priority?.estimated_crew_hours || 3.5,
+              materials_required: ['Bituminous Concrete (BC) Hot Mix (MoRTH Spec 500)', 'Emulsion Tack Coat (RS-1)', 'High-Adhesion Polymer Binder'],
+              equipment_assigned: ['Vibratory Tandem Roller 8T', 'Pothole Infrared Recycler', 'MoRTH Compactor'],
+              status: 'Approved'
+            });
+          }
         }
       }
     } catch (e) {
-      console.debug('Error merging local citizen reports:', e);
+      console.debug('Error merging local citizen reports & work orders:', e);
     }
 
     applyStateAndSearchFilters();
