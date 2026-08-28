@@ -45,18 +45,7 @@
       background: linear-gradient(90deg, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%);
     }
 
-    /* Atmospheric Highway Background Hero Mask */
-    .bulletin-hero-bg {
-      position: relative;
-      background-image: 
-        linear-gradient(to bottom, rgba(248, 250, 252, 0.88) 0%, rgba(241, 245, 249, 0.94) 50%, rgba(226, 232, 240, 0.98) 100%),
-        url('/static/assets/highway_bg.webp');
-      background-size: cover;
-      background-position: center 35%;
-      background-repeat: no-repeat;
-    }
-
-    /* Login Portal Hero Section Background (Highway Interchange with Frosted Atmospheric Overlay) */
+    /* Login Portal Section Background (Highway Interchange with Frosted Atmospheric Overlay) */
     .login-interchange-bg {
       position: relative;
       background-color: #f1f5f9;
@@ -67,27 +56,14 @@
       background-position: center center;
       background-repeat: no-repeat;
     }
-
-    /* National Emergency Helplines Section Backdrop (Sea Link Suspension Bridge Sunset Panorama) */
-    .emergency-helpline-bg {
-      background-color: #f1f5f9;
-      background-image: 
-        linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(248, 250, 252, 0.82) 100%),
-        url('/static/assets/emergency_sealink_bg.png');
-      background-size: cover;
-      background-position: center 38%;
-      background-repeat: no-repeat;
-      position: relative;
-    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-amber-200 selection:text-black">
 
-
   <!-- Top Indian Tricolour Strip -->
   <div class="tricolor-strip"></div>
 
-  <!-- Top Global Header (Longer / Expansive) -->
+  <!-- Top Global Header -->
   <header class="py-5 px-8 border-b border-slate-200 bg-white sticky top-0 z-40 shadow-xs">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-3.5">
@@ -120,9 +96,9 @@
     </div>
   </header>
 
-  <!-- Hero & Gateway Section (with Night Highway Interchange Backdrop) -->
-  <div class="login-interchange-bg border-b border-slate-300">
-    <main class="max-w-6xl mx-auto px-6 py-14 flex-1 flex flex-col justify-center">
+  <!-- Hero & Gateway Section (with Highway Interchange Backdrop) -->
+  <div class="login-interchange-bg flex-1 flex flex-col justify-center">
+    <main class="max-w-6xl mx-auto px-6 py-14 w-full flex flex-col justify-center">
 
       <!-- Title Section -->
       <div class="text-center max-w-3xl mx-auto mb-12">
@@ -272,269 +248,6 @@
 
     </main>
   </div>
-
-  <!-- ==========================================
-       GOVERNMENT OF INDIA HELPLINES & NOTIFICATION HUB
-       ========================================== -->
-  <section class="mt-8 border-t border-slate-300 bg-white text-black">
-
-    <!-- 1. NATIONAL EMERGENCY HELPLINE STRIP (Expansive Height & Clean NHAI Badges with Sea Link Sunset Panorama) -->
-    <div class="emergency-helpline-bg border-b border-slate-300/80 px-8 py-7">
-      <div class="max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-5">
-        
-        <div class="flex items-center gap-3.5">
-          <div class="w-12 h-12 rounded-xl bg-amber-500/20 backdrop-blur-xs border border-amber-500/40 flex items-center justify-center text-slate-900 shrink-0 shadow-xs">
-            <i data-lucide="phone-call" class="w-6 h-6 text-amber-800"></i>
-          </div>
-          <div>
-            <h4 class="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
-              <span>National Road Safety & Emergency Helplines (24x7 Toll-Free)</span>
-              <span class="px-2.5 py-0.5 rounded-full bg-rose-100/90 backdrop-blur-xs text-rose-950 border border-rose-200 text-[10px] font-mono font-bold shadow-2xs">EMERGENCY</span>
-            </h4>
-            <p class="text-[11px] text-slate-700 font-semibold mt-0.5">Government of India official emergency response & highway rescue support services</p>
-          </div>
-        </div>
-
-        <!-- Helpline Clean Tiles Grid -->
-        <div class="flex flex-wrap items-center gap-3">
-          <!-- NHAI 1033 -->
-          <a href="tel:1033" class="group flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white/88 hover:bg-white backdrop-blur-md border border-white/80 hover:border-orange-300 shadow-xs hover:shadow-md transition-all">
-            <div class="w-7 h-7 rounded-lg bg-orange-100 border border-orange-200 flex items-center justify-center text-black font-bold text-xs shadow-xs">📞</div>
-            <div>
-              <p class="text-[10px] text-slate-600 font-bold leading-none">NHAI Highway Rescue</p>
-              <p class="text-sm font-black font-mono text-orange-700 mt-0.5">1033</p>
-            </div>
-          </a>
-
-          <!-- National Emergency 112 -->
-          <a href="tel:112" class="group flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white/88 hover:bg-white backdrop-blur-md border border-white/80 hover:border-red-300 shadow-xs hover:shadow-md transition-all">
-            <div class="w-7 h-7 rounded-lg bg-red-100 border border-red-200 flex items-center justify-center text-black font-bold text-xs shadow-xs">🚨</div>
-            <div>
-              <p class="text-[10px] text-slate-600 font-bold leading-none">National Emergency</p>
-              <p class="text-sm font-black font-mono text-red-600 mt-0.5">112</p>
-            </div>
-          </a>
-
-          <!-- Ambulance 108 -->
-          <a href="tel:108" class="group flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white/88 hover:bg-white backdrop-blur-md border border-white/80 hover:border-emerald-300 shadow-xs hover:shadow-md transition-all">
-            <div class="w-7 h-7 rounded-lg bg-emerald-100 border border-emerald-200 flex items-center justify-center text-black font-bold text-xs shadow-xs">🚑</div>
-            <div>
-              <p class="text-[10px] text-slate-600 font-bold leading-none">Trauma Ambulance</p>
-              <p class="text-sm font-black font-mono text-emerald-700 mt-0.5">108</p>
-            </div>
-          </a>
-
-          <!-- Road Safety 1073 -->
-          <a href="tel:1073" class="group flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white/88 hover:bg-white backdrop-blur-md border border-white/80 hover:border-blue-300 shadow-xs hover:shadow-md transition-all">
-            <div class="w-7 h-7 rounded-lg bg-blue-100 border border-blue-200 flex items-center justify-center text-black font-bold text-xs shadow-xs">🛡️</div>
-            <div>
-              <p class="text-[10px] text-slate-600 font-bold leading-none">Road Safety Hotline</p>
-              <p class="text-sm font-black font-mono text-blue-700 mt-0.5">1073</p>
-            </div>
-          </a>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- 2. EXPANDED NATIONAL ROAD SAFETY BULLETINS (WITH HIGHWAY PHOTO BACKGROUND & STAGGERED ALIGNMENT) -->
-    <div class="bulletin-hero-bg px-8 py-16 border-b border-slate-300 min-h-[480px] flex flex-col justify-between">
-      <div class="max-w-6xl mx-auto w-full">
-        
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-10 pb-4 border-b border-slate-300/80">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-white/90 border border-slate-300 flex items-center justify-center text-black shrink-0 shadow-sm">
-              <i data-lucide="bell" class="w-5 h-5 text-orange-600"></i>
-            </div>
-            <div>
-              <h3 class="text-base sm:text-lg font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                <span>National Road Safety & Public Awareness Bulletins</span>
-                <span class="text-sm">🇮🇳</span>
-              </h3>
-              <p class="text-xs text-slate-700 font-semibold">Official MoRTH, NHAI & Smart City Notification Center</p>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-2">
-            <span class="flex items-center gap-1.5 text-xs font-bold text-slate-700">
-              <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-              Live Notifications
-            </span>
-          </div>
-        </div>
-
-        <!-- Dynamic Staggered 4-Card Alignment (Headings Visible, Details Open on Hover) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-2 pb-16">
-
-          <!-- Bulletin 1: MoRTH Safety Campaign (Stagger 1: Slightly Higher / Up) -->
-          <div class="bulletin-card nhai-card bg-amber-50/70 hover:bg-amber-50/85 backdrop-blur-md border border-amber-200/70 border-l-4 border-l-[#FF9933] p-5 flex flex-col justify-between text-black relative group shadow-sm hover:shadow-xl transition-all duration-300 md:-translate-y-4 min-h-[175px]" tabindex="0" onclick="this.classList.toggle('active')">
-            <div>
-              <div class="flex items-center justify-between mb-3">
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white/80 text-orange-950 border border-orange-300/80 uppercase tracking-wide">
-                  Campaign
-                </span>
-                <span class="text-[11px] font-semibold text-slate-600">MoRTH • 2026</span>
-              </div>
-              <h4 class="text-base font-extrabold text-slate-900 leading-snug group-hover:text-orange-600 transition-colors">
-                सड़क सुरक्षा, जीवन रक्षा
-              </h4>
-            </div>
-            
-            <div class="flex items-center justify-between text-[11px] font-semibold text-slate-500 group-hover:text-orange-600 transition-colors pt-2.5 border-t border-amber-200/50 mt-2">
-              <span>View Advisory Details</span>
-              <i data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-y-0.5"></i>
-            </div>
-
-            <!-- Smooth Floating Hover Popup Box (Translucent Light Saffron) -->
-            <div class="bulletin-popup bg-amber-50/95 backdrop-blur-xl border border-amber-200/90 rounded-2xl p-4 shadow-2xl text-black">
-              <p class="text-xs text-slate-700 font-medium leading-relaxed mb-3">
-                Certified helmets and seatbelts reduce fatal risk by 60%. Obey corridor speed limits and avoid distracted mobile driving.
-              </p>
-              <div class="border-t border-amber-200/60 pt-2.5 flex items-center justify-between text-xs">
-                <span class="text-slate-600 text-[11px] font-bold">Helpline: <strong class="text-orange-700 font-mono">1073</strong></span>
-                <a href="tel:1073" class="px-3 py-1 rounded-lg bg-white/90 hover:bg-white border border-orange-300 text-orange-950 text-xs font-bold flex items-center gap-1 shadow-2xs transition-colors">
-                  <i data-lucide="phone" class="w-3.5 h-3.5"></i> Dial 1073
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Bulletin 2: NHAI 24x7 Highway Rescue (Stagger 2: Lower / Down) -->
-          <div class="bulletin-card nhai-card bg-sky-50/70 hover:bg-sky-50/85 backdrop-blur-md border border-blue-200/70 border-l-4 border-l-[#000080] p-5 flex flex-col justify-between text-black relative group shadow-sm hover:shadow-xl transition-all duration-300 md:translate-y-6 min-h-[175px]" tabindex="0" onclick="this.classList.toggle('active')">
-            <div>
-              <div class="flex items-center justify-between mb-3">
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white/80 text-blue-950 border border-blue-300/80 uppercase tracking-wide">
-                  NHAI 24x7
-                </span>
-                <span class="text-[11px] font-semibold text-slate-600">Toll-Free</span>
-              </div>
-              <h4 class="text-base font-extrabold text-slate-900 leading-snug group-hover:text-blue-800 transition-colors">
-                Highway Emergency 1033
-              </h4>
-            </div>
-
-            <div class="flex items-center justify-between text-[11px] font-semibold text-slate-500 group-hover:text-blue-800 transition-colors pt-2.5 border-t border-blue-200/50 mt-2">
-              <span>View Rescue Protocol</span>
-              <i data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-y-0.5"></i>
-            </div>
-
-            <!-- Smooth Floating Hover Popup Box (Translucent Light Blue) -->
-            <div class="bulletin-popup bg-sky-50/95 backdrop-blur-xl border border-blue-200/90 rounded-2xl p-4 shadow-2xl text-black">
-              <p class="text-xs text-slate-700 font-medium leading-relaxed mb-3">
-                Stranded on National Highways? 1033 dispatches rapid patrol response, trauma ambulance, and towing cranes free of charge.
-              </p>
-              <div class="border-t border-blue-200/60 pt-2.5 flex items-center justify-between text-xs">
-                <span class="text-slate-600 text-[11px] font-bold">Emergency: <strong class="text-blue-800 font-mono">1033</strong></span>
-                <a href="tel:1033" class="px-3 py-1 rounded-lg bg-white/90 hover:bg-white border border-blue-300 text-blue-950 text-xs font-bold flex items-center gap-1 shadow-2xs transition-colors">
-                  <i data-lucide="phone" class="w-3.5 h-3.5"></i> Call 1033
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Bulletin 3: Good Samaritan Protection (Stagger 3: Slightly Higher / Up) -->
-          <div class="bulletin-card nhai-card bg-emerald-50/70 hover:bg-emerald-50/85 backdrop-blur-md border border-emerald-200/70 border-l-4 border-l-[#138808] p-5 flex flex-col justify-between text-black relative group shadow-sm hover:shadow-xl transition-all duration-300 md:-translate-y-2 min-h-[175px]" tabindex="0" onclick="this.classList.toggle('active')">
-            <div>
-              <div class="flex items-center justify-between mb-3">
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white/80 text-emerald-950 border border-emerald-300/80 uppercase tracking-wide">
-                  Legal Rights
-                </span>
-                <span class="text-[11px] font-semibold text-slate-600">MV Act §134A</span>
-              </div>
-              <h4 class="text-base font-extrabold text-slate-900 leading-snug group-hover:text-emerald-700 transition-colors">
-                Good Samaritan Protection & ₹5,000 Reward
-              </h4>
-            </div>
-
-            <div class="flex items-center justify-between text-[11px] font-semibold text-slate-500 group-hover:text-emerald-700 transition-colors pt-2.5 border-t border-emerald-200/50 mt-2">
-              <span>View Legal Rights</span>
-              <i data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-y-0.5"></i>
-            </div>
-
-            <!-- Smooth Floating Hover Popup Box (Translucent Light Mint Emerald) -->
-            <div class="bulletin-popup bg-emerald-50/95 backdrop-blur-xl border border-emerald-200/90 rounded-2xl p-4 shadow-2xl text-black">
-              <p class="text-xs text-slate-700 font-medium leading-relaxed mb-3">
-                Helpers are protected from legal liability or hospital detention and receive a ₹5,000 cash reward for golden-hour rescue.
-              </p>
-              <div class="border-t border-emerald-200/60 pt-2.5 flex items-center justify-between text-xs">
-                <span class="text-slate-600 text-[11px] font-bold">Ambulance: <strong class="text-emerald-700 font-mono">112 / 108</strong></span>
-                <a href="tel:112" class="px-3 py-1 rounded-lg bg-white/90 hover:bg-white border border-emerald-300 text-emerald-950 text-xs font-bold flex items-center gap-1 shadow-2xs transition-colors">
-                  <i data-lucide="phone" class="w-3.5 h-3.5"></i> Call 112
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Bulletin 4: Monsoon & Pothole SLA (Stagger 4: Lower / Down) -->
-          <div class="bulletin-card nhai-card bg-purple-50/70 hover:bg-purple-50/85 backdrop-blur-md border border-purple-200/70 border-l-4 border-l-purple-600 p-5 flex flex-col justify-between text-black relative group shadow-sm hover:shadow-xl transition-all duration-300 md:translate-y-8 min-h-[175px]" tabindex="0" onclick="this.classList.toggle('active')">
-            <div>
-              <div class="flex items-center justify-between mb-3">
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white/80 text-purple-950 border border-purple-300/80 uppercase tracking-wide">
-                  IRC:82 SLA
-                </span>
-                <span class="text-[11px] font-semibold text-slate-600">48-Hr Target</span>
-              </div>
-              <h4 class="text-base font-extrabold text-slate-900 leading-snug group-hover:text-purple-700 transition-colors">
-                Pothole-Zero & Flood Advisory
-              </h4>
-            </div>
-
-            <div class="flex items-center justify-between text-[11px] font-semibold text-slate-500 group-hover:text-purple-700 transition-colors pt-2.5 border-t border-purple-200/50 mt-2">
-              <span>View SLA Timeline</span>
-              <i data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-y-0.5"></i>
-            </div>
-
-            <!-- Smooth Floating Hover Popup Box (Translucent Light Lavender Purple) -->
-            <div class="bulletin-popup bg-purple-50/95 backdrop-blur-xl border border-purple-200/90 rounded-2xl p-4 shadow-2xl text-black">
-              <p class="text-xs text-slate-700 font-medium leading-relaxed mb-3">
-                Defects with depth >4cm trigger automated dispatch to PWD milling contractors. Underpass radar alerts municipal drainage teams.
-              </p>
-              <div class="border-t border-purple-200/60 pt-2.5 flex items-center justify-between text-xs">
-                <span class="text-slate-600 text-[11px] font-bold">Drainage: <strong class="text-purple-800 font-mono">1916</strong></span>
-                <a href="tel:1916" class="px-3 py-1 rounded-lg bg-white/90 hover:bg-white border border-purple-300 text-purple-950 text-xs font-bold flex items-center gap-1 shadow-2xs transition-colors">
-                  <i data-lucide="phone" class="w-3.5 h-3.5"></i> Dial 1916
-                </a>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-    <!-- 3. OFFICIAL GOVERNMENT OF INDIA MANDATE & PARTNERS FOOTER (Broad & Blue Textured Background) -->
-    <div class="morth-mandate-footer-bg border-t border-blue-950/80 px-8 py-10 text-white">
-      <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-6 text-xs">
-        
-        <!-- Left: MoRTH & NHAI Credentials -->
-        <div class="flex items-center gap-3.5">
-          <div class="w-11 h-11 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-xl shadow-xs shrink-0">
-            🏛️
-          </div>
-          <div>
-            <p class="text-white font-black tracking-wide">GOVERNMENT OF INDIA • भारत सरकार</p>
-            <p class="text-[12px] text-slate-300 font-medium mt-0.5">Ministry of Road Transport and Highways (MoRTH) • National Highways Authority of India (NHAI)</p>
-          </div>
-        </div>
-
-        <!-- Middle: Compliance & Institutional Partners (Simple Font, Clean Separators, No Boxes) -->
-        <div class="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3.5 text-[12px] text-slate-200 font-medium">
-          <span>IRC:82-2015 Compliant</span>
-          <span class="text-blue-400/60">•</span>
-          <span>Digital India & Smart Cities Mission</span>
-          <span class="text-blue-400/60">•</span>
-          <span>Central Road Research Institute (CRRI)</span>
-        </div>
-
-        <!-- Right: Copyright Notice -->
-        <div class="text-center lg:text-right shrink-0">
-          <p class="text-[12px] text-slate-300 font-medium">© 2026 SadakSuraksha AI 🇮🇳 — All Rights Reserved</p>
-        </div>
-
-      </div>
-    </div>
-
-  </section>
 
   <!-- Footer -->
   <footer class="py-6 px-8 border-t border-slate-200 bg-white text-center text-xs text-black font-bold">
