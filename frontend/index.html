@@ -1551,7 +1551,123 @@
               <span id="forecast-roads-count" class="text-xs text-slate-600 font-mono font-bold">Showing 8 Predictions</span>
             </div>
             <div id="forecast-corridors-list" class="flex flex-col gap-3.5 w-full max-h-[580px] min-h-[450px] overflow-y-auto custom-scrollbar pr-1">
-              <!-- Dynamically populated forecast cards -->
+              <!-- Pre-rendered 8 High-Risk National Corridors -->
+              <div onclick="openForecastDetailModal('FC-5201')" class="bg-white hover:bg-slate-50 border-2 border-slate-200 hover:border-purple-600 rounded-xl p-4.5 transition-all cursor-pointer shadow-sm hover:shadow-md group block">
+                <div class="flex items-start justify-between gap-3 mb-2.5">
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+                      <span class="px-2.5 py-0.5 rounded text-[11px] font-black font-mono uppercase border bg-red-100 border-red-300 text-red-900 font-black">High Risk Forecast</span>
+                      <span class="text-xs text-purple-800 font-mono font-bold bg-purple-50 px-2 py-0.5 rounded border border-purple-200">89% Confidence</span>
+                    </div>
+                    <h4 class="text-sm font-black text-slate-900 group-hover:text-purple-700 transition-colors leading-tight">NH-52 (Jaipur-Sikar Expressway)</h4>
+                    <p class="text-xs text-slate-700 font-semibold mt-0.5">Jaipur, Rajasthan • <span class="text-slate-500 font-normal">National Highway (4-Lane)</span></p>
+                  </div>
+                  <div class="text-right shrink-0 bg-slate-50 p-2 rounded-lg border border-slate-200">
+                    <span class="text-[10px] text-slate-500 font-mono font-bold block">Forecast Risk</span>
+                    <span class="text-xl font-black font-mono text-red-600">87<span class="text-xs text-slate-500 font-normal">/100</span></span>
+                    <span class="text-[10px] text-purple-700 font-mono font-extrabold block">+33 pts</span>
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2.5 bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs mb-3">
+                  <div>
+                    <span class="text-[10px] text-slate-500 font-bold block uppercase tracking-wider">Predicted Issue</span>
+                    <span class="font-bold text-slate-900 text-xs">Pothole & Surface Cavity</span>
+                  </div>
+                  <div>
+                    <span class="text-[10px] text-slate-500 font-bold block uppercase tracking-wider">Expected Window</span>
+                    <span class="font-bold text-amber-800 font-mono text-xs">Next 3–5 Days (Nov 28–30)</span>
+                  </div>
+                </div>
+                <p class="text-xs text-slate-700 italic mb-3 leading-relaxed font-medium">
+                  "Heavy multi-axle freight volume (1,450 trucks/hr) coupled with 45mm recent monsoon saturation and 78 dB acoustic telemetry indicates high-velocity aggregate detachment."
+                </p>
+                <div class="flex items-center justify-between pt-2.5 border-t border-slate-200 text-xs">
+                  <span class="text-emerald-800 font-bold text-[11px] flex items-center gap-1.5">
+                    <i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-700"></i> Preventive Action Available
+                  </span>
+                  <span class="text-purple-700 font-black text-xs group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                    Inspect Corridor <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                  </span>
+                </div>
+              </div>
+
+              <div onclick="openForecastDetailModal('FC-4402')" class="bg-white hover:bg-slate-50 border-2 border-slate-200 hover:border-purple-600 rounded-xl p-4.5 transition-all cursor-pointer shadow-sm hover:shadow-md group block">
+                <div class="flex items-start justify-between gap-3 mb-2.5">
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+                      <span class="px-2.5 py-0.5 rounded text-[11px] font-black font-mono uppercase border bg-red-100 border-red-300 text-red-900 font-black">Critical Risk Forecast</span>
+                      <span class="text-xs text-purple-800 font-mono font-bold bg-purple-50 px-2 py-0.5 rounded border border-purple-200">94% Confidence</span>
+                    </div>
+                    <h4 class="text-sm font-black text-slate-900 group-hover:text-purple-700 transition-colors leading-tight">Hosur Road Technology Corridor</h4>
+                    <p class="text-xs text-slate-700 font-semibold mt-0.5">Bengaluru, Karnataka • <span class="text-slate-500 font-normal">Major Arterial Flyover</span></p>
+                  </div>
+                  <div class="text-right shrink-0 bg-slate-50 p-2 rounded-lg border border-slate-200">
+                    <span class="text-[10px] text-slate-500 font-mono font-bold block">Forecast Risk</span>
+                    <span class="text-xl font-black font-mono text-red-600">92<span class="text-xs text-slate-500 font-normal">/100</span></span>
+                    <span class="text-[10px] text-purple-700 font-mono font-extrabold block">+34 pts</span>
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2.5 bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs mb-3">
+                  <div>
+                    <span class="text-[10px] text-slate-500 font-bold block uppercase tracking-wider">Predicted Issue</span>
+                    <span class="font-bold text-slate-900 text-xs">Severe Deep Pothole & Edge Cavity</span>
+                  </div>
+                  <div>
+                    <span class="text-[10px] text-slate-500 font-bold block uppercase tracking-wider">Expected Window</span>
+                    <span class="font-bold text-amber-800 font-mono text-xs">Next 24–48 Hours (Nov 27–28)</span>
+                  </div>
+                </div>
+                <p class="text-xs text-slate-700 italic mb-3 leading-relaxed font-medium">
+                  "Accelerated cyclic vibration spikes (2.85 Gz) on right-hand flyover ramp under continuous 42,000 PCU/day traffic volume."
+                </p>
+                <div class="flex items-center justify-between pt-2.5 border-t border-slate-200 text-xs">
+                  <span class="text-emerald-800 font-bold text-[11px] flex items-center gap-1.5">
+                    <i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-700"></i> Preventive Action Available
+                  </span>
+                  <span class="text-purple-700 font-black text-xs group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                    Inspect Corridor <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                  </span>
+                </div>
+              </div>
+
+              <div onclick="openForecastDetailModal('FC-4803')" class="bg-white hover:bg-slate-50 border-2 border-slate-200 hover:border-purple-600 rounded-xl p-4.5 transition-all cursor-pointer shadow-sm hover:shadow-md group block">
+                <div class="flex items-start justify-between gap-3 mb-2.5">
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+                      <span class="px-2.5 py-0.5 rounded text-[11px] font-black font-mono uppercase border bg-red-100 border-red-300 text-red-900 font-black">High Risk Forecast</span>
+                      <span class="text-xs text-purple-800 font-mono font-bold bg-purple-50 px-2 py-0.5 rounded border border-purple-200">86% Confidence</span>
+                    </div>
+                    <h4 class="text-sm font-black text-slate-900 group-hover:text-purple-700 transition-colors leading-tight">NH-48 Western Express Corridor</h4>
+                    <p class="text-xs text-slate-700 font-semibold mt-0.5">Mumbai, Maharashtra • <span class="text-slate-500 font-normal">Arterial Expressway</span></p>
+                  </div>
+                  <div class="text-right shrink-0 bg-slate-50 p-2 rounded-lg border border-slate-200">
+                    <span class="text-[10px] text-slate-500 font-mono font-bold block">Forecast Risk</span>
+                    <span class="text-xl font-black font-mono text-red-600">79<span class="text-xs text-slate-500 font-normal">/100</span></span>
+                    <span class="text-[10px] text-purple-700 font-mono font-extrabold block">+41 pts</span>
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2.5 bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs mb-3">
+                  <div>
+                    <span class="text-[10px] text-slate-500 font-bold block uppercase tracking-wider">Predicted Issue</span>
+                    <span class="font-bold text-slate-900 text-xs">Monsoon Waterlogging & Stripping</span>
+                  </div>
+                  <div>
+                    <span class="text-[10px] text-slate-500 font-bold block uppercase tracking-wider">Expected Window</span>
+                    <span class="font-bold text-amber-800 font-mono text-xs">Next 4–6 Days (Nov 29 – Dec 1)</span>
+                  </div>
+                </div>
+                <p class="text-xs text-slate-700 italic mb-3 leading-relaxed font-medium">
+                  "Clogged stormwater inlet drains adjacent to median divider; tidal overflow modeling projects 18cm standing water during upcoming rain."
+                </p>
+                <div class="flex items-center justify-between pt-2.5 border-t border-slate-200 text-xs">
+                  <span class="text-emerald-800 font-bold text-[11px] flex items-center gap-1.5">
+                    <i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-700"></i> Preventive Action Available
+                  </span>
+                  <span class="text-purple-700 font-black text-xs group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                    Inspect Corridor <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -2147,8 +2263,8 @@
     </div>
   </div>
 
-  <script src="/static/js/i18n.js"></script>
-  <script src="/static/js/app.js"></script>
+  <script src="/static/js/i18n.js?v=2.5.0"></script>
+  <script src="/static/js/app.js?v=2.5.0"></script>
 </body>
 </html>
 
