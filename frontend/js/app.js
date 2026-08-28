@@ -1300,6 +1300,17 @@ function switchTab(tabId) {
   }
   if (tabId === 'forecast') {
     if (typeof initForecastView === 'function') initForecastView();
+    setTimeout(() => {
+      if (forecastMap) {
+        forecastMap.invalidateSize();
+        if (forecastMarkersLayer && forecastMarkersLayer.getLayers().length > 0) {
+          try {
+            const group = new L.featureGroup(forecastMarkersLayer.getLayers());
+            forecastMap.fitBounds(group.getBounds().pad(0.15));
+          } catch (e) {}
+        }
+      }
+    }, 200);
   }
   if (tabId === 'resource-intel') {
     if (typeof initResourceIntelligenceView === 'function') initResourceIntelligenceView();
@@ -2028,12 +2039,16 @@ function setForecastGoogleMapLayer(layerType) {
   if (!forecastMap) return;
   const cfg = GOOGLE_MAP_TILE_LAYERS[layerType] || GOOGLE_MAP_TILE_LAYERS.roadmap;
   if (currentForecastGoogleMapLayer) {
-    forecastMap.removeLayer(currentForecastGoogleMapLayer);
+    try {
+      forecastMap.removeLayer(currentForecastGoogleMapLayer);
+    } catch (e) {}
   }
+
   currentForecastGoogleMapLayer = L.tileLayer(cfg.url, {
-    attribution: cfg.attribution,
+    attribution: cfg.attribution || 'Google Maps',
     maxZoom: cfg.maxZoom || 20,
-    subdomains: cfg.subdomains || ['mt0', 'mt1', 'mt2', 'mt3']
+    subdomains: cfg.subdomains || ['mt0', 'mt1', 'mt2', 'mt3'],
+    errorTileUrl: 'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png'
   }).addTo(forecastMap);
 
   if (forecastMarkersLayer && forecastMap.hasLayer(forecastMarkersLayer)) {
@@ -2088,6 +2103,9 @@ function initForecastMap() {
         if (currentStateFilter && currentStateFilter !== 'all' && STATE_VIEWPORTS[currentStateFilter]) {
           const vp = STATE_VIEWPORTS[currentStateFilter];
           forecastMap.flyTo(vp.center, vp.zoom, { duration: 0.5 });
+        } else if (forecastMarkersLayer && forecastMarkersLayer.getLayers().length > 0) {
+          const group = new L.featureGroup(forecastMarkersLayer.getLayers());
+          forecastMap.fitBounds(group.getBounds().pad(0.15));
         }
       } catch (e) {
         console.debug("Map invalidation error:", e);
@@ -2113,12 +2131,13 @@ function renderForecastMapMarkers(filter) {
   });
 
   items.forEach(item => {
-    const isHigh = item.forecast_risk.toLowerCase() === 'high' || item.forecast_risk.toLowerCase() === 'critical';
+    const isCritical = item.forecast_risk.toLowerCase() === 'critical';
+    const isHigh = item.forecast_risk.toLowerCase() === 'high' || isCritical;
     const color = isHigh ? '#dc2626' : (item.forecast_risk.toLowerCase() === 'medium' ? '#f59e0b' : '#16a34a');
-    const borderColor = isHigh ? '#fecaca' : (item.forecast_risk.toLowerCase() === 'medium' ? '#fef3c7' : '#bbf7d0');
+    const borderColor = isHigh ? '#ffffff' : (item.forecast_risk.toLowerCase() === 'medium' ? '#ffffff' : '#ffffff');
 
     const iconHtml = `
-      <div style="width: 28px; height: 28px; border-radius: 50%; background: ${color}; border: 2px solid ${borderColor}; box-shadow: 0 2px 8px rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: bold; cursor: pointer;">
+      <div style="width: 30px; height: 30px; border-radius: 50%; background: ${color}; border: 2.5px solid ${borderColor}; box-shadow: 0 3px 10px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; font-weight: bold; cursor: pointer; transform: scale(1); transition: transform 0.2s;">
         🔮
       </div>
     `;
@@ -2126,21 +2145,24 @@ function renderForecastMapMarkers(filter) {
     const customIcon = L.divIcon({
       html: iconHtml,
       className: 'forecast-custom-pin',
-      iconSize: [28, 28],
-      iconAnchor: [14, 14]
+      iconSize: [30, 30],
+      iconAnchor: [15, 15]
     });
 
     const marker = L.marker(item.coordinates, { icon: customIcon }).addTo(forecastMarkersLayer);
     
     marker.bindPopup(`
-      <div style="background:#ffffff; color:#000; padding:10px; border-radius:10px; font-family:inherit; min-width:190px; border: 1px solid #cbd5e1;">
-        <span style="font-size:10px; font-weight:bold; color:${color}; text-transform:uppercase; letter-spacing:0.5px;">${item.forecast_risk} Risk Forecast</span>
-        <h4 style="font-size:12px; font-weight:bold; margin:4px 0 2px 0;">${item.road_name}</h4>
-        <p style="font-size:11px; color:#475569; margin:0 0 6px 0;">${item.location}</p>
-        <div style="display:flex; justify-content:space-between; font-size:11px; border-top:1px solid #e2e8f0; padding-top:6px;">
-          <span>Risk: <strong style="color:${color}">${item.forecast_score}/100</strong></span>
-          <span>Conf: <strong>${item.confidence}%</strong></span>
+      <div style="background:#ffffff; color:#0f172a; padding:12px; border-radius:12px; font-family:inherit; min-width:210px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+        <span style="font-size:10px; font-weight:900; color:${color}; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:2px;">${item.forecast_risk} Risk Forecast</span>
+        <h4 style="font-size:13px; font-weight:900; margin:0 0 2px 0; color:#0f172a; line-height:1.2;">${item.road_name}</h4>
+        <p style="font-size:11px; color:#475569; margin:0 0 8px 0; font-weight:600;">${item.location}</p>
+        <div style="display:flex; justify-content:space-between; font-size:11px; border-top:1px solid #e2e8f0; padding-top:6px; margin-bottom:8px;">
+          <span>Risk: <strong style="color:${color}; font-size:13px;">${item.forecast_score}/100</strong></span>
+          <span>Conf: <strong style="color:#7c3aed;">${item.confidence}%</strong></span>
         </div>
+        <button onclick="openForecastDetailModal('${item.id}')" style="width:100%; padding:6px 10px; background:#7c3aed; color:white; border:none; border-radius:8px; font-weight:800; font-size:11px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px;">
+          Inspect Telemetry ➔
+        </button>
       </div>
     `);
 
