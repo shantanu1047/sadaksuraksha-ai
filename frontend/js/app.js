@@ -650,6 +650,10 @@ function initGisMap() {
     zoomControl: false
   });
 
+  gisMap.on('dragstart zoomstart', () => {
+    window._userHasPannedMap = true;
+  });
+
   L.control.zoom({ position: 'bottomright' }).addTo(gisMap);
 
   // Initialize with Google Maps Roadmap layer
@@ -680,37 +684,49 @@ function renderMapMarkers(hazards) {
   gisMarkerLayer.clearLayers();
   gisClusterLayer.clearLayers();
 
+  const SVG_ICONS = {
+    critical: `<svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`,
+    high: `<svg class="w-4 h-4 text-slate-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`,
+    medium: `<svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`,
+    low: `<svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
+    fp: `<svg class="w-3.5 h-3.5 text-slate-800" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`
+  };
+
+  const validMarkers = [];
+
   hazards.forEach(rawH => {
     const h = normalizeHazard(rawH);
     const lat = parseFloat(h.latitude);
     const lng = parseFloat(h.longitude);
     if (isNaN(lat) || isNaN(lng)) return;
 
+    validMarkers.push([lat, lng]);
+
     let pinClass = 'pin-medium';
-    let iconName = 'alert-circle';
-    let size = 32;
+    let iconSvg = SVG_ICONS.medium;
+    let size = 34;
 
     if (h.fusion?.is_false_positive) {
       pinClass = 'pin-fp';
-      iconName = 'eye-off';
-      size = 26;
+      iconSvg = SVG_ICONS.fp;
+      size = 28;
     } else if (h.severity === 'critical') {
       pinClass = 'pin-critical';
-      iconName = 'alert-octagon';
-      size = 38;
+      iconSvg = SVG_ICONS.critical;
+      size = 40;
     } else if (h.severity === 'high') {
       pinClass = 'pin-high';
-      iconName = 'alert-triangle';
-      size = 34;
+      iconSvg = SVG_ICONS.high;
+      size = 36;
     } else if (h.severity === 'low') {
       pinClass = 'pin-low';
-      iconName = 'check-circle';
-      size = 28;
+      iconSvg = SVG_ICONS.low;
+      size = 30;
     }
 
     const customIcon = L.divIcon({
       className: `custom-hazard-pin ${pinClass}`,
-      html: `<i data-lucide="${iconName}" style="width:${size*0.5}px;height:${size*0.5}px;color:white;"></i>`,
+      html: `<div class="flex items-center justify-center w-full h-full">${iconSvg}</div>`,
       iconSize: [size, size],
       iconAnchor: [size / 2, size / 2]
     });
@@ -766,6 +782,18 @@ function renderMapMarkers(hazards) {
     marker.bindPopup(popupHtml);
     gisMarkerLayer.addLayer(marker);
   });
+
+  // Auto-focus and frame map bounds if single or few hazards exist
+  if (gisMap && validMarkers.length > 0 && !window._userHasPannedMap) {
+    if (validMarkers.length === 1) {
+      gisMap.setView(validMarkers[0], 14, { animate: true });
+    } else if (validMarkers.length <= 15) {
+      try {
+        const b = L.latLngBounds(validMarkers);
+        gisMap.fitBounds(b.pad(0.25), { maxZoom: 15 });
+      } catch (e) {}
+    }
+  }
 
   if (window.lucide && typeof window.lucide.createIcons === 'function') {
     window.lucide.createIcons();
