@@ -293,6 +293,7 @@ class CitizenTicketResponse(BaseModel):
     ai_risk_score: Optional[float] = None
     estimated_repair_cost_inr: Optional[float] = None
     estimated_repair_days: Optional[int] = None
+    image_url: Optional[str] = None
     message: str = "Your report has been received and is being processed by SadakSuraksha AI."
 
 

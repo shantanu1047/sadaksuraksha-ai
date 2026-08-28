@@ -247,6 +247,7 @@ class IngestionService:
             ai_risk_score=priority.raw_risk_score,
             estimated_repair_cost_inr=priority.estimated_repair_cost_usd,
             estimated_repair_days=max(1, int(7 - priority.raw_risk_score / 20)),
+            image_url=req.image_base64 if req.image_base64 else None,
             message=(
                 f"Thank you, {req.reporter_name}! Your report has been AI-verified as a "
                 f"{sev.value.upper()} severity {ht.value.replace('_', ' ')}. "
@@ -483,9 +484,32 @@ class IngestionService:
         logger.info(f"Google Maps anomaly processed: {new_id} ({sev.value}), speed drop {speed_drop}%")
         return incident
 
-    def get_ticket_status(self, ticket_id: str) -> Optional[CitizenTicketResponse]:
+    def get_ticket_status(self, ticket_id: str, hazards_db: Optional[List[HazardIncident]] = None) -> Optional[CitizenTicketResponse]:
         """Retrieve citizen ticket status."""
-        return self.citizen_tickets.get(ticket_id.upper(), self.citizen_tickets.get(ticket_id))
+        tid = ticket_id.strip().upper()
+        if tid in self.citizen_tickets:
+            return self.citizen_tickets[tid]
+        if ticket_id in self.citizen_tickets:
+            return self.citizen_tickets[ticket_id]
+        
+        # Search hazards_db if in-memory ticket cache missed
+        if hazards_db:
+            for h in hazards_db:
+                if h.citizen_report and h.citizen_report.report_id and h.citizen_report.report_id.upper() == tid:
+                    return CitizenTicketResponse(
+                        ticket_id=h.citizen_report.report_id,
+                        status="verified" if not h.fusion.is_false_positive else "rejected_false_positive",
+                        hazard_id=h.id,
+                        ai_verified=not h.fusion.is_false_positive,
+                        ai_severity=h.severity.value,
+                        ai_depth_cm=h.fusion.physical_depth_cm,
+                        ai_risk_score=h.priority.raw_risk_score,
+                        estimated_repair_cost_inr=h.priority.estimated_repair_cost_usd,
+                        estimated_repair_days=max(1, int(7 - h.priority.raw_risk_score / 20)),
+                        image_url=h.image_url,
+                        message=f"Verified {h.severity.value.upper()} {h.hazard_type.value.replace('_', ' ')} defect queued for PWD repair."
+                    )
+        return None
 
     def get_stream_statuses(self) -> List[IngestionStreamStatus]:
         """Return all active ingestion stream statuses."""

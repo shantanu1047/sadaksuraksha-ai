@@ -631,7 +631,8 @@ async def ingest_citizen_report(req: CitizenSubmissionRequest):
 @app.get("/api/ingest/citizen-report/{ticket_id}", response_model=CitizenTicketResponse)
 async def get_citizen_ticket_status(ticket_id: str):
     """Public endpoint for citizens to track their report status."""
-    ticket = ingestion_service.get_ticket_status(ticket_id)
+    sync_hazards_from_disk()
+    ticket = ingestion_service.get_ticket_status(ticket_id, hazards_db)
     if not ticket:
         raise HTTPException(status_code=404, detail=f"Ticket '{ticket_id}' not found.")
     return ticket

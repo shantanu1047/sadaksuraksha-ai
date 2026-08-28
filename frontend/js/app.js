@@ -737,7 +737,13 @@ function renderMapMarkers(hazards) {
 
         <!-- Hazard Title & Address -->
         <h4 class="font-extrabold text-[13px] text-slate-900 mb-1 leading-snug tracking-tight">${h.title}</h4>
-        <p class="text-[11px] text-slate-600 mb-2.5 leading-tight font-medium">${h.address || ((h.city || '') + ', ' + (h.state || ''))}</p>
+        <p class="text-[11px] text-slate-600 mb-2 leading-tight font-medium">${h.address || ((h.city || '') + ', ' + (h.state || ''))}</p>
+
+        ${h.image_url ? `
+          <div class="mb-2.5 rounded-lg overflow-hidden border border-slate-300 aspect-video bg-slate-900 flex items-center justify-center cursor-pointer shadow-xs group" onclick="openGalleryModal('${h.image_url}', '${h.title.replace(/'/g, "\\'")}', '${h.state || 'India'}', '${(h.address || h.road_name || '').replace(/'/g, "\\'")}')" title="Click to expand full image">
+            <img src="${h.image_url}" alt="Reported Photo" class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+          </div>
+        ` : ''}
 
         <!-- Metric Details Glass Box -->
         <div class="bg-white/60 backdrop-blur-xs p-2.5 rounded-xl border border-slate-200/70 text-[11px] mb-3 space-y-1 shadow-2xs font-sans">
@@ -876,6 +882,18 @@ function renderIncidentFeed(hazards) {
 
     const photoBadge = h.image_url ? `<span class="px-1.5 py-0.5 text-[9.5px] font-bold bg-orange-100 text-orange-950 border border-orange-300 rounded">📸 Photo Attached</span>` : '';
 
+    const escapedTitle = (h.title || 'Road Hazard').replace(/'/g, "\\'");
+    const escapedAddr = (h.address || h.road_name || '').replace(/'/g, "\\'");
+    const photoThumbnail = h.image_url ? `
+      <div class="mt-1.5 flex items-center gap-2">
+        <img src="${h.image_url}" onclick="event.stopPropagation(); openGalleryModal('${h.image_url}', '${escapedTitle}', '${h.state || 'India'}', '${escapedAddr}')" class="w-14 h-11 rounded-lg object-cover border border-slate-300 shadow-2xs hover:scale-105 transition-transform cursor-pointer shrink-0" alt="Citizen Photo" title="Click to view full photo" />
+        <div class="min-w-0 flex-1">
+          <p class="text-[10px] font-bold text-amber-800">📸 Citizen Photo Attached</p>
+          <p class="text-[9.5px] text-slate-500 truncate">Click photo to view high-res visual</p>
+        </div>
+      </div>
+    ` : '';
+
     card.innerHTML = `
       <!-- Top Row: Badge + Location + Maps Link + Risk Score -->
       <div class="flex items-center justify-between gap-2">
@@ -901,6 +919,8 @@ function renderIncidentFeed(hazards) {
         <h4 class="text-[12.5px] font-semibold text-slate-900 group-hover:text-blue-900 leading-snug line-clamp-2 transition-colors">${h.title}</h4>
         <p class="text-[11px] text-slate-600 truncate font-normal mt-0.5">${h.address || h.road_name}</p>
       </div>
+
+      ${photoThumbnail}
 
       <!-- Bottom Metadata Row: Depth, Area, Est Cost -->
       <div class="flex items-center justify-between text-[11px] text-slate-700 pt-1.5 border-t border-slate-200/50 font-medium">
@@ -1622,7 +1642,16 @@ function openIncidentModal(hazardId) {
     document.getElementById('modal-fp-warning').classList.add('hidden');
   }
 
-  document.getElementById('modal-image').src = h.image_url || SCENARIO_IMAGES[h.hazard_type] || SCENARIO_IMAGES.pothole;
+  const modalImg = document.getElementById('modal-image');
+  const targetImg = h.image_url || SCENARIO_IMAGES[h.hazard_type] || SCENARIO_IMAGES.pothole;
+  if (modalImg) {
+    modalImg.src = targetImg;
+    modalImg.className = 'w-full h-full object-cover cursor-pointer hover:opacity-95 transition-opacity';
+    modalImg.title = 'Click to expand high-resolution visual';
+    modalImg.onclick = () => {
+      openGalleryModal(targetImg, h.title, (h.state || 'India').toUpperCase(), (h.address || h.road_name || ''));
+    };
+  }
 
   setTimeout(() => {
     const ctx = document.getElementById('modal-imu-chart');
