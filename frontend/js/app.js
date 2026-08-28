@@ -1914,6 +1914,58 @@ const ROAD_FORECAST_DATA = [
       "Pavement Age: 4.2 years"
     ],
     action: "Milling of distressed 40mm wearing course followed by high-density asphalt overlay."
+  },
+  {
+    id: "FC-3207",
+    road_name: "Old Mahabalipuram Road (OMR IT Corridor)",
+    location: "Chennai, Tamil Nadu",
+    state: "Tamil Nadu",
+    city: "Chennai",
+    road_class: "State Highway Expressway",
+    coordinates: [12.9150, 80.2280],
+    current_risk: "Low",
+    current_score: 36,
+    forecast_risk: "Medium",
+    forecast_score: 72,
+    confidence: 84,
+    predicted_issue: "Subgrade settlement & shoulder erosion",
+    expected_window: "Next 4–6 Days",
+    expected_date: "Dec 1–3",
+    risk_trend: "+36 pts",
+    explanation: "Erosion along unpaved earthen shoulder near major IT park entry ramps weakening left carriageway edge support.",
+    factors: [
+      "Shoulder Drop-off: 45mm",
+      "Peak Hour Fleet: 3,200 vehicles/hr",
+      "Soil Permeability: Sandy clay matrix",
+      "Drainage Slope: Suboptimal"
+    ],
+    action: "Concrete shoulder reinforcement and edge curb casting."
+  },
+  {
+    id: "FC-1608",
+    road_name: "NH-16 (Kolkata-Bhubaneswar Corridor)",
+    location: "Bhubaneswar, Odisha",
+    state: "Odisha",
+    city: "Bhubaneswar",
+    road_class: "National Highway",
+    coordinates: [20.2961, 85.8245],
+    current_risk: "Medium",
+    current_score: 52,
+    forecast_risk: "High",
+    forecast_score: 83,
+    confidence: 87,
+    predicted_issue: "Severe fatigue cracking & heavy aggregate loss",
+    expected_window: "Next 3–5 Days",
+    expected_date: "Nov 28–30",
+    risk_trend: "+31 pts",
+    explanation: "Heavy mineral and ore transport truck convoys accelerating top-layer binder fatigue during high ambient humidity cycles.",
+    factors: [
+      "Overloaded Mineral Trucks: 22% of total flow",
+      "Surface Deflection: 1.1mm",
+      "Aggregate Stripping: Moderate to high",
+      "Pavement Thickness: 120mm DBM"
+    ],
+    action: "Polymer-modified micro-surfacing and structural overlay."
   }
 ];
 
@@ -1924,7 +1976,7 @@ function initForecastView() {
   renderForecastCards(currentRiskFilter);
   initForecastMap();
   fetchForecastData();
-  lucide.createIcons();
+  try { lucide.createIcons(); } catch (e) {}
 }
 window.initForecastView = initForecastView;
 
@@ -2117,8 +2169,8 @@ function renderForecastCards(filter) {
 
   if (items.length === 0) {
     container.innerHTML = `
-      <div class="bg-white border border-slate-200 rounded-xl p-8 text-center">
-        <p class="text-xs font-bold text-slate-500">No failure risks forecasted under this filter.</p>
+      <div class="bg-white border-2 border-slate-200 rounded-xl p-8 text-center shadow-xs">
+        <p class="text-xs font-bold text-slate-600">No failure risks forecasted under this filter.</p>
       </div>
     `;
     return;
@@ -2127,57 +2179,61 @@ function renderForecastCards(filter) {
   container.innerHTML = items.map(item => {
     const isCritical = item.forecast_risk.toLowerCase() === 'critical';
     const isHigh = item.forecast_risk.toLowerCase() === 'high' || isCritical;
-    const badgeBg = isHigh ? 'bg-red-100 border-red-300 text-red-900' : (item.forecast_risk.toLowerCase() === 'medium' ? 'bg-amber-100 border-amber-300 text-amber-900' : 'bg-emerald-100 border-emerald-300 text-emerald-900');
+    const badgeBg = isHigh ? 'bg-red-100 border-red-300 text-red-900 font-black' : (item.forecast_risk.toLowerCase() === 'medium' ? 'bg-amber-100 border-amber-300 text-amber-900 font-black' : 'bg-emerald-100 border-emerald-300 text-emerald-900 font-black');
     const scoreColor = isHigh ? 'text-red-600' : (item.forecast_risk.toLowerCase() === 'medium' ? 'text-amber-600' : 'text-emerald-700');
 
     return `
-      <div onclick="openForecastDetailModal('${item.id}')" class="bg-white hover:bg-slate-50 border border-slate-200 hover:border-purple-500 rounded-xl p-4 transition-all cursor-pointer shadow-xs group">
-        <div class="flex items-start justify-between gap-3 mb-2">
-          <div>
-            <div class="flex items-center gap-2 mb-1">
-              <span class="px-2 py-0.5 rounded text-[10px] font-black font-mono uppercase border ${badgeBg}">
-                ${item.forecast_risk} Forecast
+      <div onclick="openForecastDetailModal('${item.id}')" class="bg-white hover:bg-slate-50 border-2 border-slate-200 hover:border-purple-600 rounded-xl p-4.5 transition-all cursor-pointer shadow-sm hover:shadow-md group block">
+        <div class="flex items-start justify-between gap-3 mb-2.5">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+              <span class="px-2.5 py-0.5 rounded text-[11px] font-black font-mono uppercase border ${badgeBg}">
+                ${item.forecast_risk} Risk Forecast
               </span>
-              <span class="text-[11px] text-purple-700 font-mono font-bold">${item.confidence}% Confidence</span>
+              <span class="text-xs text-purple-800 font-mono font-bold bg-purple-50 px-2 py-0.5 rounded border border-purple-200">${item.confidence}% Confidence</span>
             </div>
-            <h4 class="text-sm font-black text-black group-hover:text-purple-700 transition-colors">${item.road_name}</h4>
-            <p class="text-xs text-slate-600 font-medium">${item.location} • ${item.road_class}</p>
+            <h4 class="text-sm font-black text-slate-900 group-hover:text-purple-700 transition-colors leading-tight">${item.road_name}</h4>
+            <p class="text-xs text-slate-700 font-semibold mt-0.5">${item.location} • <span class="text-slate-500 font-normal">${item.road_class}</span></p>
           </div>
-          <div class="text-right shrink-0">
+          <div class="text-right shrink-0 bg-slate-50 p-2 rounded-lg border border-slate-200">
             <span class="text-[10px] text-slate-500 font-mono font-bold block">Forecast Risk</span>
             <span class="text-xl font-black font-mono ${scoreColor}">${item.forecast_score}<span class="text-xs text-slate-500 font-normal">/100</span></span>
-            <span class="text-[10px] text-purple-700 font-mono font-bold block">${item.risk_trend}</span>
+            <span class="text-[10px] text-purple-700 font-mono font-extrabold block">${item.risk_trend}</span>
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs mb-3">
+        <div class="grid grid-cols-2 gap-2.5 bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs mb-3">
           <div>
-            <span class="text-[10px] text-slate-500 font-bold block">Predicted Issue</span>
-            <span class="font-bold text-slate-900">${item.predicted_issue}</span>
+            <span class="text-[10px] text-slate-500 font-bold block uppercase tracking-wider">Predicted Issue</span>
+            <span class="font-bold text-slate-900 text-xs">${item.predicted_issue}</span>
           </div>
           <div>
-            <span class="text-[10px] text-slate-500 font-bold block">Expected Window</span>
-            <span class="font-bold text-amber-700 font-mono">${item.expected_window} (${item.expected_date})</span>
+            <span class="text-[10px] text-slate-500 font-bold block uppercase tracking-wider">Expected Window</span>
+            <span class="font-bold text-amber-800 font-mono text-xs">${item.expected_window} (${item.expected_date})</span>
           </div>
         </div>
 
-        <p class="text-xs text-slate-600 line-clamp-2 italic mb-3 leading-relaxed font-medium">
+        <p class="text-xs text-slate-700 italic mb-3 leading-relaxed font-medium">
           "${item.explanation}"
         </p>
 
-        <div class="flex items-center justify-between pt-2 border-t border-slate-200 text-xs">
-          <span class="text-emerald-700 font-bold text-[11px] flex items-center gap-1">
-            <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i> Preventive Action Available
+        <div class="flex items-center justify-between pt-2.5 border-t border-slate-200 text-xs">
+          <span class="text-emerald-800 font-bold text-[11px] flex items-center gap-1.5">
+            <i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-700"></i> Preventive Action Available
           </span>
-          <span class="text-purple-700 font-black text-[11px] group-hover:translate-x-0.5 transition-transform flex items-center gap-1">
-            Inspect Corridor <i data-lucide="arrow-right" class="w-3 h-3"></i>
+          <span class="text-purple-700 font-black text-xs group-hover:translate-x-1 transition-transform flex items-center gap-1">
+            Inspect Corridor <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
           </span>
         </div>
       </div>
     `;
   }).join('');
 
-  lucide.createIcons();
+  try {
+    lucide.createIcons();
+  } catch (err) {
+    console.debug('Lucide icon refresh error', err);
+  }
 }
 
 function handleForecastFilterChange(filterVal) {
