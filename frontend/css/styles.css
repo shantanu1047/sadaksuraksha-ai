@@ -400,16 +400,16 @@ code, pre, .font-mono {
 }
 
 .leaflet-popup-content-wrapper {
-  background: rgba(255, 255, 255, 0.52) !important;
-  backdrop-filter: blur(24px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.75) !important;
-  border-radius: 16px !important;
-  color: #0f172a !important;
+  background: rgba(0, 0, 0, 0.40) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: 18px !important;
+  color: #ffffff !important;
   padding: 0 !important;
   overflow: hidden !important;
   position: relative !important;
-  box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
 }
 
 .leaflet-popup-content-wrapper::before {
@@ -418,15 +418,27 @@ code, pre, .font-mono {
   height: 3px;
   width: 100%;
   background: linear-gradient(90deg, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%);
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 .leaflet-popup-tip {
-  background: rgba(255, 255, 255, 0.52) !important;
-  backdrop-filter: blur(24px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.75) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  background: rgba(0, 0, 0, 0.40) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+  color: #ffffff !important;
+  padding: 6px !important;
+  opacity: 0.8;
+  transition: opacity 0.15s ease;
+}
+
+.leaflet-container a.leaflet-popup-close-button:hover {
+  color: #ffffff !important;
+  opacity: 1;
 }
 
 /* Custom Map Hazard Marker Pins */
