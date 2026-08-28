@@ -1918,9 +1918,11 @@ const ROAD_FORECAST_DATA = [
 
 let activeForecastData = [...ROAD_FORECAST_DATA];
 
-async function initForecastView() {
-  await fetchForecastData();
+function initForecastView() {
+  const currentRiskFilter = document.getElementById('forecast-filter-risk')?.value || 'all';
+  renderForecastCards(currentRiskFilter);
   initForecastMap();
+  fetchForecastData();
   lucide.createIcons();
 }
 window.initForecastView = initForecastView;
@@ -1989,7 +1991,7 @@ function initForecastMap() {
     forecastMarkersLayer = L.layerGroup().addTo(forecastMap);
   }
 
-  setTimeout(() => {
+  const renderAndInvalidate = () => {
     if (forecastMap) {
       forecastMap.invalidateSize();
       const currentRiskFilter = document.getElementById('forecast-filter-risk')?.value || 'all';
@@ -1998,10 +2000,14 @@ function initForecastMap() {
       // Pan to state if filtered
       if (currentStateFilter && currentStateFilter !== 'all' && STATE_VIEWPORTS[currentStateFilter]) {
         const vp = STATE_VIEWPORTS[currentStateFilter];
-        forecastMap.flyTo(vp.center, vp.zoom, { duration: 0.8 });
+        forecastMap.flyTo(vp.center, vp.zoom, { duration: 0.5 });
       }
     }
-  }, 250);
+  };
+
+  setTimeout(renderAndInvalidate, 50);
+  setTimeout(renderAndInvalidate, 200);
+  setTimeout(renderAndInvalidate, 500);
 }
 
 function renderForecastMapMarkers(filter) {
