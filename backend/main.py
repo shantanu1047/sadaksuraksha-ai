@@ -159,6 +159,29 @@ async def set_api_key(payload: Dict[str, Any]):
         }
 
 
+@app.post("/api/hazards/reset")
+@app.delete("/api/hazards/citizen")
+async def reset_citizen_hazards():
+    """Clear all persisted citizen complaints and reset to fresh state."""
+    global hazards_db, work_orders_db
+    p = get_persisted_file()
+    try:
+        if p.exists():
+            with open(p, "w", encoding="utf-8") as f:
+                json.dump([], f)
+    except Exception as e:
+        logger.debug(f"Reset write error: {e}")
+    
+    hazards_db = get_demo_hazards()
+    work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+    return {
+        "status": "success",
+        "message": "Database reset to clean fresh state.",
+        "active_incidents": len(hazards_db),
+        "active_work_orders": len(work_orders_db)
+    }
+
+
 @app.get("/api/states")
 async def list_states():
     """Returns available Indian States with regional incident statistics."""

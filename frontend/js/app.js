@@ -381,6 +381,18 @@ async function refreshAllData() {
   }
 }
 
+async function resetCitizenDatabase() {
+  try {
+    localStorage.removeItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS');
+    await fetch('/api/hazards/reset', { method: 'POST' });
+    await refreshAllData();
+    alert('Database cleared and reset to fresh state.');
+  } catch (e) {
+    console.error('Reset failed:', e);
+  }
+}
+window.resetCitizenDatabase = resetCitizenDatabase;
+
 function normalizeHazard(h) {
   if (!h) return h;
   if (!h.fusion) {
