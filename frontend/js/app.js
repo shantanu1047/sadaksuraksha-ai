@@ -657,48 +657,9 @@ function initGisMap() {
   L.control.zoom({ position: 'bottomright' }).addTo(gisMap);
 
   // Initialize with Google Maps Roadmap layer
-  if (typeof L.markerClusterGroup === 'function') {
-    gisMarkerLayer = L.markerClusterGroup({
-      showCoverageOnHover: false,
-      maxClusterRadius: 40,
-      spiderfyOnMaxZoom: true,
-      zoomToBoundsOnClick: true,
-      disableClusteringAtZoom: 7,
-      iconCreateFunction: function(cluster) {
-        const count = cluster.getChildCount();
-        const markers = cluster.getAllChildMarkers();
-        const hasCritical = markers.some(m => m._isCriticalHazard);
-        
-        let sizeClass = 'nhai-cluster-small';
-        let dim = 42;
-        if (count > 25) {
-          sizeClass = 'nhai-cluster-large';
-          dim = 52;
-        } else if (count > 8) {
-          sizeClass = 'nhai-cluster-medium';
-          dim = 46;
-        }
-        
-        const critClass = hasCritical ? 'nhai-cluster-has-critical' : '';
-        
-        return L.divIcon({
-          html: `
-            <div class="nhai-cluster-bubble ${sizeClass} ${critClass}">
-              <span class="nhai-cluster-count">${count}</span>
-              <span class="nhai-cluster-label">Defects</span>
-            </div>
-          `,
-          className: 'nhai-hazard-cluster',
-          iconSize: [dim, dim],
-          iconAnchor: [dim / 2, dim / 2]
-        });
-      }
-    });
-  } else {
-    gisMarkerLayer = L.layerGroup();
-  }
+  setGoogleMapLayer('roadmap');
 
-  gisMarkerLayer.addTo(gisMap);
+  gisMarkerLayer = L.layerGroup().addTo(gisMap);
   gisClusterLayer = L.layerGroup().addTo(gisMap);
 
   const toggleClusters = document.getElementById('toggle-clusters');
@@ -822,14 +783,8 @@ function renderMapMarkers(hazards) {
     `;
 
     marker.bindPopup(popupHtml);
-    markersToAdd.push(marker);
+    gisMarkerLayer.addLayer(marker);
   });
-
-  if (typeof gisMarkerLayer.addLayers === 'function') {
-    gisMarkerLayer.addLayers(markersToAdd);
-  } else {
-    markersToAdd.forEach(m => gisMarkerLayer.addLayer(m));
-  }
 
   // Auto-focus framing
   if (gisMap && markersToAdd.length > 0 && !window._userHasPannedMap) {
