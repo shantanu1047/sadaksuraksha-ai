@@ -48,13 +48,13 @@
 <body class="bg-[#f8f9fa] text-black min-h-screen flex flex-col font-sans selection:bg-amber-200 selection:text-black">
 
   <!-- ROLE SELECTION & LOGIN GATEWAY (PRIOR SCREEN OVERLAY) -->
-  <div id="role-gateway-overlay" class="fixed inset-0 gateway-portal-bg z-[100000] flex flex-col justify-between overflow-y-auto" style="z-index: 100000 !important;">
+  <div id="role-gateway-overlay" class="fixed inset-0 bg-[#f8f9fa] z-[100000] flex flex-col justify-between overflow-y-auto" style="z-index: 100000 !important;">
     
     <!-- Top Indian Tricolour Strip -->
     <div class="tricolor-strip"></div>
 
-    <!-- Gateway Header (Expansive & Modern) -->
-    <header class="px-8 py-5 border-b border-slate-200/80 bg-white/95 backdrop-blur-md sticky top-0 z-10 shadow-xs">
+    <!-- Gateway Header -->
+    <header class="px-8 py-5 border-b border-slate-200 bg-white sticky top-0 z-10 shadow-xs">
       <div class="max-w-7xl mx-auto flex items-center justify-between">
         <div class="flex items-center gap-3.5">
           <div class="w-12 h-12 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center shadow-xs">
@@ -65,149 +65,161 @@
               <h1 class="text-lg font-black tracking-wider text-black font-mono uppercase flex items-center gap-2">
                 <span>SADAK-SURAKSHA</span> <span class="text-base">🇮🇳</span>
               </h1>
-              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 border border-emerald-300 text-emerald-950">
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 border border-emerald-300 text-emerald-950">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span> MoRTH & NHAI CONNECTED
               </span>
             </div>
-            <p class="text-xs text-slate-700 font-medium">National Multimodal Road Hazard Awareness & Maintenance Intelligence System</p>
+            <p class="text-xs text-slate-600 font-medium">National Multimodal Road Hazard Awareness & Maintenance Intelligence System</p>
           </div>
         </div>
 
-        <div class="hidden md:flex items-center gap-3 font-mono text-xs text-black">
-          <span class="px-3 py-1.5 rounded-lg bg-orange-50 border border-orange-200 text-orange-950 font-bold">🇮🇳 16 States Live</span>
-          <span class="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-950 font-bold">IRC:82 Compliant</span>
+        <div class="hidden md:flex items-center gap-2.5">
+          <div class="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 flex items-center gap-1.5 text-xs font-semibold text-slate-700 shadow-2xs">
+            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-orange-600"></i>
+            <span>16 States / UTs Active</span>
+          </div>
+          <div class="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 flex items-center gap-1.5 text-xs font-semibold text-slate-700 shadow-2xs">
+            <i data-lucide="activity" class="w-3.5 h-3.5 text-emerald-600"></i>
+            <span>AI Vision & IMU Live</span>
+          </div>
         </div>
       </div>
     </header>
 
-    <!-- Role Prompt Main Card Container -->
-    <main class="max-w-6xl mx-auto px-6 py-12 flex-1 flex flex-col justify-center w-full">
-      <div class="text-center max-w-3xl mx-auto mb-10">
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 text-black text-xs font-bold shadow-xs mb-3">
-          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-700"></i> Identity & Role Verification
-        </div>
-        <h2 class="text-3xl sm:text-4xl font-black text-black tracking-tight">
-          Select Your Portal
-        </h2>
-        <p class="text-sm text-slate-700 font-medium mt-2">
-          Are you an Indian Citizen reporting road damage or an authorized Government Infrastructure Official?
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto w-full">
-
-        <!-- 1. CITIZEN CARD -->
-        <div class="nhai-card bg-white/92 backdrop-blur-md p-8 flex flex-col justify-between relative overflow-hidden text-black border-l-4 border-l-[#138808] shadow-md hover:shadow-xl transition-all duration-300">
-          <div>
-            <div class="flex items-center justify-between mb-6">
-              <div class="w-13 h-13 rounded-xl bg-emerald-100 border border-emerald-300 flex items-center justify-center shadow-xs">
-                <i data-lucide="smartphone" class="w-7 h-7 text-emerald-800"></i>
-              </div>
-              <span class="px-3 py-1 rounded-full text-xs font-bold font-mono bg-emerald-50 text-emerald-900 border border-emerald-200">
-                PUBLIC PORTAL
-              </span>
-            </div>
-
-            <h3 class="text-2xl font-black text-black mb-2">Indian Citizen / Commuter</h3>
-            <p class="text-xs sm:text-sm text-slate-700 mb-6 leading-relaxed font-medium">
-              Report road potholes, dangerous waterlogging, broken barriers, or debris from your phone. No officer login required.
-            </p>
-
-            <div class="space-y-3 mb-8 text-xs text-black font-bold">
-              <div class="flex items-center gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                <i data-lucide="map-pin" class="w-4 h-4 text-emerald-700 shrink-0"></i>
-                <span>Automatic GPS Location & Google Maps Tagging</span>
-              </div>
-              <div class="flex items-center gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                <i data-lucide="camera" class="w-4 h-4 text-emerald-700 shrink-0"></i>
-                <span>Live Camera Defect Capture & AI Depth Estimation</span>
-              </div>
-              <div class="flex items-center gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                <i data-lucide="ticket" class="w-4 h-4 text-emerald-700 shrink-0"></i>
-                <span>Instant Ticket ID & Real-Time PWD Repair Tracking</span>
-              </div>
-            </div>
+    <!-- Role Prompt Main Container with Highway Interchange Backdrop -->
+    <div class="login-interchange-bg flex-1 flex flex-col justify-center">
+      <main class="max-w-6xl mx-auto px-6 py-14 flex-1 flex flex-col justify-center w-full">
+        <div class="text-center max-w-3xl mx-auto mb-10">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-white/80 text-black text-xs font-bold shadow-xs mb-3">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i> Single-Sign-On & Public Reporting Gateway
           </div>
-
-          <div>
-            <a href="/report" onclick="if(window.location.protocol==='file:'){event.preventDefault();window.location.href='report.html';}" class="w-full py-4 px-6 rounded-xl bg-[#138808] hover:bg-[#0f6b06] border border-emerald-700 text-white font-black text-sm flex items-center justify-center gap-2 shadow-xs transition-colors">
-              <i data-lucide="camera" class="w-4 h-4 text-white"></i>
-              <span>Proceed to Citizen Reporting Portal</span>
-              <i data-lucide="arrow-right" class="w-4 h-4 ml-1 text-white"></i>
-            </a>
-            <p class="text-[11px] text-center text-slate-600 font-bold mt-2.5">Instant public submission • No password needed</p>
-          </div>
+          <h2 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+            National Road Infrastructure Intelligence & Safety Gateway
+          </h2>
+          <p class="text-sm text-slate-700 font-semibold mt-2">
+            Select your role below. Citizens can report road hazards directly without login, while authorized officials access the AI Command Center.
+          </p>
         </div>
 
-        <!-- 2. GOVERNMENT OFFICIAL CARD -->
-        <div class="nhai-card bg-white/92 backdrop-blur-md p-8 flex flex-col justify-between relative overflow-hidden text-black border-l-4 border-l-[#FF9933] shadow-md hover:shadow-xl transition-all duration-300">
-          <div>
-            <div class="flex items-center justify-between mb-6">
-              <div class="w-13 h-13 rounded-xl bg-orange-100 border border-orange-300 flex items-center justify-center shadow-xs">
-                <i data-lucide="shield-check" class="w-7 h-7 text-orange-700"></i>
-              </div>
-              <span class="px-3 py-1 rounded-full text-xs font-bold font-mono bg-orange-50 text-orange-950 border border-orange-200">
-                RESTRICTED OFFICIAL ACCESS
-              </span>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto w-full">
 
-            <h3 class="text-2xl font-black text-black mb-2">Government Official / Engineer</h3>
-            <p class="text-xs sm:text-sm text-slate-700 mb-4 leading-relaxed font-medium">
-              For NHAI Engineers, State PWD Officers, Smart City Commanders, and Municipal Road Teams. Enter valid details to unlock the Command Center.
-            </p>
-
-            <form id="overlay-login-form" onsubmit="handleOverlayGovLogin(event)" class="space-y-3.5 mb-4">
-              <div>
-                <label class="block text-xs font-black text-black mb-1">Select Department:</label>
-                <select id="overlay-dept" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-black focus:outline-none focus:border-orange-500 focus:bg-amber-50/50">
-                  <option value="nhai">NHAI — National Highways Authority of India</option>
-                  <option value="morth">MoRTH — Ministry of Road Transport & Highways</option>
-                  <option value="pwd_ka">Karnataka State PWD (Bengaluru)</option>
-                  <option value="pwd_mh">Maharashtra PWD / BMC Smart City</option>
-                  <option value="pwd_dl">Delhi NCR PWD / ITMS Command</option>
-                  <option value="pwd_tn">Tamil Nadu Highways Department</option>
-                  <option value="pwd_ts">Telangana Roads & Buildings</option>
-                  <option value="smart_city">Smart City ICCC Command</option>
-                </select>
-              </div>
-
-              <div class="grid grid-cols-2 gap-3">
-                <div>
-                  <label class="block text-xs font-black text-black mb-1">Officer Badge ID:</label>
-                  <input type="text" id="overlay-officer-id" placeholder="e.g. NHAI-ENG-8429" value="NHAI-ENG-8429" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:border-orange-500 focus:bg-amber-50/50" required>
+          <!-- 1. CITIZEN CARD -->
+          <div class="nhai-card bg-white/88 hover:bg-white/96 backdrop-blur-xl border border-white/85 p-8 flex flex-col justify-between relative overflow-hidden text-black border-l-6 border-l-[#138808] shadow-xl hover:shadow-2xl transition-all duration-300">
+            <div>
+              <div class="flex items-center justify-between mb-6">
+                <div class="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center shadow-xs">
+                  <i data-lucide="smartphone" class="w-7 h-7 text-emerald-700"></i>
                 </div>
-                <div>
-                  <label class="block text-xs font-black text-black mb-1">Security PIN:</label>
-                  <input type="password" id="overlay-officer-pin" placeholder="Security PIN" value="NHAI2026" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:border-orange-500 focus:bg-amber-50/50" required>
+                <span class="px-3 py-1 rounded-full text-xs font-bold font-mono bg-emerald-50 text-emerald-950 border border-emerald-300 shadow-xs">
+                  PUBLIC ACCESS
+                </span>
+              </div>
+
+              <h3 class="text-2xl font-black text-black mb-2 flex items-center gap-2">
+                <span>Indian Citizen Portal</span> <span class="text-lg">🇮🇳</span>
+              </h3>
+              <p class="text-xs sm:text-sm text-slate-600 mb-6 leading-relaxed font-medium">
+                Report road potholes, dangerous waterlogging, broken barriers, or debris from your phone. AI automatically calculates cavity depth and routes your report to PWD.
+              </p>
+
+              <div class="space-y-3 mb-8 text-xs text-black font-semibold">
+                <div class="flex items-start gap-2.5">
+                  <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5"></i>
+                  <span><strong>Automatic GPS Location</strong> & Google Maps Tagging</span>
+                </div>
+                <div class="flex items-start gap-2.5">
+                  <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5"></i>
+                  <span><strong>Live Camera Defect Capture</strong> & AI Depth Estimation</span>
+                </div>
+                <div class="flex items-start gap-2.5">
+                  <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5"></i>
+                  <span><strong>Ticket Tracking</strong>: Check real-time PWD repair status</span>
                 </div>
               </div>
+            </div>
 
-              <div id="overlay-login-error" class="hidden text-xs text-red-950 bg-red-100 border border-red-300 p-2.5 rounded-xl font-mono font-bold"></div>
+            <div>
+              <a href="/report" onclick="if(window.location.protocol==='file:'){event.preventDefault();window.location.href='report.html';}" class="w-full py-4 px-6 rounded-xl bg-[#138808] hover:bg-[#0f6b06] border border-emerald-700 text-white font-black text-sm flex items-center justify-center gap-2 shadow-xs transition-colors">
+                <i data-lucide="camera" class="w-4 h-4 text-white"></i>
+                <span>Proceed to Citizen Reporting Portal</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 ml-1 text-white"></i>
+              </a>
+              <p class="text-[11px] text-center text-slate-500 font-semibold mt-2.5">Instant public submission • No password needed</p>
+            </div>
+          </div>
 
-              <div class="flex items-center gap-2 pt-0.5">
-                <button type="button" onclick="fillOverlayDemo('nhai')" class="text-[11px] bg-slate-100 hover:bg-slate-200 border border-slate-300 text-black font-bold px-3 py-1 rounded-lg transition-colors">
-                  ⚡ NHAI Demo
-                </button>
-                <button type="button" onclick="fillOverlayDemo('pwd')" class="text-[11px] bg-slate-100 hover:bg-slate-200 border border-slate-300 text-black font-bold px-3 py-1 rounded-lg transition-colors">
-                  ⚡ State PWD Demo
-                </button>
+          <!-- 2. GOVERNMENT OFFICIAL CARD -->
+          <div class="nhai-card bg-white/88 hover:bg-white/96 backdrop-blur-xl border border-white/85 p-8 flex flex-col justify-between relative overflow-hidden text-black border-l-6 border-l-[#FF9933] shadow-xl hover:shadow-2xl transition-all duration-300">
+            <div>
+              <div class="flex items-center justify-between mb-6">
+                <div class="w-14 h-14 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center shadow-xs">
+                  <i data-lucide="shield-check" class="w-7 h-7 text-orange-700"></i>
+                </div>
+                <span class="px-3 py-1 rounded-full text-xs font-bold font-mono bg-orange-50 text-orange-950 border border-orange-300 shadow-xs">
+                  RESTRICTED OFFICIAL ACCESS
+                </span>
               </div>
 
-              <button type="submit" class="w-full py-4 px-6 rounded-xl bg-[#FF9933] hover:bg-[#F28500] border border-amber-600 text-black font-black text-sm flex items-center justify-center gap-2 shadow-xs transition-colors mt-2 cursor-pointer">
-                <i data-lucide="shield-check" class="w-4 h-4"></i>
-                <span>Verify Credentials & Enter Command Center</span>
-                <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
-              </button>
-            </form>
+              <h3 class="text-2xl font-black text-black mb-2 flex items-center gap-2">
+                <span>Government Authority Login</span> <span class="text-lg">🏛️</span>
+              </h3>
+              <p class="text-xs sm:text-sm text-slate-600 mb-4 leading-relaxed font-medium">
+                For NHAI Engineers, State PWD Officers, Smart City Commanders, and Municipal Road Teams.
+              </p>
+
+              <form id="overlay-login-form" onsubmit="handleOverlayGovLogin(event)" class="space-y-3.5 mb-4">
+                <div>
+                  <label class="block text-xs font-bold text-black mb-1">Select Department:</label>
+                  <select id="overlay-dept" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-black focus:outline-none focus:border-orange-500">
+                    <option value="nhai">NHAI — National Highways Authority of India</option>
+                    <option value="morth">MoRTH — Ministry of Road Transport & Highways</option>
+                    <option value="pwd_ka">Karnataka State PWD (Bengaluru)</option>
+                    <option value="pwd_mh">Maharashtra PWD / BMC Smart City</option>
+                    <option value="pwd_dl">Delhi NCR PWD / ITMS Command</option>
+                    <option value="pwd_tn">Tamil Nadu Highways Department</option>
+                    <option value="pwd_ts">Telangana Roads & Buildings</option>
+                    <option value="smart_city">Smart City ICCC Command</option>
+                  </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-xs font-bold text-black mb-1">Officer Badge ID:</label>
+                    <input type="text" id="overlay-officer-id" placeholder="e.g. NHAI-ENG-8429" value="NHAI-ENG-8429" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:border-orange-500" required>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-black mb-1">Security PIN:</label>
+                    <input type="password" id="overlay-officer-pin" placeholder="Security PIN" value="NHAI2026" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:border-orange-500" required>
+                  </div>
+                </div>
+
+                <div id="overlay-login-error" class="hidden text-xs text-red-950 bg-red-100 border border-red-300 p-2.5 rounded-xl font-mono font-bold"></div>
+
+                <div class="flex items-center gap-2 pt-0.5">
+                  <button type="button" onclick="fillOverlayDemo('nhai')" class="text-[11px] bg-slate-100 hover:bg-slate-200 border border-slate-300 text-black font-bold px-3 py-1 rounded-lg transition-colors cursor-pointer">
+                    ⚡ NHAI Demo
+                  </button>
+                  <button type="button" onclick="fillOverlayDemo('pwd')" class="text-[11px] bg-slate-100 hover:bg-slate-200 border border-slate-300 text-black font-bold px-3 py-1 rounded-lg transition-colors cursor-pointer">
+                    ⚡ State PWD Demo
+                  </button>
+                </div>
+
+                <button type="submit" class="w-full py-4 px-6 rounded-xl bg-[#FF9933] hover:bg-[#F28500] border border-amber-600 text-black font-black text-sm flex items-center justify-center gap-2 shadow-xs transition-colors mt-2 cursor-pointer">
+                  <i data-lucide="shield-check" class="w-4 h-4"></i>
+                  <span>Verify Credentials & Enter Command Center</span>
+                  <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                </button>
+              </form>
+            </div>
+
+            <div class="border-t border-slate-200 pt-3 text-center">
+              <p class="text-[11px] text-slate-600 font-medium">Access to GIS Triage, PWD Work Orders & Multimodal Inspection</p>
+            </div>
           </div>
 
-          <div class="border-t border-slate-200 pt-3 text-center">
-            <p class="text-[11px] text-slate-700 font-bold">Access to GIS Triage, PWD Work Orders & Multimodal Inspection</p>
-          </div>
         </div>
-
-      </div>
-    </main>
+      </main>
+    </div>
 
     <!-- Gateway Footer -->
     <footer class="px-8 py-6 border-t border-slate-200 bg-white text-center text-xs text-black font-bold">

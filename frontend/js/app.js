@@ -196,13 +196,10 @@ function handleLogout() {
   sessionStorage.removeItem('sadaksuraksha_dept');
   sessionStorage.removeItem('sadaksuraksha_officer');
   
-  const overlay = document.getElementById('role-gateway-overlay');
-  if (overlay) {
-    overlay.classList.remove('hidden');
-    lucide.createIcons();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (window.location.protocol === 'file:') {
+    window.location.href = 'login.html';
   } else {
-    window.location.href = '/';
+    window.location.href = '/login';
   }
 }
 
