@@ -107,6 +107,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize Maps
   initGisMap();
   initPatrolMap();
+  if (typeof initForecastMap === 'function') initForecastMap();
 
   // Initialize Charts
   initCharts();
@@ -1929,10 +1930,9 @@ window.initForecastView = initForecastView;
 
 async function fetchForecastData() {
   try {
-    const stateParam = (currentStateFilter && currentStateFilter !== 'all') ? `?state=${encodeURIComponent(currentStateFilter)}` : '';
     const [roadsRes, summaryRes] = await Promise.all([
-      fetch(`/api/forecast/roads${stateParam}`).catch(() => null),
-      fetch(`/api/forecast/summary${stateParam}`).catch(() => null)
+      fetch('/api/forecast/roads').catch(() => null),
+      fetch('/api/forecast/summary').catch(() => null)
     ]);
 
     if (roadsRes && roadsRes.ok) {
@@ -1975,32 +1975,42 @@ function initForecastMap() {
   if (!mapContainer) return;
 
   if (!forecastMap) {
-    forecastMap = L.map('forecast-map', {
-      center: [21.5, 78.5],
-      zoom: 5,
-      zoomControl: true,
-      attributionControl: false
-    });
+    try {
+      if (mapContainer._leaflet_id) {
+        mapContainer._leaflet_id = null;
+      }
+      forecastMap = L.map('forecast-map', {
+        center: [21.5, 78.5],
+        zoom: 5,
+        zoomControl: true,
+        attributionControl: false
+      });
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; CartoDB &copy; OpenStreetMap',
-      maxZoom: 19,
-      subdomains: 'abcd'
-    }).addTo(forecastMap);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; CartoDB &copy; OpenStreetMap',
+        maxZoom: 19,
+        subdomains: 'abcd'
+      }).addTo(forecastMap);
 
-    forecastMarkersLayer = L.layerGroup().addTo(forecastMap);
+      forecastMarkersLayer = L.layerGroup().addTo(forecastMap);
+    } catch (e) {
+      console.warn("Forecast map init error:", e);
+    }
   }
 
   const renderAndInvalidate = () => {
     if (forecastMap) {
-      forecastMap.invalidateSize();
-      const currentRiskFilter = document.getElementById('forecast-filter-risk')?.value || 'all';
-      renderForecastMapMarkers(currentRiskFilter);
-      
-      // Pan to state if filtered
-      if (currentStateFilter && currentStateFilter !== 'all' && STATE_VIEWPORTS[currentStateFilter]) {
-        const vp = STATE_VIEWPORTS[currentStateFilter];
-        forecastMap.flyTo(vp.center, vp.zoom, { duration: 0.5 });
+      try {
+        forecastMap.invalidateSize();
+        const currentRiskFilter = document.getElementById('forecast-filter-risk')?.value || 'all';
+        renderForecastMapMarkers(currentRiskFilter);
+        
+        if (currentStateFilter && currentStateFilter !== 'all' && STATE_VIEWPORTS[currentStateFilter]) {
+          const vp = STATE_VIEWPORTS[currentStateFilter];
+          forecastMap.flyTo(vp.center, vp.zoom, { duration: 0.5 });
+        }
+      } catch (e) {
+        console.debug("Map invalidation error:", e);
       }
     }
   };
