@@ -237,15 +237,15 @@ def sync_hazards_from_disk():
     """Ensures in-memory hazards_db and work_orders_db are synchronized with persistent cloud & disk storage."""
     global hazards_db, work_orders_db
     persisted = load_persisted_citizen_hazards()
+    persisted_ids = {p.id for p in persisted}
+    # Synchronize in-memory DB with disk
+    hazards_db[:] = [h for h in hazards_db if h.id in persisted_ids]
     existing_ids = {h.id for h in hazards_db}
-    new_found = False
     for p in persisted:
         if p.id not in existing_ids:
             hazards_db.insert(0, p)
             existing_ids.add(p.id)
-            new_found = True
-    if new_found or (not work_orders_db and hazards_db):
-        work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+    work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
 
 
 hazards_db: List[HazardIncident] = load_persisted_citizen_hazards()
@@ -403,6 +403,16 @@ async def get_hazard_detail(hazard_id: str):
         if h.id.upper() == hazard_id.upper():
             return h
     raise HTTPException(status_code=404, detail=f"Hazard incident '{hazard_id}' not found.")
+
+
+@app.post("/api/hazards/reset")
+async def reset_hazards():
+    """Wipes all hazards and resets database to an empty clean state."""
+    global hazards_db, work_orders_db
+    hazards_db.clear()
+    save_persisted_citizen_hazards([])
+    work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+    return {"status": "reset", "total_hazards": 0}
 
 
 @app.post("/api/hazards/inspect", response_model=HazardIncident)
