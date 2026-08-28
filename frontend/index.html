@@ -435,14 +435,14 @@
               </div>
             </button>
 
-            <!-- 7. AI Co-Pilot -->
-            <button type="button" onclick="selectNavTab('copilot', 'AI Co-Pilot')" class="dropdown-nav-item w-full flex items-center gap-3 p-2 rounded-lg hover:bg-blue-50 border border-transparent hover:border-blue-200 transition-all text-left group cursor-pointer">
-              <div class="w-8 h-8 rounded-md bg-blue-100 border border-blue-300 flex items-center justify-center shrink-0">
-                <i data-lucide="bot" class="w-4 h-4 text-[#0A3161]"></i>
+            <!-- 7. Gemini AI Assistant -->
+            <button type="button" onclick="selectNavTab('copilot', 'Gemini AI Assistant')" class="dropdown-nav-item w-full flex items-center gap-3 p-2 rounded-lg hover:bg-purple-50 border border-transparent hover:border-purple-200 transition-all text-left group cursor-pointer">
+              <div class="w-8 h-8 rounded-md bg-purple-100 border border-purple-300 flex items-center justify-center shrink-0">
+                <i data-lucide="sparkles" class="w-4 h-4 text-purple-800"></i>
               </div>
               <div>
-                <p data-i18n="nav_copilot" class="text-xs font-bold text-slate-900 leading-none">AI Co-Pilot</p>
-                <p data-i18n="nav_copilot_desc" class="text-[11px] text-slate-600 font-medium mt-1">MoRTH & IRC engineering chat</p>
+                <p data-i18n="nav_copilot" class="text-xs font-bold text-slate-900 leading-none">Gemini AI Assistant</p>
+                <p data-i18n="nav_copilot_desc" class="text-[11px] text-slate-600 font-medium mt-1">Google Gemini 2.5 Flash engineering chat</p>
               </div>
             </button>
 
@@ -1365,7 +1365,7 @@
       </div>
     </div>
 
-    <!-- 5. GEMINI INFRASTRUCTURE AI CO-PILOT TAB -->
+    <!-- 5. GOOGLE GEMINI 2.5 FLASH INFRASTRUCTURE ASSISTANT TAB -->
     <div id="view-copilot" class="tab-view hidden p-6">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-230px)]">
         
@@ -1376,29 +1376,58 @@
                 <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back
               </button>
               <h2 class="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-                <i data-lucide="bot" class="w-4 h-4 text-black"></i> AI Co-Pilot
+                <i data-lucide="sparkles" class="w-4 h-4 text-purple-700"></i> Gemini 2.5 Flash
               </h2>
             </div>
-            <span class="text-[10px] font-mono text-amber-950 font-bold bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full">
-              IRC:82 / MoRTH Grounded
+            <span class="text-[10px] font-mono text-purple-950 font-bold bg-purple-50 border border-purple-200 px-2.5 py-0.5 rounded-full">
+              MoRTH / IRC Grounded
             </span>
+          </div>
+
+          <!-- Direct In-Section Gemini API Key Connection Box -->
+          <div class="bg-purple-50/80 border border-purple-200 rounded-xl p-3.5 flex flex-col gap-2.5 shadow-2xs">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-black text-purple-950 flex items-center gap-1.5">
+                <i data-lucide="key" class="w-3.5 h-3.5 text-purple-700"></i> Gemini API Key
+              </span>
+              <span id="copilot-key-status-badge" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-white text-slate-700 border border-slate-300">
+                Checking...
+              </span>
+            </div>
+            
+            <div class="flex items-center gap-1.5">
+              <input type="password" id="copilot-direct-api-key" placeholder="Paste Gemini API Key..." class="flex-1 bg-white border border-purple-300 rounded-lg px-3 py-1.5 text-xs text-black font-mono font-bold focus:outline-none focus:border-purple-600 focus:ring-1 focus:ring-purple-400">
+              <button onclick="saveCopilotDirectApiKey()" class="px-3 py-1.5 rounded-lg bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold shadow-xs cursor-pointer transition-colors">
+                Save
+              </button>
+              <button onclick="clearCopilotDirectApiKey()" title="Clear Key" class="p-1.5 rounded-lg bg-white hover:bg-red-50 text-slate-500 hover:text-red-600 border border-slate-300 hover:border-red-300 text-xs font-bold cursor-pointer transition-colors">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+
+            <div class="flex items-center justify-between text-[10px] text-purple-800 font-semibold pt-0.5 border-t border-purple-200/60">
+              <span id="copilot-key-hint-text">Connects live to Google Gemini 2.5 Flash</span>
+              <a href="https://aistudio.google.com/" target="_blank" rel="noopener noreferrer" class="underline font-bold hover:text-purple-950 flex items-center gap-0.5">
+                Get Free Key <i data-lucide="external-link" class="w-2.5 h-2.5"></i>
+              </a>
+            </div>
           </div>
 
           <div class="space-y-2">
             <p class="text-[11px] font-black text-black uppercase tracking-wider">Suggested Inquiries:</p>
-            <button onclick="askCopilot('Which hazards pose the greatest risk to emergency hospital transit corridors in this state?')" class="w-full text-left p-3 rounded-xl bg-slate-50 hover:bg-amber-50/50 border border-slate-200 border-l-4 border-l-red-600 text-xs text-black font-bold shadow-xs transition-colors flex items-center justify-between cursor-pointer">
+            <button onclick="askCopilot('Which hazards pose the greatest risk to emergency hospital transit corridors in this state?')" class="w-full text-left p-3 rounded-xl bg-slate-50 hover:bg-purple-50/50 border border-slate-200 border-l-4 border-l-red-600 text-xs text-black font-bold shadow-xs transition-colors flex items-center justify-between cursor-pointer">
               <span>🏥 Hospital Emergency Routes Risk</span>
               <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-black"></i>
             </button>
-            <button onclick="askCopilot('List the top 4 highest priority road hazards and recommend MoRTH repair techniques with cost estimates in Rupees.')" class="w-full text-left p-3 rounded-xl bg-slate-50 hover:bg-amber-50/50 border border-slate-200 border-l-4 border-l-[#FF9933] text-xs text-black font-bold shadow-xs transition-colors flex items-center justify-between cursor-pointer">
+            <button onclick="askCopilot('List the top 4 highest priority road hazards and recommend MoRTH repair techniques with cost estimates in Rupees.')" class="w-full text-left p-3 rounded-xl bg-slate-50 hover:bg-purple-50/50 border border-slate-200 border-l-4 border-l-[#FF9933] text-xs text-black font-bold shadow-xs transition-colors flex items-center justify-between cursor-pointer">
               <span>🚨 Top Priority Defects & MoRTH Repair Rates</span>
               <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-black"></i>
             </button>
-            <button onclick="askCopilot('Analyze how monsoon rainfall and waterlogging will accelerate alligator crack deterioration.')" class="w-full text-left p-3 rounded-xl bg-slate-50 hover:bg-amber-50/50 border border-slate-200 border-l-4 border-l-blue-600 text-xs text-black font-bold shadow-xs transition-colors flex items-center justify-between cursor-pointer">
+            <button onclick="askCopilot('Analyze how monsoon rainfall and waterlogging will accelerate alligator crack deterioration.')" class="w-full text-left p-3 rounded-xl bg-slate-50 hover:bg-purple-50/50 border border-slate-200 border-l-4 border-l-blue-600 text-xs text-black font-bold shadow-xs transition-colors flex items-center justify-between cursor-pointer">
               <span>🌧️ Monsoon Inundation & Hydraulic Pumping</span>
               <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-black"></i>
             </button>
-            <button onclick="askCopilot('What is the total estimated PWD maintenance budget in Rupees for the selected state and how much is saved via spatial clustering?')" class="w-full text-left p-3 rounded-xl bg-slate-50 hover:bg-amber-50/50 border border-slate-200 border-l-4 border-l-[#138808] text-xs text-black font-bold shadow-xs transition-colors flex items-center justify-between cursor-pointer">
+            <button onclick="askCopilot('What is the total estimated PWD maintenance budget in Rupees for the selected state and how much is saved via spatial clustering?')" class="w-full text-left p-3 rounded-xl bg-slate-50 hover:bg-purple-50/50 border border-slate-200 border-l-4 border-l-[#138808] text-xs text-black font-bold shadow-xs transition-colors flex items-center justify-between cursor-pointer">
               <span>💰 PWD Repair Budget & Cluster Savings in ₹</span>
               <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-black"></i>
             </button>
@@ -1406,7 +1435,7 @@
 
           <div class="mt-auto bg-slate-50 border border-slate-200 p-3.5 rounded-xl text-xs text-slate-800 font-medium shadow-xs">
             <div class="flex items-center gap-2 text-black font-extrabold mb-1">
-              <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i> Multimodal Grounding Active (India)
+              <i data-lucide="sparkles" class="w-4 h-4 text-purple-600"></i> Multimodal Grounding Active (India)
             </div>
             Visual detections, 3-axis accelerometer peaks, and IRC deduct values in ₹ INR are automatically injected into the reasoning prompt.
           </div>
@@ -1415,21 +1444,21 @@
         <div class="lg:col-span-8 bg-white border border-slate-200 rounded-2xl flex flex-col overflow-hidden text-black shadow-xs">
           <div id="copilot-chat-messages" class="flex-1 p-5 overflow-y-auto space-y-4 custom-scrollbar bg-[#fcfcf9]">
             <div class="flex gap-3">
-              <div class="w-9 h-9 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center shrink-0 shadow-xs">
-                <i data-lucide="bot" class="w-5 h-5 text-black"></i>
+              <div class="w-9 h-9 rounded-xl bg-purple-100 border border-purple-300 flex items-center justify-center shrink-0 shadow-xs">
+                <i data-lucide="sparkles" class="w-5 h-5 text-purple-800"></i>
               </div>
               <div class="bg-white border border-slate-200 p-4 rounded-2xl max-w-2xl text-xs text-black leading-relaxed shadow-xs">
-                <p class="font-extrabold text-blue-800 mb-1">SadakSuraksha Infrastructure AI Co-Pilot (MoRTH / IRC)</p>
-                <p class="font-medium">Namaste! I am grounded in your multi-state road network database. Select any state from the dropdown above or ask me about risk prioritization, MoRTH repair specifications, budget planning in ₹ INR, or emergency hospital transit corridors.</p>
+                <p class="font-extrabold text-purple-900 mb-1">SadakSuraksha Google Gemini 2.5 Flash Assistant (MoRTH / IRC Grounded)</p>
+                <p class="font-medium">Namaste! Grounded in your multi-state Indian road network database, IRC:82 standards, and PWD repair cost catalogs in ₹ INR. Enter your Gemini API key on the left to activate Google's generative multimodal reasoning, or ask any road safety and maintenance question.</p>
               </div>
             </div>
           </div>
 
           <div class="p-4 border-t border-slate-200 bg-white flex items-center gap-3">
-            <input type="text" id="copilot-input" placeholder="Ask about road defects, PWD maintenance priority, or MoRTH repair costs in ₹..." class="flex-1 bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-black font-bold placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:bg-amber-50/30" onkeydown="if(event.key==='Enter') sendCopilotMessage()">
-            <button onclick="sendCopilotMessage()" id="copilot-send-btn" class="px-4 py-2.5 rounded-xl bg-[#FF9933] hover:bg-[#F28500] border border-amber-600 text-black font-black text-xs flex items-center gap-2 shadow-xs transition-colors cursor-pointer">
-              <span>Ask Co-Pilot</span>
-              <i data-lucide="send" class="w-3.5 h-3.5 text-black"></i>
+            <input type="text" id="copilot-input" placeholder="Ask Google Gemini 2.5 Flash about road defects, PWD priority, or MoRTH repair costs in ₹..." class="flex-1 bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-black font-bold placeholder-slate-400 focus:outline-none focus:border-purple-600 focus:bg-purple-50/20" onkeydown="if(event.key==='Enter') sendCopilotMessage()">
+            <button onclick="sendCopilotMessage()" id="copilot-send-btn" class="px-4 py-2.5 rounded-xl bg-purple-700 hover:bg-purple-800 border border-purple-900 text-white font-black text-xs flex items-center gap-2 shadow-xs transition-colors cursor-pointer">
+              <span>Ask Gemini 2.5 Flash</span>
+              <i data-lucide="send" class="w-3.5 h-3.5 text-white"></i>
             </button>
           </div>
         </div>
@@ -2449,8 +2478,8 @@
     </div>
   </div>
 
-  <script src="/static/js/i18n.js?v=2.8.0"></script>
-  <script src="/static/js/app.js?v=2.8.0"></script>
+  <script src="/static/js/i18n.js?v=2.9.0"></script>
+  <script src="/static/js/app.js?v=2.9.0"></script>
 </body>
 </html>
 

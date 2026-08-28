@@ -228,13 +228,86 @@ function initSessionIdentity() {
 
 function updateApiKeyDisplay() {
   const btn = document.getElementById('apiKeyBtnText');
-  if (userApiKey) {
-    btn.textContent = 'Key Saved ✓';
-    btn.classList.add('text-emerald-400');
-  } else {
-    btn.textContent = 'Gemini Key';
-    btn.classList.remove('text-emerald-400');
+  if (btn) {
+    if (userApiKey) {
+      btn.textContent = 'Gemini Active ✓';
+      btn.classList.add('text-purple-600', 'font-black');
+    } else {
+      btn.textContent = 'Gemini API Key';
+      btn.classList.remove('text-purple-600', 'font-black');
+    }
   }
+  syncCopilotDirectApiKeyStatus();
+}
+
+function syncCopilotDirectApiKeyStatus() {
+  const badge = document.getElementById('copilot-key-status-badge');
+  const input = document.getElementById('copilot-direct-api-key');
+  const hint = document.getElementById('copilot-key-hint-text');
+  
+  if (userApiKey && userApiKey.trim()) {
+    if (badge) {
+      badge.className = 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-100 text-emerald-950 border border-emerald-300';
+      badge.textContent = 'Gemini 2.5 Active ⚡';
+    }
+    if (input) {
+      input.value = userApiKey;
+    }
+    if (hint) {
+      hint.textContent = 'Google Gemini 2.5 Flash connected';
+    }
+  } else {
+    if (badge) {
+      badge.className = 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-100 text-slate-700 border border-slate-300';
+      badge.textContent = 'Local Mode';
+    }
+    if (input) {
+      input.value = '';
+    }
+    if (hint) {
+      hint.textContent = 'Running onboard civil AI engine';
+    }
+  }
+}
+
+async function saveCopilotDirectApiKey() {
+  const input = document.getElementById('copilot-direct-api-key');
+  if (!input) return;
+  const key = input.value.trim();
+  userApiKey = key;
+  localStorage.setItem('SADAKSURAKSHA_GEMINI_KEY', key);
+  
+  try {
+    await fetch('/api/config/apikey', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ api_key: key })
+    });
+  } catch (e) {
+    console.debug('Failed to sync API key to server:', e);
+  }
+
+  updateApiKeyDisplay();
+  if (key) {
+    alert('Google Gemini 2.5 Flash API Key connected and active for all engineering queries.');
+  }
+}
+
+async function clearCopilotDirectApiKey() {
+  const input = document.getElementById('copilot-direct-api-key');
+  if (input) input.value = '';
+  userApiKey = '';
+  localStorage.removeItem('SADAKSURAKSHA_GEMINI_KEY');
+  
+  try {
+    await fetch('/api/config/apikey', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ api_key: '' })
+    });
+  } catch (e) {}
+
+  updateApiKeyDisplay();
 }
 
 // ==========================================
@@ -1093,29 +1166,32 @@ function appendChatMessage(role, content) {
   if (role === 'user') {
     msg.className = 'flex gap-3 justify-end';
     msg.innerHTML = `
-      <div class="bg-cyan-600/20 border border-cyan-500/40 p-4 rounded-2xl max-w-2xl text-xs text-slate-100 leading-relaxed shadow-lg">
-        <p class="font-bold text-cyan-300 mb-1">PWD / Municipal Engineer (${currentStateFilter})</p>
-        <p>${content}</p>
+      <div class="bg-purple-50 border border-purple-200 p-4 rounded-2xl max-w-2xl text-xs text-black leading-relaxed shadow-xs">
+        <p class="font-black text-purple-900 mb-1">PWD / Highway Engineer (${currentStateFilter})</p>
+        <p class="font-medium">${content}</p>
       </div>
-      <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center shrink-0 border border-slate-700">
-        <i data-lucide="user" class="w-4 h-4 text-slate-300"></i>
+      <div class="w-8 h-8 rounded-lg bg-purple-100 border border-purple-300 flex items-center justify-center shrink-0">
+        <i data-lucide="user" class="w-4 h-4 text-purple-800"></i>
       </div>
     `;
   } else {
     let formatted = content
-      .replace(/### (.*?)\n/g, '<h4 class="font-bold text-sm text-cyan-300 mt-2 mb-1">$1</h4>')
-      .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>')
-      .replace(/`([^`]+)`/g, '<code class="bg-slate-800 text-cyan-300 px-1 py-0.5 rounded font-mono text-[11px]">$1</code>')
-      .replace(/> (.*?)\n/g, '<blockquote class="border-l-2 border-cyan-400 pl-2 my-2 text-slate-300 italic text-[11px]">$1</blockquote>')
-      .replace(/\n- (.*?)/g, '<li class="ml-4 list-disc text-slate-300">$1</li>');
+      .replace(/### (.*?)\n/g, '<h4 class="font-bold text-sm text-purple-900 mt-2 mb-1">$1</h4>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong class="text-black font-extrabold">$1</strong>')
+      .replace(/`([^`]+)`/g, '<code class="bg-slate-100 text-purple-800 px-1 py-0.5 rounded font-mono text-[11px] font-bold border border-slate-200">$1</code>')
+      .replace(/> (.*?)\n/g, '<blockquote class="border-l-2 border-purple-500 pl-2 my-2 text-slate-700 italic text-[11px]">$1</blockquote>')
+      .replace(/\n- (.*?)/g, '<li class="ml-4 list-disc text-slate-800">$1</li>');
 
     msg.innerHTML = `
-      <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shrink-0">
-        <i data-lucide="bot" class="w-4 h-4 text-black"></i>
+      <div class="w-8 h-8 rounded-lg bg-purple-600 flex items-center justify-center shrink-0 shadow-xs">
+        <i data-lucide="sparkles" class="w-4 h-4 text-white"></i>
       </div>
-      <div class="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl max-w-2xl text-xs text-slate-200 leading-relaxed shadow-lg">
-        <p class="font-bold text-cyan-300 mb-1">SadakSuraksha Infrastructure AI Co-Pilot (MoRTH / IRC)</p>
-        <div class="space-y-1.5">${formatted}</div>
+      <div class="bg-white border border-slate-200 p-4 rounded-2xl max-w-2xl text-xs text-slate-800 leading-relaxed shadow-xs">
+        <p class="font-black text-purple-900 mb-1 flex items-center gap-1.5">
+          <span>Google Gemini 2.5 Flash Assistant</span>
+          <span class="text-[10px] bg-purple-50 text-purple-800 border border-purple-200 px-1.5 py-0.2 rounded font-mono">IRC / MoRTH</span>
+        </p>
+        <div class="space-y-1.5 font-medium text-black">${formatted}</div>
       </div>
     `;
   }
