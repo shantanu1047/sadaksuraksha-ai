@@ -400,16 +400,16 @@ code, pre, .font-mono {
 }
 
 .leaflet-popup-content-wrapper {
-  background: rgba(255, 255, 255, 0.85) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  background: rgba(255, 255, 255, 0.58) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
   border-radius: 16px !important;
   color: #0f172a !important;
   padding: 0 !important;
   overflow: hidden !important;
   position: relative !important;
-  box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(226, 232, 240, 0.6) !important;
+  box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(255, 255, 255, 0.7) !important;
 }
 
 .leaflet-popup-content-wrapper::before {
@@ -421,10 +421,11 @@ code, pre, .font-mono {
 }
 
 .leaflet-popup-tip {
-  background: rgba(255, 255, 255, 0.85) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+  background: rgba(255, 255, 255, 0.58) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
 }
 
 /* Custom Map Hazard Marker Pins */

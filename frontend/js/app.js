@@ -495,18 +495,18 @@ function renderMapMarkers(hazards) {
 
     const marker = L.marker([h.latitude, h.longitude], { icon: customIcon });
 
-    let sevBadgeBg = 'bg-amber-100/80 text-amber-900 border-amber-300/70';
+    let sevBadgeBg = 'bg-amber-100/60 text-amber-900 border-amber-300/60';
     if (h.severity === 'critical') {
-      sevBadgeBg = 'bg-rose-100/80 text-rose-900 border-rose-300/70';
+      sevBadgeBg = 'bg-rose-100/60 text-rose-900 border-rose-300/60';
     } else if (h.severity === 'low') {
-      sevBadgeBg = 'bg-emerald-100/80 text-emerald-900 border-emerald-300/70';
+      sevBadgeBg = 'bg-emerald-100/60 text-emerald-900 border-emerald-300/60';
     }
 
     const popupHtml = `
       <div class="p-3.5 text-xs font-sans text-slate-900" style="min-width:260px; max-width:290px;">
         <!-- Top Row: ID & Severity Badge -->
-        <div class="flex items-center justify-between gap-2 pb-2 mb-2 border-b border-slate-200/60">
-          <span class="inline-flex items-center gap-1 font-bold text-xs text-blue-900 bg-blue-50/80 border border-blue-200/80 px-2 py-0.5 rounded-md">
+        <div class="flex items-center justify-between gap-2 pb-2 mb-2 border-b border-slate-200/50">
+          <span class="inline-flex items-center gap-1 font-bold text-xs text-blue-900 bg-blue-50/60 border border-blue-200/60 px-2 py-0.5 rounded-md">
             <span>${h.id}</span>
             <span class="text-[10px] text-blue-700 font-medium">(${h.state})</span>
           </span>
@@ -519,8 +519,8 @@ function renderMapMarkers(hazards) {
         <h4 class="font-extrabold text-[13px] text-slate-900 mb-1 leading-snug tracking-tight">${h.title}</h4>
         <p class="text-[11px] text-slate-600 mb-2.5 leading-tight font-medium">${h.address}</p>
 
-        <!-- Metric Details Glass Box -->
-        <div class="bg-white/60 backdrop-blur-xs p-2.5 rounded-xl border border-slate-200/70 text-[11px] mb-3 space-y-1 shadow-2xs font-sans">
+        <!-- Metric Details Translucent Glass Box -->
+        <div class="bg-white/40 backdrop-blur-md p-2.5 rounded-xl border border-white/80 text-[11px] mb-3 space-y-1 shadow-2xs font-sans">
           <div class="flex justify-between items-center"><span class="text-slate-600 font-medium">Risk Priority:</span> <strong class="text-rose-600 font-extrabold font-mono">${h.priority.raw_risk_score}/100</strong></div>
           <div class="flex justify-between items-center"><span class="text-slate-600 font-medium">Cavity Depth:</span> <strong class="text-blue-700 font-extrabold font-mono">${h.fusion.physical_depth_cm} cm</strong></div>
           <div class="flex justify-between items-center"><span class="text-slate-600 font-medium">PWD Repair:</span> <strong class="text-slate-900 font-extrabold font-mono">${formatINR(h.priority.estimated_repair_cost_usd)}</strong></div>
@@ -528,10 +528,10 @@ function renderMapMarkers(hazards) {
 
         <!-- Action Buttons -->
         <div class="space-y-1.5 font-sans">
-          <button onclick="openIncidentModal('${h.id}')" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-2 px-3 rounded-xl shadow-xs border border-amber-400/40 flex items-center justify-center gap-1.5 text-xs transition-all cursor-pointer">
+          <button onclick="openIncidentModal('${h.id}')" class="w-full bg-gradient-to-r from-amber-500/90 to-orange-500/90 hover:from-amber-500 hover:to-orange-500 text-white font-bold py-2 px-3 rounded-xl shadow-xs border border-amber-300/40 flex items-center justify-center gap-1.5 text-xs transition-all cursor-pointer backdrop-blur-xs">
             <span>🇮🇳 View Multimodal Dossier</span>
           </button>
-          <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" class="w-full bg-slate-900/90 hover:bg-slate-900 text-white font-semibold py-1.5 px-3 rounded-xl shadow-xs border border-slate-700/50 flex items-center justify-center gap-1.5 text-[11.5px] transition-all no-underline text-center box-border">
+          <a href="https://www.google.com/maps/search/?api=1&query=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" class="w-full bg-slate-900/85 hover:bg-slate-900 text-white font-semibold py-1.5 px-3 rounded-xl shadow-xs border border-slate-700/40 flex items-center justify-center gap-1.5 text-[11.5px] transition-all no-underline text-center box-border backdrop-blur-xs">
             <span>🗺️ Open in Google Maps ↗</span>
           </a>
           <a href="https://www.google.com/maps/dir/?api=1&destination=${h.latitude},${h.longitude}" target="_blank" rel="noopener noreferrer" class="block text-center text-emerald-700 hover:text-emerald-800 font-bold text-[11px] no-underline pt-0.5 transition-colors">
