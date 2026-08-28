@@ -232,6 +232,7 @@ class IngestionService:
             fusion=fusion,
             priority=priority,
             status="Active",
+            image_url=req.image_base64 if req.image_base64 else None,
             telemetry_trace=trace,
         )
 
