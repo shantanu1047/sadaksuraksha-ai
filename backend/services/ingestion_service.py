@@ -7,6 +7,7 @@ All costs computed in Indian Rupees (₹ INR).
 
 import random
 import logging
+import uuid
 from datetime import datetime
 from typing import List, Dict, Optional, Any
 
@@ -115,7 +116,7 @@ class IngestionService:
 
     def _next_ticket_id(self) -> str:
         self.citizen_ticket_counter += 1
-        return f"CITIZEN-SURAKSHA-{self.citizen_ticket_counter:04d}"
+        return f"CITIZEN-SURAKSHA-{datetime.now().strftime('%y%m%d')}-{uuid.uuid4().hex[:4].upper()}"
 
     def _category_to_hazard_type(self, category: str) -> HazardType:
         mapping = {
@@ -206,7 +207,7 @@ class IngestionService:
             road_class=road_class, env_context=env,
         )
 
-        new_id = f"HAZ-{len(hazards_db)+1:03d}"
+        new_id = f"HAZ-{datetime.now().strftime('%y%m%d')}-{uuid.uuid4().hex[:4].upper()}"
         road_title = req.road_name or f"Citizen Reported Location ({req.city})"
         trace = generate_sample_telemetry_trace(acc_z_peak=simulated_gz, is_bump=(simulated_gz > 1.3))
 
@@ -343,7 +344,7 @@ class IngestionService:
             road_class=req.road_class, env_context=env,
         )
 
-        new_id = f"HAZ-{len(hazards_db)+1:03d}"
+        new_id = f"HAZ-{datetime.now().strftime('%y%m%d')}-{uuid.uuid4().hex[:4].upper()}"
         trace = generate_sample_telemetry_trace(acc_z_peak=1.0, is_bump=False)
 
         incident = HazardIncident(
@@ -453,7 +454,7 @@ class IngestionService:
             road_class=road_class, env_context=env,
         )
 
-        new_id = f"HAZ-{len(hazards_db)+1:03d}"
+        new_id = f"HAZ-{datetime.now().strftime('%y%m%d')}-{uuid.uuid4().hex[:4].upper()}"
         road_title = req.road_name or f"Traffic Anomaly Zone ({req.city})"
         trace = generate_sample_telemetry_trace(acc_z_peak=simulated_gz, is_bump=(simulated_gz > 1.3))
 

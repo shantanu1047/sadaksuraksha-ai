@@ -355,27 +355,6 @@ async function refreshAllData() {
       console.debug('Error merging local citizen reports:', e);
     }
 
-    // 3. Fallback Cloud Database sync across serverless workers & devices
-    try {
-      const cloudRes = await fetch('https://api.restful-api.dev/objects/ff8081819ff5b11001a049f2fd8d573c', {
-        headers: { 'Accept': 'application/json' }
-      });
-      if (cloudRes.ok) {
-        const resObj = await cloudRes.json();
-        const cloudHazards = resObj?.data?.hazards;
-        if (Array.isArray(cloudHazards)) {
-          cloudHazards.forEach(rawCh => {
-            const ch = normalizeHazard(rawCh);
-            if (ch && ch.id && !hazardMap.has(ch.id)) {
-              hazardMap.set(ch.id, ch);
-            }
-          });
-        }
-      }
-    } catch (e) {
-      console.debug('Cloud DB fallback sync note:', e);
-    }
-
     allHazards = Array.from(hazardMap.values());
     allRoads = Array.isArray(await roadsRes.json()) ? await roadsRes.json() : [];
     const serverOrders = Array.isArray(await workOrdersRes.json()) ? await workOrdersRes.json() : [];

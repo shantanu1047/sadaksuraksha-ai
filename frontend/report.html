@@ -1076,29 +1076,6 @@
                     const existingList = JSON.parse(localStorage.getItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS') || '[]');
                     existingList.unshift(localIncident);
                     localStorage.setItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS', JSON.stringify(existingList.slice(0, 50)));
-
-                    // Push directly to Cloud Database for cross-device & serverless persistence
-                    (async () => {
-                        try {
-                            const getRes = await fetch('https://api.restful-api.dev/objects/ff8081819ff5b11001a049f2fd8d573c');
-                            let currentHazards = [];
-                            if (getRes.ok) {
-                                const obj = await getRes.json();
-                                currentHazards = obj?.data?.hazards || [];
-                            }
-                            currentHazards.unshift(localIncident);
-                            await fetch('https://api.restful-api.dev/objects/ff8081819ff5b11001a049f2fd8d573c', {
-                                method: 'PUT',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    name: "sadaksuraksha_hazards_store",
-                                    data: { hazards: currentHazards.slice(0, 50) }
-                                })
-                            });
-                        } catch (err) {
-                            console.debug('Direct cloud storage note:', err);
-                        }
-                    })();
                 } catch (e) {
                     console.debug('Error saving local citizen report:', e);
                 }

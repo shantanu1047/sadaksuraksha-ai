@@ -8,6 +8,8 @@ import os
 import json
 import asyncio
 import logging
+import uuid
+from datetime import datetime
 from typing import List, Optional, Dict, Any
 from pathlib import Path
 
@@ -71,14 +73,15 @@ copilot_service = CopilotService()
 ingestion_service = IngestionService()
 forecast_service = ForecastService()
 
-DEFAULT_CLOUD_ENDPOINT = "https://api.restful-api.dev/objects/ff8081819ff5b11001a049f2fd8d573c"
-
-def get_cloud_endpoint() -> str:
-    return os.environ.get("CLOUD_DB_URL", DEFAULT_CLOUD_ENDPOINT).strip()
+def get_cloud_endpoint() -> Optional[str]:
+    url = os.environ.get("CLOUD_DB_URL", "").strip()
+    return url if url else None
 
 def fetch_hazards_from_cloud() -> List[HazardIncident]:
-    """Fetches real-time persisted citizen complaints from Cloud Database."""
+    """Fetches real-time persisted citizen complaints from Cloud Database if configured."""
     endpoint = get_cloud_endpoint()
+    if not endpoint:
+        return []
     try:
         req = urllib.request.Request(
             endpoint,
@@ -88,7 +91,7 @@ def fetch_hazards_from_cloud() -> List[HazardIncident]:
             },
             method="GET",
         )
-        with urllib.request.urlopen(req, timeout=4) as res:
+        with urllib.request.urlopen(req, timeout=2) as res:
             if res.status == 200:
                 raw = res.read().decode("utf-8")
                 res_obj = json.loads(raw)
@@ -109,8 +112,10 @@ def fetch_hazards_from_cloud() -> List[HazardIncident]:
     return []
 
 def save_hazards_to_cloud(hazards: List[HazardIncident]) -> bool:
-    """Saves entire citizen hazard list atomically to Cloud Database."""
+    """Saves citizen hazard list atomically to Cloud Database if configured."""
     endpoint = get_cloud_endpoint()
+    if not endpoint:
+        return False
     try:
         citizen_only = [inc.model_dump() for inc in hazards if inc.id.startswith("HAZ-")]
         payload = json.dumps({
@@ -126,15 +131,17 @@ def save_hazards_to_cloud(hazards: List[HazardIncident]) -> bool:
             },
             method="PUT",
         )
-        with urllib.request.urlopen(req, timeout=5) as res:
+        with urllib.request.urlopen(req, timeout=3) as res:
             return res.status in (200, 201)
     except Exception as e:
         logger.debug(f"Cloud DB save error: {e}")
         return False
 
 def clear_cloud_hazards():
-    """Wipes all hazard records from Cloud Database."""
+    """Wipes all hazard records from Cloud Database if configured."""
     endpoint = get_cloud_endpoint()
+    if not endpoint:
+        return
     try:
         payload = json.dumps({
             "name": "sadaksuraksha_hazards_store",
@@ -149,7 +156,7 @@ def clear_cloud_hazards():
             },
             method="PUT",
         )
-        with urllib.request.urlopen(req, timeout=4) as res:
+        with urllib.request.urlopen(req, timeout=2) as res:
             pass
     except Exception as e:
         logger.debug(f"Cloud DB clear error: {e}")
@@ -472,8 +479,9 @@ async def inspect_multimodal(payload: MultimodalUploadRequest):
         env_context=env,
     )
 
-    new_id = f"HAZ-{len(hazards_db)+1:03d}"
+    new_id = f"HAZ-{datetime.now().strftime('%y%m%d')}-{uuid.uuid4().hex[:4].upper()}"
     road_title = payload.road_name or f"{payload.road_class.value.replace('_', ' ').title()} Corridor"
+    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     trace = generate_sample_telemetry_trace(acc_z_peak=payload.acc_z_g, is_bump=(payload.acc_z_g > 1.3))
 
@@ -490,7 +498,7 @@ async def inspect_multimodal(payload: MultimodalUploadRequest):
         latitude=payload.latitude,
         longitude=payload.longitude,
         address=f"Geotag: {payload.latitude:.4f}°N, {payload.longitude:.4f}°E ({road_title}, {payload.city}, {payload.state})",
-        detected_at="2026-08-25 13:00:00",
+        detected_at=now_str,
         visual_detections=[primary_det] if primary_det else [],
         telemetry=telemetry,
         acoustic=acoustic,
@@ -503,6 +511,7 @@ async def inspect_multimodal(payload: MultimodalUploadRequest):
     )
 
     hazards_db.insert(0, incident)
+    save_persisted_citizen_hazards(hazards_db)
     global work_orders_db
     work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
 
