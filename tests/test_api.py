@@ -355,4 +355,31 @@ def test_delete_work_order(client):
     assert not any(wo["id"] == target_wo_id for wo in wos_after)
 
 
+def test_vercel_without_cloud_keeps_new_citizen_report_in_memory(client, monkeypatch):
+    monkeypatch.setenv("VERCEL", "1")
+    monkeypatch.delenv("VERCEL_ENV", raising=False)
+    monkeypatch.delenv("CLOUD_DB_URL", raising=False)
+    monkeypatch.delenv("ALLOW_SERVERLESS_FILE_STORAGE", raising=False)
+
+    client.post("/api/hazards/reset")
+    payload = {
+        "latitude": 28.6139,
+        "longitude": 77.2090,
+        "state": "Delhi NCR",
+        "city": "New Delhi",
+        "category": "pothole",
+        "severity_self_report": 4,
+        "description": "Fresh Vercel-mode citizen complaint.",
+        "reporter_name": "Deployment Test",
+        "road_name": "Kartavya Path",
+    }
+
+    submit_res = client.post("/api/ingest/citizen-report", json=payload)
+    assert submit_res.status_code == 200
+    hazard_id = submit_res.json()["hazard_id"]
+
+    hazards_res = client.get("/api/hazards")
+    assert hazards_res.status_code == 200
+    assert any(h["id"] == hazard_id for h in hazards_res.json())
+
 

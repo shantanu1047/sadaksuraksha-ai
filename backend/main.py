@@ -216,6 +216,10 @@ def get_storage_paths() -> List[Path]:
     return paths
 
 
+def has_persistent_hazard_storage() -> bool:
+    return bool(get_cloud_endpoint() or get_storage_paths())
+
+
 def demo_hazards_enabled() -> bool:
     cloud_state = cloud_data_block()
     if cloud_state and isinstance(cloud_state.get("demo_seeded"), bool):
@@ -290,6 +294,13 @@ def sync_hazards_from_disk():
     against the persisted set and removed if they've been deleted from storage.
     """
     global hazards_db, work_orders_db, deleted_work_order_ids
+    if not has_persistent_hazard_storage():
+        work_orders_db = [
+            wo for wo in prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+            if wo.id.upper() not in deleted_work_order_ids
+        ]
+        return
+
     persisted = load_persisted_citizen_hazards()
     persisted_ids = {p.id for p in persisted}
 
