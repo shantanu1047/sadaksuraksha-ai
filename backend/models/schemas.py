@@ -341,3 +341,38 @@ class IngestionStreamStatus(BaseModel):
     hazards_detected: int = 0
     false_positives_filtered: int = 0
 
+
+# ==========================================
+# AI ROAD FORECAST SCHEMAS
+# ==========================================
+
+class RoadForecastItem(BaseModel):
+    id: str
+    road_name: str
+    location: str
+    state: str = "Karnataka"
+    city: str = "Bengaluru"
+    road_class: str
+    coordinates: List[float]
+    current_risk: str
+    current_score: int
+    forecast_risk: str
+    forecast_score: int
+    confidence: int
+    predicted_issue: str
+    expected_window: str
+    expected_date: str
+    risk_trend: str
+    explanation: str
+    factors: List[str]
+    action: str
+
+
+class ForecastSummaryResponse(BaseModel):
+    high_risk_corridors_count: int
+    avg_confidence_percent: float
+    critical_72h_segments_count: int
+    estimated_prevention_savings_inr: float
+    total_forecasts_count: int
+
+

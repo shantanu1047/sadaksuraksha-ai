@@ -196,3 +196,36 @@ def test_html_routes_serving(client):
     assert res_report.status_code == 200
     assert "text/html" in res_report.headers.get("content-type", "")
 
+
+def test_road_forecasts_endpoint(client):
+    res = client.get("/api/forecast/roads")
+    assert res.status_code == 200
+    items = res.json()
+    assert len(items) >= 6
+    assert any("Jaipur" in item["location"] for item in items)
+    assert any("Bengaluru" in item["location"] for item in items)
+
+    # Test state filter
+    res_ka = client.get("/api/forecast/roads?state=Karnataka")
+    assert res_ka.status_code == 200
+    ka_items = res_ka.json()
+    assert all(item["state"] == "Karnataka" for item in ka_items)
+
+    # Test summary
+    res_sum = client.get("/api/forecast/summary")
+    assert res_sum.status_code == 200
+    sum_data = res_sum.json()
+    assert sum_data["high_risk_corridors_count"] > 0
+    assert sum_data["estimated_prevention_savings_inr"] > 0
+
+
+def test_forecast_simulation_run(client):
+    res = client.post("/api/forecast/run")
+    assert res.status_code == 200
+    items = res.json()
+    assert len(items) >= 6
+    for item in items:
+        assert 0 <= item["forecast_score"] <= 100
+        assert item["forecast_risk"] in ["Critical", "High", "Medium", "Low"]
+
+

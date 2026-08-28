@@ -36,8 +36,11 @@ from backend.models.schemas import (
     CctvFrameIngestRequest,
     GoogleMapsAnomalyRequest,
     IngestionStreamStatus,
+    RoadForecastItem,
+    ForecastSummaryResponse,
 )
 from backend.services.ingestion_service import IngestionService
+from backend.services.forecast_service import ForecastService
 from backend.core.vision_engine import VisionEngine
 from backend.core.sensor_fusion import SensorFusionEngine
 from backend.core.prioritization_engine import PrioritizationEngine
@@ -66,6 +69,7 @@ fusion_engine = SensorFusionEngine()
 prioritization_engine = PrioritizationEngine()
 copilot_service = CopilotService()
 ingestion_service = IngestionService()
+forecast_service = ForecastService()
 
 hazards_db: List[HazardIncident] = get_demo_hazards()
 roads_db: List[RoadSegment] = get_demo_road_segments()
@@ -387,6 +391,29 @@ async def ingest_google_maps_anomaly(req: GoogleMapsAnomalyRequest):
 async def list_ingestion_streams():
     """Returns status of all active ingestion feeds."""
     return ingestion_service.get_stream_statuses()
+
+
+# ==========================================
+# AI ROAD FORECAST ENDPOINTS
+# ==========================================
+
+@app.get("/api/forecast/roads", response_model=List[RoadForecastItem])
+async def get_road_forecasts(state: Optional[str] = None, risk: Optional[str] = None):
+    """Retrieve 7-day predictive failure risk forecasts across road corridors."""
+    return forecast_service.list_forecasts(state=state, risk=risk)
+
+
+@app.post("/api/forecast/run", response_model=List[RoadForecastItem])
+async def run_road_forecast():
+    """Run AI machine learning deterioration simulation model."""
+    return forecast_service.run_simulation()
+
+
+@app.get("/api/forecast/summary", response_model=ForecastSummaryResponse)
+async def get_forecast_summary(state: Optional[str] = None):
+    """Returns aggregated high-risk corridor metrics and cost prevention savings."""
+    return forecast_service.get_summary(state=state)
+
 
 
 # WebSocket Live Patrol Vehicle Simulation

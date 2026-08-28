@@ -297,6 +297,11 @@ function handleStateChange(selectedState) {
       updateKpiBar(analytics);
       updateAnalyticsCharts(analytics, allRoads);
     });
+
+  // Also update AI Road Forecast if initialized
+  if (typeof fetchForecastData === 'function') {
+    fetchForecastData();
+  }
 }
 
 function handleSearchFilter(query) {
@@ -1911,12 +1916,57 @@ const ROAD_FORECAST_DATA = [
   }
 ];
 
-function initForecastView() {
-  renderForecastCards('all');
+let activeForecastData = [...ROAD_FORECAST_DATA];
+
+async function initForecastView() {
+  await fetchForecastData();
   initForecastMap();
   lucide.createIcons();
 }
 window.initForecastView = initForecastView;
+
+async function fetchForecastData() {
+  try {
+    const stateParam = (currentStateFilter && currentStateFilter !== 'all') ? `?state=${encodeURIComponent(currentStateFilter)}` : '';
+    const [roadsRes, summaryRes] = await Promise.all([
+      fetch(`/api/forecast/roads${stateParam}`).catch(() => null),
+      fetch(`/api/forecast/summary${stateParam}`).catch(() => null)
+    ]);
+
+    if (roadsRes && roadsRes.ok) {
+      const data = await roadsRes.json();
+      if (Array.isArray(data) && data.length > 0) {
+        activeForecastData = data;
+      }
+    }
+
+    if (summaryRes && summaryRes.ok) {
+      const summary = await summaryRes.json();
+      updateForecastKpis(summary);
+    }
+  } catch (err) {
+    console.debug('Using local forecast data fallback', err);
+  }
+
+  const currentRiskFilter = document.getElementById('forecast-filter-risk')?.value || 'all';
+  renderForecastCards(currentRiskFilter);
+  renderForecastMapMarkers(currentRiskFilter);
+}
+
+function updateForecastKpis(summary) {
+  const kpiHigh = document.getElementById('forecast-kpi-high-risk');
+  const kpiConf = document.getElementById('forecast-kpi-confidence');
+  const kpi72h = document.getElementById('forecast-kpi-72h');
+  const kpiSavings = document.getElementById('forecast-kpi-savings');
+
+  if (kpiHigh) kpiHigh.textContent = `${summary.high_risk_corridors_count} Corridors`;
+  if (kpiConf) kpiConf.textContent = `${summary.avg_confidence_percent}%`;
+  if (kpi72h) kpi72h.textContent = `${summary.critical_72h_segments_count} Road Segments`;
+  if (kpiSavings) {
+    const lakh = (summary.estimated_prevention_savings_inr / 100000).toFixed(2);
+    kpiSavings.textContent = `₹ ${lakh} Lakhs`;
+  }
+}
 
 function initForecastMap() {
   const mapContainer = document.getElementById('forecast-map');
@@ -1942,16 +1992,23 @@ function initForecastMap() {
   setTimeout(() => {
     if (forecastMap) {
       forecastMap.invalidateSize();
-      renderForecastMapMarkers('all');
+      const currentRiskFilter = document.getElementById('forecast-filter-risk')?.value || 'all';
+      renderForecastMapMarkers(currentRiskFilter);
+      
+      // Pan to state if filtered
+      if (currentStateFilter && currentStateFilter !== 'all' && STATE_VIEWPORTS[currentStateFilter]) {
+        const vp = STATE_VIEWPORTS[currentStateFilter];
+        forecastMap.flyTo(vp.center, vp.zoom, { duration: 0.8 });
+      }
     }
-  }, 200);
+  }, 250);
 }
 
 function renderForecastMapMarkers(filter) {
   if (!forecastMarkersLayer || !forecastMap) return;
   forecastMarkersLayer.clearLayers();
 
-  const items = ROAD_FORECAST_DATA.filter(item => {
+  const items = activeForecastData.filter(item => {
     if (!filter || filter === 'all') return true;
     if (filter === 'high') return item.forecast_risk.toLowerCase() === 'high' || item.forecast_risk.toLowerCase() === 'critical';
     if (filter === 'medium') return item.forecast_risk.toLowerCase() === 'medium';
@@ -2001,7 +2058,7 @@ function renderForecastCards(filter) {
   const container = document.getElementById('forecast-corridors-list');
   if (!container) return;
 
-  const items = ROAD_FORECAST_DATA.filter(item => {
+  const items = activeForecastData.filter(item => {
     if (!filter || filter === 'all') return true;
     if (filter === 'high') return item.forecast_risk.toLowerCase() === 'high' || item.forecast_risk.toLowerCase() === 'critical';
     if (filter === 'medium') return item.forecast_risk.toLowerCase() === 'medium';
@@ -2012,6 +2069,15 @@ function renderForecastCards(filter) {
   const countBadge = document.getElementById('forecast-roads-count');
   if (countBadge) {
     countBadge.textContent = `Showing ${items.length} Predictions`;
+  }
+
+  if (items.length === 0) {
+    container.innerHTML = `
+      <div class="bg-white border border-slate-200 rounded-xl p-8 text-center">
+        <p class="text-xs font-bold text-slate-500">No failure risks forecasted under this filter.</p>
+      </div>
+    `;
+    return;
   }
 
   container.innerHTML = items.map(item => {
@@ -2076,31 +2142,43 @@ function handleForecastFilterChange(filterVal) {
 }
 window.handleForecastFilterChange = handleForecastFilterChange;
 
-function refreshForecastData() {
+async function refreshForecastData() {
   const btn = document.querySelector('[onclick="refreshForecastData()"]');
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 text-purple-200 animate-spin"></i> Updating Forecasts...`;
+    btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 text-purple-200 animate-spin"></i> Running AI Simulation...`;
     lucide.createIcons();
   }
 
-  setTimeout(() => {
-    ROAD_FORECAST_DATA.forEach(d => {
-      d.confidence = Math.min(98, Math.max(80, d.confidence + Math.floor((Math.random() - 0.5) * 3)));
-    });
-    renderForecastCards('all');
-    renderForecastMapMarkers('all');
-    if (btn) {
-      btn.disabled = false;
-      btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 text-purple-200"></i> Run AI Forecast`;
-      lucide.createIcons();
+  try {
+    const res = await fetch('/api/forecast/run', { method: 'POST' });
+    if (res.ok) {
+      activeForecastData = await res.json();
     }
-  }, 600);
+    const stateParam = (currentStateFilter && currentStateFilter !== 'all') ? `?state=${encodeURIComponent(currentStateFilter)}` : '';
+    const sumRes = await fetch(`/api/forecast/summary${stateParam}`);
+    if (sumRes.ok) {
+      const summary = await sumRes.json();
+      updateForecastKpis(summary);
+    }
+  } catch (e) {
+    console.debug('Simulation local fallback', e);
+  }
+
+  const currentRiskFilter = document.getElementById('forecast-filter-risk')?.value || 'all';
+  renderForecastCards(currentRiskFilter);
+  renderForecastMapMarkers(currentRiskFilter);
+
+  if (btn) {
+    btn.disabled = false;
+    btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 text-purple-200"></i> Run AI Forecast`;
+    lucide.createIcons();
+  }
 }
 window.refreshForecastData = refreshForecastData;
 
 function openForecastDetailModal(forecastId) {
-  const item = ROAD_FORECAST_DATA.find(d => d.id === forecastId);
+  const item = activeForecastData.find(d => d.id === forecastId) || ROAD_FORECAST_DATA.find(d => d.id === forecastId);
   if (!item) return;
 
   const modal = document.getElementById('road-forecast-modal');
@@ -2163,6 +2241,7 @@ function closeForecastDetailModal() {
     modal.classList.remove('flex');
   }
 }
+window.closeForecastDetailModal = closeForecastDetailModal;
 window.closeForecastDetailModal = closeForecastDetailModal;
 
 // ==========================================
