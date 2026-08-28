@@ -71,7 +71,38 @@ copilot_service = CopilotService()
 ingestion_service = IngestionService()
 forecast_service = ForecastService()
 
-hazards_db: List[HazardIncident] = get_demo_hazards()
+def get_persisted_file() -> Path:
+    base = Path(__file__).resolve().parent.parent / "database"
+    if not base.exists():
+        try:
+            base.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            return Path("/tmp") / "persisted_citizen_hazards.json"
+    return base / "persisted_citizen_hazards.json"
+
+def load_persisted_citizen_hazards() -> List[HazardIncident]:
+    try:
+        p = get_persisted_file()
+        if p.exists():
+            with open(p, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, list):
+                    return [HazardIncident(**d) for d in data]
+    except Exception as e:
+        logger.debug(f"Could not load persisted hazards: {e}")
+    return []
+
+def save_persisted_citizen_hazards(incidents: List[HazardIncident]):
+    try:
+        p = get_persisted_file()
+        citizen_only = [inc.model_dump() for inc in incidents if inc.id.startswith("HAZ-") and inc.citizen_report is not None]
+        citizen_only = citizen_only[:100]
+        with open(p, "w", encoding="utf-8") as f:
+            json.dump(citizen_only, f, indent=2, default=str)
+    except Exception as e:
+        logger.debug(f"Could not persist hazard to disk: {e}")
+
+hazards_db: List[HazardIncident] = load_persisted_citizen_hazards() + get_demo_hazards()
 roads_db: List[RoadSegment] = get_demo_road_segments()
 work_orders_db: List[WorkOrder] = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
 
@@ -388,6 +419,7 @@ async def ingest_citizen_report(req: CitizenSubmissionRequest):
     """Public endpoint for citizen mobile portal submissions."""
     incident, ticket = ingestion_service.process_citizen_report(req, hazards_db)
     hazards_db.insert(0, incident)
+    save_persisted_citizen_hazards(hazards_db)
     global work_orders_db
     work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
     return ticket

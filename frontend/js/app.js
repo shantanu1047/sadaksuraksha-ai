@@ -327,6 +327,22 @@ async function refreshAllData() {
     allWorkOrders = await workOrdersRes.json();
     const analytics = await analyticsRes.json();
 
+    // Merge any citizen reports submitted from /report
+    try {
+      const localReports = JSON.parse(localStorage.getItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS') || '[]');
+      if (Array.isArray(localReports) && localReports.length > 0) {
+        const existingIds = new Set(allHazards.map(h => h.id));
+        for (const lr of localReports) {
+          if (!existingIds.has(lr.id)) {
+            allHazards.unshift(lr);
+            existingIds.add(lr.id);
+          }
+        }
+      }
+    } catch (e) {
+      console.debug('Error merging local citizen reports:', e);
+    }
+
     applyStateAndSearchFilters();
     updateAnalyticsCharts(analytics, allRoads);
     lucide.createIcons();
