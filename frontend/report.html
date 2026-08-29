@@ -765,6 +765,18 @@
             el.addEventListener('change', checkStep1Validity);
         });
 
+        inputState.addEventListener('change', () => {
+            const selected = inputState.value;
+            const centroid = INDIAN_STATE_CENTROIDS.find(c => c.state.toLowerCase() === selected.toLowerCase());
+            if (centroid) {
+                inputCity.value = centroid.city;
+                if (!inputLat.value || inputLat.value === "12.9716" || (locStatus && locStatus.classList.contains('hidden'))) {
+                    inputLat.value = centroid.lat.toFixed(4);
+                    inputLng.value = centroid.lng.toFixed(4);
+                }
+            }
+        });
+
         btnDetect.addEventListener('click', () => {
             if (!navigator.geolocation) {
                 alert("Geolocation is not supported by your browser.");

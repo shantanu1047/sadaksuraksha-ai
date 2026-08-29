@@ -72,24 +72,89 @@ const CITY_OPTIONS_BY_STATE = {
 
 // Indian Geographic Center Coordinates by State
 const STATE_VIEWPORTS = {
-  all: { center: [22.5937, 78.9629], zoom: 5 },
-  Karnataka: { center: [12.9550, 77.6400], zoom: 12 },
-  Maharashtra: { center: [19.0000, 73.0000], zoom: 10 },
-  "Delhi NCR": { center: [28.5672, 77.1800], zoom: 11 },
-  "Tamil Nadu": { center: [13.0100, 80.2400], zoom: 12 },
-  Telangana: { center: [17.4200, 78.3600], zoom: 12 },
-  "Uttar Pradesh": { center: [27.1800, 78.0100], zoom: 9 },
-  "West Bengal": { center: [22.5400, 88.3900], zoom: 12 },
-  Gujarat: { center: [23.0300, 72.5300], zoom: 11 },
-  Rajasthan: { center: [26.8900, 75.8000], zoom: 11 },
-  Kerala: { center: [9.9700, 76.3200], zoom: 11 },
-  "Punjab & Haryana": { center: [30.7500, 76.7800], zoom: 11 },
-  "Madhya Pradesh": { center: [22.7500, 75.8900], zoom: 11 },
-  Odisha: { center: [20.2700, 85.8000], zoom: 11 },
-  Assam: { center: [26.1600, 91.7700], zoom: 11 },
-  "Jammu & Kashmir": { center: [34.0600, 74.8300], zoom: 11 },
-  "Andhra Pradesh": { center: [17.7200, 83.3200], zoom: 11 },
-  Goa: { center: [15.5000, 73.8350], zoom: 11 }
+  all: { center: [22.5937, 78.9629], zoom: 5, primaryCity: "All Cities" },
+  Karnataka: { center: [12.9716, 77.5946], zoom: 12, primaryCity: "Bengaluru" },
+  Maharashtra: { center: [19.0760, 72.8777], zoom: 11, primaryCity: "Mumbai" },
+  "Delhi NCR": { center: [28.6139, 77.2090], zoom: 11, primaryCity: "New Delhi" },
+  "Tamil Nadu": { center: [13.0827, 80.2707], zoom: 12, primaryCity: "Chennai" },
+  Telangana: { center: [17.3850, 78.4867], zoom: 12, primaryCity: "Hyderabad" },
+  "Uttar Pradesh": { center: [26.8467, 80.9462], zoom: 10, primaryCity: "Lucknow" },
+  "West Bengal": { center: [22.5726, 88.3639], zoom: 12, primaryCity: "Kolkata" },
+  Gujarat: { center: [23.0225, 72.5714], zoom: 11, primaryCity: "Ahmedabad" },
+  Rajasthan: { center: [26.9124, 75.7873], zoom: 12, primaryCity: "Jaipur" },
+  Kerala: { center: [9.9312, 76.2673], zoom: 11, primaryCity: "Kochi" },
+  "Punjab & Haryana": { center: [30.7333, 76.7794], zoom: 11, primaryCity: "Chandigarh" },
+  "Madhya Pradesh": { center: [22.7196, 75.8577], zoom: 11, primaryCity: "Indore" },
+  Odisha: { center: [20.2961, 85.8245], zoom: 11, primaryCity: "Bhubaneswar" },
+  Assam: { center: [26.1445, 91.7362], zoom: 11, primaryCity: "Guwahati" },
+  "Jammu & Kashmir": { center: [34.0837, 74.7973], zoom: 11, primaryCity: "Srinagar" },
+  "Andhra Pradesh": { center: [17.6868, 83.2185], zoom: 11, primaryCity: "Visakhapatnam" },
+  Goa: { center: [15.4909, 73.8278], zoom: 11, primaryCity: "Panaji" }
+};
+
+const CITY_COORDINATES = {
+  "Bengaluru": [12.9716, 77.5946],
+  "Mysuru": [12.2958, 76.6394],
+  "Hubballi": [15.3647, 75.1240],
+  "Mangaluru": [12.9141, 74.8560],
+  "Mumbai": [19.0760, 72.8777],
+  "Pune": [18.5204, 73.8567],
+  "Nagpur": [21.1458, 79.0882],
+  "Nashik": [19.9975, 73.7898],
+  "Thane": [19.2183, 72.9781],
+  "New Delhi": [28.6139, 77.2090],
+  "Gurugram": [28.4595, 77.0266],
+  "Noida": [28.5355, 77.3910],
+  "Faridabad": [28.4089, 77.3178],
+  "Ghaziabad": [28.6692, 77.4538],
+  "Chennai": [13.0827, 80.2707],
+  "Coimbatore": [11.0168, 76.9558],
+  "Madurai": [9.9252, 78.1198],
+  "Tiruchirappalli": [10.7905, 78.7047],
+  "Hyderabad": [17.3850, 78.4867],
+  "Warangal": [17.9689, 79.5941],
+  "Nizamabad": [18.6725, 78.0941],
+  "Agra": [27.1767, 78.0081],
+  "Lucknow": [26.8467, 80.9462],
+  "Kanpur": [26.4499, 80.3319],
+  "Varanasi": [25.3176, 82.9739],
+  "Kolkata": [22.5726, 88.3639],
+  "Howrah": [22.5958, 88.2636],
+  "Siliguri": [26.7271, 88.3953],
+  "Durgapur": [23.5204, 87.3119],
+  "Ahmedabad": [23.0225, 72.5714],
+  "Surat": [21.1702, 72.8311],
+  "Vadodara": [22.3072, 73.1812],
+  "Rajkot": [22.3039, 70.8022],
+  "Jaipur": [26.9124, 75.7873],
+  "Jodhpur": [26.2389, 73.0243],
+  "Udaipur": [24.5854, 73.7125],
+  "Kota": [25.2138, 75.8648],
+  "Kochi": [9.9312, 76.2673],
+  "Thiruvananthapuram": [8.5241, 76.9366],
+  "Kozhikode": [11.2588, 75.7804],
+  "Chandigarh": [30.7333, 76.7794],
+  "Ludhiana": [30.9010, 75.8573],
+  "Amritsar": [31.6340, 74.8723],
+  "Indore": [22.7196, 75.8577],
+  "Bhopal": [23.2599, 77.4126],
+  "Gwalior": [26.2183, 78.1828],
+  "Jabalpur": [23.1815, 79.9864],
+  "Bhubaneswar": [20.2961, 85.8245],
+  "Cuttack": [20.4625, 85.8828],
+  "Rourkela": [22.2604, 84.8536],
+  "Guwahati": [26.1445, 91.7362],
+  "Dibrugarh": [27.4728, 94.9120],
+  "Silchar": [24.8333, 92.7789],
+  "Srinagar": [34.0837, 74.7973],
+  "Jammu": [32.7266, 74.8570],
+  "Anantnag": [33.7311, 75.1522],
+  "Visakhapatnam": [17.6868, 83.2185],
+  "Vijayawada": [16.5062, 80.6480],
+  "Guntur": [16.3067, 80.4365],
+  "Panaji": [15.4909, 73.8278],
+  "Margao": [15.2832, 73.9862],
+  "Vasco da Gama": [15.3959, 73.8153]
 };
 
 // Map instances
@@ -500,17 +565,43 @@ function populateCityDropdown(selectedState) {
 
 function handleCityChange(selectedCity) {
   currentCityFilter = selectedCity;
+  window._userHasPannedMap = false;
+
+  if (selectedCity && selectedCity !== 'all' && selectedCity !== 'All Cities') {
+    if (gisMap) {
+      if (CITY_COORDINATES[selectedCity]) {
+        gisMap.flyTo(CITY_COORDINATES[selectedCity], 13, { duration: 1.2 });
+      }
+      setTimeout(() => {
+        if (gisMap) gisMap.invalidateSize();
+      }, 250);
+    }
+  } else if (currentStateFilter && currentStateFilter !== 'all') {
+    const vp = STATE_VIEWPORTS[currentStateFilter] || STATE_VIEWPORTS.all;
+    if (gisMap) {
+      gisMap.flyTo(vp.center, vp.zoom, { duration: 1.2 });
+      setTimeout(() => {
+        if (gisMap) gisMap.invalidateSize();
+      }, 250);
+    }
+  }
+
   applyStateAndSearchFilters();
 }
 
 function handleStateChange(selectedState) {
   currentStateFilter = selectedState;
+  currentCityFilter = 'all';
+  window._userHasPannedMap = false;
   populateCityDropdown(selectedState);
 
   // Smoothly pan map to selected State viewport
-  const vp = STATE_VIEWPORTS[selectedState] || STATE_VIEWPORTS.Karnataka;
+  const vp = STATE_VIEWPORTS[selectedState] || STATE_VIEWPORTS.all;
   if (gisMap) {
-    gisMap.flyTo(vp.center, vp.zoom, { duration: 1.4 });
+    gisMap.flyTo(vp.center, vp.zoom, { duration: 1.2 });
+    setTimeout(() => {
+      if (gisMap) gisMap.invalidateSize();
+    }, 250);
   }
 
   // Refilter and update view
@@ -522,7 +613,8 @@ function handleStateChange(selectedState) {
     .then(analytics => {
       updateKpiBar(analytics);
       updateAnalyticsCharts(analytics, allRoads);
-    });
+    })
+    .catch(e => console.debug('Analytics summary fetch error:', e));
 
   // Also update AI Road Forecast if initialized
   if (typeof fetchForecastData === 'function') {
@@ -543,18 +635,53 @@ function filterMap(category) {
   applyStateAndSearchFilters();
 }
 
+function matchesHazardState(h, targetState) {
+  if (!targetState || targetState === 'all') return true;
+  const sLower = targetState.toLowerCase().trim();
+  const hState = (h.state || '').toLowerCase().trim();
+  const hCity = (h.city || '').toLowerCase().trim();
+  const hAddr = (h.address || '').toLowerCase().trim();
+  const hRoad = (h.road_name || '').toLowerCase().trim();
+
+  // Direct state match
+  if (hState === sLower || hState.includes(sLower) || sLower.includes(hState)) return true;
+
+  // City-to-state mapping check
+  const stateCities = CITY_OPTIONS_BY_STATE[targetState];
+  if (stateCities && stateCities.some(c => c !== 'All Cities' && (hCity === c.toLowerCase() || hAddr.includes(c.toLowerCase()) || hRoad.includes(c.toLowerCase())))) {
+    return true;
+  }
+
+  // Address string match
+  if (hAddr.includes(sLower) || hRoad.includes(sLower)) return true;
+
+  return false;
+}
+
+function matchesHazardCity(h, targetCity) {
+  if (!targetCity || targetCity === 'all' || targetCity === 'All Cities') return true;
+  const cLower = targetCity.toLowerCase().trim();
+  const hCity = (h.city || '').toLowerCase().trim();
+  const hAddr = (h.address || '').toLowerCase().trim();
+  const hRoad = (h.road_name || '').toLowerCase().trim();
+
+  return (
+    hCity === cLower ||
+    hCity.includes(cLower) ||
+    cLower.includes(hCity) ||
+    hAddr.includes(cLower) ||
+    hRoad.includes(cLower)
+  );
+}
 
 function getFilteredHazards() {
   return allHazards.filter(rawH => {
     const h = normalizeHazard(rawH);
     // 1. State Filter
-    const matchesState = (currentStateFilter === 'all') || (h.state && h.state.toLowerCase() === currentStateFilter.toLowerCase());
+    const matchesState = matchesHazardState(h, currentStateFilter);
     
     // 2. City Filter
-    let matchesCity = true;
-    if (currentCityFilter && currentCityFilter !== 'all' && currentCityFilter !== 'All Cities') {
-      matchesCity = (h.city && h.city.toLowerCase() === currentCityFilter.toLowerCase());
-    }
+    const matchesCity = matchesHazardCity(h, currentCityFilter);
 
     // 3. Category Filter
     let matchesCategory = true;
@@ -584,7 +711,7 @@ function applyStateAndSearchFilters() {
   
   const filteredWorkOrders = (currentStateFilter === 'all')
     ? allWorkOrders
-    : allWorkOrders.filter(wo => wo.state && wo.state.toLowerCase() === currentStateFilter.toLowerCase());
+    : allWorkOrders.filter(wo => matchesHazardState(wo, currentStateFilter));
 
   renderIncidentFeed(filteredHazards);
   renderMapMarkers(filteredHazards);
@@ -828,14 +955,20 @@ function renderMapMarkers(hazards) {
   });
 
   // Auto-focus framing
-  if (gisMap && markersToAdd.length > 0 && !window._userHasPannedMap) {
-    if (currentStateFilter !== 'all') {
-      const stateVp = STATE_VIEWPORTS[currentStateFilter];
-      if (stateVp) {
+  if (gisMap && !window._userHasPannedMap) {
+    if (markersToAdd.length > 0 && currentStateFilter !== 'all') {
+      const bounds = L.latLngBounds(markersToAdd.map(m => m.getLatLng()));
+      if (bounds.isValid() && markersToAdd.length > 1) {
+        gisMap.fitBounds(bounds.pad(0.18), { maxZoom: 14, animate: true });
+      } else if (markersToAdd.length === 1) {
+        gisMap.setView(markersToAdd[0].getLatLng(), 13);
+      } else {
+        const stateVp = STATE_VIEWPORTS[currentStateFilter] || STATE_VIEWPORTS.all;
         gisMap.setView(stateVp.center, stateVp.zoom);
       }
-    } else {
-      gisMap.setView(STATE_VIEWPORTS.all.center, STATE_VIEWPORTS.all.zoom);
+    } else if (currentStateFilter !== 'all') {
+      const stateVp = STATE_VIEWPORTS[currentStateFilter] || STATE_VIEWPORTS.all;
+      gisMap.setView(stateVp.center, stateVp.zoom);
     }
   }
 
@@ -1132,20 +1265,24 @@ function handleStudioFileUpload(event) {
     imgElem.src = b64;
 
     try {
+      const stateToUse = currentStateFilter !== 'all' ? currentStateFilter : 'Karnataka';
+      const vp = STATE_VIEWPORTS[stateToUse] || STATE_VIEWPORTS.Karnataka;
+      const primaryCity = vp.primaryCity || CITY_OPTIONS_BY_STATE[stateToUse]?.[1] || "Bengaluru";
+
       const res = await fetch('/api/hazards/inspect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           image_base64: b64,
-          latitude: 12.9340,
-          longitude: 77.6080,
-          state: currentStateFilter !== 'all' ? currentStateFilter : 'Karnataka',
-          city: 'Bengaluru',
+          latitude: vp.center[0],
+          longitude: vp.center[1],
+          state: stateToUse,
+          city: primaryCity,
           acc_z_g: 2.3,
           vertical_jerk: 10.5,
           acoustic_db: 70.0,
           road_class: 'arterial',
-          road_name: 'State Highway Sector'
+          road_name: `${stateToUse} (${primaryCity}) Highway Corridor`
         })
       });
 
@@ -2144,21 +2281,24 @@ async function submitIngestModal() {
   const acousticDb = parseFloat(document.getElementById('ingest-acoustic-db').value);
   const citizenText = document.getElementById('ingest-citizen-text').value;
 
+  const vp = STATE_VIEWPORTS[stateVal] || STATE_VIEWPORTS.Karnataka;
+  const primaryCity = vp.primaryCity || CITY_OPTIONS_BY_STATE[stateVal]?.[1] || "Bengaluru";
+
   try {
     const res = await fetch('/api/hazards/inspect', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        latitude: stateVal === 'Maharashtra' ? 19.1136 : (stateVal === 'Delhi NCR' ? 28.5672 : 12.9340),
-        longitude: stateVal === 'Maharashtra' ? 72.8697 : (stateVal === 'Delhi NCR' ? 77.2100 : 77.6080),
+        latitude: vp.center[0],
+        longitude: vp.center[1],
         state: stateVal,
-        city: stateVal === 'Maharashtra' ? 'Mumbai' : (stateVal === 'Delhi NCR' ? 'New Delhi' : 'Bengaluru'),
+        city: primaryCity,
         acc_z_g: accZ,
         vertical_jerk: accZ * 4.2,
         acoustic_db: acousticDb,
         citizen_text: citizenText,
         road_class: roadClass,
-        road_name: `${stateVal} Sector Route`
+        road_name: `${stateVal} (${primaryCity}) Road Corridor`
       })
     });
 
