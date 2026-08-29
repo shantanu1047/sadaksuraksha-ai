@@ -2290,8 +2290,16 @@ function switchTab(tabId) {
   if (tabId === 'map' && gisMap) {
     setTimeout(() => gisMap.invalidateSize(), 200);
   }
-  if (tabId === 'patrol' && patrolMap) {
-    setTimeout(() => patrolMap.invalidateSize(), 200);
+  if (tabId === 'studio') {
+    setTimeout(() => {
+      if (typeof loadStudioScenario === 'function') loadStudioScenario('pothole');
+      if (studioImuChart) studioImuChart.resize();
+    }, 100);
+  }
+  if (tabId === 'patrol') {
+    setTimeout(() => {
+      if (patrolMap) patrolMap.invalidateSize();
+    }, 200);
   }
   if (tabId === 'forecast') {
     if (typeof initForecastView === 'function') initForecastView();
@@ -2309,6 +2317,9 @@ function switchTab(tabId) {
   }
   if (tabId === 'backlog') {
     applyStateAndSearchFilters();
+  }
+  if (tabId === 'copilot') {
+    if (typeof syncCopilotDirectApiKeyStatus === 'function') syncCopilotDirectApiKeyStatus();
   }
   if (tabId === 'resource-intel') {
     if (typeof initResourceIntelligenceView === 'function') initResourceIntelligenceView();
@@ -2328,7 +2339,12 @@ function switchTab(tabId) {
         renderAuditComplianceTable();
       });
   }
+
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    window.lucide.createIcons();
+  }
 }
+window.switchTab = switchTab;
 
 
 function navigateToHome() {
@@ -2666,31 +2682,7 @@ function renderIngestionStreams(streams) {
 
 
 
-// Load ingestion streams when switching to ingestion tab
-const originalSwitchTab = window.switchTab;
-window.switchTab = function(tabId) {
-  // Call original tab logic
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active-tab'));
-  document.querySelectorAll('.tab-view').forEach(v => v.classList.add('hidden'));
 
-  const tabBtn = document.getElementById(`tab-${tabId}`);
-  const viewElem = document.getElementById(`view-${tabId}`);
-
-  if (tabBtn) tabBtn.classList.add('active-tab');
-  if (viewElem) viewElem.classList.remove('hidden');
-
-  if (tabId === 'map' && gisMap) {
-    setTimeout(() => gisMap.invalidateSize(), 200);
-  }
-  if (tabId === 'patrol' && patrolMap) {
-    setTimeout(() => patrolMap.invalidateSize(), 200);
-  }
-  if (tabId === 'ingestion') {
-    refreshIngestionStreams();
-  }
-};
-// Override the global function
-switchTab = window.switchTab;
 
 // Decluttered Navigation & Action Dropdowns
 
