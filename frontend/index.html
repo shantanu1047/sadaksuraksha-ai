@@ -1538,44 +1538,208 @@
       </div>
     </div>
 
-    <!-- 6. NETWORK ANALYTICS & BUDGET SIMULATOR TAB (₹ INR) -->
+    <!-- 6. AUDIT & STATUTORY COMPLIANCE (IRC:82 STANDARDS) TAB -->
     <div id="view-analytics" class="tab-view hidden p-6">
       <div class="flex flex-col gap-6">
         
-        <div class="bg-white border border-slate-200 rounded-2xl p-5 flex items-center justify-between text-black shadow-xs">
+        <!-- Header Banner with Navigation & Export Actions -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4 text-black shadow-xs">
           <div class="flex items-center gap-4">
             <button onclick="navigateToHome()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-bold text-black transition-colors shrink-0 cursor-pointer" title="Return to GIS Map">
               <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back to Map
             </button>
             <div>
               <h2 class="text-base font-black text-black flex items-center gap-2">
-                <i data-lucide="bar-chart-3" class="w-5 h-5 text-black"></i> Road Network Analytics & Deterioration Forecasts
+                <i data-lucide="shield-check" class="w-5 h-5 text-emerald-700"></i> Audit & Statutory Compliance (IRC:82 Standards)
               </h2>
-              <p class="text-xs text-slate-700 font-medium mt-0.5">Statistical distress breakdown, pavement condition index (PCI) distributions, and IRC lifecycle budget simulations in ₹ INR.</p>
+              <p class="text-xs text-slate-700 font-medium mt-0.5">Statutory defect verification, false positive optical sensor audit, MoRTH specification compliance, and PWD/NHAI life-cycle analytics.</p>
             </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="exportAuditComplianceCSV()" type="button" class="nhai-btn-saffron flex items-center gap-1.5 px-3.5 py-2 text-xs font-black rounded-xl cursor-pointer">
+              <i data-lucide="download" class="w-4 h-4"></i> Export Audit Dossier (CSV)
+            </button>
           </div>
         </div>
 
+        <!-- 4 Top Audit KPI Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-600">IRC:82 SLA Adherence</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 text-emerald-900 border border-emerald-300">Statutory</span>
+            </div>
+            <div class="mt-2 flex items-baseline gap-2">
+              <span class="text-2xl font-black font-mono text-slate-900">96.4%</span>
+              <span class="text-xs text-emerald-700 font-bold">Within Mandate</span>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-1">24h SLA compliance on critical corridors</p>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-600">Optical Noise Filtered</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-100 text-blue-900 border border-blue-300">Audited FP</span>
+            </div>
+            <div class="mt-2 flex items-baseline gap-2">
+              <span id="audit-fp-count" class="text-2xl font-black font-mono text-blue-800">18.2%</span>
+              <span class="text-xs text-blue-700 font-bold">Shadows & Glares</span>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-1">Confirmed false alarms prevented</p>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-600">MoRTH Spec 500 Coverage</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-100 text-purple-900 border border-purple-300">Quality QA</span>
+            </div>
+            <div class="mt-2 flex items-baseline gap-2">
+              <span class="text-2xl font-black font-mono text-purple-900">100%</span>
+              <span class="text-xs text-purple-700 font-bold">Standardized</span>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-1">Standardized hot-mix patch specifications</p>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-600">Mean Statutory SLA</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-100 text-amber-900 border border-amber-300">Speed</span>
+            </div>
+            <div class="mt-2 flex items-baseline gap-2">
+              <span class="text-2xl font-black font-mono text-amber-900">18.4 hrs</span>
+              <span class="text-xs text-emerald-700 font-bold">&lt; 24h Legal Limit</span>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-1">Average defect dispatch turn-around</p>
+          </div>
+        </div>
+
+        <!-- 2 Chart Cards -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
           <div class="lg:col-span-6 bg-white border border-slate-200 rounded-2xl p-5 flex flex-col gap-4 text-black shadow-xs">
-            <h2 class="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-              <i data-lucide="pie-chart" class="w-4 h-4 text-black"></i> Road Hazard Type Distribution
-            </h2>
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+              <h2 class="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
+                <i data-lucide="pie-chart" class="w-4 h-4 text-black"></i> Audited Road Distress Distribution
+              </h2>
+              <span class="text-[11px] text-slate-500 font-bold font-mono">IRC:82 Defect Classes</span>
+            </div>
             <div class="h-64 flex items-center justify-center">
               <canvas id="hazard-dist-chart"></canvas>
             </div>
           </div>
 
           <div class="lg:col-span-6 bg-white border border-slate-200 rounded-2xl p-5 flex flex-col gap-4 text-black shadow-xs">
-            <h2 class="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-              <i data-lucide="activity" class="w-4 h-4 text-black"></i> Road Segment IRC / PCI Health
-            </h2>
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+              <h2 class="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
+                <i data-lucide="activity" class="w-4 h-4 text-black"></i> Corridor Pavement Condition Index (PCI)
+              </h2>
+              <span class="text-[11px] text-slate-500 font-bold font-mono">Good &gt;70 • Fair 50-70 • Poor &lt;50</span>
+            </div>
             <div class="h-64 flex items-center justify-center">
               <canvas id="road-pci-chart"></canvas>
             </div>
           </div>
 
+          <!-- Official IRC:82 Maintenance & Quality Compliance Standards Matrix -->
+          <div class="lg:col-span-12 bg-white border border-slate-200 rounded-2xl p-6 flex flex-col gap-4 text-black shadow-xs">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+              <div>
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                  <i data-lucide="scale" class="w-4 h-4 text-amber-700"></i> IRC:82 Statutory Maintenance & Quality Standards Matrix
+                </h3>
+                <p class="text-xs text-slate-600 font-medium mt-0.5">Mandatory statutory defect tolerances, repair timelines, and MoRTH materials catalog.</p>
+              </div>
+              <span class="px-2.5 py-1 rounded-lg text-xs font-bold font-mono bg-amber-100 text-amber-950 border border-amber-300">
+                Gazetted IRC:82-2015 Guidelines
+              </span>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 bg-slate-50 text-slate-700 font-extrabold text-[11px]">
+                    <th class="p-3">Distress Classification</th>
+                    <th class="p-3">Statutory Tolerances</th>
+                    <th class="p-3">Mandated Repair SLA</th>
+                    <th class="p-3">MoRTH Standard Technique</th>
+                    <th class="p-3">Statutory Compliance Status</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-slate-800 font-medium text-[11.5px]">
+                  <tr class="hover:bg-slate-50/60">
+                    <td class="p-3 font-bold text-slate-900">Potholes & Deep Cavities</td>
+                    <td class="p-3 font-mono">Max depth &le; 2.5 cm</td>
+                    <td class="p-3 font-bold text-rose-700">24 Hours (Critical)</td>
+                    <td class="p-3">MoRTH Spec 500: Rapid Hot-Mix Compaction</td>
+                    <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300">✓ Fully Compliant</span></td>
+                  </tr>
+                  <tr class="hover:bg-slate-50/60">
+                    <td class="p-3 font-bold text-slate-900">Wheel Rutting & Depression</td>
+                    <td class="p-3 font-mono">Max depth &le; 20 mm</td>
+                    <td class="p-3 font-bold text-amber-800">48 Hours</td>
+                    <td class="p-3">Cold Milling & Micro-Surfacing Overlay</td>
+                    <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300">✓ Fully Compliant</span></td>
+                  </tr>
+                  <tr class="hover:bg-slate-50/60">
+                    <td class="p-3 font-bold text-slate-900">Shoulder Edge Drop</td>
+                    <td class="p-3 font-mono">Max height &le; 50 mm</td>
+                    <td class="p-3 font-bold text-amber-800">48 Hours</td>
+                    <td class="p-3">Shoulder Grading & Bituminous Edge Rebuild</td>
+                    <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300">✓ Fully Compliant</span></td>
+                  </tr>
+                  <tr class="hover:bg-slate-50/60">
+                    <td class="p-3 font-bold text-slate-900">Alligator & Structural Cracking</td>
+                    <td class="p-3 font-mono">Max area &le; 5.0 m&sup2;</td>
+                    <td class="p-3 font-bold text-blue-800">72 Hours</td>
+                    <td class="p-3">Polymer-Modified Crack Slurry Seal (IRC:SP:81)</td>
+                    <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300">✓ Fully Compliant</span></td>
+                  </tr>
+                  <tr class="hover:bg-slate-50/60">
+                    <td class="p-3 font-bold text-slate-900">Water Submergence & Ponding</td>
+                    <td class="p-3 font-mono">Zero standing water</td>
+                    <td class="p-3 font-bold text-rose-700">12 Hours</td>
+                    <td class="p-3">Side Drain Cleansing & Camber Crossfall Correction</td>
+                    <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300">✓ Fully Compliant</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Live Audited Defects & False Positive Log Table -->
+          <div class="lg:col-span-12 bg-white border border-slate-200 rounded-2xl p-6 flex flex-col gap-4 text-black shadow-xs">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+              <div>
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                  <i data-lucide="file-check" class="w-4 h-4 text-blue-700"></i> Live Audited Defects & Sensor Verification Log
+                </h3>
+                <p class="text-xs text-slate-600 font-medium mt-0.5">Audited records across state highway corridors, showing cross-modal verification status and repair orders.</p>
+              </div>
+              <button onclick="renderAuditComplianceTable()" type="button" class="text-xs font-bold text-blue-700 hover:text-blue-900 flex items-center gap-1 cursor-pointer">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh Audit Log
+              </button>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 bg-slate-50 text-slate-700 font-extrabold text-[11px]">
+                    <th class="p-3">Incident ID</th>
+                    <th class="p-3">Corridor & Location</th>
+                    <th class="p-3">Distress Type</th>
+                    <th class="p-3">Sensor Fusion Audit</th>
+                    <th class="p-3">Statutory SLA Action</th>
+                    <th class="p-3">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="audit-compliance-table-body" class="divide-y divide-slate-100">
+                  <!-- Auto-populated by renderAuditComplianceTable() -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Municipal Budget Allocation & Life-Cycle Simulator (₹ INR) -->
           <div class="lg:col-span-12 bg-white border border-slate-200 rounded-2xl p-6 flex flex-col gap-4 text-black shadow-xs">
             <div class="flex items-center justify-between border-b border-slate-200 pb-3">
               <div>
