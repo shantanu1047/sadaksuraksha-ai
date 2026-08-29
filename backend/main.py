@@ -211,13 +211,21 @@ def save_hazards_to_cloud(hazards: List[HazardIncident], demo_seeded: Optional[b
     citizen_only = [inc.model_dump() for inc in hazards if _is_citizen_hazard(inc.id)]
     deleted_order_ids = globals().get("deleted_work_order_ids", set())
     deleted_demo_ids = globals().get("deleted_demo_hazard_ids", set())
+
+    # Preserve demo_seeded flag if not explicitly passed
+    if demo_seeded is None:
+        curr_cloud = cloud_data_block()
+        if curr_cloud and isinstance(curr_cloud.get("demo_seeded"), bool):
+            demo_seeded = curr_cloud["demo_seeded"]
+        else:
+            demo_seeded = any(not _is_citizen_hazard(h.id) for h in hazards)
+
     data_block: Dict[str, Any] = {
-        "hazards": citizen_only[:100],
+        "hazards": citizen_only[:500],
         "deleted_work_order_ids": sorted(str(wo_id).upper() for wo_id in deleted_order_ids),
         "deleted_demo_hazard_ids": sorted(str(hid).upper() for hid in deleted_demo_ids),
+        "demo_seeded": bool(demo_seeded),
     }
-    if demo_seeded is not None:
-        data_block["demo_seeded"] = demo_seeded
 
     if save_data_to_postgres(data_block):
         return True
@@ -327,10 +335,16 @@ def durable_storage_failure_detail(operation: str) -> str:
     )
 
 
+_in_memory_demo_seeded: Optional[bool] = None
+
 def demo_hazards_enabled() -> bool:
+    global _in_memory_demo_seeded
     cloud_state = cloud_data_block()
     if cloud_state and isinstance(cloud_state.get("demo_seeded"), bool):
+        _in_memory_demo_seeded = cloud_state["demo_seeded"]
         return cloud_state["demo_seeded"]
+    if _in_memory_demo_seeded is not None:
+        return _in_memory_demo_seeded
 
     return os.environ.get("SEED_DEMO_DATA", "true").strip().lower() not in {"0", "false", "no", "off"}
 
@@ -423,13 +437,40 @@ def _is_citizen_hazard(hazard_id: str) -> bool:
 deleted_work_order_ids: Set[str] = load_deleted_work_order_ids_from_cloud()
 deleted_demo_hazard_ids: Set[str] = load_deleted_demo_hazard_ids_from_cloud()
 
+def _parse_cloud_snapshot(data_block: Optional[Dict]) -> tuple:
+    """Parse a single cloud_data_block() snapshot into (hazards, deleted_work_order_ids, deleted_demo_hazard_ids).
+    Called exactly once per sync so all reads see a consistent view of Postgres."""
+    if not data_block:
+        return [], set(), set()
+
+    # Citizen hazards
+    hazards = []
+    for d in data_block.get("hazards", []):
+        if isinstance(d, dict) and d.get("id"):
+            d.pop("_id", None)
+            try:
+                hazards.append(HazardIncident(**d))
+            except Exception:
+                pass
+
+    # Deleted work order IDs
+    raw_wo = data_block.get("deleted_work_order_ids", [])
+    wo_ids = {str(x).upper() for x in raw_wo if str(x).strip()} if isinstance(raw_wo, list) else set()
+
+    # Deleted demo hazard IDs
+    raw_dh = data_block.get("deleted_demo_hazard_ids", [])
+    dh_ids = {str(x).upper() for x in raw_dh if str(x).strip()} if isinstance(raw_dh, list) else set()
+
+    return hazards, wo_ids, dh_ids
+
+
 def sync_hazards_from_disk():
     """Synchronises citizen-report hazards with persistent cloud & disk storage.
 
-    Demo hazards (HAZ-NNN short-number IDs) are kept in memory UNLESS they have
-    been explicitly deleted (tracked in deleted_demo_hazard_ids in Postgres).
-    Only citizen-report hazards (HAZ-YYMMDD-XXXX datestamp IDs) are checked
-    against the persisted set and removed if they've been deleted from storage.
+    Fetches Postgres exactly once per call so all derived state (hazard list,
+    deleted_work_order_ids, deleted_demo_hazard_ids) is read from the same
+    consistent snapshot. This prevents the flickering caused by 3 separate
+    round-trips that could each see different data if a write lands in between.
     """
     global hazards_db, work_orders_db, deleted_work_order_ids, deleted_demo_hazard_ids
     if not has_persistent_hazard_storage():
@@ -439,28 +480,47 @@ def sync_hazards_from_disk():
         ]
         return
 
-    persisted = load_persisted_citizen_hazards()
+    # Single Postgres round-trip — derive everything from this one snapshot.
+    snapshot = cloud_data_block()
+    persisted, new_wo_ids, new_dh_ids = _parse_cloud_snapshot(snapshot)
     persisted_ids = {p.id for p in persisted}
-    if postgres_available() or get_cloud_endpoint():
-        deleted_work_order_ids = load_deleted_work_order_ids_from_cloud()
-        deleted_demo_hazard_ids = load_deleted_demo_hazard_ids_from_cloud()
 
-    # Keep: demo hazards not in deleted_demo_hazard_ids + citizen hazards present in the cloud store.
-    hazards_db[:] = [
-        h for h in hazards_db
-        if (not _is_citizen_hazard(h.id) and h.id.upper() not in deleted_demo_hazard_ids)
-        or (_is_citizen_hazard(h.id) and h.id in persisted_ids)
-    ]
+    # Also read local disk stores for any citizen hazards not yet in Postgres
+    loaded_map: Dict[str, HazardIncident] = {p.id: p for p in persisted}
+    for path in get_storage_paths():
+        try:
+            if path.exists():
+                with open(path, "r", encoding="utf-8") as f:
+                    content = f.read().strip()
+                if content:
+                    data = json.loads(content)
+                    if isinstance(data, list):
+                        for d in data:
+                            if isinstance(d, dict) and d.get("id") and d["id"] not in loaded_map:
+                                try:
+                                    loaded_map[d["id"]] = HazardIncident(**d)
+                                except Exception:
+                                    pass
+        except Exception as e:
+            logger.debug(f"Could not load persisted hazards from {path}: {e}")
+    persisted = list(loaded_map.values())
+    persisted_ids = {p.id for p in persisted}
 
-    # Merge any newly persisted citizen hazards not yet in memory
-    existing_ids = {h.id for h in hazards_db}
-    for p in persisted:
-        if p.id not in existing_ids:
-            hazards_db.insert(0, p)
-            existing_ids.add(p.id)
+    if snapshot is not None:
+        deleted_work_order_ids = new_wo_ids
+        deleted_demo_hazard_ids = new_dh_ids
 
+    # Determine if demo hazards should be included
+    demo_enabled = demo_hazards_enabled()
+    demo_hazards = (
+        [h for h in get_demo_hazards() if h.id.upper() not in deleted_demo_hazard_ids]
+        if demo_enabled else []
+    )
+
+    # Authoritative deterministic assignment
+    hazards_db[:] = persisted + demo_hazards
     raw_orders = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
-    work_orders_db = [wo for wo in raw_orders if wo.id.upper() not in deleted_work_order_ids]
+    work_orders_db[:] = [wo for wo in raw_orders if wo.id.upper() not in deleted_work_order_ids]
 
 
 # Initialise hazards_db with persisted citizen reports, plus demo benchmark data when enabled.
@@ -537,7 +597,8 @@ async def set_api_key(payload: Dict[str, Any]):
 @app.delete("/api/hazards/citizen")
 async def reset_citizen_hazards():
     """Clear all persisted citizen complaints and reset to completely clean fresh state (0 hazards)."""
-    global hazards_db, work_orders_db, deleted_work_order_ids, deleted_demo_hazard_ids
+    global hazards_db, work_orders_db, deleted_work_order_ids, deleted_demo_hazard_ids, _in_memory_demo_seeded
+    _in_memory_demo_seeded = False
     deleted_work_order_ids.clear()
     deleted_demo_hazard_ids.clear()
     clear_cloud_hazards()
@@ -563,7 +624,8 @@ async def reset_citizen_hazards():
 @app.post("/api/hazards/seed-demo")
 async def seed_demo_hazards():
     """Optionally re-populate 95 benchmark demo hazards across 16 states."""
-    global hazards_db, work_orders_db, deleted_work_order_ids, deleted_demo_hazard_ids
+    global hazards_db, work_orders_db, deleted_work_order_ids, deleted_demo_hazard_ids, _in_memory_demo_seeded
+    _in_memory_demo_seeded = True
     deleted_work_order_ids.clear()
     deleted_demo_hazard_ids.clear()
     hazards_db = load_persisted_citizen_hazards() + get_demo_hazards()
@@ -967,6 +1029,7 @@ async def ingest_cctv_frame(req: CctvFrameIngestRequest):
     incident = ingestion_service.process_cctv_frame(req, hazards_db)
     if incident:
         hazards_db.insert(0, incident)
+        save_persisted_citizen_hazards(hazards_db)
         global work_orders_db
         work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
         return {"status": "hazard_detected", "hazard_id": incident.id, "severity": incident.severity.value}
@@ -979,6 +1042,7 @@ async def ingest_google_maps_anomaly(req: GoogleMapsAnomalyRequest):
     incident = ingestion_service.process_google_maps_anomaly(req, hazards_db)
     if incident:
         hazards_db.insert(0, incident)
+        save_persisted_citizen_hazards(hazards_db)
         global work_orders_db
         work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
         return {"status": "hazard_correlated", "hazard_id": incident.id, "severity": incident.severity.value}
