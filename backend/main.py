@@ -377,13 +377,12 @@ def load_deleted_demo_hazard_ids_from_cloud() -> Set[str]:
 
 
 def load_persisted_citizen_hazards() -> List[HazardIncident]:
-    loaded_map: Dict[str, HazardIncident] = {}
-    
-    # 1. Cloud Database (Primary source of truth across serverless workers)
-    for ch in fetch_hazards_from_cloud():
-        loaded_map[ch.id] = ch
+    # 1. Cloud Database (Primary and sole authoritative source of truth across serverless workers)
+    if postgres_available() or get_cloud_endpoint():
+        return fetch_hazards_from_cloud()
 
-    # 2. Local Disk Stores (Secondary fallback)
+    # 2. Local Disk Stores (Only used when running offline without any cloud DB)
+    loaded_map: Dict[str, HazardIncident] = {}
     for p in get_storage_paths():
         try:
             if p.exists():
@@ -482,33 +481,32 @@ def sync_hazards_from_disk():
 
     # Single Postgres round-trip — derive everything from this one snapshot.
     snapshot = cloud_data_block()
-    persisted, new_wo_ids, new_dh_ids = _parse_cloud_snapshot(snapshot)
-    persisted_ids = {p.id for p in persisted}
-
-    # Also read local disk stores for any citizen hazards not yet in Postgres
-    loaded_map: Dict[str, HazardIncident] = {p.id: p for p in persisted}
-    for path in get_storage_paths():
-        try:
-            if path.exists():
-                with open(path, "r", encoding="utf-8") as f:
-                    content = f.read().strip()
-                if content:
-                    data = json.loads(content)
-                    if isinstance(data, list):
-                        for d in data:
-                            if isinstance(d, dict) and d.get("id") and d["id"] not in loaded_map:
-                                try:
-                                    loaded_map[d["id"]] = HazardIncident(**d)
-                                except Exception:
-                                    pass
-        except Exception as e:
-            logger.debug(f"Could not load persisted hazards from {path}: {e}")
-    persisted = list(loaded_map.values())
-    persisted_ids = {p.id for p in persisted}
-
+    
     if snapshot is not None:
+        # Postgres is authoritative: do NOT resurrect deleted records from read-only disk files
+        persisted, new_wo_ids, new_dh_ids = _parse_cloud_snapshot(snapshot)
         deleted_work_order_ids = new_wo_ids
         deleted_demo_hazard_ids = new_dh_ids
+    else:
+        # Local offline disk stores fallback (only when no cloud DB is configured)
+        loaded_map: Dict[str, HazardIncident] = {}
+        for path in get_storage_paths():
+            try:
+                if path.exists():
+                    with open(path, "r", encoding="utf-8") as f:
+                        content = f.read().strip()
+                    if content:
+                        data = json.loads(content)
+                        if isinstance(data, list):
+                            for d in data:
+                                if isinstance(d, dict) and d.get("id") and d["id"] not in loaded_map:
+                                    try:
+                                        loaded_map[d["id"]] = HazardIncident(**d)
+                                    except Exception:
+                                        pass
+            except Exception as e:
+                logger.debug(f"Could not load persisted hazards from {path}: {e}")
+        persisted = list(loaded_map.values())
 
     # Determine if demo hazards should be included
     demo_enabled = demo_hazards_enabled()
