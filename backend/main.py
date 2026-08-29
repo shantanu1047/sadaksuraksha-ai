@@ -484,7 +484,12 @@ async def inspect_multimodal(payload: MultimodalUploadRequest):
     else:
         sev = SeverityLevel.LOW
 
-    ht = primary_det.hazard_type if primary_det else HazardType.POTHOLE
+    ht = primary_det.hazard_type if primary_det else HazardType.OTHER
+    incident_title = (
+        f"SmartCity AI: {primary_det.bbox.label} ({int(primary_det.confidence * 100)}%)"
+        if primary_det
+        else "SmartCity AI: Surface Clear (0 Hazards)"
+    )
 
     priority = prioritization_engine.calculate_priority_metrics(
         hazard_type=ht,
@@ -502,7 +507,7 @@ async def inspect_multimodal(payload: MultimodalUploadRequest):
 
     incident = HazardIncident(
         id=new_id,
-        title=f"Detected {ht.value.replace('_', ' ').title()} ({sev.value.title()})",
+        title=incident_title,
         hazard_type=ht,
         severity=sev,
         state=payload.state,

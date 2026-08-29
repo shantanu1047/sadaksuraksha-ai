@@ -1026,54 +1026,66 @@ function renderStudioCanvasOverlay(rawHazard) {
   canvas.height = canvas.parentElement.clientHeight;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  if (!hazard || !hazard.visual_detections || hazard.visual_detections.length === 0) return;
+  const overlayBadge = document.getElementById('studio-overlay-text');
 
-  const det = hazard.visual_detections[0];
-  const bbox = det.bbox;
-
-  const x = bbox.xmin * canvas.width;
-  const y = bbox.ymin * canvas.height;
-  const w = (bbox.xmax - bbox.xmin) * canvas.width;
-  const h = (bbox.ymax - bbox.ymin) * canvas.height;
-
-  if (det.segmentation_polygon) {
-    ctx.beginPath();
-    det.segmentation_polygon.forEach((pt, idx) => {
-      const px = pt[0] * canvas.width;
-      const py = pt[1] * canvas.height;
-      if (idx === 0) ctx.moveTo(px, py);
-      else ctx.lineTo(px, py);
-    });
-    ctx.closePath();
-    ctx.fillStyle = hazard.fusion?.is_false_positive ? 'rgba(148, 163, 184, 0.25)' : 'rgba(0, 240, 255, 0.25)';
-    ctx.fill();
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = hazard.fusion?.is_false_positive ? '#94a3b8' : '#00f0ff';
-    ctx.stroke();
+  if (!hazard || !hazard.visual_detections || hazard.visual_detections.length === 0) {
+    if (overlayBadge) overlayBadge.textContent = 'SmartCity YOLO: No Road Hazard Detected';
+    return;
   }
 
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = hazard.fusion?.is_false_positive ? '#cbd5e1' : '#f59e0b';
-  ctx.setLineDash([4, 4]);
-  ctx.strokeRect(x, y, w, h);
-  ctx.setLineDash([]);
+  const primaryDet = hazard.visual_detections[0];
+  if (overlayBadge) {
+    overlayBadge.textContent = `SmartCity YOLO: ${primaryDet.bbox?.label || 'Hazard'} (${((primaryDet.confidence || 0) * 100).toFixed(0)}%)`;
+  }
 
-  ctx.strokeStyle = '#00f0ff';
-  ctx.lineWidth = 3;
-  const corner = 12;
-  ctx.beginPath(); ctx.moveTo(x, y + corner); ctx.lineTo(x, y); ctx.lineTo(x + corner, y); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(x + w - corner, y); ctx.lineTo(x + w, y); ctx.lineTo(x + w, y + corner); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(x, y + h - corner); ctx.lineTo(x, y + h); ctx.lineTo(x + corner, y + h); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(x + w - corner, y + h); ctx.lineTo(x + w, y + h); ctx.lineTo(x + w, y + h - corner); ctx.stroke();
+  hazard.visual_detections.forEach(det => {
+    const bbox = det.bbox;
+    if (!bbox) return;
 
-  const labelText = `${bbox.label} (${(det.confidence * 100).toFixed(0)}%)`;
-  ctx.font = 'bold 11px JetBrains Mono, monospace';
-  const textWidth = ctx.measureText(labelText).width;
+    const x = bbox.xmin * canvas.width;
+    const y = bbox.ymin * canvas.height;
+    const w = (bbox.xmax - bbox.xmin) * canvas.width;
+    const h = (bbox.ymax - bbox.ymin) * canvas.height;
 
-  ctx.fillStyle = hazard.fusion?.is_false_positive ? 'rgba(51, 65, 85, 0.95)' : 'rgba(15, 23, 42, 0.95)';
-  ctx.fillRect(x, Math.max(0, y - 24), textWidth + 16, 22);
-  ctx.fillStyle = hazard.fusion?.is_false_positive ? '#cbd5e1' : '#00f0ff';
-  ctx.fillText(labelText, x + 8, Math.max(14, y - 8));
+    if (det.segmentation_polygon) {
+      ctx.beginPath();
+      det.segmentation_polygon.forEach((pt, idx) => {
+        const px = pt[0] * canvas.width;
+        const py = pt[1] * canvas.height;
+        if (idx === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      });
+      ctx.closePath();
+      ctx.fillStyle = hazard.fusion?.is_false_positive ? 'rgba(148, 163, 184, 0.25)' : 'rgba(0, 240, 255, 0.25)';
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = hazard.fusion?.is_false_positive ? '#94a3b8' : '#00f0ff';
+      ctx.stroke();
+    }
+
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = hazard.fusion?.is_false_positive ? '#cbd5e1' : '#f59e0b';
+    ctx.setLineDash([4, 4]);
+    ctx.strokeRect(x, y, w, h);
+    ctx.setLineDash([]);
+
+    ctx.strokeStyle = '#00f0ff';
+    ctx.lineWidth = 3;
+    const corner = 12;
+    ctx.beginPath(); ctx.moveTo(x, y + corner); ctx.lineTo(x, y); ctx.lineTo(x + corner, y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + w - corner, y); ctx.lineTo(x + w); ctx.lineTo(x + w, y + corner); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x, y + h - corner); ctx.lineTo(x, y + h); ctx.lineTo(x + corner, y + h); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + w - corner, y + h); ctx.lineTo(x + w, y + h); ctx.lineTo(x + w, y + h - corner); ctx.stroke();
+
+    const labelText = `${bbox.label} (${((det.confidence || 0) * 100).toFixed(0)}%)`;
+    ctx.font = 'bold 11px JetBrains Mono, monospace';
+    const textWidth = ctx.measureText(labelText).width;
+
+    ctx.fillStyle = hazard.fusion?.is_false_positive ? 'rgba(51, 65, 85, 0.95)' : 'rgba(15, 23, 42, 0.95)';
+    ctx.fillRect(x, Math.max(0, y - 24), textWidth + 16, 22);
+    ctx.fillStyle = hazard.fusion?.is_false_positive ? '#cbd5e1' : '#00f0ff';
+    ctx.fillText(labelText, x + 8, Math.max(14, y - 8));
+  });
 }
 
 function updateStudioTelemetry(rawHazard) {
