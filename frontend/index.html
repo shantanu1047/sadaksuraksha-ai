@@ -367,11 +367,12 @@
           <div id="nav-dropdown-menu" class="hidden absolute top-full left-0 mt-2 w-80 bg-white border border-slate-300 rounded-xl p-2 z-[1100] space-y-1 shadow-2xl overflow-hidden">
             <div class="tricolor-strip -mx-2 -mt-2 mb-2"></div>
             
-            <div class="flex items-center justify-between px-3 py-1.5 bg-slate-100 rounded-md border border-slate-200">
-              <span class="text-[10px] font-black uppercase tracking-wider text-slate-800 font-mono flex items-center gap-1.5">
-                <i data-lucide="layers" class="w-3.5 h-3.5 text-[#0A3161]"></i> <span data-i18n="tools_heading">Platform Modules</span>
+            <!-- SECTION 1: ACTIVE CORE OPERATIONAL MODULES -->
+            <div class="flex items-center justify-between px-3 py-1.5 bg-emerald-50 rounded-md border border-emerald-200">
+              <span class="text-[10px] font-black uppercase tracking-wider text-emerald-950 font-mono flex items-center gap-1.5">
+                <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-700"></i> <span>Active Core Modules</span>
               </span>
-              <span class="text-[9px] bg-[#0A3161] text-white font-mono px-2 py-0.5 rounded-sm font-bold">9 Views</span>
+              <span class="text-[9px] bg-emerald-700 text-white font-mono px-2 py-0.5 rounded-sm font-bold">4 Live</span>
             </div>
 
             <!-- 1. GIS Hazard Map -->
@@ -385,29 +386,7 @@
               </div>
             </button>
 
-            <!-- 2. AI Road Forecast -->
-            <button type="button" onclick="selectNavTab('forecast', 'AI Road Forecast')" class="dropdown-nav-item w-full flex items-center gap-3 p-2 rounded-lg hover:bg-purple-50 border border-transparent hover:border-purple-200 transition-all text-left group cursor-pointer">
-              <div class="w-8 h-8 rounded-md bg-purple-100 border border-purple-300 flex items-center justify-center shrink-0">
-                <i data-lucide="trending-up" class="w-4 h-4 text-purple-700"></i>
-              </div>
-              <div>
-                <p data-i18n="nav_forecast" class="text-xs font-bold text-slate-900 leading-none">AI Road Forecast</p>
-                <p data-i18n="nav_forecast_desc" class="text-[11px] text-slate-600 font-medium mt-1">Predictive 7-day failure risk & weather</p>
-              </div>
-            </button>
-
-            <!-- 3. Resource Intelligence -->
-            <button type="button" onclick="selectNavTab('resource-intel', 'Resource Intelligence')" class="dropdown-nav-item w-full flex items-center gap-3 p-2 rounded-lg hover:bg-cyan-50 border border-transparent hover:border-cyan-200 transition-all text-left group cursor-pointer">
-              <div class="w-8 h-8 rounded-md bg-cyan-100 border border-cyan-300 flex items-center justify-center shrink-0">
-                <i data-lucide="cpu" class="w-4 h-4 text-cyan-800"></i>
-              </div>
-              <div>
-                <p data-i18n="nav_resource" class="text-xs font-bold text-slate-900 leading-none">Resource Intelligence</p>
-                <p data-i18n="nav_resource_desc" class="text-[11px] text-slate-600 font-medium mt-1">Auto-dispatch PWD repair units & fleet</p>
-              </div>
-            </button>
-
-            <!-- 4. Inspection Studio -->
+            <!-- 2. Inspection Studio -->
             <button type="button" onclick="selectNavTab('studio', 'Inspection Studio')" class="dropdown-nav-item w-full flex items-center gap-3 p-2 rounded-lg hover:bg-blue-50 border border-transparent hover:border-blue-200 transition-all text-left group cursor-pointer">
               <div class="w-8 h-8 rounded-md bg-blue-100 border border-blue-300 flex items-center justify-center shrink-0">
                 <i data-lucide="scan" class="w-4 h-4 text-[#0A3161]"></i>
@@ -418,7 +397,7 @@
               </div>
             </button>
 
-            <!-- 5. Patrol Simulator -->
+            <!-- 3. Patrol Simulator -->
             <button type="button" onclick="selectNavTab('patrol', 'Patrol Simulator')" class="dropdown-nav-item w-full flex items-center gap-3 p-2 rounded-lg hover:bg-emerald-50 border border-transparent hover:border-emerald-200 transition-all text-left group cursor-pointer">
               <div class="w-8 h-8 rounded-md bg-emerald-100 border border-emerald-300 flex items-center justify-center shrink-0">
                 <i data-lucide="car" class="w-4 h-4 text-emerald-800"></i>
@@ -429,7 +408,7 @@
               </div>
             </button>
 
-            <!-- 6. Work Orders -->
+            <!-- 4. Work Orders -->
             <button type="button" onclick="selectNavTab('backlog', 'Work Orders')" class="dropdown-nav-item w-full flex items-center gap-3 p-2 rounded-lg hover:bg-orange-50 border border-transparent hover:border-orange-200 transition-all text-left group cursor-pointer">
               <div class="w-8 h-8 rounded-md bg-orange-100 border border-orange-300 flex items-center justify-center shrink-0">
                 <i data-lucide="clipboard-list" class="w-4 h-4 text-orange-700"></i>
@@ -440,37 +419,98 @@
               </div>
             </button>
 
-            <!-- 7. Gemini AI Assistant -->
-            <button type="button" onclick="selectNavTab('copilot', 'Gemini AI Assistant')" class="dropdown-nav-item w-full flex items-center gap-3 p-2 rounded-lg hover:bg-purple-50 border border-transparent hover:border-purple-200 transition-all text-left group cursor-pointer">
-              <div class="w-8 h-8 rounded-md bg-purple-100 border border-purple-300 flex items-center justify-center shrink-0">
-                <i data-lucide="sparkles" class="w-4 h-4 text-purple-800"></i>
+            <!-- SECTION 2: FUTURE ENTERPRISE ROADMAP MODULES -->
+            <div class="my-1 border-t border-slate-200 pt-1"></div>
+            <div class="flex items-center justify-between px-3 py-1.5 bg-slate-100 rounded-md border border-slate-200">
+              <span class="text-[10px] font-black uppercase tracking-wider text-slate-700 font-mono flex items-center gap-1.5">
+                <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-500"></i> <span>Future Enterprise Modules</span>
+              </span>
+              <span class="text-[9px] bg-slate-200 text-slate-700 font-mono px-2 py-0.5 rounded-sm font-bold">Roadmap</span>
+            </div>
+
+            <!-- 5. AI Road Forecast (Future) -->
+            <button type="button" onclick="showFutureModuleModal('forecast'); closeAllDropdowns();" class="dropdown-nav-item w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all text-left group cursor-pointer">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-md bg-purple-50 border border-purple-200 flex items-center justify-center shrink-0">
+                  <i data-lucide="trending-up" class="w-4 h-4 text-purple-700"></i>
+                </div>
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <p data-i18n="nav_forecast" class="text-xs font-bold text-slate-800 leading-none">AI Road Forecast</p>
+                    <span class="text-[9px] font-mono font-bold text-purple-800 bg-purple-50 border border-purple-200 px-1.5 py-0.2 rounded">Planned</span>
+                  </div>
+                  <p data-i18n="nav_forecast_desc" class="text-[10.5px] text-slate-500 font-medium mt-1">Predictive 7-day failure risk & weather</p>
+                </div>
               </div>
-              <div>
-                <p data-i18n="nav_copilot" class="text-xs font-bold text-slate-900 leading-none">Gemini AI Assistant</p>
-                <p data-i18n="nav_copilot_desc" class="text-[11px] text-slate-600 font-medium mt-1">Google Gemini 2.5 Flash engineering chat</p>
-              </div>
+              <i data-lucide="info" class="w-3.5 h-3.5 text-slate-400 group-hover:text-purple-600"></i>
             </button>
 
-            <!-- 8. Analytics & Reports -->
-            <button type="button" onclick="selectNavTab('analytics', 'Analytics & Reports')" class="dropdown-nav-item w-full flex items-center gap-3 p-2 rounded-lg hover:bg-emerald-50 border border-transparent hover:border-emerald-200 transition-all text-left group cursor-pointer">
-              <div class="w-8 h-8 rounded-md bg-emerald-100 border border-emerald-300 flex items-center justify-center shrink-0">
-                <i data-lucide="bar-chart-3" class="w-4 h-4 text-emerald-800"></i>
+            <!-- 6. Resource Intelligence (Future) -->
+            <button type="button" onclick="showFutureModuleModal('resource-intel'); closeAllDropdowns();" class="dropdown-nav-item w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all text-left group cursor-pointer">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-md bg-cyan-50 border border-cyan-200 flex items-center justify-center shrink-0">
+                  <i data-lucide="cpu" class="w-4 h-4 text-cyan-800"></i>
+                </div>
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <p data-i18n="nav_resource" class="text-xs font-bold text-slate-800 leading-none">Resource Intelligence</p>
+                    <span class="text-[9px] font-mono font-bold text-cyan-800 bg-cyan-50 border border-cyan-200 px-1.5 py-0.2 rounded">Planned</span>
+                  </div>
+                  <p data-i18n="nav_resource_desc" class="text-[10.5px] text-slate-500 font-medium mt-1">Auto-dispatch PWD repair units & fleet</p>
+                </div>
               </div>
-              <div>
-                <p data-i18n="nav_audit" class="text-xs font-bold text-slate-900 leading-none">Analytics & Reports</p>
-                <p data-i18n="nav_audit_desc" class="text-[11px] text-slate-600 font-medium mt-1">Defect distribution & cost charts</p>
-              </div>
+              <i data-lucide="info" class="w-3.5 h-3.5 text-slate-400 group-hover:text-cyan-600"></i>
             </button>
 
-            <!-- 9. Ingestion -->
-            <button type="button" onclick="selectNavTab('ingestion', 'Multi-Source Ingestion')" class="dropdown-nav-item w-full flex items-center gap-3 p-2 rounded-lg hover:bg-orange-50 border border-transparent hover:border-orange-200 transition-all text-left group cursor-pointer">
-              <div class="w-8 h-8 rounded-md bg-orange-100 border border-orange-200 flex items-center justify-center shrink-0">
-                <i data-lucide="radio-tower" class="w-4 h-4 text-orange-700"></i>
+            <!-- 7. Gemini AI Assistant (Future) -->
+            <button type="button" onclick="showFutureModuleModal('copilot'); closeAllDropdowns();" class="dropdown-nav-item w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all text-left group cursor-pointer">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-md bg-purple-50 border border-purple-200 flex items-center justify-center shrink-0">
+                  <i data-lucide="sparkles" class="w-4 h-4 text-purple-800"></i>
+                </div>
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <p data-i18n="nav_copilot" class="text-xs font-bold text-slate-800 leading-none">NHAI AI Assistant</p>
+                    <span class="text-[9px] font-mono font-bold text-purple-800 bg-purple-50 border border-purple-200 px-1.5 py-0.2 rounded">Planned</span>
+                  </div>
+                  <p data-i18n="nav_copilot_desc" class="text-[10.5px] text-slate-500 font-medium mt-1">Google Gemini 2.5 Flash engineering chat</p>
+                </div>
               </div>
-              <div>
-                <p data-i18n="nav_live_data" class="text-xs font-bold text-slate-900 leading-none">Multi-Source Ingestion</p>
-                <p data-i18n="nav_live_data_desc" class="text-[11px] text-slate-600 font-medium mt-1">CCTV, Google Maps & Citizen 311</p>
+              <i data-lucide="info" class="w-3.5 h-3.5 text-slate-400 group-hover:text-purple-600"></i>
+            </button>
+
+            <!-- 8. Audit & Compliance (Future) -->
+            <button type="button" onclick="showFutureModuleModal('analytics'); closeAllDropdowns();" class="dropdown-nav-item w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all text-left group cursor-pointer">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-md bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0">
+                  <i data-lucide="shield-check" class="w-4 h-4 text-emerald-800"></i>
+                </div>
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <p data-i18n="nav_audit" class="text-xs font-bold text-slate-800 leading-none">Audit & Compliance</p>
+                    <span class="text-[9px] font-mono font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-1.5 py-0.2 rounded">Planned</span>
+                  </div>
+                  <p data-i18n="nav_audit_desc" class="text-[10.5px] text-slate-500 font-medium mt-1">IRC:82 compliance & budget analytics</p>
+                </div>
               </div>
+              <i data-lucide="info" class="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-600"></i>
+            </button>
+
+            <!-- 9. Multi-Source Ingestion (Future) -->
+            <button type="button" onclick="showFutureModuleModal('ingestion'); closeAllDropdowns();" class="dropdown-nav-item w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all text-left group cursor-pointer">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-md bg-orange-50 border border-orange-200 flex items-center justify-center shrink-0">
+                  <i data-lucide="radio-tower" class="w-4 h-4 text-orange-700"></i>
+                </div>
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <p data-i18n="nav_live_data" class="text-xs font-bold text-slate-800 leading-none">Multi-Source Ingestion</p>
+                    <span class="text-[9px] font-mono font-bold text-orange-800 bg-orange-50 border border-orange-200 px-1.5 py-0.2 rounded">Planned</span>
+                  </div>
+                  <p data-i18n="nav_live_data_desc" class="text-[10.5px] text-slate-500 font-medium mt-1">CCTV, Google Maps & Citizen 311</p>
+                </div>
+              </div>
+              <i data-lucide="info" class="w-3.5 h-3.5 text-slate-400 group-hover:text-orange-600"></i>
             </button>
           </div>
         </div>
@@ -2524,6 +2564,69 @@
 
       </div>
 
+    </div>
+  </div>
+
+  <!-- FUTURE ENTERPRISE MODULE ROADMAP MODAL -->
+  <div id="future-module-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] hidden flex items-center justify-center p-4" style="z-index: 99999 !important;">
+    <div class="bg-white border border-slate-300 rounded-2xl w-full max-w-lg p-6 flex flex-col gap-4 text-black overflow-hidden relative shadow-2xl animate-in fade-in zoom-in duration-150">
+      <div class="tricolor-strip -mx-6 -mt-6 mb-1"></div>
+
+      <div class="flex items-start justify-between gap-3 border-b border-slate-200 pb-3">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center shrink-0">
+            <i id="future-modal-icon" data-lucide="sparkles" class="w-6 h-6 text-[#F47216]"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span id="future-modal-badge" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-100 text-amber-950 border border-amber-300">
+                Planned Enterprise Module
+              </span>
+              <span class="text-[10px] font-mono text-slate-500 font-bold">Phase 2</span>
+            </div>
+            <h3 id="future-modal-title" class="text-sm font-black text-black mt-1 leading-snug">
+              AI Road Forecast Engine
+            </h3>
+          </div>
+        </div>
+        <button onclick="closeFutureModuleModal()" class="text-slate-500 hover:text-red-600 cursor-pointer p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+          <p id="future-modal-tagline" class="font-bold text-slate-900 text-xs mb-1">
+            7-Day Predictive Machine Learning Deterioration Horizon
+          </p>
+          <p id="future-modal-desc" class="text-slate-600 leading-relaxed font-medium">
+            This module is planned as a future enterprise expansion for state municipal highway authorities. It can be integrated and enabled for automated continuous deployment.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-900 uppercase tracking-wider text-[10px] mb-2 flex items-center gap-1.5 font-mono">
+            <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-600"></i> Key Capabilities Planned in Future Release:
+          </h4>
+          <ul id="future-modal-features" class="space-y-1.5 text-slate-700 pl-1 font-medium text-[11px]">
+            <!-- Populated dynamically -->
+          </ul>
+        </div>
+
+        <div class="p-3 bg-emerald-50/80 border border-emerald-200 rounded-xl text-emerald-950 font-semibold text-[11px] flex items-center gap-2">
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-700 shrink-0"></i>
+          <span>All 4 primary operational tools (GIS Map, Inspection Studio, Patrol Simulator, and Work Orders) are active now.</span>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between gap-3 pt-3 border-t border-slate-200">
+        <button type="button" id="btn-preview-future-tab" onclick="previewFutureModule()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 transition-all cursor-pointer">
+          Preview Prototype
+        </button>
+        <button type="button" onclick="closeFutureModuleModal()" class="px-5 py-2 rounded-xl text-xs font-black bg-[#FF9933] hover:bg-[#F28500] text-black border border-amber-600 shadow-xs transition-all cursor-pointer">
+          Got it, Continue
+        </button>
+      </div>
     </div>
   </div>
 

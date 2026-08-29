@@ -2856,6 +2856,137 @@ function navigateToHome() {
 window.navigateToHome = navigateToHome;
 
 // ==========================================
+// FUTURE ENTERPRISE ROADMAP MODAL HANDLERS
+// ==========================================
+const FUTURE_MODULE_INFO = {
+  forecast: {
+    title: "AI Road Failure & Deterioration Forecast",
+    icon: "trending-up",
+    badge: "Planned Enterprise Module",
+    tagline: "7-Day Predictive Machine Learning Deterioration Horizon",
+    description: "Anticipates pavement surface decay, waterlogging, and pothole formation 3 to 7 days before physical road collapse using weather and traffic patterns.",
+    plannedFeatures: [
+      "7-Day predictive pavement deterioration models",
+      "Monsoon rain saturation & flood vulnerability mapping",
+      "Automated preventive maintenance dispatch alerts"
+    ]
+  },
+  'resource-intel': {
+    title: "Resource Intelligence & Fleet Routing",
+    icon: "cpu",
+    badge: "Planned Enterprise Module",
+    tagline: "Autonomous PWD Crew & Equipment Allocation",
+    description: "Automated real-time dispatch and routing of municipal repair crews, asphalt hot-mix trucks, and road roller machinery based on spatial defect clusters.",
+    plannedFeatures: [
+      "Dynamic PWD maintenance crew load balancing",
+      "Automated heavy machinery routing via GPS",
+      "Shift duration and material cost optimization"
+    ]
+  },
+  copilot: {
+    title: "NHAI / PWD AI Engineering Assistant",
+    icon: "sparkles",
+    badge: "Planned Enterprise Module",
+    tagline: "Generative AI Civil Engineering Co-Pilot",
+    description: "Grounded conversational assistant tailored for highway engineers, utilizing IRC (Indian Roads Congress) standards and MoRTH maintenance guidelines.",
+    plannedFeatures: [
+      "Natural language IRC:82 pavement repair queries",
+      "Automated ₹ INR rate analysis and material estimations",
+      "Instant work order synthesis and disaster response"
+    ]
+  },
+  analytics: {
+    title: "Audit & Statutory Compliance (IRC:82)",
+    icon: "shield-check",
+    badge: "Planned Enterprise Module",
+    tagline: "Statutory SLA Verification & Audit Dossier",
+    description: "Official defect compliance tracking and statutory reporting dashboard ensuring all arterial road repairs meet gazetted IRC:82 and MoRTH standards.",
+    plannedFeatures: [
+      "24h / 48h statutory repair SLA compliance tracker",
+      "Optical false-positive noise reduction audit records",
+      "One-click signed audit report export (CSV / PDF)"
+    ]
+  },
+  ingestion: {
+    title: "Multi-Source Ingestion & CCTV Command",
+    icon: "radio-tower",
+    badge: "Planned Enterprise Module",
+    tagline: "Unified Multi-Stream Edge Telemetry Command",
+    description: "Centralized ICCC ingestion hub connecting live expressway CCTV camera feeds, Google Maps traffic probes, and citizen 311 reporting streams.",
+    plannedFeatures: [
+      "High-throughput edge RTSP CCTV camera stream ingestion",
+      "Google Maps live probe anomaly detection feeds",
+      "Automated citizen report deduplication and GPS clustering"
+    ]
+  }
+};
+
+let currentPendingFutureModule = null;
+
+function showFutureModuleModal(moduleKey) {
+  currentPendingFutureModule = moduleKey;
+  const info = FUTURE_MODULE_INFO[moduleKey] || {
+    title: "Future Enterprise Module",
+    icon: "sparkles",
+    badge: "Planned Module",
+    tagline: "Modular Highway Authority Expansion",
+    description: "This feature can be added in the future as a dedicated enterprise add-on for municipal authority cloud instances.",
+    plannedFeatures: ["Enterprise cloud instance integration", "Automated telemetry sync", "Role-based officer access control"]
+  };
+
+  const modal = document.getElementById('future-module-modal');
+  const titleEl = document.getElementById('future-modal-title');
+  const taglineEl = document.getElementById('future-modal-tagline');
+  const descEl = document.getElementById('future-modal-desc');
+  const iconEl = document.getElementById('future-modal-icon');
+  const badgeEl = document.getElementById('future-modal-badge');
+  const featuresEl = document.getElementById('future-modal-features');
+
+  if (titleEl) titleEl.textContent = info.title;
+  if (taglineEl) taglineEl.textContent = info.tagline;
+  if (descEl) descEl.textContent = info.description;
+  if (badgeEl) badgeEl.textContent = info.badge;
+  if (iconEl) iconEl.setAttribute('data-lucide', info.icon);
+
+  if (featuresEl) {
+    featuresEl.innerHTML = (info.plannedFeatures || []).map(f => `
+      <li class="flex items-start gap-2">
+        <span class="text-orange-500 font-bold">•</span>
+        <span>${f}</span>
+      </li>
+    `).join('');
+  }
+
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    window.lucide.createIcons();
+  }
+}
+window.showFutureModuleModal = showFutureModuleModal;
+
+function closeFutureModuleModal() {
+  const modal = document.getElementById('future-module-modal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}
+window.closeFutureModuleModal = closeFutureModuleModal;
+
+function previewFutureModule() {
+  const modKey = currentPendingFutureModule;
+  closeFutureModuleModal();
+  if (modKey) {
+    selectNavTab(modKey);
+  }
+}
+window.previewFutureModule = previewFutureModule;
+
+// ==========================================
 // PRIORITY BACKLOG FEED DROPDOWN BOX TOGGLER
 // ==========================================
 function toggleFeedDropdown(explicitOpen) {
