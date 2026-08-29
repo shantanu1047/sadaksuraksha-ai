@@ -2265,32 +2265,6 @@ function renderIngestionStreams(streams) {
 
 
 
-// Load ingestion streams when switching to ingestion tab
-const originalSwitchTab = window.switchTab;
-window.switchTab = function(tabId) {
-  // Call original tab logic
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active-tab'));
-  document.querySelectorAll('.tab-view').forEach(v => v.classList.add('hidden'));
-
-  const tabBtn = document.getElementById(`tab-${tabId}`);
-  const viewElem = document.getElementById(`view-${tabId}`);
-
-  if (tabBtn) tabBtn.classList.add('active-tab');
-  if (viewElem) viewElem.classList.remove('hidden');
-
-  if (tabId === 'map' && gisMap) {
-    setTimeout(() => gisMap.invalidateSize(), 200);
-  }
-  if (tabId === 'patrol' && patrolMap) {
-    setTimeout(() => patrolMap.invalidateSize(), 200);
-  }
-  if (tabId === 'ingestion') {
-    refreshIngestionStreams();
-  }
-};
-// Override the global function
-switchTab = window.switchTab;
-
 // Decluttered Navigation & Action Dropdowns
 
 // ==========================================
