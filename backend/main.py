@@ -210,9 +210,11 @@ def save_hazards_to_cloud(hazards: List[HazardIncident], demo_seeded: Optional[b
     """Saves citizen hazard list atomically to Cloud Database if configured."""
     citizen_only = [inc.model_dump() for inc in hazards if _is_citizen_hazard(inc.id)]
     deleted_order_ids = globals().get("deleted_work_order_ids", set())
+    deleted_demo_ids = globals().get("deleted_demo_hazard_ids", set())
     data_block: Dict[str, Any] = {
         "hazards": citizen_only[:100],
         "deleted_work_order_ids": sorted(str(wo_id).upper() for wo_id in deleted_order_ids),
+        "deleted_demo_hazard_ids": sorted(str(hid).upper() for hid in deleted_demo_ids),
     }
     if demo_seeded is not None:
         data_block["demo_seeded"] = demo_seeded
@@ -245,7 +247,7 @@ def save_hazards_to_cloud(hazards: List[HazardIncident], demo_seeded: Optional[b
 
 def clear_cloud_hazards():
     """Wipes all hazard records from Cloud Database if configured."""
-    save_data_to_postgres({"hazards": [], "deleted_work_order_ids": [], "demo_seeded": False})
+    save_data_to_postgres({"hazards": [], "deleted_work_order_ids": [], "deleted_demo_hazard_ids": [], "demo_seeded": False})
 
     endpoint = get_cloud_endpoint()
     if not endpoint:
@@ -345,6 +347,21 @@ def load_deleted_work_order_ids_from_cloud() -> Set[str]:
     return {str(order_id).upper() for order_id in raw_ids if str(order_id).strip()}
 
 
+def load_deleted_demo_hazard_ids_from_cloud() -> Set[str]:
+    """Returns IDs of demo hazards that have been explicitly deleted by the user.
+    These are stored in the same Postgres JSONB blob as deleted_work_order_ids so
+    that deletions survive serverless cold-starts/instance reuse on Vercel."""
+    data_block = cloud_data_block()
+    if not data_block:
+        return set()
+
+    raw_ids = data_block.get("deleted_demo_hazard_ids", [])
+    if not isinstance(raw_ids, list):
+        return set()
+
+    return {str(hid).upper() for hid in raw_ids if str(hid).strip()}
+
+
 def load_persisted_citizen_hazards() -> List[HazardIncident]:
     loaded_map: Dict[str, HazardIncident] = {}
     
@@ -404,15 +421,17 @@ def _is_citizen_hazard(hazard_id: str) -> bool:
 
 
 deleted_work_order_ids: Set[str] = load_deleted_work_order_ids_from_cloud()
+deleted_demo_hazard_ids: Set[str] = load_deleted_demo_hazard_ids_from_cloud()
 
 def sync_hazards_from_disk():
     """Synchronises citizen-report hazards with persistent cloud & disk storage.
 
-    Demo hazards (HAZ-NNN short-number IDs) are ALWAYS kept in memory unchanged.
+    Demo hazards (HAZ-NNN short-number IDs) are kept in memory UNLESS they have
+    been explicitly deleted (tracked in deleted_demo_hazard_ids in Postgres).
     Only citizen-report hazards (HAZ-YYMMDD-XXXX datestamp IDs) are checked
     against the persisted set and removed if they've been deleted from storage.
     """
-    global hazards_db, work_orders_db, deleted_work_order_ids
+    global hazards_db, work_orders_db, deleted_work_order_ids, deleted_demo_hazard_ids
     if not has_persistent_hazard_storage():
         work_orders_db = [
             wo for wo in prioritization_engine.cluster_and_generate_work_orders(hazards_db)
@@ -424,14 +443,13 @@ def sync_hazards_from_disk():
     persisted_ids = {p.id for p in persisted}
     if postgres_available() or get_cloud_endpoint():
         deleted_work_order_ids = load_deleted_work_order_ids_from_cloud()
+        deleted_demo_hazard_ids = load_deleted_demo_hazard_ids_from_cloud()
 
-    # Keep: demo hazards already in memory + citizen hazards still present on disk.
-    # Demo hazards are NOT re-injected here — that only happens at server startup.
-    # This means a deliberate /api/hazards/reset correctly produces 0 hazards until
-    # the next server restart or an explicit POST /api/hazards/seed-demo call.
+    # Keep: demo hazards not in deleted_demo_hazard_ids + citizen hazards present in the cloud store.
     hazards_db[:] = [
         h for h in hazards_db
-        if not _is_citizen_hazard(h.id) or h.id in persisted_ids
+        if (not _is_citizen_hazard(h.id) and h.id.upper() not in deleted_demo_hazard_ids)
+        or (_is_citizen_hazard(h.id) and h.id in persisted_ids)
     ]
 
     # Merge any newly persisted citizen hazards not yet in memory
@@ -446,12 +464,18 @@ def sync_hazards_from_disk():
 
 
 # Initialise hazards_db with persisted citizen reports, plus demo benchmark data when enabled.
-hazards_db: List[HazardIncident] = load_persisted_citizen_hazards() + (get_demo_hazards() if demo_hazards_enabled() else [])
+# Demo hazards that were explicitly deleted are excluded using the persisted deleted_demo_hazard_ids set.
+hazards_db: List[HazardIncident] = load_persisted_citizen_hazards() + (
+    [h for h in get_demo_hazards() if h.id.upper() not in deleted_demo_hazard_ids]
+    if demo_hazards_enabled() else []
+)
 roads_db: List[RoadSegment] = get_demo_road_segments()
 work_orders_db: List[WorkOrder] = [
     wo for wo in prioritization_engine.cluster_and_generate_work_orders(hazards_db)
     if wo.id.upper() not in deleted_work_order_ids
 ]
+
+
 
 
 @app.get("/api/health")
@@ -513,8 +537,9 @@ async def set_api_key(payload: Dict[str, Any]):
 @app.delete("/api/hazards/citizen")
 async def reset_citizen_hazards():
     """Clear all persisted citizen complaints and reset to completely clean fresh state (0 hazards)."""
-    global hazards_db, work_orders_db, deleted_work_order_ids
+    global hazards_db, work_orders_db, deleted_work_order_ids, deleted_demo_hazard_ids
     deleted_work_order_ids.clear()
+    deleted_demo_hazard_ids.clear()
     clear_cloud_hazards()
     for p in get_storage_paths():
         try:
@@ -538,8 +563,9 @@ async def reset_citizen_hazards():
 @app.post("/api/hazards/seed-demo")
 async def seed_demo_hazards():
     """Optionally re-populate 95 benchmark demo hazards across 16 states."""
-    global hazards_db, work_orders_db, deleted_work_order_ids
+    global hazards_db, work_orders_db, deleted_work_order_ids, deleted_demo_hazard_ids
     deleted_work_order_ids.clear()
+    deleted_demo_hazard_ids.clear()
     hazards_db = load_persisted_citizen_hazards() + get_demo_hazards()
     save_hazards_to_cloud(hazards_db, demo_seeded=True)
     work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
@@ -615,7 +641,7 @@ async def get_hazard_detail(hazard_id: str):
 @app.delete("/api/hazards/{hazard_id}")
 async def delete_hazard(hazard_id: str):
     """Deletes a specific hazard incident/report and updates persisted storage and work orders."""
-    global hazards_db, work_orders_db
+    global hazards_db, work_orders_db, deleted_demo_hazard_ids
     sync_hazards_from_disk()
     previous_hazards = list(hazards_db)
     target = None
@@ -628,9 +654,17 @@ async def delete_hazard(hazard_id: str):
         raise HTTPException(status_code=404, detail=f"Hazard incident '{hazard_id}' not found.")
 
     hazards_db.remove(target)
+
+    # If this is a demo hazard (HAZ-001 etc.) record its ID so the deletion survives cold-starts.
+    # Without this, get_demo_hazards() would re-inject the deleted hazard on the next invocation.
+    if not _is_citizen_hazard(target.id):
+        deleted_demo_hazard_ids.add(target.id.upper())
+
     persisted = save_persisted_citizen_hazards(hazards_db)
     if durable_storage_required() and not persisted:
+        # Rollback: restore both the hazard list and the demo deletion tracking set
         hazards_db[:] = previous_hazards
+        deleted_demo_hazard_ids.discard(target.id.upper())
         work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
         logger.error("Hazard deletion rejected because durable storage is unavailable in Vercel.")
         raise HTTPException(
