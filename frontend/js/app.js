@@ -836,10 +836,9 @@ function updateKpiBar(analytics) {
 // ==========================================
 // GIS MAP MODULE (GOOGLE MAPS INTEGRATION)
 // ==========================================
-let currentGoogleMapLayer = null;
 const GOOGLE_MAP_TILE_LAYERS = {
   roadmap: {
-    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
     subdomains: ['a', 'b', 'c', 'd'],
     maxZoom: 20
@@ -868,12 +867,15 @@ function setGoogleMapLayer(layerType) {
   if (!gisMap) return;
   const cfg = GOOGLE_MAP_TILE_LAYERS[layerType] || GOOGLE_MAP_TILE_LAYERS.roadmap;
   if (currentGoogleMapLayer) {
-    gisMap.removeLayer(currentGoogleMapLayer);
+    try {
+      gisMap.removeLayer(currentGoogleMapLayer);
+    } catch (e) {}
   }
   currentGoogleMapLayer = L.tileLayer(cfg.url, {
     attribution: cfg.attribution,
     maxZoom: cfg.maxZoom || 20,
-    subdomains: cfg.subdomains || ['mt0', 'mt1', 'mt2', 'mt3']
+    subdomains: cfg.subdomains || ['a', 'b', 'c', 'd'],
+    errorTileUrl: 'https://tile.openstreetmap.org/6/46/27.png'
   }).addTo(gisMap);
 
   if (gisClusterLayer && gisMap.hasLayer(gisClusterLayer)) {
@@ -2993,8 +2995,8 @@ function setForecastGoogleMapLayer(layerType) {
   currentForecastGoogleMapLayer = L.tileLayer(cfg.url, {
     attribution: cfg.attribution || 'Google Maps',
     maxZoom: cfg.maxZoom || 20,
-    subdomains: cfg.subdomains || ['mt0', 'mt1', 'mt2', 'mt3'],
-    errorTileUrl: 'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png'
+    subdomains: cfg.subdomains || ['a', 'b', 'c', 'd'],
+    errorTileUrl: 'https://tile.openstreetmap.org/6/46/27.png'
   }).addTo(forecastMap);
 
   if (forecastMarkersLayer && forecastMap.hasLayer(forecastMarkersLayer)) {
