@@ -245,6 +245,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Initialize Studio with default scenario
   loadStudioScenario('pothole');
+
+  // Handle URL deep-linking (e.g. ?tab=ingestion or #ingestion)
+  const urlParams = new URLSearchParams(window.location.search);
+  const tabParam = urlParams.get('tab') || window.location.hash.replace('#', '');
+  if (tabParam) {
+    if (tabParam === 'audit') {
+      selectNavTab('analytics', 'Audit & Compliance');
+    } else {
+      selectNavTab(tabParam);
+    }
+  }
 });
 
 // ==========================================
