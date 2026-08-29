@@ -104,11 +104,12 @@ class VisionEngine:
         # ── SmartCity YOLO AI (ONLY detection engine) ──
         if self.local_vision_api_url and (raw_bytes or pil_image):
             try:
-                img_bytes_for_api = raw_bytes
-                if img_bytes_for_api is None and pil_image:
+                if pil_image:
                     buf = BytesIO()
-                    pil_image.save(buf, format="JPEG", quality=90)
+                    pil_image.save(buf, format="JPEG", quality=95)
                     img_bytes_for_api = buf.getvalue()
+                else:
+                    img_bytes_for_api = raw_bytes
 
                 detections = self._analyze_with_local_api(
                     img_bytes_for_api, pil_image,

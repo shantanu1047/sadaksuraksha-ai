@@ -1028,14 +1028,19 @@ function renderStudioCanvasOverlay(rawHazard) {
 
   const overlayBadge = document.getElementById('studio-overlay-text');
 
+  const labelsContainer = document.getElementById('studio-labels-container');
+  if (labelsContainer) labelsContainer.innerHTML = '';
+
   if (!hazard || !hazard.visual_detections || hazard.visual_detections.length === 0) {
     if (overlayBadge) overlayBadge.textContent = 'SmartCity YOLO: No Road Hazard Detected';
     return;
   }
 
   const primaryDet = hazard.visual_detections[0];
+  const primaryClass = primaryDet.bbox?.label || primaryDet.hazard_type || 'Road Hazard';
+  const primaryConf = Math.round((primaryDet.confidence || 0) * 100);
   if (overlayBadge) {
-    overlayBadge.textContent = `SmartCity YOLO: ${primaryDet.bbox?.label || 'Hazard'} (${((primaryDet.confidence || 0) * 100).toFixed(0)}%)`;
+    overlayBadge.textContent = `🎯 SmartCity AI: ${primaryClass} (${primaryConf}%)`;
   }
 
   // Calculate pixel-perfect rendered image rectangle (accounting for object-contain letterboxing)
@@ -1043,30 +1048,23 @@ function renderStudioCanvasOverlay(rawHazard) {
   let renderX = 0, renderY = 0, renderW = canvas.width, renderH = canvas.height;
 
   if (imgElem && imgElem.naturalWidth && imgElem.naturalHeight) {
-    const naturalRatio = imgElem.naturalWidth / imgElem.naturalHeight;
-    const clientRatio = canvas.width / canvas.height;
-
-    if (naturalRatio > clientRatio) {
-      renderW = canvas.width;
-      renderH = canvas.width / naturalRatio;
-      renderX = 0;
-      renderY = (canvas.height - renderH) / 2;
-    } else {
-      renderH = canvas.height;
-      renderW = canvas.height * naturalRatio;
-      renderY = 0;
-      renderX = (canvas.width - renderW) / 2;
-    }
+    const natW = imgElem.naturalWidth;
+    const natH = imgElem.naturalHeight;
+    const scale = Math.min(canvas.width / natW, canvas.height / natH);
+    renderW = natW * scale;
+    renderH = natH * scale;
+    renderX = (canvas.width - renderW) / 2;
+    renderY = (canvas.height - renderH) / 2;
   }
 
   hazard.visual_detections.forEach(det => {
     const bbox = det.bbox;
     if (!bbox) return;
 
-    const x = renderX + bbox.xmin * renderW;
-    const y = renderY + bbox.ymin * renderH;
-    const w = (bbox.xmax - bbox.xmin) * renderW;
-    const h = (bbox.ymax - bbox.ymin) * renderH;
+    const x = Math.round(renderX + bbox.xmin * renderW);
+    const y = Math.round(renderY + bbox.ymin * renderH);
+    const w = Math.round((bbox.xmax - bbox.xmin) * renderW);
+    const h = Math.round((bbox.ymax - bbox.ymin) * renderH);
 
     if (det.segmentation_polygon) {
       ctx.beginPath();
@@ -1092,48 +1090,50 @@ function renderStudioCanvasOverlay(rawHazard) {
 
     ctx.strokeStyle = '#00f0ff';
     ctx.lineWidth = 3;
-    const corner = 12;
+    const corner = 14;
     ctx.beginPath(); ctx.moveTo(x, y + corner); ctx.lineTo(x, y); ctx.lineTo(x + corner, y); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(x + w - corner, y); ctx.lineTo(x + w); ctx.lineTo(x + w, y + corner); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(x, y + h - corner); ctx.lineTo(x, y + h); ctx.lineTo(x + corner, y + h); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(x + w - corner, y + h); ctx.lineTo(x + w, y + h); ctx.lineTo(x + w, y + h - corner); ctx.stroke();
 
-    const className = det.bbox?.label || det.hazard_type || hazard.hazard_type || 'Fallen Tree';
+    const className = String(det.bbox?.label || det.hazard_type || hazard.hazard_type || 'Hazard').toUpperCase();
     const confPercent = Math.round((det.confidence || 0) * 100);
     const labelText = `${className} (${confPercent}%)`;
 
-    ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.font = 'bold 12px monospace';
     ctx.textBaseline = 'middle';
     const textWidth = ctx.measureText(labelText).width;
-    const badgeW = textWidth + 24;
+    const badgeW = textWidth + 28;
     const badgeH = 26;
 
-    // Position badge: above box if space permits, otherwise inside the box at top-left so it NEVER clips off-screen
-    const badgeX = Math.max(renderX + 4, Math.min(renderX + renderW - badgeW - 4, x + 4));
-    const badgeY = (y - badgeH - 4 >= renderY) ? (y - badgeH - 4) : (y + 6);
+    // Position badge: inside top-left of box so it never clips off-screen
+    const badgeX = Math.max(renderX + 6, x + 6);
+    const badgeY = Math.max(renderY + 6, y + 6);
 
-    // High-contrast solid badge background with cyan border
+    // 1. Draw Canvas badge
     ctx.fillStyle = '#0f172a';
-    ctx.beginPath();
-    if (ctx.roundRect) {
-      ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 6);
-    } else {
-      ctx.rect(badgeX, badgeY, badgeW, badgeH);
-    }
-    ctx.fill();
+    ctx.fillRect(badgeX, badgeY, badgeW, badgeH);
     ctx.lineWidth = 2;
     ctx.strokeStyle = '#00f0ff';
-    ctx.stroke();
+    ctx.strokeRect(badgeX, badgeY, badgeW, badgeH);
 
-    // Glowing cyan status indicator dot
     ctx.fillStyle = '#00f0ff';
     ctx.beginPath();
     ctx.arc(badgeX + 10, badgeY + badgeH / 2, 3.5, 0, Math.PI * 2);
     ctx.fill();
 
-    // Text in clean bright white
     ctx.fillStyle = '#ffffff';
     ctx.fillText(labelText, badgeX + 18, badgeY + badgeH / 2);
+
+    // 2. Add crisp DOM floating badge (guaranteed visible across all renderers)
+    if (labelsContainer) {
+      const domBadge = document.createElement('div');
+      domBadge.className = 'absolute z-20 bg-slate-950/95 text-cyan-300 border-2 border-cyan-400 px-3 py-1 rounded-lg text-xs font-black font-mono shadow-2xl flex items-center gap-2 backdrop-blur-md pointer-events-none transition-all';
+      domBadge.style.left = `${badgeX}px`;
+      domBadge.style.top = `${badgeY}px`;
+      domBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span><span>${labelText}</span>`;
+      labelsContainer.appendChild(domBadge);
+    }
   });
 }
 
