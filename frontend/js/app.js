@@ -223,6 +223,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   initGisMap();
   initPatrolMap();
   if (typeof initForecastMap === 'function') initForecastMap();
+  if (typeof initForecastView === 'function') initForecastView();
+  if (typeof initResourceIntelligenceView === 'function') initResourceIntelligenceView();
 
   // Initialize Charts
   initCharts();
