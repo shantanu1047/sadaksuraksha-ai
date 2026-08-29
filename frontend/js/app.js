@@ -1098,14 +1098,42 @@ function renderStudioCanvasOverlay(rawHazard) {
     ctx.beginPath(); ctx.moveTo(x, y + h - corner); ctx.lineTo(x, y + h); ctx.lineTo(x + corner, y + h); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(x + w - corner, y + h); ctx.lineTo(x + w, y + h); ctx.lineTo(x + w, y + h - corner); ctx.stroke();
 
-    const labelText = `${bbox.label} (${((det.confidence || 0) * 100).toFixed(0)}%)`;
-    ctx.font = 'bold 11px JetBrains Mono, monospace';
-    const textWidth = ctx.measureText(labelText).width;
+    const className = det.bbox?.label || det.hazard_type || hazard.hazard_type || 'Fallen Tree';
+    const confPercent = Math.round((det.confidence || 0) * 100);
+    const labelText = `${className} (${confPercent}%)`;
 
-    ctx.fillStyle = hazard.fusion?.is_false_positive ? 'rgba(51, 65, 85, 0.95)' : 'rgba(15, 23, 42, 0.95)';
-    ctx.fillRect(x, Math.max(renderY, y - 24), textWidth + 16, 22);
-    ctx.fillStyle = hazard.fusion?.is_false_positive ? '#cbd5e1' : '#00f0ff';
-    ctx.fillText(labelText, x + 8, Math.max(renderY + 14, y - 8));
+    ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.textBaseline = 'middle';
+    const textWidth = ctx.measureText(labelText).width;
+    const badgeW = textWidth + 24;
+    const badgeH = 26;
+
+    // Position badge: above box if space permits, otherwise inside the box at top-left so it NEVER clips off-screen
+    const badgeX = Math.max(renderX + 4, Math.min(renderX + renderW - badgeW - 4, x + 4));
+    const badgeY = (y - badgeH - 4 >= renderY) ? (y - badgeH - 4) : (y + 6);
+
+    // High-contrast solid badge background with cyan border
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    if (ctx.roundRect) {
+      ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 6);
+    } else {
+      ctx.rect(badgeX, badgeY, badgeW, badgeH);
+    }
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#00f0ff';
+    ctx.stroke();
+
+    // Glowing cyan status indicator dot
+    ctx.fillStyle = '#00f0ff';
+    ctx.beginPath();
+    ctx.arc(badgeX + 10, badgeY + badgeH / 2, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Text in clean bright white
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(labelText, badgeX + 18, badgeY + badgeH / 2);
   });
 }
 
@@ -1162,13 +1190,19 @@ function handleStudioFileUpload(event) {
   if (!file) return;
 
   const overlayText = document.getElementById('studio-overlay-text');
-  if (overlayText) overlayText.textContent = 'SmartCity YOLO Running Inference...';
+  if (overlayText) overlayText.textContent = '⏳ SmartCity AI: Running YOLO Inference...';
 
   const reader = new FileReader();
   reader.onload = async (e) => {
     const b64 = e.target.result;
     const imgElem = document.getElementById('studio-image-display');
-    imgElem.src = b64;
+
+    // Wait for the new image to fully decode and obtain natural dimensions
+    const imgLoadedPromise = new Promise(resolve => {
+      imgElem.onload = () => resolve();
+      imgElem.src = b64;
+      if (imgElem.complete && imgElem.naturalWidth > 0) resolve();
+    });
 
     try {
       const res = await fetch('/api/hazards/inspect', {
@@ -1191,30 +1225,21 @@ function handleStudioFileUpload(event) {
       const newHazard = await res.json();
       allHazards.unshift(newHazard);
 
-      // Render overlay once image element has layout
-      const doRender = () => {
+      await imgLoadedPromise;
+
+      // Render on next frame so layout and canvas size are guaranteed
+      requestAnimationFrame(() => {
         renderStudioCanvasOverlay(newHazard);
-        if (overlayText) {
-          const det = newHazard.visual_detections?.[0];
-          if (det) {
-            overlayText.textContent = `SmartCity YOLO: ${det.bbox.label} (${(det.confidence * 100).toFixed(0)}%)`;
-          } else {
-            overlayText.textContent = 'SmartCity YOLO: Surface Clear (0 Hazards)';
-          }
-        }
-      };
+        updateStudioTelemetry(newHazard);
+      });
 
-      if (imgElem.complete) {
-        doRender();
-      } else {
-        imgElem.onload = doRender;
-      }
-
-      updateStudioTelemetry(newHazard);
       refreshAllData();
     } catch (err) {
       console.error('Inspection failed:', err);
-      if (overlayText) overlayText.textContent = 'Inspection Failed';
+      if (overlayText) overlayText.textContent = '❌ Inspection Failed';
+    } finally {
+      // Clear value so the user can re-upload the same file if needed
+      event.target.value = '';
     }
   };
   reader.readAsDataURL(file);
