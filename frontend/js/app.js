@@ -524,6 +524,47 @@ window.deleteHazardReport = deleteHazardReport;
 window.switchBacklogSubTab = switchBacklogSubTab;
 window.clearPriorityBacklog = clearPriorityBacklog;
 
+const INDIAN_STATE_CENTROIDS = [
+  { state: "Karnataka", city: "Bengaluru", lat: 12.9716, lng: 77.5946, minLat: 11.5, maxLat: 18.5, minLng: 74.0, maxLng: 78.6 },
+  { state: "Maharashtra", city: "Mumbai", lat: 19.0760, lng: 72.8777, minLat: 15.6, maxLat: 22.0, minLng: 72.5, maxLng: 80.9 },
+  { state: "Delhi NCR", city: "New Delhi", lat: 28.6139, lng: 77.2090, minLat: 28.3, maxLat: 28.9, minLng: 76.8, maxLng: 77.4 },
+  { state: "Tamil Nadu", city: "Chennai", lat: 13.0827, lng: 80.2707, minLat: 8.0, maxLat: 13.6, minLng: 76.2, maxLng: 80.4 },
+  { state: "Telangana", city: "Hyderabad", lat: 17.3850, lng: 78.4867, minLat: 15.8, maxLat: 19.9, minLng: 77.2, maxLng: 81.8 },
+  { state: "Uttar Pradesh", city: "Lucknow", lat: 26.8467, lng: 80.9462, minLat: 23.8, maxLat: 30.4, minLng: 77.0, maxLng: 84.7 },
+  { state: "West Bengal", city: "Kolkata", lat: 22.5726, lng: 88.3639, minLat: 21.5, maxLat: 27.2, minLng: 85.8, maxLng: 89.9 },
+  { state: "Gujarat", city: "Ahmedabad", lat: 23.0225, lng: 72.5714, minLat: 20.1, maxLat: 24.7, minLng: 68.1, maxLng: 74.5 },
+  { state: "Rajasthan", city: "Jaipur", lat: 26.9124, lng: 75.7873, minLat: 23.3, maxLat: 30.2, minLng: 69.5, maxLng: 78.3 },
+  { state: "Kerala", city: "Kochi", lat: 9.9312, lng: 76.2673, minLat: 8.2, maxLat: 12.8, minLng: 74.8, maxLng: 77.4 },
+  { state: "Punjab & Haryana", city: "Chandigarh", lat: 30.7333, lng: 76.7794, minLat: 27.6, maxLat: 32.5, minLng: 73.8, maxLng: 77.6 },
+  { state: "Madhya Pradesh", city: "Indore", lat: 22.7196, lng: 75.8577, minLat: 21.1, maxLat: 26.9, minLng: 74.0, maxLng: 82.8 },
+  { state: "Odisha", city: "Bhubaneswar", lat: 20.2961, lng: 85.8245, minLat: 17.8, maxLat: 22.6, minLng: 81.4, maxLng: 87.5 },
+  { state: "Assam", city: "Guwahati", lat: 26.1445, lng: 91.7362, minLat: 24.1, maxLat: 28.0, minLng: 89.7, maxLng: 96.0 },
+  { state: "Jammu & Kashmir", city: "Srinagar", lat: 34.0837, lng: 74.7973, minLat: 32.2, maxLat: 37.1, minLng: 73.4, maxLng: 80.3 },
+  { state: "Andhra Pradesh", city: "Visakhapatnam", lat: 17.6868, lng: 83.2185, minLat: 12.6, maxLat: 19.1, minLng: 76.7, maxLng: 84.8 },
+  { state: "Goa", city: "Panaji", lat: 15.4909, lng: 73.8278, minLat: 14.9, maxLat: 15.8, minLng: 73.6, maxLng: 74.3 }
+];
+
+function inferIndianStateAndCity(lat, lng) {
+  const numLat = parseFloat(lat);
+  const numLng = parseFloat(lng);
+  if (isNaN(numLat) || isNaN(numLng)) return { state: "Karnataka", city: "Bengaluru" };
+  for (const item of INDIAN_STATE_CENTROIDS) {
+    if (numLat >= item.minLat && numLat <= item.maxLat && numLng >= item.minLng && numLng <= item.maxLng) {
+      return { state: item.state, city: item.city };
+    }
+  }
+  let nearest = INDIAN_STATE_CENTROIDS[0];
+  let minDist = Infinity;
+  for (const item of INDIAN_STATE_CENTROIDS) {
+    const d = Math.hypot(numLat - item.lat, numLng - item.lng);
+    if (d < minDist) {
+      minDist = d;
+      nearest = item;
+    }
+  }
+  return { state: nearest.state, city: nearest.city };
+}
+
 function normalizeHazard(h) {
   if (!h) return h;
   if (!h.fusion) {
@@ -544,9 +585,14 @@ function normalizeHazard(h) {
       pci_deduct_value: 40.0
     };
   }
+  const lat = parseFloat(h.latitude);
+  const lng = parseFloat(h.longitude);
+  if (!h.state || !h.city || h.state.toLowerCase() === 'india' || h.state.toLowerCase() === 'unknown') {
+    const inferred = inferIndianStateAndCity(lat, lng);
+    if (!h.state || h.state.toLowerCase() === 'india' || h.state.toLowerCase() === 'unknown') h.state = inferred.state;
+    if (!h.city || h.city.toLowerCase() === 'unknown') h.city = inferred.city;
+  }
   if (!h.road_name) h.road_name = h.address || `${h.city || 'Urban'} Road Sector`;
-  if (!h.state) h.state = 'Karnataka';
-  if (!h.city) h.city = 'Bengaluru';
   if (!h.severity) h.severity = 'high';
   if (!h.hazard_type) h.hazard_type = 'pothole';
   return h;
@@ -642,18 +688,31 @@ function matchesHazardState(h, targetState) {
   const hCity = (h.city || '').toLowerCase().trim();
   const hAddr = (h.address || '').toLowerCase().trim();
   const hRoad = (h.road_name || '').toLowerCase().trim();
+  const hTitle = (h.title || '').toLowerCase().trim();
 
-  // Direct state match
+  // 1. Direct state match
   if (hState === sLower || hState.includes(sLower) || sLower.includes(hState)) return true;
 
-  // City-to-state mapping check
+  // 2. City-to-state mapping check
   const stateCities = CITY_OPTIONS_BY_STATE[targetState];
-  if (stateCities && stateCities.some(c => c !== 'All Cities' && (hCity === c.toLowerCase() || hAddr.includes(c.toLowerCase()) || hRoad.includes(c.toLowerCase())))) {
+  if (stateCities && stateCities.some(c => c !== 'All Cities' && (hCity === c.toLowerCase() || hAddr.includes(c.toLowerCase()) || hRoad.includes(c.toLowerCase()) || hTitle.includes(c.toLowerCase())))) {
     return true;
   }
 
-  // Address string match
-  if (hAddr.includes(sLower) || hRoad.includes(sLower)) return true;
+  // 3. Address / Road / Title match
+  if (hAddr.includes(sLower) || hRoad.includes(sLower) || hTitle.includes(sLower)) return true;
+
+  // 4. Centroid GPS bounding box match
+  const centroid = INDIAN_STATE_CENTROIDS.find(c => c.state.toLowerCase() === sLower);
+  if (centroid) {
+    const lat = parseFloat(h.latitude);
+    const lng = parseFloat(h.longitude);
+    if (!isNaN(lat) && !isNaN(lng)) {
+      if (lat >= centroid.minLat && lat <= centroid.maxLat && lng >= centroid.minLng && lng <= centroid.maxLng) {
+        return true;
+      }
+    }
+  }
 
   return false;
 }
@@ -664,14 +723,24 @@ function matchesHazardCity(h, targetCity) {
   const hCity = (h.city || '').toLowerCase().trim();
   const hAddr = (h.address || '').toLowerCase().trim();
   const hRoad = (h.road_name || '').toLowerCase().trim();
+  const hTitle = (h.title || '').toLowerCase().trim();
 
-  return (
-    hCity === cLower ||
-    hCity.includes(cLower) ||
-    cLower.includes(hCity) ||
-    hAddr.includes(cLower) ||
-    hRoad.includes(cLower)
-  );
+  if (hCity === cLower || hCity.includes(cLower) || cLower.includes(hCity)) return true;
+  if (hAddr.includes(cLower) || hRoad.includes(cLower) || hTitle.includes(cLower)) return true;
+
+  // 3. Coordinate proximity match (within ~40km)
+  if (CITY_COORDINATES[targetCity]) {
+    const [cLat, cLng] = CITY_COORDINATES[targetCity];
+    const lat = parseFloat(h.latitude);
+    const lng = parseFloat(h.longitude);
+    if (!isNaN(lat) && !isNaN(lng)) {
+      if (Math.hypot(lat - cLat, lng - cLng) < 0.45) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 function getFilteredHazards() {
@@ -753,28 +822,28 @@ function updateKpiBar(analytics) {
 let currentGoogleMapLayer = null;
 const GOOGLE_MAP_TILE_LAYERS = {
   roadmap: {
-    url: 'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
-    attribution: 'Map data &copy; <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">Google Maps</a>',
-    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: ['a', 'b', 'c', 'd'],
     maxZoom: 20
   },
   satellite: {
-    url: 'https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',
-    attribution: 'Imagery &copy; <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">Google</a>',
-    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-    maxZoom: 20
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community',
+    subdomains: ['a', 'b', 'c', 'd'],
+    maxZoom: 19
   },
   terrain: {
-    url: 'https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',
-    attribution: 'Map data &copy; <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">Google Maps</a>',
-    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-    maxZoom: 20
+    url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    subdomains: ['a', 'b', 'c'],
+    maxZoom: 19
   },
   traffic: {
-    url: 'https://{s}.google.com/vt/lyrs=m,traffic&x={x}&y={y}&z={z}',
-    attribution: 'Traffic data &copy; <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">Google Maps</a>',
-    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-    maxZoom: 20
+    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    subdomains: ['a', 'b', 'c'],
+    maxZoom: 19
   }
 };
 
