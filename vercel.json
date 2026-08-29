@@ -1,4 +1,11 @@
 {
+  "functions": {
+    "api/index.py": {
+      "includeFiles": "frontend/**,backend/**,config.yaml,database/**",
+      "maxDuration": 30,
+      "memory": 1024
+    }
+  },
   "rewrites": [
     {
       "source": "/(.*)",

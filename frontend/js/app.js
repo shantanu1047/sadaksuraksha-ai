@@ -1190,37 +1190,126 @@ function initPatrolMap() {
   patrolCarMarker = L.marker([12.9340, 77.6080], { icon: carIcon }).addTo(patrolMap);
 }
 
-function togglePatrolSimulation() {
-  const btn = document.getElementById('btn-toggle-patrol');
+let patrolFallbackTimer = null;
+let patrolStep = 0;
 
-  if (isPatrolRunning) {
-    if (patrolWs) patrolWs.close();
-    isPatrolRunning = false;
-    btn.textContent = 'Start Simulation';
-    btn.className = 'px-3 py-1 rounded-lg text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-black transition-all';
-  } else {
-    startPatrolSimulation();
-    isPatrolRunning = true;
-    btn.textContent = 'Stop Simulation';
-    btn.className = 'px-3 py-1 rounded-lg text-xs font-bold bg-red-500 hover:bg-red-400 text-white transition-all';
+const fallbackWaypoints = [
+  { lat: 12.9340, lng: 77.6080, road: "Hosur Road Medical Corridor", state: "Karnataka", city: "Bengaluru", speed: 42.0, bump: true, hazard_id: "HAZ-001" },
+  { lat: 12.9360, lng: 77.6910, road: "Outer Ring Road IT Corridor", state: "Karnataka", city: "Bengaluru", speed: 45.0, bump: true, hazard_id: "HAZ-006" },
+  { lat: 13.0350, lng: 77.5970, road: "NH-44 Airport Expressway", state: "Karnataka", city: "Bengaluru", speed: 75.0, bump: true, hazard_id: "HAZ-002" },
+  { lat: 19.1136, lng: 72.8697, road: "Western Express Highway", state: "Maharashtra", city: "Mumbai", speed: 55.0, bump: true, hazard_id: "HAZ-011" },
+  { lat: 18.7500, lng: 73.3700, road: "Mumbai-Pune Expressway", state: "Maharashtra", city: "Pune", speed: 80.0, bump: true, hazard_id: "HAZ-012" },
+  { lat: 28.5672, lng: 77.2100, road: "Ring Road AIIMS Emergency Corridor", state: "Delhi NCR", city: "New Delhi", speed: 48.0, bump: true, hazard_id: "HAZ-014" },
+  { lat: 28.4900, lng: 77.0850, road: "Delhi-Gurugram Expressway NH-48", state: "Delhi NCR", city: "Gurugram", speed: 70.0, bump: true, hazard_id: "HAZ-015" },
+  { lat: 12.9850, lng: 80.2450, road: "Rajiv Gandhi Salai OMR IT Expressway", state: "Tamil Nadu", city: "Chennai", speed: 52.0, bump: true, hazard_id: "HAZ-017" },
+  { lat: 17.4500, lng: 78.3800, road: "HITEC City Cyber Towers Corridor", state: "Telangana", city: "Hyderabad", speed: 38.0, bump: true, hazard_id: "HAZ-020" }
+];
+
+function runLocalPatrolStep() {
+  if (!isPatrolRunning) return;
+  const wp = fallbackWaypoints[patrolStep % fallbackWaypoints.length];
+  const bump = wp.bump;
+  const acc_z = bump ? (2.65 + (patrolStep % 3) * 0.15) : (1.0 + 0.04 * ((patrolStep % 3) - 1));
+  const jerk = bump ? 13.5 : 0.5;
+  const db = bump ? 76.0 : 41.0;
+  const iri = bump ? 7.5 : 2.1;
+
+  let detected_h = null;
+  if (wp.hazard_id && Array.isArray(allHazards)) {
+    detected_h = allHazards.find(h => h.id === wp.hazard_id) || null;
   }
+
+  const frame = {
+    step_id: patrolStep,
+    timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+    latitude: wp.lat,
+    longitude: wp.lng,
+    speed_kmh: wp.speed,
+    acc_x: 0.03 * ((patrolStep % 2) - 0.5),
+    acc_y: 0.02 * ((patrolStep % 4) - 1.5),
+    acc_z: Number(acc_z.toFixed(3)),
+    vertical_jerk: Number(jerk.toFixed(2)),
+    iri_roughness: Number(iri.toFixed(2)),
+    acoustic_db: Number(db.toFixed(1)),
+    hazard_detected: detected_h,
+    active_road_name: wp.road,
+    state: wp.state,
+    city: wp.city
+  };
+
+  updatePatrolHud(frame);
+  patrolStep++;
 }
 
 function startPatrolSimulation() {
   const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
   const wsUrl = `${protocol}//${window.location.host}/ws/patrol-simulation`;
-  
-  patrolWs = new WebSocket(wsUrl);
+  let wsActive = false;
 
-  patrolWs.onmessage = (event) => {
-    const frame = JSON.parse(event.data);
-    updatePatrolHud(frame);
-  };
+  try {
+    patrolWs = new WebSocket(wsUrl);
 
-  patrolWs.onclose = () => {
+    patrolWs.onopen = () => {
+      wsActive = true;
+    };
+
+    patrolWs.onmessage = (event) => {
+      try {
+        const frame = JSON.parse(event.data);
+        updatePatrolHud(frame);
+      } catch (e) {}
+    };
+
+    patrolWs.onerror = () => {
+      // Serverless (Vercel) does not support persistent WebSockets - switch to client simulation
+      if (!patrolFallbackTimer && isPatrolRunning) {
+        runLocalPatrolStep();
+        patrolFallbackTimer = setInterval(runLocalPatrolStep, 1800);
+      }
+    };
+
+    patrolWs.onclose = () => {
+      if (!wsActive && isPatrolRunning && !patrolFallbackTimer) {
+        // Fallback for immediate closure on platforms like Vercel
+        runLocalPatrolStep();
+        patrolFallbackTimer = setInterval(runLocalPatrolStep, 1800);
+      } else if (wsActive && isPatrolRunning) {
+        isPatrolRunning = false;
+        const btn = document.getElementById('btn-toggle-patrol');
+        if (btn) {
+          btn.textContent = 'Start Simulation';
+          btn.className = 'px-3 py-1 rounded-lg text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-black transition-all';
+        }
+      }
+    };
+  } catch (err) {
+    if (!patrolFallbackTimer && isPatrolRunning) {
+      runLocalPatrolStep();
+      patrolFallbackTimer = setInterval(runLocalPatrolStep, 1800);
+    }
+  }
+}
+
+function togglePatrolSimulation() {
+  const btn = document.getElementById('btn-toggle-patrol');
+
+  if (isPatrolRunning) {
+    if (patrolWs) {
+      try { patrolWs.close(); } catch(e) {}
+    }
+    if (patrolFallbackTimer) {
+      clearInterval(patrolFallbackTimer);
+      patrolFallbackTimer = null;
+    }
     isPatrolRunning = false;
-    document.getElementById('btn-toggle-patrol').textContent = 'Start Simulation';
-  };
+    btn.textContent = 'Start Simulation';
+    btn.className = 'px-3 py-1 rounded-lg text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-black transition-all';
+  } else {
+    isPatrolRunning = true;
+    startPatrolSimulation();
+    btn.textContent = 'Stop Simulation';
+    btn.className = 'px-3 py-1 rounded-lg text-xs font-bold bg-red-500 hover:bg-red-400 text-white transition-all';
+  }
 }
 
 function updatePatrolHud(frame) {

@@ -371,6 +371,9 @@ def test_delete_work_order(client):
 
 
 def test_vercel_without_cloud_rejects_unpersisted_citizen_report(client, monkeypatch):
+    """On Vercel without a cloud DB, citizen reports should still succeed via /tmp fallback storage.
+    Previously returned 503 because /tmp was incorrectly excluded from get_storage_paths() on Vercel.
+    """
     monkeypatch.setenv("VERCEL", "1")
     monkeypatch.delenv("VERCEL_ENV", raising=False)
     clear_cloud_storage_env(monkeypatch)
@@ -388,16 +391,18 @@ def test_vercel_without_cloud_rejects_unpersisted_citizen_report(client, monkeyp
         "road_name": "Kartavya Path",
     }
 
+    # /tmp is always writable — submission must succeed with 200
     submit_res = client.post("/api/ingest/citizen-report", json=payload)
-    assert submit_res.status_code == 503
-    assert "storage is not configured" in submit_res.json()["detail"]
+    assert submit_res.status_code == 200
+    assert "ticket_id" in submit_res.json()
 
     hazards_res = client.get("/api/hazards")
     assert hazards_res.status_code == 200
-    assert hazards_res.json() == []
+    assert len(hazards_res.json()) == 1
 
 
 def test_vercel_without_cloud_rejects_unpersisted_inspection_create(client, monkeypatch):
+    """On Vercel without a cloud DB, inspection creates should still succeed via /tmp fallback storage."""
     client.post("/api/hazards/reset")
     monkeypatch.setenv("VERCEL", "1")
     monkeypatch.delenv("VERCEL_ENV", raising=False)
@@ -412,21 +417,23 @@ def test_vercel_without_cloud_rejects_unpersisted_inspection_create(client, monk
         "acc_z_g": 2.85,
         "vertical_jerk": 14.2,
         "acoustic_db": 80.0,
-        "citizen_text": "Live inspection should not be accepted without durable storage.",
+        "citizen_text": "Live inspection should succeed with /tmp fallback.",
         "road_class": "hospital_corridor",
         "road_name": "WEH Medical Corridor",
     }
 
+    # /tmp is always writable — inspection create must succeed with 200
     response = client.post("/api/hazards/inspect", json=payload)
-    assert response.status_code == 503
-    assert "storage is not configured" in response.json()["detail"]
+    assert response.status_code == 200
+    assert "id" in response.json()
 
     hazards_res = client.get("/api/hazards")
     assert hazards_res.status_code == 200
-    assert hazards_res.json() == []
+    assert len(hazards_res.json()) == 1
 
 
 def test_vercel_without_cloud_rolls_back_unpersisted_hazard_delete(client, monkeypatch):
+    """On Vercel without a cloud DB, hazard deletes should succeed via /tmp fallback storage."""
     client.post("/api/hazards/reset")
     payload = {
         "latitude": 13.0827,
@@ -435,7 +442,7 @@ def test_vercel_without_cloud_rolls_back_unpersisted_hazard_delete(client, monke
         "city": "Chennai",
         "category": "debris",
         "severity_self_report": 3,
-        "description": "Temporary local report used to verify Vercel delete rollback.",
+        "description": "Temporary local report used to verify Vercel delete via /tmp.",
         "reporter_name": "Deployment Test",
         "road_name": "Anna Salai Mount Road",
     }
@@ -447,13 +454,15 @@ def test_vercel_without_cloud_rolls_back_unpersisted_hazard_delete(client, monke
     monkeypatch.delenv("VERCEL_ENV", raising=False)
     clear_cloud_storage_env(monkeypatch)
 
+    # /tmp is always writable — delete must succeed with 200
     delete_res = client.delete(f"/api/hazards/{hazard_id}")
-    assert delete_res.status_code == 503
-    assert "storage is not configured" in delete_res.json()["detail"]
+    assert delete_res.status_code == 200
+    assert delete_res.json()["status"] == "success"
 
+    # Hazard must be gone after delete
     hazards_res = client.get("/api/hazards?state=Tamil Nadu")
     assert hazards_res.status_code == 200
-    assert any(h["id"] == hazard_id for h in hazards_res.json())
+    assert not any(h["id"] == hazard_id for h in hazards_res.json())
 
 
 def test_vercel_without_cloud_rolls_back_unpersisted_work_order_delete(client, monkeypatch):

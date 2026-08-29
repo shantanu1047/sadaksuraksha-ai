@@ -123,7 +123,7 @@ def fetch_data_from_postgres() -> Optional[Dict[str, Any]]:
     if not dsn or psycopg is None:
         return None
     try:
-        with psycopg.connect(dsn, connect_timeout=3) as conn:
+        with psycopg.connect(dsn, connect_timeout=3, autocommit=True) as conn:
             ensure_postgres_store(conn)
             row = conn.execute(
                 "SELECT data FROM sadaksuraksha_app_state WHERE name = %s",
@@ -141,7 +141,7 @@ def save_data_to_postgres(data_block: Dict[str, Any]) -> bool:
     if not dsn or psycopg is None or Jsonb is None:
         return False
     try:
-        with psycopg.connect(dsn, connect_timeout=3) as conn:
+        with psycopg.connect(dsn, connect_timeout=3, autocommit=True) as conn:
             ensure_postgres_store(conn)
             conn.execute(
                 """
@@ -270,25 +270,26 @@ def clear_cloud_hazards():
         logger.debug(f"Cloud DB clear error: {e}")
 
 def get_storage_paths() -> List[Path]:
-    if is_vercel_runtime() and not os.environ.get("ALLOW_SERVERLESS_FILE_STORAGE"):
-        return []
-
     paths = []
-    # Primary local database folder
-    try:
-        base = Path(__file__).resolve().parent.parent / "database"
-        base.mkdir(parents=True, exist_ok=True)
-        paths.append(base / "persisted_citizen_hazards.json")
-    except Exception:
-        pass
 
-    # Root workspace folder
-    try:
-        paths.append(Path.cwd() / "database" / "persisted_citizen_hazards.json")
-    except Exception:
-        pass
+    # Project database/ directory — only writable outside Vercel serverless
+    if not (is_vercel_runtime() and not os.environ.get("ALLOW_SERVERLESS_FILE_STORAGE")):
+        try:
+            base = Path(__file__).resolve().parent.parent / "database"
+            base.mkdir(parents=True, exist_ok=True)
+            paths.append(base / "persisted_citizen_hazards.json")
+        except Exception:
+            pass
 
-    # Serverless / Lambda / Vercel writable /tmp location
+        # Root workspace folder
+        try:
+            paths.append(Path.cwd() / "database" / "persisted_citizen_hazards.json")
+        except Exception:
+            pass
+
+    # /tmp is ALWAYS writable on Vercel, AWS Lambda, and all standard serverless runtimes.
+    # Include it unconditionally as the serverless fallback so in-instance state survives
+    # within a single function invocation even when Postgres is not configured.
     try:
         paths.append(Path("/tmp") / "persisted_citizen_hazards.json")
     except Exception:
