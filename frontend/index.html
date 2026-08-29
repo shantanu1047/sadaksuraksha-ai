@@ -419,98 +419,78 @@
               </div>
             </button>
 
-            <!-- SECTION 2: FUTURE ENTERPRISE ROADMAP MODULES -->
+            <!-- SECTION 2: ENGINEERING & ANALYTICS MODULES -->
             <div class="my-1 border-t border-slate-200 pt-1"></div>
             <div class="flex items-center justify-between px-3 py-1.5 bg-slate-100 rounded-md border border-slate-200">
               <span class="text-[10px] font-black uppercase tracking-wider text-slate-700 font-mono flex items-center gap-1.5">
-                <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-500"></i> <span>Future Enterprise Modules</span>
+                <i data-lucide="layers" class="w-3.5 h-3.5 text-slate-500"></i> <span>Engineering & Analytics</span>
               </span>
-              <span class="text-[9px] bg-slate-200 text-slate-700 font-mono px-2 py-0.5 rounded-sm font-bold">Roadmap</span>
+              <span class="text-[9px] bg-slate-200 text-slate-700 font-mono px-2 py-0.5 rounded-sm font-bold">Active</span>
             </div>
 
-            <!-- 5. AI Road Forecast (Future) -->
-            <button type="button" onclick="showFutureModuleModal('forecast'); closeAllDropdowns();" class="dropdown-nav-item w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all text-left group cursor-pointer">
+            <!-- 5. AI Road Forecast -->
+            <button type="button" onclick="selectNavTab('forecast', 'AI Road Forecast')" class="dropdown-nav-item w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all text-left group cursor-pointer">
               <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-md bg-purple-50 border border-purple-200 flex items-center justify-center shrink-0">
                   <i data-lucide="trending-up" class="w-4 h-4 text-purple-700"></i>
                 </div>
                 <div>
-                  <div class="flex items-center gap-1.5">
-                    <p data-i18n="nav_forecast" class="text-xs font-bold text-slate-800 leading-none">AI Road Forecast</p>
-                    <span class="text-[9px] font-mono font-bold text-purple-800 bg-purple-50 border border-purple-200 px-1.5 py-0.2 rounded">Planned</span>
-                  </div>
+                  <p data-i18n="nav_forecast" class="text-xs font-bold text-slate-800 leading-none">AI Road Forecast</p>
                   <p data-i18n="nav_forecast_desc" class="text-[10.5px] text-slate-500 font-medium mt-1">Predictive 7-day failure risk & weather</p>
                 </div>
               </div>
-              <i data-lucide="info" class="w-3.5 h-3.5 text-slate-400 group-hover:text-purple-600"></i>
             </button>
 
-            <!-- 6. Resource Intelligence (Future) -->
-            <button type="button" onclick="showFutureModuleModal('resource-intel'); closeAllDropdowns();" class="dropdown-nav-item w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all text-left group cursor-pointer">
+            <!-- 6. Resource Intelligence -->
+            <button type="button" onclick="selectNavTab('resource-intel', 'Resource Intelligence')" class="dropdown-nav-item w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all text-left group cursor-pointer">
               <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-md bg-cyan-50 border border-cyan-200 flex items-center justify-center shrink-0">
                   <i data-lucide="cpu" class="w-4 h-4 text-cyan-800"></i>
                 </div>
                 <div>
-                  <div class="flex items-center gap-1.5">
-                    <p data-i18n="nav_resource" class="text-xs font-bold text-slate-800 leading-none">Resource Intelligence</p>
-                    <span class="text-[9px] font-mono font-bold text-cyan-800 bg-cyan-50 border border-cyan-200 px-1.5 py-0.2 rounded">Planned</span>
-                  </div>
+                  <p data-i18n="nav_resource" class="text-xs font-bold text-slate-800 leading-none">Resource Intelligence</p>
                   <p data-i18n="nav_resource_desc" class="text-[10.5px] text-slate-500 font-medium mt-1">Auto-dispatch PWD repair units & fleet</p>
                 </div>
               </div>
-              <i data-lucide="info" class="w-3.5 h-3.5 text-slate-400 group-hover:text-cyan-600"></i>
             </button>
 
-            <!-- 7. Gemini AI Assistant (Future) -->
-            <button type="button" onclick="showFutureModuleModal('copilot'); closeAllDropdowns();" class="dropdown-nav-item w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all text-left group cursor-pointer">
+            <!-- 7. Gemini AI Assistant -->
+            <button type="button" onclick="selectNavTab('copilot', 'NHAI AI Assistant')" class="dropdown-nav-item w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all text-left group cursor-pointer">
               <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-md bg-purple-50 border border-purple-200 flex items-center justify-center shrink-0">
                   <i data-lucide="sparkles" class="w-4 h-4 text-purple-800"></i>
                 </div>
                 <div>
-                  <div class="flex items-center gap-1.5">
-                    <p data-i18n="nav_copilot" class="text-xs font-bold text-slate-800 leading-none">NHAI AI Assistant</p>
-                    <span class="text-[9px] font-mono font-bold text-purple-800 bg-purple-50 border border-purple-200 px-1.5 py-0.2 rounded">Planned</span>
-                  </div>
+                  <p data-i18n="nav_copilot" class="text-xs font-bold text-slate-800 leading-none">NHAI AI Assistant</p>
                   <p data-i18n="nav_copilot_desc" class="text-[10.5px] text-slate-500 font-medium mt-1">Google Gemini 2.5 Flash engineering chat</p>
                 </div>
               </div>
-              <i data-lucide="info" class="w-3.5 h-3.5 text-slate-400 group-hover:text-purple-600"></i>
             </button>
 
-            <!-- 8. Audit & Compliance (Future) -->
-            <button type="button" onclick="showFutureModuleModal('analytics'); closeAllDropdowns();" class="dropdown-nav-item w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all text-left group cursor-pointer">
+            <!-- 8. Audit & Compliance -->
+            <button type="button" onclick="selectNavTab('analytics', 'Audit & Compliance')" class="dropdown-nav-item w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all text-left group cursor-pointer">
               <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-md bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0">
                   <i data-lucide="shield-check" class="w-4 h-4 text-emerald-800"></i>
                 </div>
                 <div>
-                  <div class="flex items-center gap-1.5">
-                    <p data-i18n="nav_audit" class="text-xs font-bold text-slate-800 leading-none">Audit & Compliance</p>
-                    <span class="text-[9px] font-mono font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-1.5 py-0.2 rounded">Planned</span>
-                  </div>
+                  <p data-i18n="nav_audit" class="text-xs font-bold text-slate-800 leading-none">Audit & Compliance</p>
                   <p data-i18n="nav_audit_desc" class="text-[10.5px] text-slate-500 font-medium mt-1">IRC:82 compliance & budget analytics</p>
                 </div>
               </div>
-              <i data-lucide="info" class="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-600"></i>
             </button>
 
-            <!-- 9. Multi-Source Ingestion (Future) -->
-            <button type="button" onclick="showFutureModuleModal('ingestion'); closeAllDropdowns();" class="dropdown-nav-item w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all text-left group cursor-pointer">
+            <!-- 9. Multi-Source Ingestion -->
+            <button type="button" onclick="selectNavTab('ingestion', 'Multi-Source Ingestion')" class="dropdown-nav-item w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all text-left group cursor-pointer">
               <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-md bg-orange-50 border border-orange-200 flex items-center justify-center shrink-0">
                   <i data-lucide="radio-tower" class="w-4 h-4 text-orange-700"></i>
                 </div>
                 <div>
-                  <div class="flex items-center gap-1.5">
-                    <p data-i18n="nav_live_data" class="text-xs font-bold text-slate-800 leading-none">Multi-Source Ingestion</p>
-                    <span class="text-[9px] font-mono font-bold text-orange-800 bg-orange-50 border border-orange-200 px-1.5 py-0.2 rounded">Planned</span>
-                  </div>
+                  <p data-i18n="nav_live_data" class="text-xs font-bold text-slate-800 leading-none">Multi-Source Ingestion</p>
                   <p data-i18n="nav_live_data_desc" class="text-[10.5px] text-slate-500 font-medium mt-1">CCTV, Google Maps & Citizen 311</p>
                 </div>
               </div>
-              <i data-lucide="info" class="w-3.5 h-3.5 text-slate-400 group-hover:text-orange-600"></i>
             </button>
           </div>
         </div>
@@ -2841,7 +2821,7 @@
   </div>
 
   <script src="/static/js/i18n.js?v=3.3.0"></script>
-  <script src="/static/js/app.js?v=3.3.0"></script>
+  <script src="/static/js/app.js?v=3.3.1-nav-active-fix"></script>
 </body>
 </html>
 
