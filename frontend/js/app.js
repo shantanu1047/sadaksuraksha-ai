@@ -1066,11 +1066,14 @@ function renderStudioCanvasOverlay(rawHazard) {
   ctx.beginPath(); ctx.moveTo(x, y + h - corner); ctx.lineTo(x, y + h); ctx.lineTo(x + corner, y + h); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(x + w - corner, y + h); ctx.lineTo(x + w, y + h); ctx.lineTo(x + w, y + h - corner); ctx.stroke();
 
-  ctx.fillStyle = hazard.fusion?.is_false_positive ? 'rgba(51, 65, 85, 0.9)' : 'rgba(15, 23, 42, 0.9)';
-  ctx.fillRect(x, y - 24, 190, 22);
+  const labelText = `${bbox.label} (${(det.confidence * 100).toFixed(0)}%)`;
   ctx.font = 'bold 11px JetBrains Mono, monospace';
+  const textWidth = ctx.measureText(labelText).width;
+
+  ctx.fillStyle = hazard.fusion?.is_false_positive ? 'rgba(51, 65, 85, 0.95)' : 'rgba(15, 23, 42, 0.95)';
+  ctx.fillRect(x, Math.max(0, y - 24), textWidth + 16, 22);
   ctx.fillStyle = hazard.fusion?.is_false_positive ? '#cbd5e1' : '#00f0ff';
-  ctx.fillText(`${bbox.label} (${(det.confidence * 100).toFixed(0)}%)`, x + 6, y - 8);
+  ctx.fillText(labelText, x + 8, Math.max(14, y - 8));
 }
 
 function updateStudioTelemetry(rawHazard) {
@@ -1125,6 +1128,9 @@ function handleStudioFileUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
 
+  const overlayText = document.getElementById('studio-overlay-text');
+  if (overlayText) overlayText.textContent = 'SmartCity YOLO Running Inference...';
+
   const reader = new FileReader();
   reader.onload = async (e) => {
     const b64 = e.target.result;
@@ -1137,25 +1143,45 @@ function handleStudioFileUpload(event) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           image_base64: b64,
-          latitude: 12.9340,
-          longitude: 77.6080,
-          state: currentStateFilter !== 'all' ? currentStateFilter : 'Karnataka',
-          city: 'Bengaluru',
+          latitude: 28.6139,
+          longitude: 77.2090,
+          state: currentStateFilter !== 'all' ? currentStateFilter : 'Delhi NCR',
+          city: 'New Delhi',
           acc_z_g: 2.3,
           vertical_jerk: 10.5,
           acoustic_db: 70.0,
           road_class: 'arterial',
-          road_name: 'State Highway Sector'
+          road_name: 'SmartCity AI Camera Feed'
         })
       });
 
       const newHazard = await res.json();
       allHazards.unshift(newHazard);
-      renderStudioCanvasOverlay(newHazard);
+
+      // Render overlay once image element has layout
+      const doRender = () => {
+        renderStudioCanvasOverlay(newHazard);
+        if (overlayText) {
+          const det = newHazard.visual_detections?.[0];
+          if (det) {
+            overlayText.textContent = `SmartCity YOLO: ${det.bbox.label} (${(det.confidence * 100).toFixed(0)}%)`;
+          } else {
+            overlayText.textContent = 'SmartCity YOLO: Surface Clear (0 Hazards)';
+          }
+        }
+      };
+
+      if (imgElem.complete) {
+        doRender();
+      } else {
+        imgElem.onload = doRender;
+      }
+
       updateStudioTelemetry(newHazard);
       refreshAllData();
     } catch (err) {
       console.error('Inspection failed:', err);
+      if (overlayText) overlayText.textContent = 'Inspection Failed';
     }
   };
   reader.readAsDataURL(file);

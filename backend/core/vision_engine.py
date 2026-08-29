@@ -296,12 +296,13 @@ class VisionEngine:
                 depth_cm = round(1.5 + risk_score * 0.02, 1)
                 area_sqm = round(bbox_area_frac * 2.0, 2)
 
+            raw_label = det.get("hazard_type") or ht.value.replace("_", " ").title()
             bbox = BoundingBox(
                 xmin=round(xmin, 3),
                 ymin=round(ymin, 3),
                 xmax=round(xmax, 3),
                 ymax=round(ymax, 3),
-                label=ht.value.replace("_", " ").title(),
+                label=str(raw_label).title(),
                 confidence=round(conf, 2),
             )
             polygon = self._generate_polygon(xmin, ymin, xmax, ymax)
