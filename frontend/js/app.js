@@ -1038,20 +1038,41 @@ function renderStudioCanvasOverlay(rawHazard) {
     overlayBadge.textContent = `SmartCity YOLO: ${primaryDet.bbox?.label || 'Hazard'} (${((primaryDet.confidence || 0) * 100).toFixed(0)}%)`;
   }
 
+  // Calculate pixel-perfect rendered image rectangle (accounting for object-contain letterboxing)
+  const imgElem = document.getElementById('studio-image-display');
+  let renderX = 0, renderY = 0, renderW = canvas.width, renderH = canvas.height;
+
+  if (imgElem && imgElem.naturalWidth && imgElem.naturalHeight) {
+    const naturalRatio = imgElem.naturalWidth / imgElem.naturalHeight;
+    const clientRatio = canvas.width / canvas.height;
+
+    if (naturalRatio > clientRatio) {
+      renderW = canvas.width;
+      renderH = canvas.width / naturalRatio;
+      renderX = 0;
+      renderY = (canvas.height - renderH) / 2;
+    } else {
+      renderH = canvas.height;
+      renderW = canvas.height * naturalRatio;
+      renderY = 0;
+      renderX = (canvas.width - renderW) / 2;
+    }
+  }
+
   hazard.visual_detections.forEach(det => {
     const bbox = det.bbox;
     if (!bbox) return;
 
-    const x = bbox.xmin * canvas.width;
-    const y = bbox.ymin * canvas.height;
-    const w = (bbox.xmax - bbox.xmin) * canvas.width;
-    const h = (bbox.ymax - bbox.ymin) * canvas.height;
+    const x = renderX + bbox.xmin * renderW;
+    const y = renderY + bbox.ymin * renderH;
+    const w = (bbox.xmax - bbox.xmin) * renderW;
+    const h = (bbox.ymax - bbox.ymin) * renderH;
 
     if (det.segmentation_polygon) {
       ctx.beginPath();
       det.segmentation_polygon.forEach((pt, idx) => {
-        const px = pt[0] * canvas.width;
-        const py = pt[1] * canvas.height;
+        const px = renderX + pt[0] * renderW;
+        const py = renderY + pt[1] * renderH;
         if (idx === 0) ctx.moveTo(px, py);
         else ctx.lineTo(px, py);
       });
@@ -1082,9 +1103,9 @@ function renderStudioCanvasOverlay(rawHazard) {
     const textWidth = ctx.measureText(labelText).width;
 
     ctx.fillStyle = hazard.fusion?.is_false_positive ? 'rgba(51, 65, 85, 0.95)' : 'rgba(15, 23, 42, 0.95)';
-    ctx.fillRect(x, Math.max(0, y - 24), textWidth + 16, 22);
+    ctx.fillRect(x, Math.max(renderY, y - 24), textWidth + 16, 22);
     ctx.fillStyle = hazard.fusion?.is_false_positive ? '#cbd5e1' : '#00f0ff';
-    ctx.fillText(labelText, x + 8, Math.max(14, y - 8));
+    ctx.fillText(labelText, x + 8, Math.max(renderY + 14, y - 8));
   });
 }
 
