@@ -3896,6 +3896,7 @@ function dispatchRepairTeam(teamId) {
   alert(`Dispatched ${team.name} to ${team.recommended_assignment}!`);
 }
 window.dispatchRepairTeam = dispatchRepairTeam;
+window.dispatchTeam = dispatchRepairTeam;
 
 function dispatchRepairTask(taskId) {
   const task = PRIORITY_ALLOCATION_DATA.find(t => t.id === taskId);
@@ -3906,6 +3907,7 @@ function dispatchRepairTask(taskId) {
   alert(`Allocated ${task.recommended_crew} to ${task.hazard_title}!`);
 }
 window.dispatchRepairTask = dispatchRepairTask;
+window.allocateCrew = dispatchRepairTask;
 
 function runAutoAllocation() {
   const btn = document.querySelector('[onclick="runAutoAllocation()"]');
