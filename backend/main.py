@@ -209,7 +209,11 @@ def fetch_hazards_from_cloud() -> List[HazardIncident]:
 def save_hazards_to_cloud(hazards: List[HazardIncident], demo_seeded: Optional[bool] = None) -> bool:
     """Saves citizen hazard list atomically to Cloud Database if configured."""
     citizen_only = [inc.model_dump() for inc in hazards if _is_citizen_hazard(inc.id)]
-    data_block: Dict[str, Any] = {"hazards": citizen_only[:100]}
+    deleted_order_ids = globals().get("deleted_work_order_ids", set())
+    data_block: Dict[str, Any] = {
+        "hazards": citizen_only[:100],
+        "deleted_work_order_ids": sorted(str(wo_id).upper() for wo_id in deleted_order_ids),
+    }
     if demo_seeded is not None:
         data_block["demo_seeded"] = demo_seeded
 
@@ -241,7 +245,7 @@ def save_hazards_to_cloud(hazards: List[HazardIncident], demo_seeded: Optional[b
 
 def clear_cloud_hazards():
     """Wipes all hazard records from Cloud Database if configured."""
-    save_data_to_postgres({"hazards": [], "demo_seeded": False})
+    save_data_to_postgres({"hazards": [], "deleted_work_order_ids": [], "demo_seeded": False})
 
     endpoint = get_cloud_endpoint()
     if not endpoint:
@@ -249,7 +253,7 @@ def clear_cloud_hazards():
     try:
         payload = json.dumps({
             "name": "sadaksuraksha_hazards_store",
-            "data": {"hazards": [], "demo_seeded": False}
+            "data": {"hazards": [], "deleted_work_order_ids": [], "demo_seeded": False}
         }).encode("utf-8")
         req = urllib.request.Request(
             endpoint,
@@ -294,11 +298,30 @@ def get_storage_paths() -> List[Path]:
 
 
 def has_persistent_hazard_storage() -> bool:
-    return bool(get_postgres_dsn() or get_cloud_endpoint() or get_storage_paths())
+    return bool(postgres_available() or get_cloud_endpoint() or get_storage_paths())
 
 
 def durable_storage_required() -> bool:
     return is_vercel_runtime() and not os.environ.get("ALLOW_SERVERLESS_FILE_STORAGE")
+
+
+def storage_backend_name() -> str:
+    if postgres_available():
+        return "postgres"
+    if get_postgres_dsn():
+        return "postgres_unavailable"
+    if get_cloud_endpoint():
+        return "cloud_endpoint"
+    if get_storage_paths():
+        return "local_file"
+    return "none"
+
+
+def durable_storage_failure_detail(operation: str) -> str:
+    return (
+        f"{operation} storage is not configured or unavailable for Vercel. "
+        "Add a Postgres integration and set DATABASE_URL, or configure CLOUD_DB_URL."
+    )
 
 
 def demo_hazards_enabled() -> bool:
@@ -307,6 +330,18 @@ def demo_hazards_enabled() -> bool:
         return cloud_state["demo_seeded"]
 
     return os.environ.get("SEED_DEMO_DATA", "true").strip().lower() not in {"0", "false", "no", "off"}
+
+
+def load_deleted_work_order_ids_from_cloud() -> Set[str]:
+    data_block = cloud_data_block()
+    if not data_block:
+        return set()
+
+    raw_ids = data_block.get("deleted_work_order_ids", [])
+    if not isinstance(raw_ids, list):
+        return set()
+
+    return {str(order_id).upper() for order_id in raw_ids if str(order_id).strip()}
 
 
 def load_persisted_citizen_hazards() -> List[HazardIncident]:
@@ -367,7 +402,7 @@ def _is_citizen_hazard(hazard_id: str) -> bool:
     return bool(_CITIZEN_HAZARD_ID_RE.match(hazard_id))
 
 
-deleted_work_order_ids: Set[str] = set()
+deleted_work_order_ids: Set[str] = load_deleted_work_order_ids_from_cloud()
 
 def sync_hazards_from_disk():
     """Synchronises citizen-report hazards with persistent cloud & disk storage.
@@ -386,6 +421,8 @@ def sync_hazards_from_disk():
 
     persisted = load_persisted_citizen_hazards()
     persisted_ids = {p.id for p in persisted}
+    if postgres_available() or get_cloud_endpoint():
+        deleted_work_order_ids = load_deleted_work_order_ids_from_cloud()
 
     # Keep: demo hazards already in memory + citizen hazards still present on disk.
     # Demo hazards are NOT re-injected here — that only happens at server startup.
@@ -410,7 +447,10 @@ def sync_hazards_from_disk():
 # Initialise hazards_db with persisted citizen reports, plus demo benchmark data when enabled.
 hazards_db: List[HazardIncident] = load_persisted_citizen_hazards() + (get_demo_hazards() if demo_hazards_enabled() else [])
 roads_db: List[RoadSegment] = get_demo_road_segments()
-work_orders_db: List[WorkOrder] = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+work_orders_db: List[WorkOrder] = [
+    wo for wo in prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+    if wo.id.upper() not in deleted_work_order_ids
+]
 
 
 @app.get("/api/health")
@@ -421,6 +461,9 @@ async def health_check():
         "region": "All India (Multi-State)",
         "currency": "INR (₹)",
         "gemini_api_configured": bool(os.environ.get("GEMINI_API_KEY")),
+        "storage_backend": storage_backend_name(),
+        "persistent_storage_configured": has_persistent_hazard_storage(),
+        "durable_storage_required": durable_storage_required(),
         "active_incidents": len(hazards_db),
         "active_work_orders": len(work_orders_db),
     }
@@ -573,6 +616,7 @@ async def delete_hazard(hazard_id: str):
     """Deletes a specific hazard incident/report and updates persisted storage and work orders."""
     global hazards_db, work_orders_db
     sync_hazards_from_disk()
+    previous_hazards = list(hazards_db)
     target = None
     for h in hazards_db:
         if h.id.upper() == hazard_id.upper():
@@ -583,7 +627,16 @@ async def delete_hazard(hazard_id: str):
         raise HTTPException(status_code=404, detail=f"Hazard incident '{hazard_id}' not found.")
 
     hazards_db.remove(target)
-    save_persisted_citizen_hazards(hazards_db)
+    persisted = save_persisted_citizen_hazards(hazards_db)
+    if durable_storage_required() and not persisted:
+        hazards_db[:] = previous_hazards
+        work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+        logger.error("Hazard deletion rejected because durable storage is unavailable in Vercel.")
+        raise HTTPException(
+            status_code=503,
+            detail=durable_storage_failure_detail("Hazard deletion"),
+        )
+
     work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
 
     return {
@@ -597,6 +650,7 @@ async def delete_hazard(hazard_id: str):
 
 @app.post("/api/hazards/inspect", response_model=HazardIncident)
 async def inspect_multimodal(payload: MultimodalUploadRequest):
+    global work_orders_db
     detections = vision_engine.analyze_image(
         image_b64=payload.image_base64,
         image_url=payload.image_url,
@@ -701,8 +755,16 @@ async def inspect_multimodal(payload: MultimodalUploadRequest):
     )
 
     hazards_db.insert(0, incident)
-    save_persisted_citizen_hazards(hazards_db)
-    global work_orders_db
+    persisted = save_persisted_citizen_hazards(hazards_db)
+    if durable_storage_required() and not persisted:
+        hazards_db[:] = [h for h in hazards_db if h.id != incident.id]
+        work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+        logger.error("Inspection hazard creation rejected because durable storage is unavailable in Vercel.")
+        raise HTTPException(
+            status_code=503,
+            detail=durable_storage_failure_detail("Inspection hazard"),
+        )
+
     work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
 
     return incident
@@ -745,6 +807,8 @@ async def update_work_order_status(order_id: str, status: str = Form(...)):
 async def delete_work_order(order_id: str):
     """Deletes/cancels a specific PWD work order."""
     global work_orders_db, deleted_work_order_ids
+    previous_orders = list(work_orders_db)
+    previous_deleted_order_ids = set(deleted_work_order_ids)
     target = None
     for wo in work_orders_db:
         if wo.id.upper() == order_id.upper():
@@ -756,6 +820,16 @@ async def delete_work_order(order_id: str):
 
     deleted_work_order_ids.add(order_id.upper())
     work_orders_db.remove(target)
+    persisted = save_hazards_to_cloud(hazards_db)
+    if durable_storage_required() and not persisted:
+        deleted_work_order_ids = previous_deleted_order_ids
+        work_orders_db = previous_orders
+        logger.error("Work order deletion rejected because durable storage is unavailable in Vercel.")
+        raise HTTPException(
+            status_code=503,
+            detail=durable_storage_failure_detail("Work order deletion"),
+        )
+
     return {
         "status": "success",
         "message": f"Work order '{order_id}' successfully cancelled/deleted.",
@@ -832,12 +906,10 @@ async def ingest_citizen_report(req: CitizenSubmissionRequest):
     if durable_storage_required() and not persisted:
         hazards_db[:] = [h for h in hazards_db if h.id != incident.id]
         work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+        logger.error("Citizen report creation rejected because durable storage is unavailable in Vercel.")
         raise HTTPException(
             status_code=503,
-            detail=(
-                "Citizen complaint storage is not configured for Vercel. "
-                "Add a Postgres integration and set DATABASE_URL, or configure CLOUD_DB_URL."
-            ),
+            detail=durable_storage_failure_detail("Citizen complaint"),
         )
 
     work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)

@@ -14,6 +14,18 @@ def client():
     return c
 
 
+def clear_cloud_storage_env(monkeypatch):
+    for key in (
+        "DATABASE_URL",
+        "POSTGRES_URL",
+        "POSTGRES_PRISMA_URL",
+        "POSTGRES_URL_NON_POOLING",
+        "CLOUD_DB_URL",
+        "ALLOW_SERVERLESS_FILE_STORAGE",
+    ):
+        monkeypatch.delenv(key, raising=False)
+
+
 def test_health_check(client):
     response = client.get("/api/health")
     assert response.status_code == 200
@@ -21,6 +33,9 @@ def test_health_check(client):
     assert data["status"] == "healthy"
     assert data["service"] == "SadakSuraksha-AI"
     assert "INR" in data["currency"]
+    assert "storage_backend" in data
+    assert "persistent_storage_configured" in data
+    assert "durable_storage_required" in data
     assert data["active_incidents"] >= 0
 
 
@@ -355,11 +370,10 @@ def test_delete_work_order(client):
     assert not any(wo["id"] == target_wo_id for wo in wos_after)
 
 
-def test_vercel_without_cloud_keeps_new_citizen_report_in_memory(client, monkeypatch):
+def test_vercel_without_cloud_rejects_unpersisted_citizen_report(client, monkeypatch):
     monkeypatch.setenv("VERCEL", "1")
     monkeypatch.delenv("VERCEL_ENV", raising=False)
-    monkeypatch.delenv("CLOUD_DB_URL", raising=False)
-    monkeypatch.delenv("ALLOW_SERVERLESS_FILE_STORAGE", raising=False)
+    clear_cloud_storage_env(monkeypatch)
 
     client.post("/api/hazards/reset")
     payload = {
@@ -375,11 +389,85 @@ def test_vercel_without_cloud_keeps_new_citizen_report_in_memory(client, monkeyp
     }
 
     submit_res = client.post("/api/ingest/citizen-report", json=payload)
-    assert submit_res.status_code == 200
-    hazard_id = submit_res.json()["hazard_id"]
+    assert submit_res.status_code == 503
+    assert "storage is not configured" in submit_res.json()["detail"]
 
     hazards_res = client.get("/api/hazards")
+    assert hazards_res.status_code == 200
+    assert hazards_res.json() == []
+
+
+def test_vercel_without_cloud_rejects_unpersisted_inspection_create(client, monkeypatch):
+    client.post("/api/hazards/reset")
+    monkeypatch.setenv("VERCEL", "1")
+    monkeypatch.delenv("VERCEL_ENV", raising=False)
+    clear_cloud_storage_env(monkeypatch)
+
+    payload = {
+        "latitude": 19.1136,
+        "longitude": 72.8697,
+        "state": "Maharashtra",
+        "city": "Mumbai",
+        "speed_kmh": 45.0,
+        "acc_z_g": 2.85,
+        "vertical_jerk": 14.2,
+        "acoustic_db": 80.0,
+        "citizen_text": "Live inspection should not be accepted without durable storage.",
+        "road_class": "hospital_corridor",
+        "road_name": "WEH Medical Corridor",
+    }
+
+    response = client.post("/api/hazards/inspect", json=payload)
+    assert response.status_code == 503
+    assert "storage is not configured" in response.json()["detail"]
+
+    hazards_res = client.get("/api/hazards")
+    assert hazards_res.status_code == 200
+    assert hazards_res.json() == []
+
+
+def test_vercel_without_cloud_rolls_back_unpersisted_hazard_delete(client, monkeypatch):
+    client.post("/api/hazards/reset")
+    payload = {
+        "latitude": 13.0827,
+        "longitude": 80.2707,
+        "state": "Tamil Nadu",
+        "city": "Chennai",
+        "category": "debris",
+        "severity_self_report": 3,
+        "description": "Temporary local report used to verify Vercel delete rollback.",
+        "reporter_name": "Deployment Test",
+        "road_name": "Anna Salai Mount Road",
+    }
+    create_res = client.post("/api/ingest/citizen-report", json=payload)
+    assert create_res.status_code == 200
+    hazard_id = create_res.json()["hazard_id"]
+
+    monkeypatch.setenv("VERCEL", "1")
+    monkeypatch.delenv("VERCEL_ENV", raising=False)
+    clear_cloud_storage_env(monkeypatch)
+
+    delete_res = client.delete(f"/api/hazards/{hazard_id}")
+    assert delete_res.status_code == 503
+    assert "storage is not configured" in delete_res.json()["detail"]
+
+    hazards_res = client.get("/api/hazards?state=Tamil Nadu")
     assert hazards_res.status_code == 200
     assert any(h["id"] == hazard_id for h in hazards_res.json())
 
 
+def test_vercel_without_cloud_rolls_back_unpersisted_work_order_delete(client, monkeypatch):
+    work_orders = client.get("/api/work-orders").json()
+    assert len(work_orders) > 0
+    work_order_id = work_orders[0]["id"]
+
+    monkeypatch.setenv("VERCEL", "1")
+    monkeypatch.delenv("VERCEL_ENV", raising=False)
+    clear_cloud_storage_env(monkeypatch)
+
+    delete_res = client.delete(f"/api/work-orders/{work_order_id}")
+    assert delete_res.status_code == 503
+    assert "storage is not configured" in delete_res.json()["detail"]
+
+    work_orders_after = client.get("/api/work-orders").json()
+    assert any(wo["id"] == work_order_id for wo in work_orders_after)

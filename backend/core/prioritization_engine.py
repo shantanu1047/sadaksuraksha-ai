@@ -4,7 +4,9 @@ Calculates ASTM D6433 & IRC Pavement Condition Index (PCI) deducts, Pavement Vul
 Index (PVI), multi-criteria hazard risk scores, and spatial work-order batching in Indian Rupees (₹ INR).
 """
 
+import hashlib
 import math
+from datetime import date, timedelta
 from typing import List, Dict, Any, Optional
 from backend.models.schemas import (
     HazardType,
@@ -102,7 +104,18 @@ class PrioritizationEngine:
             + (fusion.fused_confidence * 100.0 * 0.25)
         )
 
-        final_risk = composite_raw * class_weight * traffic_factor * (env_factor ** 0.5)
+        context_multiplier = (
+            1.0
+            + ((class_weight - 1.0) * 0.35)
+            + ((traffic_factor - 1.0) * 0.30)
+            + (((env_factor ** 0.5) - 1.0) * 0.25)
+        )
+        final_risk = composite_raw * context_multiplier
+
+        # Preserve the 90-100 band for truly extreme cases instead of letting
+        # every important arterial or hospital defect saturate at 100.
+        if final_risk > 90.0:
+            final_risk = 90.0 + ((final_risk - 90.0) * 0.35)
 
         # False positive optical artifact penalty
         if fusion.is_false_positive:
@@ -125,6 +138,23 @@ class PrioritizationEngine:
             recommended_repair_technique=technique,
             estimated_crew_hours=hours,
         )
+
+    def assign_priority_ranks(self, hazards: List[HazardIncident]) -> None:
+        """
+        Mutates hazards so final_priority_rank reflects the current active backlog.
+        False positives are ranked after actionable hazards.
+        """
+        ranked = sorted(
+            hazards,
+            key=lambda h: (
+                h.fusion.is_false_positive,
+                -h.priority.raw_risk_score,
+                h.detected_at,
+                h.id,
+            ),
+        )
+        for idx, hazard in enumerate(ranked, 1):
+            hazard.priority.final_priority_rank = idx
 
     def _compute_pci_deduct(
         self,
@@ -217,6 +247,8 @@ class PrioritizationEngine:
         Spatial clustering algorithm grouping nearby high-priority defects
         into single crew work orders to minimize road closures and mobilization costs.
         """
+        self.assign_priority_ranks(hazards)
+
         actionable = [
             h for h in hazards
             if not h.fusion.is_false_positive and h.status.lower() in ["active", "pending", "unresolved", "in progress", "in_progress", "scheduled", "assigned"]
@@ -268,13 +300,18 @@ class PrioritizationEngine:
             max_risk = max(h.priority.raw_risk_score for h in cluster)
             if max_risk >= 80.0:
                 tier = "Tier 1 - Immediate Emergency (24h)"
+                schedule_date = date.today() + timedelta(days=1)
             elif max_risk >= 60.0:
                 tier = "Tier 2 - High Priority (48-72h)"
+                schedule_date = date.today() + timedelta(days=3)
             else:
                 tier = "Tier 3 - Scheduled Routine (7-14 Days)"
+                schedule_date = date.today() + timedelta(days=10)
 
             crew_name = crews[(order_idx - 1) % len(crews)]
             road_closure = any(h.priority.raw_risk_score > 70.0 for h in cluster)
+            cluster_key = "|".join(sorted(h.id.upper() for h in cluster))
+            cluster_digest = hashlib.sha1(cluster_key.encode("utf-8")).hexdigest()[:8].upper()
 
             summary_items = [
                 {
@@ -291,13 +328,13 @@ class PrioritizationEngine:
             ]
 
             wo = WorkOrder(
-                id=f"WO-2026-{order_idx:03d}",
+                id=f"WO-{date.today().year}-{cluster_digest}",
                 title=f"Cluster Dispatch: {cluster[0].road_name} Sector ({len(cluster)} Defects)",
                 state=cluster[0].state,
                 city=cluster[0].city,
                 target_hazard_ids=[h.id for h in cluster],
                 assigned_crew=crew_name,
-                scheduled_date="2026-08-27",
+                scheduled_date=schedule_date.isoformat(),
                 estimated_hours=round(total_hours, 1),
                 estimated_cost_usd=round(total_cost, 2),
                 priority_tier=tier,
