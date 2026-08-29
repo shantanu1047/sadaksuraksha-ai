@@ -692,7 +692,8 @@ function setGoogleMapLayer(layerType) {
   currentGoogleMapLayer = L.tileLayer(cfg.url, {
     attribution: cfg.attribution,
     maxZoom: cfg.maxZoom || 20,
-    subdomains: cfg.subdomains || ['mt0', 'mt1', 'mt2', 'mt3']
+    subdomains: cfg.subdomains || ['mt0', 'mt1', 'mt2', 'mt3'],
+    errorTileUrl: 'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png'
   }).addTo(gisMap);
 
   if (gisClusterLayer && gisMap.hasLayer(gisClusterLayer)) {
