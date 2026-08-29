@@ -836,6 +836,7 @@ function updateKpiBar(analytics) {
 // ==========================================
 // GIS MAP MODULE (GOOGLE MAPS INTEGRATION)
 // ==========================================
+let currentGoogleMapLayer = null;
 const GOOGLE_MAP_TILE_LAYERS = {
   roadmap: {
     url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
