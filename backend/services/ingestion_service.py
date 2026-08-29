@@ -48,9 +48,13 @@ class IngestionService:
         self.prioritization_engine = PrioritizationEngine()
         self.citizen_ticket_counter = 0
         self.citizen_tickets: Dict[str, CitizenTicketResponse] = {}
-        self.ingestion_streams: List[IngestionStreamStatus] = self._init_demo_streams()
+    def reset(self):
+        """Reset ingestion ticket cache and frame counters."""
+        self.citizen_tickets.clear()
+        self.citizen_ticket_counter = 0
         self.cctv_frame_counter = 0
         self.gmaps_anomaly_counter = 0
+        self.ingestion_streams = self._init_demo_streams()
 
     def _init_demo_streams(self) -> List[IngestionStreamStatus]:
         """Initialize demo ingestion stream statuses."""
@@ -141,7 +145,11 @@ class IngestionService:
         # Run vision engine if image provided
         detections = []
         if req.image_base64:
-            detections = self.vision_engine.analyze_image(image_b64=req.image_base64)
+            detections = self.vision_engine.analyze_image(
+                image_b64=req.image_base64,
+                latitude=req.latitude,
+                longitude=req.longitude,
+            )
         primary_det = detections[0] if detections else None
 
         ht = primary_det.hazard_type if primary_det else self._category_to_hazard_type(req.category)
@@ -284,6 +292,8 @@ class IngestionService:
         detections = self.vision_engine.analyze_image(
             image_b64=req.image_base64,
             image_url=req.image_url,
+            latitude=req.location_lat,
+            longitude=req.location_lng,
         )
         primary_det = detections[0] if detections else None
 

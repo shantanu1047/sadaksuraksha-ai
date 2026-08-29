@@ -9,6 +9,7 @@ import json
 import asyncio
 import logging
 import uuid
+import urllib.request
 from datetime import datetime
 from typing import List, Optional, Dict, Any
 from pathlib import Path
@@ -215,8 +216,13 @@ def load_persisted_citizen_hazards() -> List[HazardIncident]:
     return list(loaded_map.values())
 
 
+demo_hazards_cache: List[HazardIncident] = get_demo_hazards()
+DEMO_HAZARD_IDS = {h.id for h in demo_hazards_cache}
+roads_db: List[RoadSegment] = get_demo_road_segments()
+
 def save_persisted_citizen_hazards(incidents: List[HazardIncident]):
-    citizen_only = [inc.model_dump() for inc in incidents if inc.id.startswith("HAZ-")]
+    """Persist only genuine citizen / live ingested reports (excluding baseline demo hazards)."""
+    citizen_only = [inc.model_dump() for inc in incidents if inc.id not in DEMO_HAZARD_IDS]
     citizen_only = citizen_only[:200]
     payload_str = json.dumps(citizen_only, indent=2, default=str)
     
@@ -230,27 +236,29 @@ def save_persisted_citizen_hazards(incidents: List[HazardIncident]):
             logger.debug(f"Could not persist hazard to {p}: {e}")
 
     # 2. Save atomically to Cloud Database
-    save_hazards_to_cloud(incidents)
+    save_hazards_to_cloud([inc for inc in incidents if inc.id not in DEMO_HAZARD_IDS])
 
 
 def sync_hazards_from_disk():
-    """Ensures in-memory hazards_db and work_orders_db are synchronized with persistent cloud & disk storage."""
+    """Ensures in-memory hazards_db and work_orders_db are synchronized with both baseline 16-state hazards and persistent storage."""
     global hazards_db, work_orders_db
     persisted = load_persisted_citizen_hazards()
-    persisted_ids = {p.id for p in persisted}
-    # Synchronize in-memory DB with disk
-    hazards_db[:] = [h for h in hazards_db if h.id in persisted_ids]
-    existing_ids = {h.id for h in hazards_db}
+    
+    # Combined dictionary: baseline demo hazards + persisted citizen hazards (citizen reports appear first)
+    combined_map: Dict[str, HazardIncident] = {}
     for p in persisted:
-        if p.id not in existing_ids:
-            hazards_db.insert(0, p)
-            existing_ids.add(p.id)
+        if p.id not in DEMO_HAZARD_IDS:
+            combined_map[p.id] = p
+    for h in demo_hazards_cache:
+        if h.id not in combined_map:
+            combined_map[h.id] = h
+        
+    hazards_db[:] = list(combined_map.values())
     work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
 
 
-hazards_db: List[HazardIncident] = load_persisted_citizen_hazards()
-roads_db: List[RoadSegment] = get_demo_road_segments()
-work_orders_db: List[WorkOrder] = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+hazards_db: List[HazardIncident] = []
+sync_hazards_from_disk()
 
 
 @app.get("/api/health")
@@ -308,7 +316,7 @@ async def set_api_key(payload: Dict[str, Any]):
 @app.post("/api/hazards/reset")
 @app.delete("/api/hazards/citizen")
 async def reset_citizen_hazards():
-    """Clear all persisted citizen complaints and reset to completely clean fresh state (0 hazards)."""
+    """Clear all persisted citizen complaints and reset database back to the clean baseline demo state."""
     global hazards_db, work_orders_db
     clear_cloud_hazards()
     for p in get_storage_paths():
@@ -320,22 +328,26 @@ async def reset_citizen_hazards():
         except Exception as e:
             logger.debug(f"Reset write error on {p}: {e}")
     
-    hazards_db = []
-    work_orders_db = []
+    # Clear ingestion caches (citizen tickets, streams)
+    ingestion_service.reset()
+
+    # Re-sync with pristine demo dataset
+    hazards_db[:] = [h.model_copy(deep=True) for h in demo_hazards_cache]
+    work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+    
     return {
         "status": "success",
-        "message": "Database completely emptied (0 road hazards).",
-        "active_incidents": 0,
-        "active_work_orders": 0
+        "message": "Database reset: all citizen complaints cleared and restored to clean baseline state.",
+        "active_incidents": len(hazards_db),
+        "active_work_orders": len(work_orders_db)
     }
 
 
 @app.post("/api/hazards/seed-demo")
 async def seed_demo_hazards():
-    """Optionally re-populate 95 benchmark demo hazards across 16 states."""
+    """Optionally re-populate benchmark demo hazards across 16 states."""
     global hazards_db, work_orders_db
-    hazards_db = load_persisted_citizen_hazards() + get_demo_hazards()
-    work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+    sync_hazards_from_disk()
     return {
         "status": "success",
         "message": f"Populated {len(hazards_db)} demo road hazards.",
@@ -380,10 +392,10 @@ async def list_hazards(
 ):
     sync_hazards_from_disk()
     results = hazards_db
-    if state and state.lower() != "all":
-        results = [h for h in results if h.state.lower() == state.lower()]
-    if city and city.lower() != "all":
-        results = [h for h in results if h.city.lower() == city.lower()]
+    if state and state.strip().lower() not in ("all", "all india"):
+        results = [h for h in results if (h.state and h.state.strip().lower() == state.strip().lower())]
+    if city and city.strip().lower() not in ("all", "all cities"):
+        results = [h for h in results if (h.city and h.city.strip().lower() == city.strip().lower())]
     if hazard_type:
         results = [h for h in results if h.hazard_type == hazard_type]
     if severity:
@@ -405,21 +417,14 @@ async def get_hazard_detail(hazard_id: str):
     raise HTTPException(status_code=404, detail=f"Hazard incident '{hazard_id}' not found.")
 
 
-@app.post("/api/hazards/reset")
-async def reset_hazards():
-    """Wipes all hazards and resets database to an empty clean state."""
-    global hazards_db, work_orders_db
-    hazards_db.clear()
-    save_persisted_citizen_hazards([])
-    work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
-    return {"status": "reset", "total_hazards": 0}
-
-
 @app.post("/api/hazards/inspect", response_model=HazardIncident)
 async def inspect_multimodal(payload: MultimodalUploadRequest):
     detections = vision_engine.analyze_image(
         image_b64=payload.image_base64,
         image_url=payload.image_url,
+        latitude=payload.latitude,
+        longitude=payload.longitude,
+        speed_kmh=payload.speed_kmh,
     )
     primary_det = detections[0] if detections else None
 
@@ -564,8 +569,8 @@ async def update_work_order_status(order_id: str, status: str = Form(...)):
 async def copilot_chat(query: CopilotQuery):
     sync_hazards_from_disk()
     active_hazards = hazards_db
-    if query.state_filter and query.state_filter.lower() != "all":
-        active_hazards = [h for h in hazards_db if h.state.lower() == query.state_filter.lower()]
+    if query.state_filter and query.state_filter.strip().lower() not in ("all", "all india"):
+        active_hazards = [h for h in hazards_db if (h.state and h.state.strip().lower() == query.state_filter.strip().lower())]
     return copilot_service.query(query, active_hazards, work_orders_db)
 
 
@@ -576,24 +581,24 @@ async def get_analytics_summary(state: Optional[str] = None):
     subset_roads = roads_db
     subset_work_orders = work_orders_db
 
-    if state and state.lower() != "all":
-        subset_hazards = [h for h in hazards_db if h.state.lower() == state.lower()]
-        subset_roads = [r for r in roads_db if r.state.lower() == state.lower()]
-        subset_work_orders = [wo for wo in work_orders_db if wo.state.lower() == state.lower()]
+    if state and state.strip().lower() not in ("all", "all india"):
+        subset_hazards = [h for h in hazards_db if (h.state and h.state.strip().lower() == state.strip().lower())]
+        subset_roads = [r for r in roads_db if (r.state and r.state.strip().lower() == state.strip().lower())]
+        subset_work_orders = [wo for wo in work_orders_db if (wo.state and wo.state.strip().lower() == state.strip().lower())]
 
     actionable = [h for h in subset_hazards if not h.fusion.is_false_positive]
     false_positives = [h for h in subset_hazards if h.fusion.is_false_positive]
-    critical_count = sum(1 for h in actionable if h.severity == SeverityLevel.CRITICAL)
-    high_count = sum(1 for h in actionable if h.severity == SeverityLevel.HIGH)
-    med_count = sum(1 for h in actionable if h.severity == SeverityLevel.MEDIUM)
-    low_count = sum(1 for h in actionable if h.severity == SeverityLevel.LOW)
+    critical_count = sum(1 for h in actionable if (h.severity == SeverityLevel.CRITICAL or str(getattr(h.severity, 'value', h.severity)).lower() == 'critical'))
+    high_count = sum(1 for h in actionable if (h.severity == SeverityLevel.HIGH or str(getattr(h.severity, 'value', h.severity)).lower() == 'high'))
+    med_count = sum(1 for h in actionable if (h.severity == SeverityLevel.MEDIUM or str(getattr(h.severity, 'value', h.severity)).lower() == 'medium'))
+    low_count = sum(1 for h in actionable if (h.severity == SeverityLevel.LOW or str(getattr(h.severity, 'value', h.severity)).lower() == 'low'))
 
     total_cost_inr = sum(h.priority.estimated_repair_cost_usd for h in actionable)
     avg_pci = (sum(r.current_pci for r in subset_roads) / max(1, len(subset_roads))) if subset_roads else 65.0
 
     hazard_dist: Dict[str, int] = {}
     for h in actionable:
-        k = h.hazard_type.value
+        k = h.hazard_type.value if hasattr(h.hazard_type, 'value') else str(h.hazard_type)
         hazard_dist[k] = hazard_dist.get(k, 0) + 1
 
     return {

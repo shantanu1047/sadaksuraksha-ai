@@ -1,7 +1,8 @@
 """
 Computer Vision module for road hazard detection, bounding box localization,
 polygon segmentation, and visual depth/area estimation.
-Integrates with Google Gemini Multimodal API when configured.
+Integrates with local SmartCity YOLO AI service, Google Gemini Multimodal API,
+or deterministic onboard CV engine (in that priority order).
 """
 
 import os
@@ -12,6 +13,7 @@ from typing import List, Optional, Tuple, Dict, Any
 from io import BytesIO
 from PIL import Image, ImageStat
 import numpy as np
+import httpx
 
 from backend.models.schemas import (
     HazardType,
@@ -22,11 +24,25 @@ from backend.models.schemas import (
 
 logger = logging.getLogger("VisionEngine")
 
+# ── Mapping from SmartCity AI hazard class names to SadakSuraksha HazardType ──
+SMARTCITY_CLASS_MAP: Dict[str, HazardType] = {
+    "pothole": HazardType.POTHOLE,
+    "road_crack": HazardType.ALLIGATOR_CRACK,
+    "waterlogging": HazardType.STANDING_WATER,
+    "damaged_road": HazardType.RUTTING,
+    "garbage_obstruction": HazardType.DEBRIS,
+}
+
 
 class VisionEngine:
     """
     Multimodal Vision Engine capable of processing road images, dashcam frames,
     and drone footage to segment and quantify road distress.
+
+    Detection priority:
+      1. Local SmartCity YOLO AI (if LOCAL_VISION_API_URL is configured)
+      2. Google Gemini 2.5 Flash (if GEMINI_API_KEY is configured)
+      3. Deterministic onboard CV analyzer (always available)
     """
 
     def __init__(self, api_key: Optional[str] = None):
@@ -40,33 +56,69 @@ class VisionEngine:
             except Exception as e:
                 logger.warning(f"Could not initialize GenAI client: {e}")
 
+        # Local SmartCity Vision AI service endpoint
+        self.local_vision_api_url = os.environ.get("LOCAL_VISION_API_URL", "").strip()
+        self.local_vision_timeout = int(os.environ.get("LOCAL_VISION_TIMEOUT_SECONDS", "10"))
+        if self.local_vision_api_url:
+            logger.info(f"Local SmartCity Vision AI configured at: {self.local_vision_api_url}")
+
     def analyze_image(
         self,
         image_bytes: Optional[bytes] = None,
         image_b64: Optional[str] = None,
         image_url: Optional[str] = None,
-        hint_hazard_type: Optional[HazardType] = None
+        hint_hazard_type: Optional[HazardType] = None,
+        latitude: Optional[float] = None,
+        longitude: Optional[float] = None,
+        speed_kmh: Optional[float] = None,
     ) -> List[VisualDetection]:
         """
-        Detect and localize road hazards in an image using Gemini Multimodal or Onboard CV Engine.
+        Detect and localize road hazards in an image.
+
+        Priority chain:
+          1. Local SmartCity Vision AI (YOLO + multimodal fusion)
+          2. Google Gemini 2.5 Flash Multimodal API
+          3. Deterministic onboard CV heuristic analyzer
         """
         pil_image = None
+        raw_bytes = None
+
         if image_b64:
             try:
                 # Strip data:image/...;base64, header if present
                 if "," in image_b64:
                     image_b64 = image_b64.split(",")[1]
                 decoded = base64.b64decode(image_b64)
+                raw_bytes = decoded
                 pil_image = Image.open(BytesIO(decoded)).convert("RGB")
             except Exception as e:
                 logger.error(f"Error decoding base64 image: {e}")
         elif image_bytes:
             try:
+                raw_bytes = image_bytes
                 pil_image = Image.open(BytesIO(image_bytes)).convert("RGB")
             except Exception as e:
                 logger.error(f"Error reading image bytes: {e}")
 
-        # If Gemini client is active and we have an image, attempt Gemini analysis
+        # ── 1. Try Local SmartCity Vision AI ──
+        if self.local_vision_api_url and (raw_bytes or pil_image):
+            try:
+                img_bytes_for_api = raw_bytes
+                if img_bytes_for_api is None and pil_image:
+                    buf = BytesIO()
+                    pil_image.save(buf, format="JPEG", quality=90)
+                    img_bytes_for_api = buf.getvalue()
+
+                detections = self._analyze_with_local_api(
+                    img_bytes_for_api, pil_image,
+                    latitude=latitude, longitude=longitude, speed_kmh=speed_kmh,
+                )
+                if detections:
+                    return detections
+            except Exception as e:
+                logger.warning(f"Local SmartCity Vision API failed, falling back: {e}")
+
+        # ── 2. Try Gemini Multimodal API ──
         if self.client and pil_image:
             try:
                 detections = self._analyze_with_gemini(pil_image)
@@ -75,7 +127,7 @@ class VisionEngine:
             except Exception as e:
                 logger.warning(f"Gemini API analysis failed, falling back to CV Engine: {e}")
 
-        # Deterministic / Onboard CV Analyzer
+        # ── 3. Deterministic / Onboard CV Analyzer ──
         return self._analyze_with_onboard_cv(pil_image, hint_hazard_type)
 
     def _analyze_with_gemini(self, image: Image.Image) -> List[VisualDetection]:
@@ -149,6 +201,123 @@ class VisionEngine:
                     estimated_depth_cm=float(item.get("estimated_depth_cm", 6.5)),
                 )
             )
+        return detections
+
+    def _analyze_with_local_api(
+        self,
+        image_bytes: bytes,
+        pil_image: Optional[Image.Image],
+        latitude: Optional[float] = None,
+        longitude: Optional[float] = None,
+        speed_kmh: Optional[float] = None,
+    ) -> List[VisualDetection]:
+        """
+        Call the local SmartCity Vision AI service (POST /predict).
+
+        Request format: multipart form with 'image' file and 'metadata' JSON string.
+        Response format:
+            {
+              "detections": [{"hazard_type": str, "confidence": float, "bounding_box": [x1,y1,x2,y2]}],
+              "multimodal_prediction": {
+                "severity": {"class_id": int, "label": str, "confidence": float},
+                "risk_score": float,
+                "repair_priority": {"class_id": int, "label": str, "confidence": float}
+              }
+            }
+        """
+        # Build the metadata JSON for the SmartCity API
+        metadata = {
+            "latitude": latitude or 26.9124,
+            "longitude": longitude or 75.7873,
+            "weather_condition": "clear",
+            "time_of_day": "afternoon",
+            "vehicle_speed": speed_kmh or 30.0,
+            "road_type": "urban",
+            "traffic_density": 0.5,
+        }
+
+        with httpx.Client(timeout=self.local_vision_timeout) as client:
+            response = client.post(
+                self.local_vision_api_url,
+                files={"image": ("road_frame.jpg", image_bytes, "image/jpeg")},
+                data={"metadata": json.dumps(metadata)},
+            )
+            response.raise_for_status()
+
+        result = response.json()
+        raw_detections = result.get("detections", [])
+        multimodal = result.get("multimodal_prediction", {})
+
+        if not raw_detections:
+            logger.info("Local SmartCity Vision API returned zero detections.")
+            return []
+
+        # Get image dimensions for normalizing pixel bboxes to [0, 1]
+        if pil_image:
+            img_w, img_h = pil_image.size
+        else:
+            img_w, img_h = 640, 640  # fallback assumption
+
+        # Extract severity info from multimodal prediction for depth/area estimation
+        severity_label = multimodal.get("severity", {}).get("label", "Medium").lower()
+        risk_score = multimodal.get("risk_score", 50.0)
+
+        detections: List[VisualDetection] = []
+        for det in raw_detections:
+            class_name = det.get("hazard_type", "pothole").lower()
+            ht = SMARTCITY_CLASS_MAP.get(class_name, HazardType.OTHER)
+            conf = float(det.get("confidence", 0.5))
+
+            # Bounding box: SmartCity returns [x1, y1, x2, y2] in pixels
+            bbox_raw = det.get("bounding_box", [0, 0, img_w, img_h])
+            x1, y1, x2, y2 = [float(v) for v in bbox_raw]
+
+            # Normalize to [0, 1]
+            xmin = max(0.0, min(1.0, x1 / img_w))
+            ymin = max(0.0, min(1.0, y1 / img_h))
+            xmax = max(xmin + 0.02, min(1.0, x2 / img_w))
+            ymax = max(ymin + 0.02, min(1.0, y2 / img_h))
+
+            # Estimate physical dimensions from severity and risk score
+            bbox_area_frac = (xmax - xmin) * (ymax - ymin)
+            if severity_label == "critical":
+                depth_cm = round(8.0 + risk_score * 0.05, 1)
+                area_sqm = round(bbox_area_frac * 6.0, 2)
+            elif severity_label == "high":
+                depth_cm = round(5.0 + risk_score * 0.04, 1)
+                area_sqm = round(bbox_area_frac * 4.5, 2)
+            elif severity_label == "medium":
+                depth_cm = round(3.0 + risk_score * 0.03, 1)
+                area_sqm = round(bbox_area_frac * 3.0, 2)
+            else:
+                depth_cm = round(1.5 + risk_score * 0.02, 1)
+                area_sqm = round(bbox_area_frac * 2.0, 2)
+
+            bbox = BoundingBox(
+                xmin=round(xmin, 3),
+                ymin=round(ymin, 3),
+                xmax=round(xmax, 3),
+                ymax=round(ymax, 3),
+                label=ht.value.replace("_", " ").title(),
+                confidence=round(conf, 2),
+            )
+            polygon = self._generate_polygon(xmin, ymin, xmax, ymax)
+
+            detections.append(
+                VisualDetection(
+                    hazard_type=ht,
+                    confidence=round(conf, 2),
+                    bbox=bbox,
+                    segmentation_polygon=polygon,
+                    estimated_area_sqm=area_sqm,
+                    estimated_depth_cm=depth_cm,
+                )
+            )
+
+        logger.info(
+            f"Local SmartCity Vision API: {len(detections)} detection(s), "
+            f"severity={severity_label}, risk={risk_score:.1f}"
+        )
         return detections
 
     def _analyze_with_onboard_cv(
