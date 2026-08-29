@@ -320,10 +320,14 @@
         </div>
 
         <!-- Quick Executive Actions & Stats -->
-        <div class="flex items-center gap-3 ml-auto">
-          <button type="button" onclick="if(confirm('Are you sure you want to reset and empty all citizen complaints for a fresh start?')) resetCitizenDatabase();" class="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-white/20 text-white text-xs font-bold transition-all shadow-sm cursor-pointer" title="Empty citizen complaints and start fresh">
+          <button type="button" onclick="if(confirm('Are you sure you want to reset and empty all hazards for a fresh start?')) resetCitizenDatabase();" class="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-white/20 text-white text-xs font-bold transition-all shadow-sm cursor-pointer" title="Empty all hazards and start fresh">
             <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-cyan-400"></i>
             <span class="hidden sm:inline">Reset DB</span>
+          </button>
+
+          <button type="button" onclick="seedDemoDatabase();" class="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-white/20 text-white text-xs font-bold transition-all shadow-sm cursor-pointer" title="Re-populate 95 benchmark demo hazards across 16 states">
+            <i data-lucide="database" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span class="hidden sm:inline">Seed Demo</span>
           </button>
 
           <a href="/report" target="_blank" class="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-white/20 text-white text-xs font-bold transition-all shadow-sm">
@@ -2502,7 +2506,7 @@
   </div>
 
   <script src="/static/js/i18n.js?v=3.3.0"></script>
-  <script src="/static/js/app.js?v=4.5.0-crud-db"></script>
+  <script src="/static/js/app.js?v=4.6.0-reset-crud-fix"></script>
 </body>
 </html>
 

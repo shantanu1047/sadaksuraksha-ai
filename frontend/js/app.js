@@ -427,13 +427,29 @@ async function resetCitizenDatabase() {
     await refreshAllData();
     applyStateAndSearchFilters();
     
-    alert(`Database successfully reset.\n${data.message || 'All citizen complaints cleared.'}`);
+    alert(`Database successfully reset.\n${data.message || 'Database completely emptied.'}`);
   } catch (e) {
     console.error('Reset failed:', e);
     alert('Failed to reset database: ' + (e.message || e));
   }
 }
 window.resetCitizenDatabase = resetCitizenDatabase;
+
+async function seedDemoDatabase() {
+  try {
+    const res = await fetch('/api/hazards/seed-demo', { method: 'POST' });
+    if (!res.ok) {
+      throw new Error(`Server returned HTTP ${res.status}`);
+    }
+    const data = await res.json();
+    await refreshAllData();
+    alert(`Demo dataset seeded into database.\n${data.message || 'Populated demo road hazards.'}`);
+  } catch (e) {
+    console.error('Seed demo failed:', e);
+    alert('Failed to seed demo hazards: ' + (e.message || e));
+  }
+}
+window.seedDemoDatabase = seedDemoDatabase;
 
 function normalizeHazard(h) {
   if (!h) return h;

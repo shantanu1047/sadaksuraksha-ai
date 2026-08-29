@@ -235,19 +235,18 @@ DEMO_HAZARD_IDS = {h.id for h in demo_hazards_cache}
 roads_db: List[RoadSegment] = get_demo_road_segments()
 
 def save_persisted_citizen_hazards(incidents: List[HazardIncident]):
-    """Persist only genuine citizen / live ingested reports (excluding baseline demo hazards)."""
-    citizen_only = [inc.model_dump() for inc in incidents if inc.id not in DEMO_HAZARD_IDS]
-    citizen_only = citizen_only[:200]
-    payload_str = json.dumps(citizen_only, indent=2, default=str)
+    """Persist all active road hazards across SQL database and atomic JSON stores (up to 400 records)."""
+    records = [inc.model_dump() for inc in incidents][:400]
+    payload_str = json.dumps(records, indent=2, default=str)
     
-    # 1. Save to Vercel Postgres / Database
+    # 1. Save to Vercel Postgres / SQLite
     try:
         from backend.core.database import save_db_hazards
-        save_db_hazards(citizen_only)
+        save_db_hazards(records)
     except Exception as e:
         logger.debug(f"Database save error: {e}")
 
-    # 2. Save to local disk paths
+    # 2. Save to local & serverless disk paths
     for p in get_storage_paths():
         try:
             p.parent.mkdir(parents=True, exist_ok=True)
@@ -257,13 +256,13 @@ def save_persisted_citizen_hazards(incidents: List[HazardIncident]):
             logger.debug(f"Could not persist hazard to {p}: {e}")
 
     # 3. Save atomically to Cloud Database
-    save_hazards_to_cloud([inc for inc in incidents if inc.id not in DEMO_HAZARD_IDS])
+    save_hazards_to_cloud(records)
 
 
 _last_sync_time: float = 0.0
 
 def sync_hazards_from_disk(force: bool = False):
-    """Ensures in-memory hazards_db and work_orders_db are synchronized with both baseline 16-state hazards and persistent storage."""
+    """Ensures in-memory hazards_db and work_orders_db are synchronized with persistent storage."""
     global hazards_db, work_orders_db, _last_sync_time
     now = time.time()
     if not force and hazards_db and (now - _last_sync_time) < 4.0:
@@ -272,16 +271,24 @@ def sync_hazards_from_disk(force: bool = False):
 
     persisted = load_persisted_citizen_hazards()
     
-    # Combined dictionary: baseline demo hazards + persisted citizen hazards (citizen reports appear first)
-    combined_map: Dict[str, HazardIncident] = {}
-    for p in persisted:
-        if p.id not in DEMO_HAZARD_IDS:
-            combined_map[p.id] = p
-    for h in demo_hazards_cache:
-        if h.id not in combined_map:
-            combined_map[h.id] = h
-        
-    hazards_db[:] = list(combined_map.values())
+    # Check if disk has explicit empty state
+    disk_explicit_empty = False
+    for p in get_storage_paths():
+        try:
+            if p.exists() and p.read_text(encoding="utf-8").strip() == "[]":
+                disk_explicit_empty = True
+                break
+        except Exception:
+            pass
+
+    if not persisted and not disk_explicit_empty:
+        # Initial cold boot: seed demo hazards into database and disk
+        demo_hazards = get_demo_hazards()
+        hazards_db[:] = demo_hazards
+        save_persisted_citizen_hazards(hazards_db)
+    else:
+        hazards_db[:] = persisted
+
     generated_orders = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
     
     # Merge persisted work order statuses from database
@@ -361,7 +368,7 @@ async def set_api_key(payload: Dict[str, Any]):
 @app.post("/api/hazards/reset")
 @app.delete("/api/hazards/citizen")
 async def reset_citizen_hazards():
-    """Clear all persisted citizen complaints and reset database back to the clean baseline demo state."""
+    """Clear all persisted hazards and reset database to a completely empty clean state (0 hazards)."""
     global hazards_db, work_orders_db
     clear_cloud_hazards()
     for p in get_storage_paths():
@@ -383,15 +390,14 @@ async def reset_citizen_hazards():
     # Clear ingestion caches (citizen tickets, streams)
     ingestion_service.reset()
 
-    # Re-sync with pristine demo dataset
-    hazards_db[:] = [h.model_copy(deep=True) for h in demo_hazards_cache]
-    work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+    hazards_db = []
+    work_orders_db = []
     
     return {
         "status": "success",
-        "message": "Database reset: all citizen complaints cleared and restored to clean baseline state.",
-        "active_incidents": len(hazards_db),
-        "active_work_orders": len(work_orders_db)
+        "message": "Database completely emptied (0 road hazards).",
+        "active_incidents": 0,
+        "active_work_orders": 0
     }
 
 
@@ -407,9 +413,17 @@ async def get_database_status_endpoint():
 
 @app.post("/api/hazards/seed-demo")
 async def seed_demo_hazards():
-    """Optionally re-populate benchmark demo hazards across 16 states."""
+    """Optionally re-populate 95 benchmark demo hazards across 16 states."""
     global hazards_db, work_orders_db
-    sync_hazards_from_disk()
+    demo_hazards = get_demo_hazards()
+    existing_ids = {h.id for h in hazards_db}
+    for dh in demo_hazards:
+        if dh.id not in existing_ids:
+            hazards_db.append(dh)
+            existing_ids.add(dh.id)
+            
+    save_persisted_citizen_hazards(hazards_db)
+    work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
     return {
         "status": "success",
         "message": f"Populated {len(hazards_db)} demo road hazards.",
