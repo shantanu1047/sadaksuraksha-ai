@@ -53,6 +53,13 @@ from backend.data.demo_data import get_demo_hazards, get_demo_road_segments, gen
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("RoadHazardAI")
 
+try:
+    import psycopg
+    from psycopg.types.json import Jsonb
+except Exception:
+    psycopg = None
+    Jsonb = None
+
 app = FastAPI(
     title="SadakSuraksha AI // Multimodal Road Hazard AI & Maintenance Prioritization API",
     version="1.1.0",
@@ -87,10 +94,74 @@ def get_cloud_endpoint() -> Optional[str]:
     url = os.environ.get("CLOUD_DB_URL", "").strip()
     return url if url else None
 
+def get_postgres_dsn() -> Optional[str]:
+    for key in ("DATABASE_URL", "POSTGRES_URL", "POSTGRES_PRISMA_URL", "POSTGRES_URL_NON_POOLING"):
+        url = os.environ.get(key, "").strip()
+        if url:
+            return url
+    return None
+
 def is_vercel_runtime() -> bool:
     return bool(os.environ.get("VERCEL") or os.environ.get("VERCEL_ENV"))
 
+def postgres_available() -> bool:
+    return bool(get_postgres_dsn() and psycopg is not None and Jsonb is not None)
+
+def ensure_postgres_store(conn):
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS sadaksuraksha_app_state (
+            name TEXT PRIMARY KEY,
+            data JSONB NOT NULL,
+            updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+        """
+    )
+
+def fetch_data_from_postgres() -> Optional[Dict[str, Any]]:
+    dsn = get_postgres_dsn()
+    if not dsn or psycopg is None:
+        return None
+    try:
+        with psycopg.connect(dsn, connect_timeout=3) as conn:
+            ensure_postgres_store(conn)
+            row = conn.execute(
+                "SELECT data FROM sadaksuraksha_app_state WHERE name = %s",
+                ("hazards_store",),
+            ).fetchone()
+            if not row:
+                return None
+            return row[0] if isinstance(row[0], dict) else None
+    except Exception as e:
+        logger.warning(f"Postgres hazard store fetch failed: {e}")
+        return None
+
+def save_data_to_postgres(data_block: Dict[str, Any]) -> bool:
+    dsn = get_postgres_dsn()
+    if not dsn or psycopg is None or Jsonb is None:
+        return False
+    try:
+        with psycopg.connect(dsn, connect_timeout=3) as conn:
+            ensure_postgres_store(conn)
+            conn.execute(
+                """
+                INSERT INTO sadaksuraksha_app_state (name, data, updated_at)
+                VALUES (%s, %s, NOW())
+                ON CONFLICT (name)
+                DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()
+                """,
+                ("hazards_store", Jsonb(data_block)),
+            )
+        return True
+    except Exception as e:
+        logger.warning(f"Postgres hazard store save failed: {e}")
+        return False
+
 def cloud_data_block() -> Optional[Dict[str, Any]]:
+    pg_data = fetch_data_from_postgres()
+    if pg_data is not None:
+        return pg_data
+
     endpoint = get_cloud_endpoint()
     if not endpoint:
         return None
@@ -137,14 +208,18 @@ def fetch_hazards_from_cloud() -> List[HazardIncident]:
 
 def save_hazards_to_cloud(hazards: List[HazardIncident], demo_seeded: Optional[bool] = None) -> bool:
     """Saves citizen hazard list atomically to Cloud Database if configured."""
+    citizen_only = [inc.model_dump() for inc in hazards if _is_citizen_hazard(inc.id)]
+    data_block: Dict[str, Any] = {"hazards": citizen_only[:100]}
+    if demo_seeded is not None:
+        data_block["demo_seeded"] = demo_seeded
+
+    if save_data_to_postgres(data_block):
+        return True
+
     endpoint = get_cloud_endpoint()
     if not endpoint:
         return False
     try:
-        citizen_only = [inc.model_dump() for inc in hazards if _is_citizen_hazard(inc.id)]
-        data_block: Dict[str, Any] = {"hazards": citizen_only[:100]}
-        if demo_seeded is not None:
-            data_block["demo_seeded"] = demo_seeded
         payload = json.dumps({
             "name": "sadaksuraksha_hazards_store",
             "data": data_block,
@@ -166,6 +241,8 @@ def save_hazards_to_cloud(hazards: List[HazardIncident], demo_seeded: Optional[b
 
 def clear_cloud_hazards():
     """Wipes all hazard records from Cloud Database if configured."""
+    save_data_to_postgres({"hazards": [], "demo_seeded": False})
+
     endpoint = get_cloud_endpoint()
     if not endpoint:
         return
@@ -217,7 +294,11 @@ def get_storage_paths() -> List[Path]:
 
 
 def has_persistent_hazard_storage() -> bool:
-    return bool(get_cloud_endpoint() or get_storage_paths())
+    return bool(get_postgres_dsn() or get_cloud_endpoint() or get_storage_paths())
+
+
+def durable_storage_required() -> bool:
+    return is_vercel_runtime() and not os.environ.get("ALLOW_SERVERLESS_FILE_STORAGE")
 
 
 def demo_hazards_enabled() -> bool:
@@ -257,10 +338,11 @@ def load_persisted_citizen_hazards() -> List[HazardIncident]:
     return list(loaded_map.values())
 
 
-def save_persisted_citizen_hazards(incidents: List[HazardIncident]):
+def save_persisted_citizen_hazards(incidents: List[HazardIncident]) -> bool:
     citizen_only = [inc.model_dump() for inc in incidents if _is_citizen_hazard(inc.id)]
     citizen_only = citizen_only[:200]
     payload_str = json.dumps(citizen_only, indent=2, default=str)
+    saved = False
     
     # 1. Save to local disk paths
     for p in get_storage_paths():
@@ -268,11 +350,12 @@ def save_persisted_citizen_hazards(incidents: List[HazardIncident]):
             p.parent.mkdir(parents=True, exist_ok=True)
             with open(p, "w", encoding="utf-8") as f:
                 f.write(payload_str)
+            saved = True
         except Exception as e:
             logger.debug(f"Could not persist hazard to {p}: {e}")
 
     # 2. Save atomically to Cloud Database
-    save_hazards_to_cloud(incidents)
+    return save_hazards_to_cloud(incidents) or saved
 
 
 import re as _re
@@ -644,7 +727,8 @@ async def list_work_orders(state: Optional[str] = None):
 async def regenerate_work_orders():
     sync_hazards_from_disk()
     global work_orders_db
-    work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+    raw_orders = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+    work_orders_db = [wo for wo in raw_orders if wo.id.upper() not in deleted_work_order_ids]
     return work_orders_db
 
 
@@ -676,6 +760,7 @@ async def delete_work_order(order_id: str):
         "status": "success",
         "message": f"Work order '{order_id}' successfully cancelled/deleted.",
         "deleted_order_id": order_id,
+        "target_hazard_ids": target.target_hazard_ids,
         "remaining_work_orders": len(work_orders_db),
     }
 
@@ -740,10 +825,21 @@ async def get_analytics_summary(state: Optional[str] = None):
 @app.post("/api/ingest/citizen-report", response_model=CitizenTicketResponse)
 async def ingest_citizen_report(req: CitizenSubmissionRequest):
     """Public endpoint for citizen mobile portal submissions."""
+    global work_orders_db
     incident, ticket = ingestion_service.process_citizen_report(req, hazards_db)
     hazards_db.insert(0, incident)
-    save_persisted_citizen_hazards(hazards_db)
-    global work_orders_db
+    persisted = save_persisted_citizen_hazards(hazards_db)
+    if durable_storage_required() and not persisted:
+        hazards_db[:] = [h for h in hazards_db if h.id != incident.id]
+        work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "Citizen complaint storage is not configured for Vercel. "
+                "Add a Postgres integration and set DATABASE_URL, or configure CLOUD_DB_URL."
+            ),
+        )
+
     work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
     return ticket
 

@@ -15,6 +15,39 @@ let currentCategoryFilter = 'all';
 let currentSearchQuery = '';
 let selectedHazard = null;
 let userApiKey = localStorage.getItem('SADAKSURAKSHA_GEMINI_KEY') || localStorage.getItem('SADAKSUKHA_GEMINI_KEY') || localStorage.getItem('AERO_GEMINI_KEY') || '';
+const CANCELLED_WORK_ORDER_IDS_KEY = 'SADAKSURAKSHA_CANCELLED_WORK_ORDER_IDS';
+const CANCELLED_WORK_ORDER_HAZARD_IDS_KEY = 'SADAKSURAKSHA_CANCELLED_WORK_ORDER_HAZARD_IDS';
+
+function readStringSet(key) {
+  try {
+    const raw = JSON.parse(localStorage.getItem(key) || '[]');
+    return new Set(Array.isArray(raw) ? raw.filter(Boolean).map(String) : []);
+  } catch (e) {
+    return new Set();
+  }
+}
+
+function writeStringSet(key, values) {
+  localStorage.setItem(key, JSON.stringify(Array.from(values)));
+}
+
+function getCancelledWorkOrderIds() {
+  return readStringSet(CANCELLED_WORK_ORDER_IDS_KEY);
+}
+
+function getCancelledWorkOrderHazardIds() {
+  return readStringSet(CANCELLED_WORK_ORDER_HAZARD_IDS_KEY);
+}
+
+function rememberCancelledWorkOrder(orderId, hazardIds = []) {
+  const cancelledOrderIds = getCancelledWorkOrderIds();
+  cancelledOrderIds.add(String(orderId).toUpperCase());
+  writeStringSet(CANCELLED_WORK_ORDER_IDS_KEY, cancelledOrderIds);
+
+  const cancelledHazardIds = getCancelledWorkOrderHazardIds();
+  hazardIds.filter(Boolean).forEach(id => cancelledHazardIds.add(String(id)));
+  writeStringSet(CANCELLED_WORK_ORDER_HAZARD_IDS_KEY, cancelledHazardIds);
+}
 
 const CITY_OPTIONS_BY_STATE = {
   all: ["All Cities"],
@@ -362,17 +395,21 @@ async function refreshAllData() {
 
     allHazards = Array.from(hazardMap.values());
     allRoads = Array.isArray(fetchedRoads) ? fetchedRoads : [];
+    const cancelledOrderIds = getCancelledWorkOrderIds();
+    const cancelledHazardIds = getCancelledWorkOrderHazardIds();
     const serverOrders = Array.isArray(fetchedWorkOrders) ? fetchedWorkOrders : [];
-    allWorkOrders = [...serverOrders];
+    allWorkOrders = serverOrders.filter(wo => wo && !cancelledOrderIds.has(String(wo.id || '').toUpperCase()));
 
     // Ensure every hazard in allHazards has an associated work order
     for (const h of allHazards) {
+      if (cancelledHazardIds.has(String(h.id))) continue;
       const hasOrder = allWorkOrders.some(wo => wo.target_hazard_ids && wo.target_hazard_ids.includes(h.id));
       if (!hasOrder) {
         const stateCode = (h.state || 'IND').substring(0, 3).toUpperCase();
         const cleanId = (h.id || 'CITIZEN').replace(/[^a-zA-Z0-9]/g, '').slice(-8);
         allWorkOrders.unshift({
           id: `WO-${stateCode}-${cleanId}`,
+          client_generated: true,
           title: `Citizen Action Order: ${h.title || 'Road Hazard'} (${h.road_name || h.city || h.state})`,
           state: h.state || 'Karnataka',
           city: h.city || 'Bengaluru',
@@ -407,6 +444,8 @@ async function refreshAllData() {
 async function resetCitizenDatabase() {
   try {
     localStorage.removeItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS');
+    localStorage.removeItem(CANCELLED_WORK_ORDER_IDS_KEY);
+    localStorage.removeItem(CANCELLED_WORK_ORDER_HAZARD_IDS_KEY);
     await fetch('/api/hazards/reset', { method: 'POST' });
     await refreshAllData();
     alert('Database cleared and reset to fresh state.');
@@ -1476,15 +1515,31 @@ function renderBacklogReports(hazards) {
 
 async function deleteWorkOrder(orderId) {
   if (!confirm(`Are you sure you want to cancel/delete Work Order '${orderId}'?`)) return;
+  const targetOrder = allWorkOrders.find(wo => wo && String(wo.id).toUpperCase() === String(orderId).toUpperCase());
   try {
     const res = await fetch(`/api/work-orders/${encodeURIComponent(orderId)}`, { method: 'DELETE' });
+    if (!res.ok) {
+      if (res.status === 404 && targetOrder?.client_generated) {
+        rememberCancelledWorkOrder(orderId, targetOrder.target_hazard_ids || []);
+        allWorkOrders = allWorkOrders.filter(wo => wo.id.toUpperCase() !== orderId.toUpperCase());
+        applyStateAndSearchFilters();
+        showToastNotification(`Work Order ${orderId} cancelled.`);
+        return;
+      }
+      const message = await res.text();
+      throw new Error(message || `Delete failed with status ${res.status}`);
+    }
+    const result = await res.json().catch(() => ({}));
+    const hazardIds = Array.isArray(result.target_hazard_ids)
+      ? result.target_hazard_ids
+      : (targetOrder?.target_hazard_ids || []);
+    rememberCancelledWorkOrder(orderId, hazardIds);
     allWorkOrders = allWorkOrders.filter(wo => wo.id.toUpperCase() !== orderId.toUpperCase());
     applyStateAndSearchFilters();
     showToastNotification(`Work Order ${orderId} cancelled.`);
   } catch (err) {
     console.error('Error deleting work order:', err);
-    allWorkOrders = allWorkOrders.filter(wo => wo.id.toUpperCase() !== orderId.toUpperCase());
-    applyStateAndSearchFilters();
+    showToastNotification(`Unable to cancel Work Order ${orderId}.`, 'error');
   }
 }
 
@@ -1568,6 +1623,9 @@ async function clearPriorityBacklog() {
 async function regenerateWorkOrders() {
   try {
     const res = await fetch('/api/work-orders/generate', { method: 'POST' });
+    if (!res.ok) throw new Error(`Work order generation failed with status ${res.status}`);
+    localStorage.removeItem(CANCELLED_WORK_ORDER_IDS_KEY);
+    localStorage.removeItem(CANCELLED_WORK_ORDER_HAZARD_IDS_KEY);
     allWorkOrders = await res.json();
     applyStateAndSearchFilters();
     showToastNotification('Work orders re-optimized via spatial clustering.');
