@@ -11,6 +11,27 @@ from pydantic import BaseModel, Field
 
 # Root directory of the project
 CONFIG_FILE_PATH = Path(__file__).parent.parent.parent / "config.yaml"
+ENV_FILE_PATH = Path(__file__).parent.parent.parent / ".env"
+
+
+def load_env_file():
+    """Load key-value pairs from .env into os.environ if not already present."""
+    if ENV_FILE_PATH.exists():
+        try:
+            with open(ENV_FILE_PATH, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, v = line.split("=", 1)
+                        k = k.strip()
+                        v = v.strip().strip('"').strip("'")
+                        if k and k not in os.environ:
+                            os.environ[k] = v
+        except Exception:
+            pass
+
+
+load_env_file()
 
 
 def load_raw_config() -> Dict[str, Any]:

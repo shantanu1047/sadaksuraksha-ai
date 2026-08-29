@@ -27,8 +27,11 @@ logger = logging.getLogger("VisionEngine")
 # ── Mapping from SmartCity AI hazard class names to SadakSuraksha HazardType ──
 SMARTCITY_CLASS_MAP: Dict[str, HazardType] = {
     "pothole": HazardType.POTHOLE,
-    "road_crack": HazardType.ALLIGATOR_CRACK,
     "waterlogging": HazardType.STANDING_WATER,
+    "manhole": HazardType.DEBRIS,
+    "fallen tree": HazardType.DEBRIS,
+    "road debris": HazardType.DEBRIS,
+    "road_crack": HazardType.ALLIGATOR_CRACK,
     "damaged_road": HazardType.RUTTING,
     "garbage_obstruction": HazardType.DEBRIS,
 }
@@ -57,7 +60,7 @@ class VisionEngine:
                 logger.warning(f"Could not initialize GenAI client: {e}")
 
         # Local SmartCity Vision AI service endpoint
-        self.local_vision_api_url = os.environ.get("LOCAL_VISION_API_URL", "").strip()
+        self.local_vision_api_url = os.environ.get("LOCAL_VISION_API_URL", "http://127.0.0.1:8001/predict").strip()
         self.local_vision_timeout = int(os.environ.get("LOCAL_VISION_TIMEOUT_SECONDS", "10"))
         if self.local_vision_api_url:
             logger.info(f"Local SmartCity Vision AI configured at: {self.local_vision_api_url}")
