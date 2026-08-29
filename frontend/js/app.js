@@ -834,6 +834,9 @@ function renderMapMarkers(hazards) {
           <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" target="_blank" rel="noopener noreferrer" class="block text-center text-emerald-700 hover:text-emerald-800 font-bold text-[11px] no-underline pt-0.5 transition-colors">
             🧭 Navigate Route
           </a>
+          <button onclick="promptDeleteHazard('${h.id}')" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold py-1.5 px-3 rounded-xl border border-rose-200 flex items-center justify-center gap-1.5 text-xs transition-all cursor-pointer">
+            <span>🗑️ Delete Hazard</span>
+          </button>
         </div>
       </div>
     `;
@@ -980,6 +983,9 @@ function renderIncidentFeed(hazards) {
         <div class="flex items-center gap-1.5 shrink-0">
           <button type="button" onclick="event.stopPropagation(); openIncidentModal('${h.id}')" title="View Multimodal Dossier" class="inline-flex items-center gap-0.5 text-[10px] font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-300 px-1.5 py-0.5 rounded transition-colors cursor-pointer">
             <span>Dossier</span>
+          </button>
+          <button type="button" onclick="event.stopPropagation(); promptDeleteHazard('${h.id}')" title="Delete Hazard" class="inline-flex items-center justify-center p-1 rounded text-rose-600 hover:bg-rose-100 border border-rose-200/60 hover:border-rose-300 transition-colors cursor-pointer">
+            <i data-lucide="trash-2" class="w-3 h-3 text-rose-600"></i>
           </button>
           <span class="text-[10.5px] font-semibold px-1.5 py-0.5 rounded border ${riskBadge} shadow-2xs">${riskLabel} ${h.priority?.raw_risk_score || 75}</span>
         </div>
@@ -1872,6 +1878,69 @@ function openIncidentModal(hazardId) {
 
 function closeIncidentModal() {
   document.getElementById('incident-modal').classList.add('hidden');
+}
+
+function promptDeleteHazard(hazardId) {
+  const target = allHazards.find(h => h.id === hazardId);
+  const title = target ? target.title : hazardId;
+  const confirmed = confirm(`Are you sure you want to permanently delete this hazard?\n\nID: ${hazardId}\nTitle: ${title}`);
+  if (confirmed) {
+    deleteHazard(hazardId);
+  }
+}
+
+function deleteCurrentModalHazard() {
+  if (!selectedHazard || !selectedHazard.id) return;
+  const hazardId = selectedHazard.id;
+  const confirmed = confirm(`Are you sure you want to permanently delete this hazard?\n\nID: ${hazardId}\nTitle: ${selectedHazard.title || 'Road Hazard'}`);
+  if (confirmed) {
+    deleteHazard(hazardId);
+    closeIncidentModal();
+  }
+}
+
+async function deleteHazard(hazardId) {
+  if (!hazardId) return;
+  try {
+    const res = await fetch(`/api/hazards/${encodeURIComponent(hazardId)}`, {
+      method: 'DELETE'
+    });
+    
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      alert(`Could not delete hazard: ${err.detail || res.statusText}`);
+      return;
+    }
+
+    // 1. Remove from in-memory allHazards
+    allHazards = allHazards.filter(h => h.id !== hazardId);
+    
+    // 2. Remove associated work orders from in-memory allWorkOrders
+    allWorkOrders = allWorkOrders.filter(wo => !wo.target_hazard_ids || !wo.target_hazard_ids.includes(hazardId));
+
+    // 3. Remove from local storage citizen reports if saved locally
+    try {
+      const localReports = JSON.parse(localStorage.getItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS') || '[]');
+      const filtered = localReports.filter(r => r.id !== hazardId);
+      localStorage.setItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS', JSON.stringify(filtered));
+    } catch (e) {}
+
+    // 4. Update UI views
+    applyStateAndSearchFilters();
+    lucide.createIcons();
+
+    // 5. Update fast-path KPI counters
+    fetch(`/api/analytics/summary?state=${encodeURIComponent(currentStateFilter || 'all')}`)
+      .then(r => r.json())
+      .then(analytics => {
+        if (analytics) updateKpiCounters(analytics);
+      })
+      .catch(e => console.debug("KPI sync error:", e));
+
+  } catch (err) {
+    console.error('Error deleting hazard:', err);
+    alert(`Failed to delete hazard: ${err.message}`);
+  }
 }
 
 function openApiKeyModal() {

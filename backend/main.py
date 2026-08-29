@@ -459,6 +459,55 @@ async def get_hazard_detail(hazard_id: str):
     raise HTTPException(status_code=404, detail=f"Hazard incident '{hazard_id}' not found.")
 
 
+@app.delete("/api/hazards/{hazard_id}")
+async def delete_hazard(hazard_id: str):
+    """Deletes a specific road hazard incident from memory and persistent database."""
+    global hazards_db, work_orders_db
+    
+    # Check if hazard exists
+    target = None
+    for h in hazards_db:
+        if h.id.upper() == hazard_id.upper():
+            target = h
+            break
+            
+    if not target:
+        raise HTTPException(status_code=404, detail=f"Hazard incident '{hazard_id}' not found.")
+        
+    actual_id = target.id
+    
+    # 1. Remove from in-memory hazards_db
+    hazards_db[:] = [h for h in hazards_db if h.id.upper() != hazard_id.upper()]
+    
+    # 2. If it is in demo_hazards_cache, remove it
+    for idx, dh in enumerate(demo_hazards_cache):
+        if dh.id.upper() == hazard_id.upper():
+            demo_hazards_cache.pop(idx)
+            break
+    DEMO_HAZARD_IDS.discard(actual_id)
+    
+    # 3. Remove from Vercel Postgres / SQLite
+    try:
+        from backend.core.database import delete_db_hazard
+        delete_db_hazard(actual_id)
+    except Exception as e:
+        logger.debug(f"DB delete error: {e}")
+        
+    # 4. Remove from persisted disk stores
+    save_persisted_citizen_hazards(hazards_db)
+    
+    # 5. Re-cluster work orders
+    work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+    
+    return {
+        "status": "success",
+        "message": f"Hazard incident '{actual_id}' successfully deleted.",
+        "deleted_id": actual_id,
+        "remaining_hazards": len(hazards_db),
+        "remaining_work_orders": len(work_orders_db)
+    }
+
+
 @app.post("/api/hazards/inspect", response_model=HazardIncident)
 async def inspect_multimodal(payload: MultimodalUploadRequest):
     detections = vision_engine.analyze_image(

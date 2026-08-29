@@ -153,6 +153,35 @@ def save_db_hazards(hazards: List[Dict[str, Any]]) -> bool:
 
     return False
 
+def delete_db_hazard(hazard_id: str) -> bool:
+    """Deletes an individual hazard record from Vercel Postgres or SQLite."""
+    if not hazard_id:
+        return False
+        
+    pg_url = get_postgres_url()
+    if pg_url and PSYCOPG2_AVAILABLE:
+        try:
+            with psycopg2.connect(pg_url, connect_timeout=3) as conn:
+                with conn.cursor() as cur:
+                    cur.execute("DELETE FROM persisted_hazards WHERE id = %s;", (hazard_id,))
+                    conn.commit()
+                    return True
+        except Exception as e:
+            logger.debug(f"Postgres delete error: {e}")
+
+    try:
+        sqlite_file = get_sqlite_path()
+        if sqlite_file.exists():
+            with sqlite3.connect(str(sqlite_file)) as conn:
+                cur = conn.cursor()
+                cur.execute("DELETE FROM persisted_hazards WHERE id = ?;", (hazard_id,))
+                conn.commit()
+                return True
+    except Exception as e:
+        logger.debug(f"SQLite delete error: {e}")
+
+    return False
+
 def clear_db_hazards() -> bool:
     """Empties persisted hazard records."""
     pg_url = get_postgres_url()

@@ -2239,6 +2239,10 @@
             <i data-lucide="navigation" class="w-3.5 h-3.5 text-black"></i>
             <span>Directions</span>
           </a>
+          <button id="modal-btn-delete" onclick="deleteCurrentModalHazard()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-50 hover:bg-rose-100 border border-rose-300 text-rose-700 transition-colors shadow-xs cursor-pointer" title="Permanently Delete Hazard">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-600"></i>
+            <span>Delete</span>
+          </button>
           <button onclick="closeIncidentModal()" class="p-2 rounded-xl bg-slate-100 hover:bg-red-100 border border-slate-300 text-black transition-colors cursor-pointer">
             <i data-lucide="x" class="w-4 h-4"></i>
           </button>
@@ -2492,7 +2496,7 @@
   </div>
 
   <script src="/static/js/i18n.js?v=3.3.0"></script>
-  <script src="/static/js/app.js?v=4.3.0-fast-kpi"></script>
+  <script src="/static/js/app.js?v=4.4.0-delete-hazard"></script>
 </body>
 </html>
 
