@@ -195,8 +195,25 @@ function formatINR(amount) {
 document.addEventListener('DOMContentLoaded', async () => {
   lucide.createIcons();
   checkAuthStatus();
-  updateApiKeyDisplay();
   initSessionIdentity();
+
+  // Fetch server API key status and auto-activate
+  try {
+    const keyRes = await fetch('/api/config/apikey', { cache: 'no-store' });
+    if (keyRes.ok) {
+      const keyData = await keyRes.json();
+      if (keyData.configured && !userApiKey) {
+        userApiKey = keyData.masked_key || 'SERVER_ACTIVE';
+      }
+      if (keyData.google_maps_configured) {
+        window._serverGmapsActive = true;
+      }
+    }
+  } catch (e) {
+    console.debug('Failed to fetch initial API key status:', e);
+  }
+
+  updateApiKeyDisplay();
   
   // Set default state selector in UI
   const stateSelect = document.getElementById('state-selector');
@@ -343,16 +360,16 @@ function syncCopilotDirectApiKeyStatus() {
   const input = document.getElementById('copilot-direct-api-key');
   const hint = document.getElementById('copilot-key-hint-text');
   
-  if (userApiKey && userApiKey.trim()) {
+  if ((userApiKey && userApiKey.trim()) || window._serverGmapsActive) {
     if (badge) {
       badge.className = 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-100 text-emerald-950 border border-emerald-300';
-      badge.textContent = 'Gemini 2.5 Active ⚡';
+      badge.textContent = 'Google Cloud Active ⚡';
     }
-    if (input) {
+    if (input && userApiKey && userApiKey !== 'SERVER_ACTIVE') {
       input.value = userApiKey;
     }
     if (hint) {
-      hint.textContent = 'Google Gemini 2.5 Flash connected';
+      hint.textContent = 'Google Cloud & Gemini AI Connected';
     }
   } else {
     if (badge) {
