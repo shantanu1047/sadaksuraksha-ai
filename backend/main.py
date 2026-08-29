@@ -13,6 +13,7 @@ import urllib.request
 from datetime import datetime
 from typing import List, Optional, Dict, Any
 from pathlib import Path
+import time
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, UploadFile, File, Form, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -259,9 +260,16 @@ def save_persisted_citizen_hazards(incidents: List[HazardIncident]):
     save_hazards_to_cloud([inc for inc in incidents if inc.id not in DEMO_HAZARD_IDS])
 
 
-def sync_hazards_from_disk():
+_last_sync_time: float = 0.0
+
+def sync_hazards_from_disk(force: bool = False):
     """Ensures in-memory hazards_db and work_orders_db are synchronized with both baseline 16-state hazards and persistent storage."""
-    global hazards_db, work_orders_db
+    global hazards_db, work_orders_db, _last_sync_time
+    now = time.time()
+    if not force and hazards_db and (now - _last_sync_time) < 4.0:
+        return
+    _last_sync_time = now
+
     persisted = load_persisted_citizen_hazards()
     
     # Combined dictionary: baseline demo hazards + persisted citizen hazards (citizen reports appear first)

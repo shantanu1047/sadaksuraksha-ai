@@ -1,0 +1,15 @@
+[
+  {
+    "ticket_id": "CITIZEN-SURAKSHA-260830-9575",
+    "status": "verified",
+    "hazard_id": "HAZ-260830-B686",
+    "ai_verified": true,
+    "ai_severity": "high",
+    "ai_depth_cm": 6.3,
+    "ai_risk_score": 100.0,
+    "estimated_repair_cost_inr": 16785.0,
+    "estimated_repair_days": 2,
+    "image_url": null,
+    "message": "Thank you, Test Citizen! Your report has been AI-verified as a HIGH severity pothole. Estimated depth: 6.3cm. PWD repair estimated at \u20b916,785. Ticket: CITIZEN-SURAKSHA-260830-9575"
+  }
+]
