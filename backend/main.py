@@ -190,11 +190,24 @@ def get_storage_paths() -> List[Path]:
 def load_persisted_citizen_hazards() -> List[HazardIncident]:
     loaded_map: Dict[str, HazardIncident] = {}
     
-    # 1. Cloud Database (Primary source of truth across serverless workers)
-    for ch in fetch_hazards_from_cloud():
-        loaded_map[ch.id] = ch
+    # 1. Vercel Postgres / Database (Primary source of truth in Vercel serverless)
+    try:
+        from backend.core.database import fetch_db_hazards
+        for d in fetch_db_hazards():
+            if isinstance(d, dict) and d.get("id") and d["id"] not in loaded_map:
+                try:
+                    loaded_map[d["id"]] = HazardIncident(**d)
+                except Exception:
+                    pass
+    except Exception as e:
+        logger.debug(f"Database fetch error: {e}")
 
-    # 2. Local Disk Stores (Secondary fallback)
+    # 2. Cloud Database Endpoint (if CLOUD_DB_URL configured)
+    for ch in fetch_hazards_from_cloud():
+        if ch.id not in loaded_map:
+            loaded_map[ch.id] = ch
+
+    # 3. Local Disk Stores (Secondary fallback)
     for p in get_storage_paths():
         try:
             if p.exists():
@@ -226,7 +239,14 @@ def save_persisted_citizen_hazards(incidents: List[HazardIncident]):
     citizen_only = citizen_only[:200]
     payload_str = json.dumps(citizen_only, indent=2, default=str)
     
-    # 1. Save to local disk paths
+    # 1. Save to Vercel Postgres / Database
+    try:
+        from backend.core.database import save_db_hazards
+        save_db_hazards(citizen_only)
+    except Exception as e:
+        logger.debug(f"Database save error: {e}")
+
+    # 2. Save to local disk paths
     for p in get_storage_paths():
         try:
             p.parent.mkdir(parents=True, exist_ok=True)
@@ -235,7 +255,7 @@ def save_persisted_citizen_hazards(incidents: List[HazardIncident]):
         except Exception as e:
             logger.debug(f"Could not persist hazard to {p}: {e}")
 
-    # 2. Save atomically to Cloud Database
+    # 3. Save atomically to Cloud Database
     save_hazards_to_cloud([inc for inc in incidents if inc.id not in DEMO_HAZARD_IDS])
 
 
@@ -258,6 +278,11 @@ def sync_hazards_from_disk():
 
 
 hazards_db: List[HazardIncident] = []
+try:
+    from backend.core.database import init_db
+    init_db()
+except Exception as e:
+    logger.debug(f"DB init warning: {e}")
 sync_hazards_from_disk()
 
 
@@ -328,6 +353,13 @@ async def reset_citizen_hazards():
         except Exception as e:
             logger.debug(f"Reset write error on {p}: {e}")
     
+    # Clear Vercel Postgres / SQLite DB
+    try:
+        from backend.core.database import clear_db_hazards
+        clear_db_hazards()
+    except Exception as e:
+        logger.debug(f"DB clear error: {e}")
+
     # Clear ingestion caches (citizen tickets, streams)
     ingestion_service.reset()
 
@@ -341,6 +373,16 @@ async def reset_citizen_hazards():
         "active_incidents": len(hazards_db),
         "active_work_orders": len(work_orders_db)
     }
+
+
+@app.get("/api/database/status")
+async def get_database_status_endpoint():
+    """Returns connection and driver status of Vercel Postgres, Neon, Supabase, or SQLite database."""
+    from backend.core.database import get_database_info
+    info = get_database_info()
+    info["persisted_citizen_hazards_count"] = len(load_persisted_citizen_hazards())
+    info["total_live_hazards"] = len(hazards_db)
+    return info
 
 
 @app.post("/api/hazards/seed-demo")

@@ -54,3 +54,6 @@ logs/
 
 # Scratch & Artifacts
 scratch/
+*.db
+*.sqlite
+*.sqlite3

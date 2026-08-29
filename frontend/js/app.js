@@ -104,6 +104,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   const stateSelect = document.getElementById('state-selector');
   if (stateSelect) stateSelect.value = currentStateFilter;
 
+  // Fast-path immediate KPI fetch (loads in ~15ms without waiting for full 2MB hazards list)
+  fetch(`/api/analytics/summary?state=${encodeURIComponent(currentStateFilter || 'all')}`)
+    .then(r => r.json())
+    .then(analytics => {
+      if (analytics) {
+        updateKpiBar(analytics);
+        updateKpiCounters(analytics);
+      }
+    })
+    .catch(e => console.debug("Fast KPI fetch:", e));
+
   // Initialize Maps
   initGisMap();
   initPatrolMap();
@@ -112,7 +123,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize Charts
   initCharts();
 
-  // Fetch initial data
+  // Fetch full data
   await refreshAllData();
 
   // Live periodic refresh so incoming citizen & sensor reports reflect instantly
@@ -486,6 +497,7 @@ function handleStateChange(selectedState) {
     .then(r => r.json())
     .then(analytics => {
       updateKpiBar(analytics);
+      updateKpiCounters(analytics);
       updateAnalyticsCharts(analytics, allRoads);
     });
 
@@ -581,11 +593,39 @@ function applyStateAndSearchFilters() {
   const kpiWo = document.getElementById('kpi-work-orders');
   const kpiCost = document.getElementById('kpi-cost');
 
-  if (kpiCrit) kpiCrit.textContent = critical;
-  if (kpiTot) kpiTot.textContent = actionable.length;
-  if (kpiFp) kpiFp.textContent = fp;
-  if (kpiWo) kpiWo.textContent = filteredWorkOrders.length;
-  if (kpiCost) kpiCost.textContent = formatINR(totalCost);
+  // Only update from stateHazards when data is loaded, or if filtered by a specific state
+  if (stateHazards.length > 0 || !isAllIndia) {
+    if (kpiCrit) kpiCrit.textContent = critical;
+    if (kpiTot) kpiTot.textContent = actionable.length;
+    if (kpiFp) kpiFp.textContent = fp;
+    if (kpiWo) kpiWo.textContent = filteredWorkOrders.length;
+    if (kpiCost) kpiCost.textContent = formatINR(totalCost);
+  }
+}
+
+function updateKpiCounters(analytics) {
+  if (!analytics) return;
+  const kpiTot = document.getElementById('kpi-total');
+  const kpiCrit = document.getElementById('kpi-critical');
+  const kpiWo = document.getElementById('kpi-work-orders');
+  const kpiFp = document.getElementById('kpi-fp');
+  const kpiCost = document.getElementById('kpi-cost');
+
+  if (kpiTot && analytics.total_active_hazards !== undefined) {
+    kpiTot.textContent = analytics.total_active_hazards;
+  }
+  if (kpiCrit && analytics.critical_hazards !== undefined) {
+    kpiCrit.textContent = analytics.critical_hazards;
+  }
+  if (kpiWo && analytics.active_work_orders_count !== undefined) {
+    kpiWo.textContent = analytics.active_work_orders_count;
+  }
+  if (kpiFp && analytics.false_positives_filtered !== undefined) {
+    kpiFp.textContent = analytics.false_positives_filtered;
+  }
+  if (kpiCost && analytics.total_estimated_repair_cost_usd !== undefined) {
+    kpiCost.textContent = formatINR(analytics.total_estimated_repair_cost_usd);
+  }
 }
 
 function updateKpiBar(analytics) {
