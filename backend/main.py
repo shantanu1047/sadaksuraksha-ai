@@ -274,7 +274,19 @@ def sync_hazards_from_disk():
             combined_map[h.id] = h
         
     hazards_db[:] = list(combined_map.values())
-    work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+    generated_orders = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+    
+    # Merge persisted work order statuses from database
+    try:
+        from backend.core.database import fetch_db_work_orders
+        saved_status_map = {wo.get("id"): wo.get("status") for wo in fetch_db_work_orders() if wo.get("id")}
+        for wo in generated_orders:
+            if wo.id in saved_status_map:
+                wo.status = saved_status_map[wo.id]
+    except Exception as e:
+        logger.debug(f"Work orders status sync warning: {e}")
+
+    work_orders_db = generated_orders
 
 
 hazards_db: List[HazardIncident] = []
@@ -508,6 +520,121 @@ async def delete_hazard(hazard_id: str):
     }
 
 
+@app.patch("/api/hazards/{hazard_id}", response_model=HazardIncident)
+@app.put("/api/hazards/{hazard_id}", response_model=HazardIncident)
+async def update_hazard(hazard_id: str, updates: Dict[str, Any]):
+    """Updates fields (status, severity, notes, repair cost, etc.) on an existing hazard incident in memory and persistent database."""
+    global hazards_db, work_orders_db
+    target = None
+    for h in hazards_db:
+        if h.id.upper() == hazard_id.upper():
+            target = h
+            break
+    if not target:
+        raise HTTPException(status_code=404, detail=f"Hazard incident '{hazard_id}' not found.")
+
+    actual_id = target.id
+    target_dict = target.model_dump()
+    
+    # Merge updates
+    for k, v in updates.items():
+        if k in ("id", "detected_at"):
+            continue
+        if k == "priority" and isinstance(v, dict):
+            target_dict["priority"].update(v)
+        elif k == "fusion" and isinstance(v, dict):
+            target_dict["fusion"].update(v)
+        elif k in target_dict:
+            target_dict[k] = v
+
+    try:
+        updated_incident = HazardIncident(**target_dict)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Validation error applying updates: {e}")
+
+    # Update in-memory
+    for i, h in enumerate(hazards_db):
+        if h.id == actual_id:
+            hazards_db[i] = updated_incident
+            break
+
+    # If demo hazard, also update cache
+    for i, dh in enumerate(demo_hazards_cache):
+        if dh.id == actual_id:
+            demo_hazards_cache[i] = updated_incident
+            break
+
+    # Persist to database
+    try:
+        from backend.core.database import update_db_hazard
+        update_db_hazard(actual_id, target_dict)
+    except Exception as e:
+        logger.debug(f"DB update hazard error: {e}")
+
+    # Save to disk stores
+    save_persisted_citizen_hazards(hazards_db)
+    
+    # Re-cluster work orders
+    work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+
+    return updated_incident
+
+
+@app.post("/api/hazards", response_model=HazardIncident)
+async def create_hazard_manual(incident_data: Dict[str, Any]):
+    """Creates a new road hazard record and persists it to database."""
+    global hazards_db, work_orders_db
+    if "id" not in incident_data or not incident_data["id"]:
+        incident_data["id"] = f"HAZ-{datetime.now().strftime('%y%m%d')}-{uuid.uuid4().hex[:4].upper()}"
+    if "detected_at" not in incident_data:
+        incident_data["detected_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # If missing fusion or priority, auto-generate defaults
+    if "fusion" not in incident_data:
+        incident_data["fusion"] = {
+            "visual_score": 0.85,
+            "inertial_score": 0.8,
+            "acoustic_score": 0.5,
+            "text_score": 0.5,
+            "fused_confidence": 0.85,
+            "is_false_positive": False,
+            "physical_depth_cm": 5.0,
+            "physical_area_sqm": 0.8,
+            "confidence_breakdown": {}
+        }
+    if "priority" not in incident_data:
+        incident_data["priority"] = {
+            "raw_risk_score": 80.0,
+            "pci_deduct_value": 35.0,
+            "pavement_vulnerability_index": 1.2,
+            "safety_urgency_multiplier": 1.5,
+            "traffic_impact_factor": 1.2,
+            "environmental_acceleration_factor": 1.0,
+            "final_priority_rank": 1,
+            "estimated_repair_cost_usd": 22000.0,
+            "recommended_repair_technique": "Bituminous Concrete Patching",
+            "estimated_crew_hours": 3.0
+        }
+
+    try:
+        incident = HazardIncident(**incident_data)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Invalid hazard data: {e}")
+
+    hazards_db.insert(0, incident)
+    
+    # Save to DB
+    try:
+        from backend.core.database import save_db_hazards
+        save_db_hazards([incident.model_dump()])
+    except Exception as e:
+        logger.debug(f"DB save error: {e}")
+        
+    save_persisted_citizen_hazards(hazards_db)
+    work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
+    return incident
+
+
 @app.post("/api/hazards/inspect", response_model=HazardIncident)
 async def inspect_multimodal(payload: MultimodalUploadRequest):
     detections = vision_engine.analyze_image(
@@ -652,13 +779,78 @@ async def regenerate_work_orders():
     return work_orders_db
 
 
-@app.post("/api/work-orders/{order_id}/status")
-async def update_work_order_status(order_id: str, status: str = Form(...)):
+@app.get("/api/work-orders/{order_id}", response_model=WorkOrder)
+async def get_work_order_detail(order_id: str):
     for wo in work_orders_db:
         if wo.id.upper() == order_id.upper():
-            wo.status = status
-            return {"success": True, "order_id": order_id, "new_status": status}
-    raise HTTPException(status_code=404, detail="Work order not found")
+            return wo
+    raise HTTPException(status_code=404, detail=f"Work order '{order_id}' not found")
+
+
+@app.post("/api/work-orders/{order_id}/status")
+@app.patch("/api/work-orders/{order_id}/status")
+async def update_work_order_status(
+    order_id: str,
+    status: Optional[str] = Form(None),
+    payload: Optional[Dict[str, Any]] = None
+):
+    """Updates the status of a work order and persists it to Vercel Postgres or SQLite database."""
+    new_status = status
+    if not new_status and payload and "status" in payload:
+        new_status = str(payload["status"])
+    if not new_status:
+        new_status = "in_progress"
+
+    for wo in work_orders_db:
+        if wo.id.upper() == order_id.upper():
+            try:
+                wo.status = new_status
+            except Exception:
+                pass
+            
+            # Persist to database
+            try:
+                from backend.core.database import update_db_work_order_status
+                update_db_work_order_status(wo.id, str(new_status))
+            except Exception as e:
+                logger.debug(f"DB update work order status error: {e}")
+                
+            return {
+                "success": True,
+                "order_id": wo.id,
+                "new_status": str(new_status),
+                "work_order": wo.model_dump()
+            }
+    raise HTTPException(status_code=404, detail=f"Work order '{order_id}' not found")
+
+
+@app.delete("/api/work-orders/{order_id}")
+async def delete_work_order_endpoint(order_id: str):
+    """Deletes a work order from memory and persistent database."""
+    global work_orders_db
+    target = None
+    for wo in work_orders_db:
+        if wo.id.upper() == order_id.upper():
+            target = wo
+            break
+    if not target:
+        raise HTTPException(status_code=404, detail=f"Work order '{order_id}' not found")
+
+    actual_id = target.id
+    work_orders_db[:] = [wo for wo in work_orders_db if wo.id.upper() != order_id.upper()]
+
+    try:
+        from backend.core.database import delete_db_work_order
+        delete_db_work_order(actual_id)
+    except Exception as e:
+        logger.debug(f"DB delete work order error: {e}")
+
+    return {
+        "status": "success",
+        "message": f"Work order '{actual_id}' deleted successfully.",
+        "deleted_id": actual_id,
+        "remaining_work_orders": len(work_orders_db)
+    }
 
 
 @app.post("/api/copilot/chat", response_model=CopilotResponse)
@@ -724,6 +916,14 @@ async def ingest_citizen_report(req: CitizenSubmissionRequest):
     incident, ticket = ingestion_service.process_citizen_report(req, hazards_db)
     hazards_db.insert(0, incident)
     save_persisted_citizen_hazards(hazards_db)
+    
+    # Save ticket to database
+    try:
+        from backend.core.database import save_db_citizen_report
+        save_db_citizen_report(ticket.model_dump())
+    except Exception as e:
+        logger.debug(f"DB citizen report save warning: {e}")
+
     global work_orders_db
     work_orders_db = prioritization_engine.cluster_and_generate_work_orders(hazards_db)
     return ticket
@@ -735,8 +935,35 @@ async def get_citizen_ticket_status(ticket_id: str):
     sync_hazards_from_disk()
     ticket = ingestion_service.get_ticket_status(ticket_id, hazards_db)
     if not ticket:
+        # Check database fallback
+        try:
+            from backend.core.database import get_db_citizen_report
+            d = get_db_citizen_report(ticket_id)
+            if d:
+                return CitizenTicketResponse(**d)
+        except Exception:
+            pass
         raise HTTPException(status_code=404, detail=f"Ticket '{ticket_id}' not found.")
     return ticket
+
+
+@app.patch("/api/ingest/citizen-report/{ticket_id}/status")
+async def update_citizen_ticket_status(ticket_id: str, payload: Dict[str, Any]):
+    """Allows PWD engineers or admins to update the status of a citizen ticket."""
+    new_status = payload.get("status", "verified")
+    ticket = ingestion_service.get_ticket_status(ticket_id, hazards_db)
+    if not ticket:
+        raise HTTPException(status_code=404, detail=f"Ticket '{ticket_id}' not found.")
+    
+    ticket.status = new_status
+    ticket_dict = ticket.model_dump()
+    try:
+        from backend.core.database import save_db_citizen_report
+        save_db_citizen_report(ticket_dict)
+    except Exception as e:
+        logger.debug(f"DB ticket status update error: {e}")
+        
+    return {"success": True, "ticket_id": ticket_id, "new_status": new_status, "ticket": ticket_dict}
 
 
 @app.post("/api/ingest/cctv-feed")

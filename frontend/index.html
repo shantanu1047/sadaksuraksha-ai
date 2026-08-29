@@ -2218,8 +2218,14 @@
       <div class="tricolor-strip"></div>
       
       <div class="p-5 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white z-10">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2.5">
           <div id="modal-badge-severity" class="px-3 py-1 rounded-full text-xs font-bold font-mono border border-slate-300">CRITICAL</div>
+          <select id="modal-status-select" onchange="updateCurrentModalHazardStatus(this.value)" class="px-2.5 py-1 rounded-full text-xs font-bold font-mono bg-white border border-slate-300 text-slate-800 focus:outline-none focus:border-orange-500 cursor-pointer shadow-2xs">
+            <option value="Active">🟢 Active</option>
+            <option value="In_Progress">🟡 In Progress</option>
+            <option value="Resolved">🔵 Resolved</option>
+            <option value="Deferred">⚪ Deferred</option>
+          </select>
           <div>
             <div class="flex items-center gap-2">
               <h3 id="modal-title" class="text-base font-black text-black">Hazard Title</h3>
@@ -2496,7 +2502,7 @@
   </div>
 
   <script src="/static/js/i18n.js?v=3.3.0"></script>
-  <script src="/static/js/app.js?v=4.4.0-delete-hazard"></script>
+  <script src="/static/js/app.js?v=4.5.0-crud-db"></script>
 </body>
 </html>
 

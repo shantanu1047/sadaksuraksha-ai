@@ -1464,13 +1464,19 @@ function renderWorkOrders(workOrders) {
       </div>
 
       <div class="flex items-center justify-between border-t border-slate-100 pt-3.5 text-xs">
-        <span class="text-slate-700 font-mono font-bold">Status: <strong class="text-emerald-800 font-black">${(wo.status || 'APPROVED').toUpperCase()}</strong></span>
-        <div class="flex items-center gap-2">
-          <a href="https://www.google.com/maps/search/?api=1&query=${centerLat},${centerLng}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-950 text-xs font-bold flex items-center gap-1 transition-colors shadow-xs">
+        <span class="text-slate-700 font-mono font-bold">Status: <strong class="${wo.status === 'completed' ? 'text-blue-700' : (wo.status === 'in_progress' ? 'text-amber-700' : 'text-emerald-800')} font-black">${(wo.status || 'SCHEDULED').toUpperCase()}</strong></span>
+        <div class="flex items-center gap-1.5">
+          <a href="https://www.google.com/maps/search/?api=1&query=${centerLat},${centerLng}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-950 text-xs font-bold flex items-center gap-1 transition-colors shadow-xs">
             🗺️ Maps ↗
           </a>
-          <button onclick="dispatchWorkOrder('${wo.id}')" class="px-3.5 py-1.5 rounded-xl font-bold bg-[#138808] hover:bg-[#0f6b06] border border-emerald-700 text-white text-xs transition-colors shadow-xs cursor-pointer">
-            Dispatch Crew
+          <button onclick="dispatchWorkOrder('${wo.id}')" class="px-3 py-1.5 rounded-xl font-bold ${wo.status === 'in_progress' ? 'bg-amber-600 hover:bg-amber-700' : 'bg-[#138808] hover:bg-[#0f6b06]'} text-white text-xs transition-colors shadow-xs cursor-pointer" title="Dispatch Crew">
+            ${wo.status === 'in_progress' ? 'In Progress' : 'Dispatch'}
+          </button>
+          <button onclick="completeWorkOrder('${wo.id}')" title="Mark as Completed" class="p-1.5 rounded-xl bg-slate-100 hover:bg-blue-100 border border-slate-300 text-slate-700 hover:text-blue-800 transition-colors shadow-xs cursor-pointer">
+            <i data-lucide="check" class="w-3.5 h-3.5"></i>
+          </button>
+          <button onclick="deleteWorkOrder('${wo.id}')" title="Delete Work Order" class="p-1.5 rounded-xl bg-slate-100 hover:bg-rose-100 border border-slate-300 text-slate-700 hover:text-rose-700 transition-colors shadow-xs cursor-pointer">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
           </button>
         </div>
       </div>
@@ -1478,6 +1484,7 @@ function renderWorkOrders(workOrders) {
 
     container.appendChild(card);
   });
+  lucide.createIcons();
 }
 
 async function regenerateWorkOrders() {
@@ -1490,8 +1497,61 @@ async function regenerateWorkOrders() {
   }
 }
 
-function dispatchWorkOrder(orderId) {
-  alert(`PWD / NHAI Dispatch Notification: Maintenance fleet assigned and route loaded for ${orderId}. Traffic police advisories issued.`);
+async function dispatchWorkOrder(orderId) {
+  try {
+    const res = await fetch(`/api/work-orders/${encodeURIComponent(orderId)}/status`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ status: 'in_progress' })
+    });
+    if (res.ok) {
+      const wo = allWorkOrders.find(w => w.id === orderId);
+      if (wo) wo.status = 'in_progress';
+      renderWorkOrders(allWorkOrders);
+    } else {
+      alert(`Could not dispatch work order: ${res.statusText}`);
+    }
+  } catch (err) {
+    console.error('Work order dispatch error:', err);
+    alert(`Failed to dispatch work order: ${err.message}`);
+  }
+}
+
+async function completeWorkOrder(orderId) {
+  try {
+    const res = await fetch(`/api/work-orders/${encodeURIComponent(orderId)}/status`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ status: 'completed' })
+    });
+    if (res.ok) {
+      const wo = allWorkOrders.find(w => w.id === orderId);
+      if (wo) wo.status = 'completed';
+      renderWorkOrders(allWorkOrders);
+    }
+  } catch (err) {
+    console.error('Complete work order error:', err);
+  }
+}
+
+async function deleteWorkOrder(orderId) {
+  const confirmed = confirm(`Are you sure you want to delete work order '${orderId}'?`);
+  if (!confirmed) return;
+  try {
+    const res = await fetch(`/api/work-orders/${encodeURIComponent(orderId)}`, {
+      method: 'DELETE'
+    });
+    if (res.ok) {
+      allWorkOrders = allWorkOrders.filter(w => w.id !== orderId);
+      renderWorkOrders(allWorkOrders);
+      const kpiWo = document.getElementById('kpi-work-orders');
+      if (kpiWo) kpiWo.textContent = allWorkOrders.length;
+    } else {
+      alert(`Could not delete work order: ${res.statusText}`);
+    }
+  } catch (err) {
+    console.error('Delete work order error:', err);
+  }
 }
 
 // ==========================================
@@ -1810,6 +1870,11 @@ function openIncidentModal(hazardId) {
   document.getElementById('modal-repair-technique').textContent = h.priority?.recommended_repair_technique || 'Bituminous Hot-Mix Patching';
   document.getElementById('modal-repair-hours').textContent = `Estimated Crew Hours: ${h.priority?.estimated_crew_hours || 3.5} hrs`;
 
+  const statusSelect = document.getElementById('modal-status-select');
+  if (statusSelect) {
+    statusSelect.value = h.status || 'Active';
+  }
+
   // Set Google Maps redirection links
   const modalGmaps = document.getElementById('modal-gmaps-link');
   if (modalGmaps) {
@@ -1878,6 +1943,44 @@ function openIncidentModal(hazardId) {
 
 function closeIncidentModal() {
   document.getElementById('incident-modal').classList.add('hidden');
+}
+
+async function updateCurrentModalHazardStatus(newStatus) {
+  if (!selectedHazard || !selectedHazard.id) return;
+  await updateHazardStatus(selectedHazard.id, { status: newStatus });
+}
+
+async function updateHazardStatus(hazardId, updates) {
+  if (!hazardId || !updates) return;
+  try {
+    const res = await fetch(`/api/hazards/${encodeURIComponent(hazardId)}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      alert(`Could not update hazard: ${err.detail || res.statusText}`);
+      return;
+    }
+    const updated = await res.json();
+    
+    // Update local state
+    const idx = allHazards.findIndex(h => h.id === hazardId);
+    if (idx !== -1) {
+      allHazards[idx] = updated;
+    }
+    if (selectedHazard && selectedHazard.id === hazardId) {
+      selectedHazard = updated;
+      const statusSelect = document.getElementById('modal-status-select');
+      if (statusSelect) statusSelect.value = updated.status || 'Active';
+    }
+    
+    applyStateAndSearchFilters();
+  } catch (err) {
+    console.error('Update hazard error:', err);
+    alert(`Failed to update hazard: ${err.message}`);
+  }
 }
 
 function promptDeleteHazard(hazardId) {
