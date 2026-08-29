@@ -403,11 +403,23 @@ async function refreshAllData() {
 async function resetCitizenDatabase() {
   try {
     localStorage.removeItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS');
-    await fetch('/api/hazards/reset', { method: 'POST' });
+    const res = await fetch('/api/hazards/reset', { method: 'POST' });
+    if (!res.ok) {
+      throw new Error(`Server returned HTTP ${res.status}`);
+    }
+    const data = await res.json();
+    
+    // Clear local state
+    allHazards = [];
+    allWorkOrders = [];
+    
     await refreshAllData();
-    alert('Database cleared and reset to fresh state.');
+    applyStateAndSearchFilters();
+    
+    alert(`Database successfully reset.\n${data.message || 'All citizen complaints cleared.'}`);
   } catch (e) {
     console.error('Reset failed:', e);
+    alert('Failed to reset database: ' + (e.message || e));
   }
 }
 window.resetCitizenDatabase = resetCitizenDatabase;
@@ -501,23 +513,30 @@ function getFilteredHazards() {
   return allHazards.filter(rawH => {
     const h = normalizeHazard(rawH);
     // 1. State Filter
-    const matchesState = (currentStateFilter === 'all') || (h.state && h.state.toLowerCase() === currentStateFilter.toLowerCase());
+    const filterState = (currentStateFilter || 'all').trim().toLowerCase();
+    const matchesState = (filterState === 'all' || filterState === 'all india') || 
+      (h.state && h.state.trim().toLowerCase() === filterState);
     
     // 2. City Filter
     let matchesCity = true;
-    if (currentCityFilter && currentCityFilter !== 'all' && currentCityFilter !== 'All Cities') {
-      matchesCity = (h.city && h.city.toLowerCase() === currentCityFilter.toLowerCase());
+    const filterCity = (currentCityFilter || 'all').trim().toLowerCase();
+    if (filterCity && filterCity !== 'all' && filterCity !== 'all cities') {
+      matchesCity = (h.city && h.city.trim().toLowerCase() === filterCity);
     }
 
     // 3. Category Filter
     let matchesCategory = true;
     const isFP = h.fusion?.is_false_positive || false;
+    const hSev = String(h.severity || '').toLowerCase();
+    const hType = String(h.hazard_type || '').toLowerCase();
+    const hRoadClass = String(h.road_class || '').toLowerCase();
+
     if (currentCategoryFilter === 'critical') {
-      matchesCategory = (h.severity === 'critical' && !isFP);
+      matchesCategory = (hSev === 'critical' && !isFP);
     } else if (currentCategoryFilter === 'pothole') {
-      matchesCategory = (h.hazard_type === 'pothole' && !isFP);
+      matchesCategory = (hType === 'pothole' && !isFP);
     } else if (currentCategoryFilter === 'hospital') {
-      matchesCategory = (h.road_class === 'hospital_corridor' && !isFP);
+      matchesCategory = (hRoadClass === 'hospital_corridor' && !isFP);
     }
 
     // 4. Search Query Filter (State, City, Road Name, Title, Type)
@@ -535,34 +554,46 @@ function getFilteredHazards() {
 function applyStateAndSearchFilters() {
   const filteredHazards = getFilteredHazards();
   
-  const filteredWorkOrders = (currentStateFilter === 'all')
+  const filterState = (currentStateFilter || 'all').trim().toLowerCase();
+  const isAllIndia = filterState === 'all' || filterState === 'all india';
+
+  const filteredWorkOrders = isAllIndia
     ? allWorkOrders
-    : allWorkOrders.filter(wo => wo.state && wo.state.toLowerCase() === currentStateFilter.toLowerCase());
+    : allWorkOrders.filter(wo => wo.state && wo.state.trim().toLowerCase() === filterState);
 
   renderIncidentFeed(filteredHazards);
   renderMapMarkers(filteredHazards);
   renderWorkOrders(filteredWorkOrders);
 
-  // Recalculate quick KPI values for current filtered subset
-  const actionable = filteredHazards.filter(h => !h.fusion?.is_false_positive);
-  const critical = actionable.filter(h => h.severity === 'critical').length;
-  const fp = filteredHazards.filter(h => h.fusion?.is_false_positive).length;
+  // Recalculate quick KPI values for current selected State (or All India)
+  const stateHazards = isAllIndia
+    ? allHazards
+    : allHazards.filter(h => h.state && h.state.trim().toLowerCase() === filterState);
+
+  const actionable = stateHazards.filter(h => !h.fusion?.is_false_positive);
+  const critical = actionable.filter(h => String(h.severity || '').toLowerCase() === 'critical').length;
+  const fp = stateHazards.filter(h => h.fusion?.is_false_positive).length;
   const totalCost = actionable.reduce((acc, h) => acc + (h.priority?.estimated_repair_cost_usd || 0), 0);
 
-  document.getElementById('kpi-critical').textContent = critical;
-  document.getElementById('kpi-total').textContent = actionable.length;
-  document.getElementById('kpi-fp').textContent = fp;
-  document.getElementById('kpi-work-orders').textContent = filteredWorkOrders.length;
-  document.getElementById('kpi-cost').textContent = formatINR(totalCost);
+  const kpiCrit = document.getElementById('kpi-critical');
+  const kpiTot = document.getElementById('kpi-total');
+  const kpiFp = document.getElementById('kpi-fp');
+  const kpiWo = document.getElementById('kpi-work-orders');
+  const kpiCost = document.getElementById('kpi-cost');
+
+  if (kpiCrit) kpiCrit.textContent = critical;
+  if (kpiTot) kpiTot.textContent = actionable.length;
+  if (kpiFp) kpiFp.textContent = fp;
+  if (kpiWo) kpiWo.textContent = filteredWorkOrders.length;
+  if (kpiCost) kpiCost.textContent = formatINR(totalCost);
 }
 
 function updateKpiBar(analytics) {
-  document.getElementById('kpi-critical').textContent = analytics.critical_hazards;
-  document.getElementById('kpi-total').textContent = analytics.total_active_hazards;
-  document.getElementById('kpi-fp').textContent = analytics.false_positives_filtered;
-  document.getElementById('kpi-pci').innerHTML = `${analytics.average_network_pci} <span class="text-xs text-slate-400">/100</span>`;
-  document.getElementById('kpi-work-orders').textContent = analytics.active_work_orders_count;
-  document.getElementById('kpi-cost').textContent = formatINR(analytics.total_estimated_repair_cost_usd);
+  if (!analytics) return;
+  const kpiPci = document.getElementById('kpi-pci');
+  if (kpiPci && analytics.average_network_pci !== undefined) {
+    kpiPci.innerHTML = `${analytics.average_network_pci} <span class="text-xs text-slate-400">/100</span>`;
+  }
 }
 
 // ==========================================
@@ -940,7 +971,40 @@ function renderIncidentFeed(hazards) {
 // ==========================================
 // LIVE MULTIMODAL INSPECTION STUDIO
 // ==========================================
-function loadStudioScenario(type) {
+async function loadStudioScenario(type) {
+  const imgElem = document.getElementById('studio-image-display');
+  const targetSrc = SCENARIO_IMAGES[type] || SCENARIO_IMAGES.pothole;
+  imgElem.src = targetSrc;
+
+  // Run live inspection through the AI backend (SmartCity YOLO on port 8001)
+  try {
+    const res = await fetch('/api/hazards/inspect', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        image_base64: targetSrc.startsWith('data:') ? targetSrc : '',
+        image_url: targetSrc.startsWith('data:') ? null : targetSrc,
+        latitude: 28.6139,
+        longitude: 77.2090,
+        state: 'Delhi NCR',
+        city: 'New Delhi',
+        acc_z_g: type === 'shadow_fp' ? 1.02 : 2.4,
+        vertical_jerk: type === 'shadow_fp' ? 0.2 : 9.5,
+        acoustic_db: type === 'shadow_fp' ? 38.0 : 72.0,
+        road_class: 'arterial',
+        road_name: 'SmartCity AI Inspection'
+      })
+    });
+    if (res.ok) {
+      const liveHazard = await res.json();
+      renderStudioCanvasOverlay(liveHazard);
+      updateStudioTelemetry(liveHazard);
+      return;
+    }
+  } catch (err) {
+    console.warn('Live scenario inspection fallback:', err);
+  }
+
   let hazardData = allHazards.find(h => {
     if (type === 'shadow_fp') return h.fusion.is_false_positive;
     if (type === 'submerged') return h.title.includes('Submerged');
@@ -948,12 +1012,7 @@ function loadStudioScenario(type) {
     return h.hazard_type === 'pothole' && !h.fusion.is_false_positive;
   }) || allHazards[0];
 
-  const imgElem = document.getElementById('studio-image-display');
-  imgElem.src = SCENARIO_IMAGES[type] || SCENARIO_IMAGES.pothole;
-  imgElem.onload = () => {
-    renderStudioCanvasOverlay(hazardData);
-  };
-
+  renderStudioCanvasOverlay(hazardData);
   updateStudioTelemetry(hazardData);
 }
 

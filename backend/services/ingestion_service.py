@@ -46,8 +46,9 @@ class IngestionService:
         self.vision_engine = VisionEngine()
         self.fusion_engine = SensorFusionEngine()
         self.prioritization_engine = PrioritizationEngine()
-        self.citizen_ticket_counter = 0
         self.citizen_tickets: Dict[str, CitizenTicketResponse] = {}
+        self.reset()
+
     def reset(self):
         """Reset ingestion ticket cache and frame counters."""
         self.citizen_tickets.clear()
