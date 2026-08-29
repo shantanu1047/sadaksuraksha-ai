@@ -2320,7 +2320,10 @@ function closeIncidentModal() {
 }
 
 function openApiKeyModal() {
-  document.getElementById('input-api-key').value = userApiKey;
+  const geminiInput = document.getElementById('input-api-key');
+  const gmapsInput = document.getElementById('input-gmaps-api-key');
+  if (geminiInput) geminiInput.value = userApiKey || localStorage.getItem('SADAKSURAKSHA_GEMINI_KEY') || '';
+  if (gmapsInput) gmapsInput.value = localStorage.getItem('SADAKSURAKSHA_GMAPS_KEY') || '';
   document.getElementById('apikey-modal').classList.remove('hidden');
 }
 
@@ -2328,9 +2331,30 @@ function closeApiKeyModal() {
   document.getElementById('apikey-modal').classList.add('hidden');
 }
 
-function saveApiKey() {
-  userApiKey = document.getElementById('input-api-key').value.trim();
-  localStorage.setItem('SADAKSURAKSHA_GEMINI_KEY', userApiKey);
+async function saveApiKey() {
+  const geminiInput = document.getElementById('input-api-key');
+  const gmapsInput = document.getElementById('input-gmaps-api-key');
+  
+  const gKey = geminiInput ? geminiInput.value.trim() : '';
+  const mKey = gmapsInput ? gmapsInput.value.trim() : '';
+
+  userApiKey = gKey;
+  localStorage.setItem('SADAKSURAKSHA_GEMINI_KEY', gKey);
+  localStorage.setItem('SADAKSURAKSHA_GMAPS_KEY', mKey);
+
+  try {
+    await fetch('/api/config/apikey', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        api_key: gKey,
+        google_maps_api_key: mKey
+      })
+    });
+  } catch (e) {
+    console.debug('Failed to sync keys with server:', e);
+  }
+
   updateApiKeyDisplay();
   closeApiKeyModal();
 }

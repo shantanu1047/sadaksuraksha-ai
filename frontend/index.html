@@ -2365,22 +2365,41 @@
 
   <!-- API KEY CONFIG MODAL -->
   <div id="apikey-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] hidden flex items-center justify-center p-4" style="z-index: 99999 !important;">
-    <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-md p-6 flex flex-col gap-4 text-black overflow-hidden relative shadow-2xl">
+    <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-lg p-6 flex flex-col gap-4 text-black overflow-hidden relative shadow-2xl">
       <div class="tricolor-strip -mx-6 -mt-6 mb-2"></div>
 
       <div class="flex items-center justify-between border-b border-slate-200 pb-3">
         <h3 class="text-sm font-black text-black flex items-center gap-2">
-          <i data-lucide="key" class="w-4 h-4 text-orange-600"></i> Configure Google Gemini API Key
+          <i data-lucide="key" class="w-4 h-4 text-orange-600"></i> Configure Google Cloud & Maps API Keys
         </h3>
         <button onclick="closeApiKeyModal()" class="text-slate-600 hover:text-red-600 cursor-pointer">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
-      <p class="text-xs text-slate-700 font-medium">Enter your Gemini API Key to enable live cloud multimodal vision defect analysis and real-time generative infrastructure reasoning.</p>
-      <input type="password" id="input-api-key" placeholder="AIzaSy..." class="bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:border-orange-500 focus:bg-orange-50/30">
-      <div class="flex items-center justify-end gap-2 pt-2">
+      
+      <!-- Google Gemini API Key Input -->
+      <div class="space-y-1.5">
+        <label class="text-xs font-bold text-slate-800 flex items-center justify-between">
+          <span class="flex items-center gap-1.5">✨ Google Gemini AI Key <span class="text-[10px] text-slate-500 font-normal">(Vision & Copilot)</span></span>
+        </label>
+        <input type="password" id="input-api-key" placeholder="AIzaSy... (Gemini Key)" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:border-orange-500 focus:bg-orange-50/30">
+      </div>
+
+      <!-- Google Maps Platform API Key Input -->
+      <div class="space-y-1.5">
+        <label class="text-xs font-bold text-slate-800 flex items-center justify-between">
+          <span class="flex items-center gap-1.5">🗺️ Google Maps Platform Key <span class="text-[10px] text-slate-500 font-normal">(Maps JS, Places & Routes)</span></span>
+        </label>
+        <input type="password" id="input-gmaps-api-key" placeholder="AIzaSy... (Google Maps Key)" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:border-blue-500 focus:bg-blue-50/30">
+      </div>
+
+      <p class="text-[11px] text-slate-500 leading-relaxed">
+        Keys are stored securely in your session and enable live cloud multimodal defect vision and official Google Maps routing.
+      </p>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
         <button onclick="closeApiKeyModal()" class="px-3.5 py-1.5 rounded-xl text-xs font-bold text-black hover:bg-slate-100 border border-slate-300 cursor-pointer">Cancel</button>
-        <button onclick="saveApiKey()" class="px-4 py-1.5 rounded-xl text-xs font-black bg-[#FF9933] hover:bg-[#F28500] border border-amber-600 text-black shadow-xs cursor-pointer">Save Key</button>
+        <button onclick="saveApiKey()" class="px-4 py-1.5 rounded-xl text-xs font-black bg-[#FF9933] hover:bg-[#F28500] border border-amber-600 text-black shadow-xs cursor-pointer">Save Keys</button>
       </div>
     </div>
   </div>

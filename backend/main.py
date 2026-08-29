@@ -554,35 +554,52 @@ async def health_check():
 
 @app.get("/api/config/apikey")
 async def get_api_key_status():
-    """Check if Gemini API Key is currently active on the server."""
+    """Check if Gemini and Google Maps API Keys are currently active on the server."""
     key = os.environ.get("GEMINI_API_KEY", "")
+    gmaps_key = os.environ.get("GOOGLE_MAPS_API_KEY", "")
     masked = f"{key[:4]}...{key[-4:]}" if len(key) > 8 else ("Configured" if key else "")
+    gmaps_masked = f"{gmaps_key[:4]}...{gmaps_key[-4:]}" if len(gmaps_key) > 8 else ("Configured" if gmaps_key else "")
     return {
         "configured": bool(key),
         "masked_key": masked,
+        "google_maps_configured": bool(gmaps_key),
+        "google_maps_masked": gmaps_masked,
         "model": "gemini-2.5-flash" if key else "onboard-heuristic-cv"
     }
 
 
 @app.post("/api/config/apikey")
 async def set_api_key(payload: Dict[str, Any]):
-    """Hot-swap Gemini API Key dynamically on the live server."""
+    """Hot-swap Gemini and Google Maps API Keys dynamically on the live server."""
     global vision_engine, copilot_service
     key = str(payload.get("api_key", "")).strip()
+    gmaps_key = str(payload.get("google_maps_api_key", "")).strip()
+
+    if gmaps_key:
+        os.environ["GOOGLE_MAPS_API_KEY"] = gmaps_key
+
     if key:
         os.environ["GEMINI_API_KEY"] = key
         vision_engine = VisionEngine(api_key=key)
         copilot_service = CopilotService(api_key=key)
         return {
             "status": "success",
-            "message": "Google Gemini 2.5 Flash API Key connected and active.",
+            "message": "Google Cloud & Maps API Keys connected and active.",
             "configured": True,
+            "google_maps_configured": bool(os.environ.get("GOOGLE_MAPS_API_KEY")),
             "model": "gemini-2.5-flash"
         }
     else:
-        os.environ.pop("GEMINI_API_KEY", None)
-        vision_engine = VisionEngine()
-        copilot_service = CopilotService()
+        if "api_key" in payload and not key:
+            os.environ.pop("GEMINI_API_KEY", None)
+            vision_engine = VisionEngine()
+            copilot_service = CopilotService()
+        return {
+            "status": "success",
+            "message": "API key configuration updated.",
+            "configured": bool(os.environ.get("GEMINI_API_KEY")),
+            "google_maps_configured": bool(os.environ.get("GOOGLE_MAPS_API_KEY"))
+        }
         return {
             "status": "success",
             "message": "Reverted to Onboard Local Computer Vision Engine.",
