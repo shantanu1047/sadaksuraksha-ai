@@ -2172,119 +2172,7 @@
           </div>
         </div>
         <div id="resource-teams-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <!-- Team A -->
-          <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-xs flex flex-col justify-between gap-3 text-black">
-            <div>
-              <div class="flex items-start justify-between gap-2 mb-2">
-                <div>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-black font-mono uppercase border bg-emerald-100 border-emerald-300 text-emerald-900">
-                    Available
-                  </span>
-                  <h4 class="text-sm font-black text-black mt-1">TEAM A (Rapid Pothole & Jet Patch Unit)</h4>
-                  <p class="text-xs text-slate-600 font-medium">North Zone • 6 Technicians</p>
-                </div>
-                <span class="text-xs font-mono font-black text-red-600">CRITICAL</span>
-              </div>
-              <div class="space-y-1 mb-3">
-                <p class="text-xs text-slate-700 font-semibold flex items-center gap-1.5">
-                  <i data-lucide="wrench" class="w-3.5 h-3.5 text-slate-500"></i>
-                  <span>Jet Patcher (JP-04), Vibratory Tandem Roller 8T</span>
-                </p>
-                <p class="text-xs text-slate-600 flex items-center gap-1.5">
-                  <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-500"></i>
-                  <span>Target: NH-52 Jaipur-Sikar Expressway Pothole Cluster</span>
-                </p>
-              </div>
-            </div>
-            <div>
-              <div class="flex items-center justify-between text-xs font-bold text-slate-700 mb-1">
-                <span>Workload Capacity</span>
-                <span>25%</span>
-              </div>
-              <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden mb-3">
-                <div class="h-full rounded-full bg-emerald-600" style="width: 25%"></div>
-              </div>
-              <button onclick="dispatchTeam('TEAM-A')" class="w-full py-2 rounded-xl text-xs font-black bg-cyan-600 hover:bg-cyan-700 text-white transition-colors cursor-pointer flex items-center justify-center gap-1.5">
-                <i data-lucide="send" class="w-3.5 h-3.5"></i> Dispatch Crew to Site
-              </button>
-            </div>
-          </div>
-
-          <!-- Team B -->
-          <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-xs flex flex-col justify-between gap-3 text-black">
-            <div>
-              <div class="flex items-start justify-between gap-2 mb-2">
-                <div>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-black font-mono uppercase border bg-amber-100 border-amber-300 text-amber-900">
-                    Busy
-                  </span>
-                  <h4 class="text-sm font-black text-black mt-1">TEAM B (Hot Mix Asphalt Resurfacing Unit)</h4>
-                  <p class="text-xs text-slate-600 font-medium">South Zone • 8 Technicians</p>
-                </div>
-                <span class="text-xs font-mono font-black text-red-600">CRITICAL</span>
-              </div>
-              <div class="space-y-1 mb-3">
-                <p class="text-xs text-slate-700 font-semibold flex items-center gap-1.5">
-                  <i data-lucide="wrench" class="w-3.5 h-3.5 text-slate-500"></i>
-                  <span>Bitumen Distributor, Asphalt Paver 12m</span>
-                </p>
-                <p class="text-xs text-slate-600 flex items-center gap-1.5">
-                  <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-500"></i>
-                  <span>Target: Hosur Road Flyover Ramp Repair</span>
-                </p>
-              </div>
-            </div>
-            <div>
-              <div class="flex items-center justify-between text-xs font-bold text-slate-700 mb-1">
-                <span>Workload Capacity</span>
-                <span>80%</span>
-              </div>
-              <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden mb-3">
-                <div class="h-full rounded-full bg-amber-500" style="width: 80%"></div>
-              </div>
-              <button disabled class="w-full py-2 rounded-xl text-xs font-black bg-slate-200 text-slate-500 cursor-not-allowed flex items-center justify-center gap-1.5">
-                <i data-lucide="clock" class="w-3.5 h-3.5"></i> On Site (Busy)
-              </button>
-            </div>
-          </div>
-
-          <!-- Team C -->
-          <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-xs flex flex-col justify-between gap-3 text-black">
-            <div>
-              <div class="flex items-start justify-between gap-2 mb-2">
-                <div>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-black font-mono uppercase border bg-emerald-100 border-emerald-300 text-emerald-900">
-                    Available
-                  </span>
-                  <h4 class="text-sm font-black text-black mt-1">TEAM C (Monsoon Drainage & Guardrail Unit)</h4>
-                  <p class="text-xs text-slate-600 font-medium">West Zone • 5 Technicians</p>
-                </div>
-                <span class="text-xs font-mono font-black text-amber-600">HIGH</span>
-              </div>
-              <div class="space-y-1 mb-3">
-                <p class="text-xs text-slate-700 font-semibold flex items-center gap-1.5">
-                  <i data-lucide="wrench" class="w-3.5 h-3.5 text-slate-500"></i>
-                  <span>High-Capacity Suction Pump (SP-01), Trench Digger</span>
-                </p>
-                <p class="text-xs text-slate-600 flex items-center gap-1.5">
-                  <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-500"></i>
-                  <span>Target: NH-48 Western Express Drainage Clearing</span>
-                </p>
-              </div>
-            </div>
-            <div>
-              <div class="flex items-center justify-between text-xs font-bold text-slate-700 mb-1">
-                <span>Workload Capacity</span>
-                <span>15%</span>
-              </div>
-              <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden mb-3">
-                <div class="h-full rounded-full bg-emerald-600" style="width: 15%"></div>
-              </div>
-              <button onclick="dispatchTeam('TEAM-C')" class="w-full py-2 rounded-xl text-xs font-black bg-cyan-600 hover:bg-cyan-700 text-white transition-colors cursor-pointer flex items-center justify-center gap-1.5">
-                <i data-lucide="send" class="w-3.5 h-3.5"></i> Dispatch Crew to Site
-              </button>
-            </div>
-          </div>
+          <!-- Dynamically populated crew cards -->
         </div>
       </div>
 
@@ -2315,44 +2203,7 @@
               </tr>
             </thead>
             <tbody id="resource-allocation-table-body" class="divide-y divide-slate-200 font-sans">
-              <tr class="hover:bg-slate-50 transition-colors">
-                <td class="py-3 px-3">
-                  <p class="font-black text-black">Major Pothole Cluster (12cm Deep)</p>
-                  <span class="text-[10px] font-mono font-bold text-slate-500">ID: HAZ-001</span>
-                </td>
-                <td class="py-3 px-3 text-slate-700 font-medium">NH-52 (Jaipur-Sikar Expressway)</td>
-                <td class="py-3 px-3">
-                  <span class="px-2 py-0.5 rounded text-[10px] font-black font-mono border bg-red-100 border-red-300 text-red-900">CRITICAL</span>
-                  <span class="text-xs font-mono font-bold text-slate-700 ml-1.5">96 pts</span>
-                </td>
-                <td class="py-3 px-3 text-slate-700 font-medium">Jet Patcher, Roller</td>
-                <td class="py-3 px-3 font-bold text-black">TEAM A (North Zone)</td>
-                <td class="py-3 px-3 text-slate-700 font-mono font-semibold">3.5 Hours</td>
-                <td class="py-3 px-3 text-right">
-                  <button onclick="allocateCrew('HAZ-001')" class="px-3 py-1.5 rounded-lg text-xs font-black bg-cyan-600 hover:bg-cyan-700 text-white cursor-pointer transition-colors shadow-2xs">
-                    Assign Crew
-                  </button>
-                </td>
-              </tr>
-              <tr class="hover:bg-slate-50 transition-colors">
-                <td class="py-3 px-3">
-                  <p class="font-black text-black">Active Monsoon Waterlogging (18cm)</p>
-                  <span class="text-[10px] font-mono font-bold text-slate-500">ID: HAZ-002</span>
-                </td>
-                <td class="py-3 px-3 text-slate-700 font-medium">NH-48 Western Express (Mumbai)</td>
-                <td class="py-3 px-3">
-                  <span class="px-2 py-0.5 rounded text-[10px] font-black font-mono border bg-amber-100 border-amber-300 text-amber-900">HIGH</span>
-                  <span class="text-xs font-mono font-bold text-slate-700 ml-1.5">84 pts</span>
-                </td>
-                <td class="py-3 px-3 text-slate-700 font-medium">High-Capacity Suction Pump</td>
-                <td class="py-3 px-3 font-bold text-black">TEAM C (West Zone)</td>
-                <td class="py-3 px-3 text-slate-700 font-mono font-semibold">2.0 Hours</td>
-                <td class="py-3 px-3 text-right">
-                  <button onclick="allocateCrew('HAZ-002')" class="px-3 py-1.5 rounded-lg text-xs font-black bg-cyan-600 hover:bg-cyan-700 text-white cursor-pointer transition-colors shadow-2xs">
-                    Assign Crew
-                  </button>
-                </td>
-              </tr>
+              <!-- Dynamically populated incident allocation rows -->
             </tbody>
           </table>
         </div>
@@ -2989,8 +2840,7 @@
     </div>
   </div>
 
-  <script src="/static/js/i18n.js?v=3.3.0"></script>
-  <script src="/static/js/app.js?v=3.3.0"></script>
+  <script src="/static/js/app.js?v=3.3.1-nav-active-fix"></script>
 </body>
 </html>
 
