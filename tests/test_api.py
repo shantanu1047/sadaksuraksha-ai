@@ -471,6 +471,7 @@ def test_vercel_without_cloud_rolls_back_unpersisted_work_order_delete(client, m
     work_order_id = work_orders[0]["id"]
 
     monkeypatch.setenv("VERCEL", "1")
+    monkeypatch.setenv("STRICT_DURABLE_STORAGE", "1")
     monkeypatch.delenv("VERCEL_ENV", raising=False)
     clear_cloud_storage_env(monkeypatch)
 

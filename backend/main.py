@@ -122,40 +122,48 @@ def fetch_data_from_postgres() -> Optional[Dict[str, Any]]:
     dsn = get_postgres_dsn()
     if not dsn or psycopg is None:
         return None
-    try:
-        with psycopg.connect(dsn, connect_timeout=3, autocommit=True) as conn:
-            ensure_postgres_store(conn)
-            row = conn.execute(
-                "SELECT data FROM sadaksuraksha_app_state WHERE name = %s",
-                ("hazards_store",),
-            ).fetchone()
-            if not row:
-                return None
-            return row[0] if isinstance(row[0], dict) else None
-    except Exception as e:
-        logger.warning(f"Postgres hazard store fetch failed: {e}")
-        return None
+    for attempt in range(2):
+        try:
+            with psycopg.connect(dsn, connect_timeout=5, autocommit=True) as conn:
+                ensure_postgres_store(conn)
+                row = conn.execute(
+                    "SELECT data FROM sadaksuraksha_app_state WHERE name = %s",
+                    ("hazards_store",),
+                ).fetchone()
+                if not row:
+                    return None
+                return row[0] if isinstance(row[0], dict) else None
+        except Exception as e:
+            logger.warning(f"Postgres hazard store fetch attempt {attempt + 1} failed: {e}")
+            if attempt == 0:
+                continue
+            return None
+    return None
 
 def save_data_to_postgres(data_block: Dict[str, Any]) -> bool:
     dsn = get_postgres_dsn()
     if not dsn or psycopg is None or Jsonb is None:
         return False
-    try:
-        with psycopg.connect(dsn, connect_timeout=3, autocommit=True) as conn:
-            ensure_postgres_store(conn)
-            conn.execute(
-                """
-                INSERT INTO sadaksuraksha_app_state (name, data, updated_at)
-                VALUES (%s, %s, NOW())
-                ON CONFLICT (name)
-                DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()
-                """,
-                ("hazards_store", Jsonb(data_block)),
-            )
-        return True
-    except Exception as e:
-        logger.warning(f"Postgres hazard store save failed: {e}")
-        return False
+    for attempt in range(2):
+        try:
+            with psycopg.connect(dsn, connect_timeout=5, autocommit=True) as conn:
+                ensure_postgres_store(conn)
+                conn.execute(
+                    """
+                    INSERT INTO sadaksuraksha_app_state (name, data, updated_at)
+                    VALUES (%s, %s, NOW())
+                    ON CONFLICT (name)
+                    DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()
+                    """,
+                    ("hazards_store", Jsonb(data_block)),
+                )
+            return True
+        except Exception as e:
+            logger.warning(f"Postgres hazard store save attempt {attempt + 1} failed: {e}")
+            if attempt == 0:
+                continue
+            return False
+    return False
 
 def cloud_data_block() -> Optional[Dict[str, Any]]:
     pg_data = fetch_data_from_postgres()
@@ -218,7 +226,7 @@ def save_hazards_to_cloud(hazards: List[HazardIncident], demo_seeded: Optional[b
         if curr_cloud and isinstance(curr_cloud.get("demo_seeded"), bool):
             demo_seeded = curr_cloud["demo_seeded"]
         else:
-            demo_seeded = any(not _is_citizen_hazard(h.id) for h in hazards)
+            demo_seeded = False
 
     data_block: Dict[str, Any] = {
         "hazards": citizen_only[:500],
@@ -313,7 +321,9 @@ def has_persistent_hazard_storage() -> bool:
 
 
 def durable_storage_required() -> bool:
-    return is_vercel_runtime() and not os.environ.get("ALLOW_SERVERLESS_FILE_STORAGE")
+    return is_vercel_runtime() and (
+        os.environ.get("STRICT_DURABLE_STORAGE", "").strip() in {"1", "true", "yes"}
+    )
 
 
 def storage_backend_name() -> str:
@@ -346,7 +356,8 @@ def demo_hazards_enabled() -> bool:
     if _in_memory_demo_seeded is not None:
         return _in_memory_demo_seeded
 
-    return os.environ.get("SEED_DEMO_DATA", "true").strip().lower() not in {"0", "false", "no", "off"}
+    # Default to clean empty 0-hazard baseline so only citizen-reported complaints appear unless explicitly requested
+    return os.environ.get("SEED_DEMO_DATA", "false").strip().lower() in {"1", "true", "yes", "on"}
 
 
 def load_deleted_work_order_ids_from_cloud() -> Set[str]:
@@ -919,6 +930,7 @@ async def update_work_order_status(order_id: str, status: str = Form(...)):
 async def delete_work_order(order_id: str):
     """Deletes/cancels a specific PWD work order."""
     global work_orders_db, deleted_work_order_ids
+    sync_hazards_from_disk()
     previous_orders = list(work_orders_db)
     previous_deleted_order_ids = set(deleted_work_order_ids)
     target = None
@@ -932,6 +944,8 @@ async def delete_work_order(order_id: str):
 
     deleted_work_order_ids.add(order_id.upper())
     work_orders_db.remove(target)
+    # Save both to local disk and cloud DB
+    save_persisted_citizen_hazards(hazards_db)
     persisted = save_hazards_to_cloud(hazards_db)
     if durable_storage_required() and not persisted:
         deleted_work_order_ids = previous_deleted_order_ids
