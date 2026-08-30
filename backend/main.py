@@ -313,7 +313,10 @@ def has_persistent_hazard_storage() -> bool:
 
 
 def durable_storage_required() -> bool:
-    return is_vercel_runtime() and not os.environ.get("ALLOW_SERVERLESS_FILE_STORAGE")
+    """Returns True only when strict durable storage is explicitly demanded by env.
+    By default, serverless mutations fall back gracefully to /tmp and in-memory caches
+    so citizen reporting and deletions are never blocked by 503 Service Unavailable."""
+    return os.environ.get("STRICT_DURABLE_STORAGE", "0").strip().lower() in {"1", "true", "yes"}
 
 
 def storage_backend_name() -> str:
@@ -377,11 +380,13 @@ def load_deleted_demo_hazard_ids_from_cloud() -> Set[str]:
 
 
 def load_persisted_citizen_hazards() -> List[HazardIncident]:
-    # 1. Cloud Database (Primary and sole authoritative source of truth across serverless workers)
+    # 1. Cloud Database (Primary authoritative source across serverless workers)
     if postgres_available() or get_cloud_endpoint():
-        return fetch_hazards_from_cloud()
+        cloud_hazards = fetch_hazards_from_cloud()
+        if cloud_hazards:
+            return cloud_hazards
 
-    # 2. Local Disk Stores (Only used when running offline without any cloud DB)
+    # 2. Local Disk Stores (Fallback if cloud returns empty or is unconfigured)
     loaded_map: Dict[str, HazardIncident] = {}
     for p in get_storage_paths():
         try:
@@ -421,16 +426,19 @@ def save_persisted_citizen_hazards(incidents: List[HazardIncident]) -> bool:
             logger.debug(f"Could not persist hazard to {p}: {e}")
 
     # 2. Save atomically to Cloud Database
-    return save_hazards_to_cloud(incidents) or saved
+    cloud_saved = save_hazards_to_cloud(incidents)
+    if durable_storage_required():
+        return cloud_saved
+    return cloud_saved or saved
 
 
 import re as _re
-_CITIZEN_HAZARD_ID_RE = _re.compile(r'^HAZ-\d{6}-.+$')
+_DEMO_HAZARD_ID_RE = _re.compile(r'^HAZ-\d{3,4}$', _re.IGNORECASE)
 
 def _is_citizen_hazard(hazard_id: str) -> bool:
-    """Returns True only for citizen-submitted hazard IDs (HAZ-YYMMDD-XXXX format).
-    Demo hazards use HAZ-NNN (short number) and must never be treated as citizen reports."""
-    return bool(_CITIZEN_HAZARD_ID_RE.match(hazard_id))
+    """Returns True for any hazard that is not a pre-seeded benchmark demo hazard (HAZ-NNN).
+    This accurately preserves all citizen-submitted, live-inspected, and dynamically generated hazards."""
+    return not bool(_DEMO_HAZARD_ID_RE.match(str(hazard_id).strip()))
 
 
 deleted_work_order_ids: Set[str] = load_deleted_work_order_ids_from_cloud()
@@ -487,6 +495,26 @@ def sync_hazards_from_disk():
         persisted, new_wo_ids, new_dh_ids = _parse_cloud_snapshot(snapshot)
         deleted_work_order_ids = new_wo_ids
         deleted_demo_hazard_ids = new_dh_ids
+        # If cloud snapshot contains no citizen hazards, also merge local /tmp disk store if present
+        if not persisted:
+            loaded_map: Dict[str, HazardIncident] = {}
+            for path in get_storage_paths():
+                try:
+                    if path.exists():
+                        with open(path, "r", encoding="utf-8") as f:
+                            content = f.read().strip()
+                        if content:
+                            data = json.loads(content)
+                            if isinstance(data, list):
+                                for d in data:
+                                    if isinstance(d, dict) and d.get("id") and d["id"] not in loaded_map:
+                                        try:
+                                            loaded_map[d["id"]] = HazardIncident(**d)
+                                        except Exception:
+                                            pass
+                except Exception as e:
+                    logger.debug(f"Could not load persisted hazards from {path}: {e}")
+            persisted = list(loaded_map.values())
     else:
         # Local offline disk stores fallback (only when no cloud DB is configured)
         loaded_map: Dict[str, HazardIncident] = {}
@@ -932,7 +960,8 @@ async def delete_work_order(order_id: str):
 
     deleted_work_order_ids.add(order_id.upper())
     work_orders_db.remove(target)
-    persisted = save_hazards_to_cloud(hazards_db)
+    # Save both to local /tmp disk and cloud DB
+    persisted = save_persisted_citizen_hazards(hazards_db)
     if durable_storage_required() and not persisted:
         deleted_work_order_ids = previous_deleted_order_ids
         work_orders_db = previous_orders
