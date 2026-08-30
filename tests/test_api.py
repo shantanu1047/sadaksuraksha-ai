@@ -465,8 +465,7 @@ def test_vercel_without_cloud_rolls_back_unpersisted_hazard_delete(client, monke
     assert not any(h["id"] == hazard_id for h in hazards_res.json())
 
 
-def test_vercel_without_cloud_allows_work_order_delete(client, monkeypatch):
-    """On Vercel without cloud DB, work order deletions should succeed and update /tmp and in-memory state."""
+def test_vercel_without_cloud_rolls_back_unpersisted_work_order_delete(client, monkeypatch):
     work_orders = client.get("/api/work-orders").json()
     assert len(work_orders) > 0
     work_order_id = work_orders[0]["id"]
@@ -476,23 +475,8 @@ def test_vercel_without_cloud_allows_work_order_delete(client, monkeypatch):
     clear_cloud_storage_env(monkeypatch)
 
     delete_res = client.delete(f"/api/work-orders/{work_order_id}")
-    assert delete_res.status_code == 200
-    assert delete_res.json()["status"] == "success"
-
-    work_orders_after = client.get("/api/work-orders").json()
-    assert not any(wo["id"] == work_order_id for wo in work_orders_after)
-
-
-def test_strict_durable_storage_mode_enforces_cloud_backend(client, monkeypatch):
-    """When STRICT_DURABLE_STORAGE=1 is explicitly requested, mutations fail with 503 if cloud DB is missing."""
-    work_orders = client.get("/api/work-orders").json()
-    assert len(work_orders) > 0
-    work_order_id = work_orders[0]["id"]
-
-    monkeypatch.setenv("VERCEL", "1")
-    monkeypatch.setenv("STRICT_DURABLE_STORAGE", "1")
-    clear_cloud_storage_env(monkeypatch)
-
-    delete_res = client.delete(f"/api/work-orders/{work_order_id}")
     assert delete_res.status_code == 503
     assert "storage is not configured" in delete_res.json()["detail"]
+
+    work_orders_after = client.get("/api/work-orders").json()
+    assert any(wo["id"] == work_order_id for wo in work_orders_after)

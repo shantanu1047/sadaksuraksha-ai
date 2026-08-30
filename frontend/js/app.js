@@ -17,7 +17,6 @@ let selectedHazard = null;
 let userApiKey = localStorage.getItem('SADAKSURAKSHA_GEMINI_KEY') || localStorage.getItem('SADAKSUKHA_GEMINI_KEY') || localStorage.getItem('AERO_GEMINI_KEY') || '';
 const CANCELLED_WORK_ORDER_IDS_KEY = 'SADAKSURAKSHA_CANCELLED_WORK_ORDER_IDS';
 const CANCELLED_WORK_ORDER_HAZARD_IDS_KEY = 'SADAKSURAKSHA_CANCELLED_WORK_ORDER_HAZARD_IDS';
-const DELETED_HAZARD_IDS_KEY = 'SADAKSURAKSHA_DELETED_HAZARD_IDS';
 
 function readStringSet(key) {
   try {
@@ -38,17 +37,6 @@ function getCancelledWorkOrderIds() {
 
 function getCancelledWorkOrderHazardIds() {
   return readStringSet(CANCELLED_WORK_ORDER_HAZARD_IDS_KEY);
-}
-
-function getDeletedHazardIds() {
-  return readStringSet(DELETED_HAZARD_IDS_KEY);
-}
-
-function rememberDeletedHazard(hazardId) {
-  if (!hazardId) return;
-  const deleted = getDeletedHazardIds();
-  deleted.add(String(hazardId).toUpperCase());
-  writeStringSet(DELETED_HAZARD_IDS_KEY, deleted);
 }
 
 function rememberCancelledWorkOrder(orderId, hazardIds = []) {
@@ -475,30 +463,23 @@ async function refreshAllData() {
 
     // Authoritative Single-Source Map Merge
     const hazardMap = new Map();
-    const deletedHazardIds = getDeletedHazardIds();
 
-    // 1. Add server hazards (excluding locally deleted hazards)
+    // 1. Add server hazards
     normalizedFetched.forEach(h => {
-      if (h && h.id && !deletedHazardIds.has(String(h.id).toUpperCase())) {
-        hazardMap.set(h.id, h);
-      }
+      if (h && h.id) hazardMap.set(h.id, h);
     });
 
-    // 2. Merge local citizen reports stored on client (for cold-start resilience)
+    // 2. Merge local image data only for hazards confirmed by the server.
+    // Browser-only records can be stale after a Vercel/serverless reset.
     try {
       const localReports = JSON.parse(localStorage.getItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS') || '[]');
       if (Array.isArray(localReports)) {
         localReports.forEach(rawLr => {
           const lr = normalizeHazard(rawLr);
-          if (lr && lr.id && !deletedHazardIds.has(String(lr.id).toUpperCase())) {
-            if (hazardMap.has(lr.id)) {
-              const existing = hazardMap.get(lr.id);
-              if (!existing.image_url && lr.image_url) {
-                existing.image_url = lr.image_url;
-              }
-            } else {
-              // Server cold container may not have seen this citizen report yet; merge it
-              hazardMap.set(lr.id, lr);
+          if (lr && lr.id && hazardMap.has(lr.id)) {
+            const existing = hazardMap.get(lr.id);
+            if (!existing.image_url && lr.image_url) {
+              existing.image_url = lr.image_url;
             }
           }
         });
@@ -560,7 +541,6 @@ async function resetCitizenDatabase() {
     localStorage.removeItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS');
     localStorage.removeItem(CANCELLED_WORK_ORDER_IDS_KEY);
     localStorage.removeItem(CANCELLED_WORK_ORDER_HAZARD_IDS_KEY);
-    localStorage.removeItem(DELETED_HAZARD_IDS_KEY);
     await fetch('/api/hazards/reset', { method: 'POST' });
     await refreshAllData();
     alert('Database cleared and reset to fresh state.');
@@ -1895,9 +1875,6 @@ async function deleteWorkOrder(orderId) {
 async function deleteHazardReport(hazardId) {
   if (!confirm(`Are you sure you want to delete Hazard Report '${hazardId}'?`)) return;
   try {
-    // Record deletion immediately in persistent client storage
-    rememberDeletedHazard(hazardId);
-
     const res = await fetch(`/api/hazards/${encodeURIComponent(hazardId)}`, { method: 'DELETE' });
     
     // Clear from local storage citizen reports
@@ -1930,7 +1907,6 @@ async function deleteHazardReport(hazardId) {
     refreshAllData().catch(e => console.debug('Background sync:', e));
   } catch (err) {
     console.error('Error deleting hazard report:', err);
-    rememberDeletedHazard(hazardId);
     allHazards = allHazards.filter(h => h.id.toUpperCase() !== hazardId.toUpperCase());
     applyStateAndSearchFilters();
   }
@@ -1949,16 +1925,14 @@ async function clearPriorityBacklog() {
   try {
     const isGlobalReset = (currentStateFilter === 'all' && currentCityFilter === 'all' && currentCategoryFilter === 'all' && !currentSearchQuery);
     if (isGlobalReset) {
-      localStorage.removeItem(DELETED_HAZARD_IDS_KEY);
-      localStorage.removeItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS');
       await fetch('/api/hazards/reset', { method: 'POST' });
+      localStorage.removeItem('SADAKSURAKSHA_MY_CITIZEN_REPORTS');
       await refreshAllData();
       showToastNotification('Priority Backlog completely emptied.');
       return;
     }
 
     const idsToDelete = filtered.map(h => h.id);
-    idsToDelete.forEach(id => rememberDeletedHazard(id));
     await Promise.all(idsToDelete.map(id => fetch(`/api/hazards/${encodeURIComponent(id)}`, { method: 'DELETE' }).catch(e => null)));
     
     try {
